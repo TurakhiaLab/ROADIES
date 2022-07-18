@@ -5,7 +5,7 @@ import random
  
 # Arguments passed
 k= random.randint(0,10) 
-l= random.randint(0,10) 
+l= random.randint(0,300) 
 SeqFile="sample.fa"
 
 if len(sys.argv)>1 and (sys.argv[1][-3:]==".fa" or sys.argv[1][-6:]==".fasta"):
