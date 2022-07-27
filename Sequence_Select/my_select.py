@@ -2,17 +2,21 @@ from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import sys
 import random
+
+# import OS module
+import os
  
+# Get the list of all files and directories
+path = "./../genomes"
+dir_list = os.listdir(path)
+
 # Arguments passed
+f=random.randrange(0,len(dir_list))
 k= random.randint(0,10) 
 l= random.randint(0,300) 
-SeqFile="sample.fa"
+SeqFile=path+"/"+dir_list[f]
 
-if len(sys.argv)>1 and (sys.argv[1][-3:]==".fa" or sys.argv[1][-6:]==".fasta"):
-    SeqFile=sys.argv[1]
-print("\nName of File:", SeqFile)
-
-for i in range(2, len(sys.argv)):
+for i in range(1, len(sys.argv)):
     if sys.argv[i]=="-l":
         l=int(sys.argv[i+1])
     elif sys.argv[i]=="-k":
