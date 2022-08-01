@@ -2,32 +2,30 @@ from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import sys
 import random
-import argparse
+
 # import OS module
 import os
  
 # Get the list of all files and directories
+path = "./../genomes"
+dir_list = os.listdir(path)
+
 # Arguments passed
+
 k= random.randint(0,10) 
 l= random.randint(0,300) 
 
-def isPath(string):
-    if os.path.isdir(string):
-        return string
-    else:
-        raise NotADirectoryError(string)
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-path', type=isPath, required=True)
-parser.add(argument('-k', type=int, default=k))
-parser.add(argument('-l', type=int, default=l))
-args = parser.parse_args()
-print("Input Directory Path:"+ args.path)
-print("Number of regions:" +str(args.k))
-print("Region Length :"+ str(args.l))
+for i in range(1, len(sys.argv)):
+    if sys.argv[i]=="-l":
+        l=int(sys.argv[i+1])
+    elif sys.argv[i]=="-k":
+        k=int(sys.argv[i+1])
+     
+print("Number of regions:", k)
+print("Region Length :", l)
 print("\n")
-path = args.path
-dir_list = os.listdir(path)
+
 
 sequence=[]
 for i in range(k):
