@@ -7,5 +7,6 @@ To download ALL genomes use:
 `./get_fasta.sh [output directory]`
 
 To download the top n genomes by contig N50 use:
-`./get_fasta_small.sh [number of genomes] [output directory]`
+`./get_fasta_small.sh [number of genomes] [output directory]
+default value is 30`
 
