@@ -5,6 +5,11 @@ import random
 import argparse
 # import OS module
 import os
+import time
+import numpy as np
+
+start_time = time.time()
+
  
 # Get the list of all files and directories
 # Arguments passed
@@ -29,12 +34,15 @@ print("\n")
 path = args.path
 dir_list = os.listdir(path)
 
+filenum = np.random.randint(0, len(dir_list), k)
+filenum.sort()
 sequence=[]
 for i in range(k):
-    for j in range(5):
-        f=random.randrange(0,len(dir_list))
+    if i==0 or filenum[i]!=filenum[i-1]:
+        f=filenum[i]
         SeqFile=path+"/"+dir_list[f]
         records = list(SeqIO.parse(SeqFile, "fasta"))
+    for j in range(5):
         c_seq=random.randint(0,len(records)-1)
         seq_len=len(records[c_seq].seq)
         start=random.randint(0,seq_len-l)
@@ -45,4 +53,5 @@ for i in range(k):
     sequence.append(record)
 
 SeqIO.write(sequence, "out.fasta", "fasta")
-
+main()
+print("--- %s seconds ---" % (time.time() - start_time))
