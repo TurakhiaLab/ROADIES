@@ -1,5 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+import sys
+num_genomes = 30
+if len(sys.argv)>1:
+    num_genomes = int(sys.argv[1])
 top = []
 with open("datarank.txt",'r') as f:
     lines = f.readlines()
@@ -7,7 +11,7 @@ with open("datarank.txt",'r') as f:
         split = l.split(',')
         name = split[0]
         top.append(name)
-top = top[0:30]
+top = top[0:num_genomes]
 from collections import OrderedDict
 url = 'https://hgdownload.soe.ucsc.edu/hubs/birds/index.html'
 r = requests.get(url)
@@ -25,7 +29,7 @@ for l in links:
     if name in top:
         print(name)
         theLinks.append(l)
-f = open("fasta_links_30.txt",'w')
+f = open("fasta_links_small.txt",'w')
 for l in theLinks:
     #print(l)
     req = requests.get(l)
