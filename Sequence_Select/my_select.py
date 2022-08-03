@@ -9,7 +9,6 @@ import os
 from alive_progress import alive_bar 
 # Get the list of all files and directories
 path = "./../genomes"
-dir_list = os.listdir(path)
 
 # Arguments passed
 
@@ -22,11 +21,15 @@ for i in range(1, len(sys.argv)):
         l=int(sys.argv[i+1])
     elif sys.argv[i]=="-k":
         k=int(sys.argv[i+1])
-     
+    elif sys.argv[i]=="-d":
+        path = sys.argv[i+1]
+dir_list = os.listdir(path)
+
 print("Number of regions:", k)
 print("Region Length :", l)
+print("Input Directory:" +path)
 print("\n")
-print(len(dir_list))
+print("Number of genomes:" +str(len(dir_list)))
 filenum = np.random.randint(0, len(dir_list), k)
 filenum.sort()
 
@@ -36,6 +39,7 @@ with alive_bar(k) as bar:
         if i==0 or filenum[i]!=filenum[i-1]:
             f=filenum[i]
             SeqFile=path+"/"+dir_list[f]
+            print(SeqFile)
             records = list(SeqIO.parse(SeqFile, "fasta"))
         for j in range(5):
             c_seq=random.randint(0,len(records)-1)
