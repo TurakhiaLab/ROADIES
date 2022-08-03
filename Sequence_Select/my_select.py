@@ -39,7 +39,7 @@ with alive_bar(k) as bar:
         if i==0 or filenum[i]!=filenum[i-1]:
             f=filenum[i]
             SeqFile=path+"/"+dir_list[f]
-            print(SeqFile)
+            #print(SeqFile)
             records = list(SeqIO.parse(SeqFile, "fasta"))
         for j in range(5):
             c_seq=random.randint(0,len(records)-1)
