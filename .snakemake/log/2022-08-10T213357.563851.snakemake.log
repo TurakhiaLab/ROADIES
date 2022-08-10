@@ -1,0 +1,39 @@
+Building DAG of jobs...
+Relative file path './Sequence_Select/out.fasta' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './Sequence_Select/index.csv' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './Sequence_Select/out.fasta' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './Sequence_Select/index.csv' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+get_seeding            1              1              1
+sequence_select        1              1              1
+total                  3              1              1
+
+Select jobs to execute...
+
+[Wed Aug 10 21:33:57 2022]
+rule get_seeding:
+    input: ./get_genomes/small_genomes
+    output: ./Sequence_Select/index.csv
+    jobid: 2
+    reason: Missing output files: ./Sequence_Select/index.csv
+    resources: tmpdir=/tmp
+
+[Wed Aug 10 21:33:57 2022]
+Error in rule get_seeding:
+    jobid: 2
+    output: ./Sequence_Select/index.csv
+    shell:
+        python3 ./Sequence_Select/seeding.py --output ./Sequence_Select/index.csv --path ./get_genomes/small_genomes
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-08-10T213357.563851.snakemake.log
