@@ -33,7 +33,7 @@ with alive_bar(k) as bar:
         for j in range(5):
             c_seq=random.randint(0,len(records)-1)
             seq_len=len(records[c_seq].seq)
-            if l>seq_len
+            if l>seq_len:
                 continue
             start = random.randint(0,seq_len-l)
             frag = records[c_seq].seq[start:(start+l)]
