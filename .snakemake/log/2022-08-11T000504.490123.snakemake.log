@@ -1,0 +1,2 @@
+SyntaxError in line 9 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+Unexpected keyword core in rule definition (Snakefile, line 9)

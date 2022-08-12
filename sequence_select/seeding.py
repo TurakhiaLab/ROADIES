@@ -17,7 +17,7 @@ num = args.k
 directory = args.path
 dir_list = os.listdir(directory)
 num_genomes = len(dir_list)
-print("There are "+ str(len(dir_list))+" genomes")
+# print("There are "+ str(len(dir_list))+" genomes")
 od = OrderedDict()
 for i in range(num):
     index = random.randint(0,num_genomes-1)
@@ -28,6 +28,6 @@ for i in range(num):
 od = OrderedDict(sorted(od.items()))
 f = open(args.output,'w')
 for key,value in od.items():
-    print(str(key)+ ", "+dir_list[key] +", " +str(value))
+    # print(str(key)+ ", "+dir_list[key] +", " +str(value))
     f.write(dir_list[key]+","+str(value)+'\n')
 

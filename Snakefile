@@ -1,11 +1,13 @@
 rule all:
     input:
         "./sequence_select/out.fasta"
-print(config["KREG"])
+
 rule sequence_select:
     input:
         "./sequence_select/index.csv",
         PATH=config["PATH"]
+    threads:
+        16
     params:
         LENGTH=config["LENGTH"] 
     output:

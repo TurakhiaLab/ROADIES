@@ -1,5 +1,6 @@
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
+from Bio.Seq import Seq
 import sys
 import time
 import random
@@ -7,6 +8,7 @@ import random
 import numpy as np
 import os
 from alive_progress import alive_bar 
+import re
 # Get the list of all files and directories
 # Arguments passed
 k= random.randint(0,10) 
@@ -21,6 +23,10 @@ path = sys.argv[1]
 print("Region Length :", l)
 print("Input Directory:" +path)
 print("\n") """
+def CheckLength(letter):
+    return True if len(letter)>=l else False
+
+
 records = list(SeqIO.parse(path,"fasta"))
 sequence=[]
 name = ''
@@ -35,8 +41,12 @@ with alive_bar(k) as bar:
             seq_len=len(records[c_seq].seq)
             if l>seq_len:
                 continue
-            start = random.randint(0,seq_len-l)
-            frag = records[c_seq].seq[start:(start+l)]
+            new_list=list(filter(CheckLength,re.split("[a,c,g,t,N]", str(records[c_seq].seq))))
+            if len(new_list)==0:
+                continue
+            chosen=random.randint(0,len(new_list)-1)
+            start = random.randint(0,len(new_list[chosen])-l)
+            frag = Seq(new_list[chosen][start:(start+l)])
             if j ==4:
                 record = SeqRecord(frag, name+':'+str(start)+':'+str(i),"","" )
                 if "N" not in record:
@@ -55,4 +65,3 @@ for s in split:
     if 'fa' in s:
         frag = s
 SeqIO.write(sequence, "frag_"+ s, "fasta")
-

@@ -1,0 +1,2 @@
+SyntaxError in line 5 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+Command must be given as string after the shell keyword. (Snakefile, line 5)
