@@ -1,0 +1,35 @@
+gtNum = 10
+depth = 6
+genLen = 1000
+threadNum = 64
+
+NUMBERS = [str(i) for i in range(gtNum)]
+
+rule all:
+    input:
+        "speciesTree.newick"
+
+
+rule writeGeneTrees:
+    input:
+        expand("tmp/tree{sample}.newick", sample=NUMBERS)
+    output:
+        "geneTrees.newick"
+    script:
+        "writeGT.py"
+
+rule astral:
+    input:
+        "geneTrees.newick"
+    output:
+        "speciesTree.newick"
+    shell:
+        "astral -i {input} -o {output}  2> /dev/null"
+
+rule test:
+    input:
+        "{sss}/genes{sample}.fasta"
+    output:
+        "{sss}/dummy{sample}"
+    shell:
+        "echo {input} >> {output}"
