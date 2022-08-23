@@ -1,0 +1,582 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 32
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+get_seeding            1              1              1
+lastz                 40              1              1
+sequence_select        1             16             16
+total                 43              1             16
+
+Select jobs to execute...
+
+[Tue Aug 23 20:01:09 2022]
+rule get_seeding:
+    input: ../genomes_top40
+    output: sequence_select/index.csv
+    jobid: 3
+    reason: Missing output files: sequence_select/index.csv
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:01:10 2022]
+Finished job 3.
+1 of 43 steps (2%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:01:10 2022]
+rule sequence_select:
+    input: sequence_select/index.csv, ../genomes_top40
+    output: sequence_select/out.fasta
+    jobid: 2
+    reason: Missing output files: sequence_select/out.fasta; Input files updated by another job: sequence_select/index.csv
+    threads: 16
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:01:49 2022]
+Finished job 2.
+2 of 43 steps (5%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_009829145.1.fa
+    output: test/GCF_009829145.1.maf
+    jobid: 16
+    reason: Missing output files: test/GCF_009829145.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_013407035.1.fa
+    output: test/GCA_013407035.1.maf
+    jobid: 31
+    reason: Missing output files: test/GCA_013407035.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_012275295.1.fa
+    output: test/GCF_012275295.1.maf
+    jobid: 9
+    reason: Missing output files: test/GCF_012275295.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_016904835.1.fa
+    output: test/GCA_016904835.1.maf
+    jobid: 39
+    reason: Missing output files: test/GCA_016904835.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639485.1.fa
+    output: test/GCA_017639485.1.maf
+    jobid: 17
+    reason: Missing output files: test/GCA_017639485.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639555.1.fa
+    output: test/GCA_017639555.1.maf
+    jobid: 1
+    reason: Missing output files: test/GCA_017639555.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_902806625.1.fa
+    output: test/GCA_902806625.1.maf
+    jobid: 32
+    reason: Missing output files: test/GCA_902806625.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_018691265.1.fa
+    output: test/GCF_018691265.1.maf
+    jobid: 25
+    reason: Missing output files: test/GCF_018691265.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020801775.1.fa
+    output: test/GCA_020801775.1.maf
+    jobid: 10
+    reason: Missing output files: test/GCA_020801775.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_020740725.1.fa
+    output: test/GCF_020740725.1.maf
+    jobid: 40
+    reason: Missing output files: test/GCF_020740725.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_907165065.1.fa
+    output: test/GCA_907165065.1.maf
+    jobid: 18
+    reason: Missing output files: test/GCA_907165065.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_016128335.1.fa
+    output: test/GCA_016128335.1.maf
+    jobid: 33
+    reason: Missing output files: test/GCA_016128335.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_017639655.2.fa
+    output: test/GCF_017639655.2.maf
+    jobid: 26
+    reason: Missing output files: test/GCF_017639655.2.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_018139145.1.fa
+    output: test/GCA_018139145.1.maf
+    jobid: 11
+    reason: Missing output files: test/GCA_018139145.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_901933205.1.fa
+    output: test/GCF_901933205.1.maf
+    jobid: 41
+    reason: Missing output files: test/GCF_901933205.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_011004875.1.fa
+    output: test/GCA_011004875.1.maf
+    jobid: 19
+    reason: Missing output files: test/GCA_011004875.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_013368605.1.fa
+    output: test/GCA_013368605.1.maf
+    jobid: 4
+    reason: Missing output files: test/GCA_013368605.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_900496995.4.fa
+    output: test/GCF_900496995.4.maf
+    jobid: 34
+    reason: Missing output files: test/GCF_900496995.4.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_014839835.1.fa
+    output: test/GCA_014839835.1.maf
+    jobid: 27
+    reason: Missing output files: test/GCA_014839835.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_014839755.1.fa
+    output: test/GCA_014839755.1.maf
+    jobid: 21
+    reason: Missing output files: test/GCA_014839755.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639245.1.fa
+    output: test/GCA_017639245.1.maf
+    jobid: 6
+    reason: Missing output files: test/GCA_017639245.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020740795.1.fa
+    output: test/GCA_020740795.1.maf
+    jobid: 36
+    reason: Missing output files: test/GCA_020740795.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_016699485.2.fa
+    output: test/GCF_016699485.2.maf
+    jobid: 29
+    reason: Missing output files: test/GCF_016699485.2.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_003957555.1.fa
+    output: test/GCF_003957555.1.maf
+    jobid: 14
+    reason: Missing output files: test/GCF_003957555.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_015220805.1.fa
+    output: test/GCA_015220805.1.maf
+    jobid: 22
+    reason: Missing output files: test/GCA_015220805.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020745705.1.fa
+    output: test/GCA_020745705.1.maf
+    jobid: 7
+    reason: Missing output files: test/GCA_020745705.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_008658365.1.fa
+    output: test/GCA_008658365.1.maf
+    jobid: 37
+    reason: Missing output files: test/GCA_008658365.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_016700215.2.fa
+    output: test/GCF_016700215.2.maf
+    jobid: 30
+    reason: Missing output files: test/GCF_016700215.2.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020746105.1.fa
+    output: test/GCA_020746105.1.maf
+    jobid: 15
+    reason: Missing output files: test/GCA_020746105.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819825.1.fa
+    output: test/GCA_009819825.1.maf
+    jobid: 23
+    reason: Missing output files: test/GCA_009819825.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819775.1.fa
+    output: test/GCA_009819775.1.maf
+    jobid: 8
+    reason: Missing output files: test/GCA_009819775.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 20:01:50 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_000002315.6.fa
+    output: test/GCF_000002315.6.maf
+    jobid: 38
+    reason: Missing output files: test/GCF_000002315.6.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:45 2022]
+Finished job 41.
+3 of 43 steps (7%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:45 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_012275265.1.fa
+    output: test/GCA_012275265.1.maf
+    jobid: 42
+    reason: Missing output files: test/GCA_012275265.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:46 2022]
+Finished job 30.
+4 of 43 steps (9%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:46 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_009819795.1.fa
+    output: test/GCF_009819795.1.maf
+    jobid: 12
+    reason: Missing output files: test/GCF_009819795.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:47 2022]
+Finished job 31.
+5 of 43 steps (12%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:47 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819605.1.fa
+    output: test/GCA_009819605.1.maf
+    jobid: 13
+    reason: Missing output files: test/GCA_009819605.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:48 2022]
+Finished job 39.
+6 of 43 steps (14%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:48 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_905368555.1.fa
+    output: test/GCA_905368555.1.maf
+    jobid: 28
+    reason: Missing output files: test/GCA_905368555.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:49 2022]
+Finished job 32.
+7 of 43 steps (16%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:49 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_015220075.1.fa
+    output: test/GCF_015220075.1.maf
+    jobid: 5
+    reason: Missing output files: test/GCF_015220075.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:49 2022]
+Finished job 38.
+8 of 43 steps (19%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:49 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017976375.1.fa
+    output: test/GCA_017976375.1.maf
+    jobid: 20
+    reason: Missing output files: test/GCA_017976375.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:51 2022]
+Finished job 16.
+9 of 43 steps (21%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:51 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020800305.1.fa
+    output: test/GCA_020800305.1.maf
+    jobid: 35
+    reason: Missing output files: test/GCA_020800305.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:51 2022]
+Finished job 14.
+10 of 43 steps (23%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:02:51 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020745775.1.fa
+    output: test/GCA_020745775.1.maf
+    jobid: 24
+    reason: Missing output files: test/GCA_020745775.1.maf; Input files updated by another job: sequence_select/out.fasta; Code has changed since last execution
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:02:53 2022]
+Finished job 21.
+11 of 43 steps (26%) done
+[Tue Aug 23 20:02:53 2022]
+Finished job 9.
+12 of 43 steps (28%) done
+[Tue Aug 23 20:02:54 2022]
+Finished job 33.
+13 of 43 steps (30%) done
+[Tue Aug 23 20:02:54 2022]
+Finished job 6.
+14 of 43 steps (33%) done
+[Tue Aug 23 20:02:54 2022]
+Finished job 10.
+15 of 43 steps (35%) done
+[Tue Aug 23 20:02:56 2022]
+Finished job 7.
+16 of 43 steps (37%) done
+[Tue Aug 23 20:02:56 2022]
+Finished job 19.
+17 of 43 steps (40%) done
+[Tue Aug 23 20:02:56 2022]
+Finished job 37.
+18 of 43 steps (42%) done
+[Tue Aug 23 20:02:57 2022]
+Finished job 1.
+19 of 43 steps (44%) done
+[Tue Aug 23 20:02:59 2022]
+Finished job 8.
+20 of 43 steps (47%) done
+[Tue Aug 23 20:02:59 2022]
+Finished job 36.
+21 of 43 steps (49%) done
+[Tue Aug 23 20:02:59 2022]
+Finished job 23.
+22 of 43 steps (51%) done
+[Tue Aug 23 20:02:59 2022]
+Finished job 34.
+23 of 43 steps (53%) done
+[Tue Aug 23 20:02:59 2022]
+Finished job 27.
+24 of 43 steps (56%) done
+[Tue Aug 23 20:03:00 2022]
+Finished job 15.
+25 of 43 steps (58%) done
+[Tue Aug 23 20:03:02 2022]
+Finished job 11.
+26 of 43 steps (60%) done
+[Tue Aug 23 20:03:04 2022]
+Finished job 18.
+27 of 43 steps (63%) done
+[Tue Aug 23 20:03:04 2022]
+Finished job 40.
+28 of 43 steps (65%) done
+[Tue Aug 23 20:03:04 2022]
+Finished job 22.
+29 of 43 steps (67%) done
+[Tue Aug 23 20:03:06 2022]
+Finished job 25.
+30 of 43 steps (70%) done
+[Tue Aug 23 20:03:06 2022]
+Finished job 4.
+31 of 43 steps (72%) done
+[Tue Aug 23 20:03:08 2022]
+Finished job 17.
+32 of 43 steps (74%) done
+[Tue Aug 23 20:03:26 2022]
+Finished job 26.
+33 of 43 steps (77%) done
+[Tue Aug 23 20:03:38 2022]
+Finished job 28.
+34 of 43 steps (79%) done
+[Tue Aug 23 20:03:41 2022]
+Finished job 42.
+35 of 43 steps (81%) done
+[Tue Aug 23 20:03:48 2022]
+Finished job 12.
+36 of 43 steps (84%) done
+[Tue Aug 23 20:03:57 2022]
+Finished job 24.
+37 of 43 steps (86%) done
+[Tue Aug 23 20:04:00 2022]
+Finished job 5.
+38 of 43 steps (88%) done
+[Tue Aug 23 20:04:01 2022]
+Finished job 35.
+39 of 43 steps (91%) done
+[Tue Aug 23 20:04:03 2022]
+Finished job 13.
+40 of 43 steps (93%) done
+[Tue Aug 23 20:04:03 2022]
+Finished job 20.
+41 of 43 steps (95%) done
+[Tue Aug 23 20:04:15 2022]
+Finished job 29.
+42 of 43 steps (98%) done
+Select jobs to execute...
+
+[Tue Aug 23 20:04:15 2022]
+localrule all:
+    input: test/GCA_017639555.1.maf, test/GCA_013368605.1.maf, test/GCF_015220075.1.maf, test/GCA_017639245.1.maf, test/GCA_020745705.1.maf, test/GCA_009819775.1.maf, test/GCF_012275295.1.maf, test/GCA_020801775.1.maf, test/GCA_018139145.1.maf, test/GCF_009819795.1.maf, test/GCA_009819605.1.maf, test/GCF_003957555.1.maf, test/GCA_020746105.1.maf, test/GCF_009829145.1.maf, test/GCA_017639485.1.maf, test/GCA_907165065.1.maf, test/GCA_011004875.1.maf, test/GCA_017976375.1.maf, test/GCA_014839755.1.maf, test/GCA_015220805.1.maf, test/GCA_009819825.1.maf, test/GCA_020745775.1.maf, test/GCF_018691265.1.maf, test/GCF_017639655.2.maf, test/GCA_014839835.1.maf, test/GCA_905368555.1.maf, test/GCF_016699485.2.maf, test/GCF_016700215.2.maf, test/GCA_013407035.1.maf, test/GCA_902806625.1.maf, test/GCA_016128335.1.maf, test/GCF_900496995.4.maf, test/GCA_020800305.1.maf, test/GCA_020740795.1.maf, test/GCA_008658365.1.maf, test/GCF_000002315.6.maf, test/GCA_016904835.1.maf, test/GCF_020740725.1.maf, test/GCF_901933205.1.maf, test/GCA_012275265.1.maf
+    jobid: 0
+    reason: Input files updated by another job: test/GCA_013407035.1.maf, test/GCA_905368555.1.maf, test/GCA_012275265.1.maf, test/GCA_009819775.1.maf, test/GCF_016700215.2.maf, test/GCF_009829145.1.maf, test/GCA_020740795.1.maf, test/GCF_017639655.2.maf, test/GCA_011004875.1.maf, test/GCA_907165065.1.maf, test/GCF_018691265.1.maf, test/GCF_020740725.1.maf, test/GCA_009819825.1.maf, test/GCA_020746105.1.maf, test/GCA_018139145.1.maf, test/GCA_017639555.1.maf, test/GCA_017976375.1.maf, test/GCA_009819605.1.maf, test/GCF_016699485.2.maf, test/GCF_012275295.1.maf, test/GCA_014839835.1.maf, test/GCA_016904835.1.maf, test/GCA_020801775.1.maf, test/GCA_017639245.1.maf, test/GCF_015220075.1.maf, test/GCA_020800305.1.maf, test/GCA_015220805.1.maf, test/GCA_020745705.1.maf, test/GCA_013368605.1.maf, test/GCA_014839755.1.maf, test/GCA_020745775.1.maf, test/GCA_008658365.1.maf, test/GCF_000002315.6.maf, test/GCF_003957555.1.maf, test/GCA_016128335.1.maf, test/GCA_902806625.1.maf, test/GCA_017639485.1.maf, test/GCF_009819795.1.maf, test/GCF_901933205.1.maf, test/GCF_900496995.4.maf
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 20:04:15 2022]
+Finished job 0.
+43 of 43 steps (100%) done
+Complete log: .snakemake/log/2022-08-23T200109.799865.snakemake.log

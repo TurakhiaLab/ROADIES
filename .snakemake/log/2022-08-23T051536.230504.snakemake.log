@@ -1,0 +1,545 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Job stats:
+job      count    min threads    max threads
+-----  -------  -------------  -------------
+all          1              1              1
+lastz       40              1              1
+total       41              1              1
+
+Select jobs to execute...
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_009829145.1.fa
+    output: test/GCF_009829145.1.maf
+    jobid: 16
+    reason: Forced execution
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_013407035.1.fa
+    output: test/GCA_013407035.1.maf
+    jobid: 31
+    reason: Forced execution
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020745775.1.fa
+    output: test/GCA_020745775.1.maf
+    jobid: 24
+    reason: Forced execution
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_012275295.1.fa
+    output: test/GCF_012275295.1.maf
+    jobid: 9
+    reason: Forced execution
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_016904835.1.fa
+    output: test/GCA_016904835.1.maf
+    jobid: 39
+    reason: Forced execution
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639485.1.fa
+    output: test/GCA_017639485.1.maf
+    jobid: 17
+    reason: Forced execution
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639555.1.fa
+    output: test/GCA_017639555.1.maf
+    jobid: 1
+    reason: Forced execution
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_902806625.1.fa
+    output: test/GCA_902806625.1.maf
+    jobid: 32
+    reason: Forced execution
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_018691265.1.fa
+    output: test/GCF_018691265.1.maf
+    jobid: 25
+    reason: Forced execution
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020801775.1.fa
+    output: test/GCA_020801775.1.maf
+    jobid: 10
+    reason: Forced execution
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_020740725.1.fa
+    output: test/GCF_020740725.1.maf
+    jobid: 40
+    reason: Forced execution
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_907165065.1.fa
+    output: test/GCA_907165065.1.maf
+    jobid: 18
+    reason: Forced execution
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_016128335.1.fa
+    output: test/GCA_016128335.1.maf
+    jobid: 33
+    reason: Forced execution
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_017639655.2.fa
+    output: test/GCF_017639655.2.maf
+    jobid: 26
+    reason: Forced execution
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_018139145.1.fa
+    output: test/GCA_018139145.1.maf
+    jobid: 11
+    reason: Forced execution
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_901933205.1.fa
+    output: test/GCF_901933205.1.maf
+    jobid: 41
+    reason: Forced execution
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_011004875.1.fa
+    output: test/GCA_011004875.1.maf
+    jobid: 19
+    reason: Forced execution
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_013368605.1.fa
+    output: test/GCA_013368605.1.maf
+    jobid: 4
+    reason: Forced execution
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_900496995.4.fa
+    output: test/GCF_900496995.4.maf
+    jobid: 34
+    reason: Forced execution
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_014839835.1.fa
+    output: test/GCA_014839835.1.maf
+    jobid: 27
+    reason: Forced execution
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_009819795.1.fa
+    output: test/GCF_009819795.1.maf
+    jobid: 12
+    reason: Forced execution
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_012275265.1.fa
+    output: test/GCA_012275265.1.maf
+    jobid: 42
+    reason: Forced execution
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017976375.1.fa
+    output: test/GCA_017976375.1.maf
+    jobid: 20
+    reason: Forced execution
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_015220075.1.fa
+    output: test/GCF_015220075.1.maf
+    jobid: 5
+    reason: Forced execution
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020800305.1.fa
+    output: test/GCA_020800305.1.maf
+    jobid: 35
+    reason: Forced execution
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_905368555.1.fa
+    output: test/GCA_905368555.1.maf
+    jobid: 28
+    reason: Forced execution
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819605.1.fa
+    output: test/GCA_009819605.1.maf
+    jobid: 13
+    reason: Forced execution
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_014839755.1.fa
+    output: test/GCA_014839755.1.maf
+    jobid: 21
+    reason: Forced execution
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639245.1.fa
+    output: test/GCA_017639245.1.maf
+    jobid: 6
+    reason: Forced execution
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020740795.1.fa
+    output: test/GCA_020740795.1.maf
+    jobid: 36
+    reason: Forced execution
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_016699485.2.fa
+    output: test/GCF_016699485.2.maf
+    jobid: 29
+    reason: Forced execution
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_003957555.1.fa
+    output: test/GCF_003957555.1.maf
+    jobid: 14
+    reason: Forced execution
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_015220805.1.fa
+    output: test/GCA_015220805.1.maf
+    jobid: 22
+    reason: Forced execution
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020745705.1.fa
+    output: test/GCA_020745705.1.maf
+    jobid: 7
+    reason: Forced execution
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_008658365.1.fa
+    output: test/GCA_008658365.1.maf
+    jobid: 37
+    reason: Forced execution
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_016700215.2.fa
+    output: test/GCF_016700215.2.maf
+    jobid: 30
+    reason: Forced execution
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020746105.1.fa
+    output: test/GCA_020746105.1.maf
+    jobid: 15
+    reason: Forced execution
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819825.1.fa
+    output: test/GCA_009819825.1.maf
+    jobid: 23
+    reason: Forced execution
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819775.1.fa
+    output: test/GCA_009819775.1.maf
+    jobid: 8
+    reason: Forced execution
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:15:36 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_000002315.6.fa
+    output: test/GCF_000002315.6.maf
+    jobid: 38
+    reason: Forced execution
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 05:16:35 2022]
+Finished job 21.
+1 of 41 steps (2%) done
+[Tue Aug 23 05:16:35 2022]
+Finished job 31.
+2 of 41 steps (5%) done
+[Tue Aug 23 05:16:36 2022]
+Finished job 39.
+3 of 41 steps (7%) done
+[Tue Aug 23 05:16:39 2022]
+Finished job 16.
+4 of 41 steps (10%) done
+[Tue Aug 23 05:16:40 2022]
+Finished job 15.
+5 of 41 steps (12%) done
+[Tue Aug 23 05:16:41 2022]
+Finished job 29.
+6 of 41 steps (15%) done
+[Tue Aug 23 05:16:41 2022]
+Finished job 9.
+7 of 41 steps (17%) done
+[Tue Aug 23 05:16:41 2022]
+Finished job 10.
+8 of 41 steps (20%) done
+[Tue Aug 23 05:16:42 2022]
+Finished job 37.
+9 of 41 steps (22%) done
+[Tue Aug 23 05:16:42 2022]
+Finished job 42.
+10 of 41 steps (24%) done
+[Tue Aug 23 05:16:42 2022]
+Finished job 6.
+11 of 41 steps (27%) done
+[Tue Aug 23 05:16:43 2022]
+Finished job 1.
+12 of 41 steps (29%) done
+[Tue Aug 23 05:16:44 2022]
+Finished job 36.
+13 of 41 steps (32%) done
+[Tue Aug 23 05:16:44 2022]
+Finished job 8.
+14 of 41 steps (34%) done
+[Tue Aug 23 05:16:46 2022]
+Finished job 24.
+15 of 41 steps (37%) done
+[Tue Aug 23 05:16:46 2022]
+Finished job 40.
+16 of 41 steps (39%) done
+[Tue Aug 23 05:16:47 2022]
+Finished job 25.
+17 of 41 steps (41%) done
+[Tue Aug 23 05:16:47 2022]
+Finished job 20.
+18 of 41 steps (44%) done
+[Tue Aug 23 05:16:48 2022]
+Finished job 27.
+19 of 41 steps (46%) done
+[Tue Aug 23 05:16:48 2022]
+Finished job 5.
+20 of 41 steps (49%) done
+[Tue Aug 23 05:16:49 2022]
+Finished job 33.
+21 of 41 steps (51%) done
+[Tue Aug 23 05:16:50 2022]
+Finished job 23.
+22 of 41 steps (54%) done
+[Tue Aug 23 05:16:53 2022]
+Finished job 30.
+23 of 41 steps (56%) done
+[Tue Aug 23 05:16:54 2022]
+Finished job 19.
+24 of 41 steps (59%) done
+[Tue Aug 23 05:16:54 2022]
+Finished job 26.
+25 of 41 steps (61%) done
+[Tue Aug 23 05:17:00 2022]
+Finished job 28.
+26 of 41 steps (63%) done
+[Tue Aug 23 05:17:04 2022]
+Finished job 32.
+27 of 41 steps (66%) done
+[Tue Aug 23 05:17:04 2022]
+Finished job 14.
+28 of 41 steps (68%) done
+[Tue Aug 23 05:17:05 2022]
+Finished job 34.
+29 of 41 steps (71%) done
+[Tue Aug 23 05:17:06 2022]
+Finished job 41.
+30 of 41 steps (73%) done
+[Tue Aug 23 05:17:07 2022]
+Finished job 4.
+31 of 41 steps (76%) done
+[Tue Aug 23 05:17:09 2022]
+Finished job 17.
+32 of 41 steps (78%) done
+[Tue Aug 23 05:17:10 2022]
+Finished job 38.
+33 of 41 steps (80%) done
+[Tue Aug 23 05:17:11 2022]
+Finished job 7.
+34 of 41 steps (83%) done
+[Tue Aug 23 05:17:11 2022]
+Finished job 11.
+35 of 41 steps (85%) done
+[Tue Aug 23 05:17:11 2022]
+Finished job 22.
+36 of 41 steps (88%) done
+[Tue Aug 23 05:17:12 2022]
+Finished job 12.
+37 of 41 steps (90%) done
+[Tue Aug 23 05:17:14 2022]
+Finished job 35.
+38 of 41 steps (93%) done
+[Tue Aug 23 05:17:16 2022]
+Finished job 13.
+39 of 41 steps (95%) done
+[Tue Aug 23 05:17:17 2022]
+Finished job 18.
+40 of 41 steps (98%) done
+Select jobs to execute...
+
+[Tue Aug 23 05:17:17 2022]
+localrule all:
+    input: test/GCA_017639555.1.maf, test/GCA_013368605.1.maf, test/GCF_015220075.1.maf, test/GCA_017639245.1.maf, test/GCA_020745705.1.maf, test/GCA_009819775.1.maf, test/GCF_012275295.1.maf, test/GCA_020801775.1.maf, test/GCA_018139145.1.maf, test/GCF_009819795.1.maf, test/GCA_009819605.1.maf, test/GCF_003957555.1.maf, test/GCA_020746105.1.maf, test/GCF_009829145.1.maf, test/GCA_017639485.1.maf, test/GCA_907165065.1.maf, test/GCA_011004875.1.maf, test/GCA_017976375.1.maf, test/GCA_014839755.1.maf, test/GCA_015220805.1.maf, test/GCA_009819825.1.maf, test/GCA_020745775.1.maf, test/GCF_018691265.1.maf, test/GCF_017639655.2.maf, test/GCA_014839835.1.maf, test/GCA_905368555.1.maf, test/GCF_016699485.2.maf, test/GCF_016700215.2.maf, test/GCA_013407035.1.maf, test/GCA_902806625.1.maf, test/GCA_016128335.1.maf, test/GCF_900496995.4.maf, test/GCA_020800305.1.maf, test/GCA_020740795.1.maf, test/GCA_008658365.1.maf, test/GCF_000002315.6.maf, test/GCA_016904835.1.maf, test/GCF_020740725.1.maf, test/GCF_901933205.1.maf, test/GCA_012275265.1.maf
+    jobid: 0
+    reason: Input files updated by another job: test/GCA_012275265.1.maf, test/GCA_013407035.1.maf, test/GCA_020801775.1.maf, test/GCF_020740725.1.maf, test/GCF_901933205.1.maf, test/GCA_017639555.1.maf, test/GCF_009829145.1.maf, test/GCF_016700215.2.maf, test/GCA_020740795.1.maf, test/GCA_902806625.1.maf, test/GCA_008658365.1.maf, test/GCA_020745775.1.maf, test/GCA_009819825.1.maf, test/GCF_000002315.6.maf, test/GCF_015220075.1.maf, test/GCF_900496995.4.maf, test/GCA_020800305.1.maf, test/GCA_018139145.1.maf, test/GCA_009819775.1.maf, test/GCA_014839755.1.maf, test/GCA_009819605.1.maf, test/GCF_012275295.1.maf, test/GCA_020745705.1.maf, test/GCF_003957555.1.maf, test/GCA_020746105.1.maf, test/GCA_015220805.1.maf, test/GCA_907165065.1.maf, test/GCF_009819795.1.maf, test/GCA_017639485.1.maf, test/GCF_016699485.2.maf, test/GCA_017976375.1.maf, test/GCA_905368555.1.maf, test/GCF_018691265.1.maf, test/GCA_013368605.1.maf, test/GCA_017639245.1.maf, test/GCF_017639655.2.maf, test/GCA_011004875.1.maf, test/GCA_016904835.1.maf, test/GCA_014839835.1.maf, test/GCA_016128335.1.maf
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 05:17:17 2022]
+Finished job 0.
+41 of 41 steps (100%) done
+Complete log: .snakemake/log/2022-08-23T051536.230504.snakemake.log

@@ -2,15 +2,16 @@ import glob
 SAMPLES = glob_wildcards(config["PATH"]+"/{samples}.fa").samples
 print(SAMPLES)
 rule all:
-	input:expand("test/{samples}.maf",samples=SAMPLES)	
+	input:expand(config["OUT"]+"/{samples}.maf",samples=SAMPLES)	
 rule lastz:
 	input:
 		"sequence_select/out.fasta",
 		config["PATH"]+"/{sample}.fa"
 	output:
-		"test/{sample}.maf"
+		config["OUT"]+"/{sample}.maf"
 	shell:
-		"/home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output={output}"
+		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output={output}"
+
 rule sequence_select:
     input:
         "sequence_select/index.csv",

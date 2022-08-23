@@ -1,0 +1,734 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Job stats:
+job      count    min threads    max threads
+-----  -------  -------------  -------------
+all          1              1              1
+lastz       40              1              1
+total       41              1              1
+
+Select jobs to execute...
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_009829145.1.fa
+    output: test/GCF_009829145.1.maf
+    jobid: 16
+    reason: Missing output files: test/GCF_009829145.1.maf
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_013407035.1.fa
+    output: test/GCA_013407035.1.maf
+    jobid: 31
+    reason: Missing output files: test/GCA_013407035.1.maf
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020745775.1.fa
+    output: test/GCA_020745775.1.maf
+    jobid: 24
+    reason: Missing output files: test/GCA_020745775.1.maf
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_012275295.1.fa
+    output: test/GCF_012275295.1.maf
+    jobid: 9
+    reason: Missing output files: test/GCF_012275295.1.maf
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_016904835.1.fa
+    output: test/GCA_016904835.1.maf
+    jobid: 39
+    reason: Missing output files: test/GCA_016904835.1.maf
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639485.1.fa
+    output: test/GCA_017639485.1.maf
+    jobid: 17
+    reason: Missing output files: test/GCA_017639485.1.maf
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639555.1.fa
+    output: test/GCA_017639555.1.maf
+    jobid: 1
+    reason: Missing output files: test/GCA_017639555.1.maf
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_902806625.1.fa
+    output: test/GCA_902806625.1.maf
+    jobid: 32
+    reason: Missing output files: test/GCA_902806625.1.maf
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_018691265.1.fa
+    output: test/GCF_018691265.1.maf
+    jobid: 25
+    reason: Missing output files: test/GCF_018691265.1.maf
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020801775.1.fa
+    output: test/GCA_020801775.1.maf
+    jobid: 10
+    reason: Missing output files: test/GCA_020801775.1.maf
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_020740725.1.fa
+    output: test/GCF_020740725.1.maf
+    jobid: 40
+    reason: Missing output files: test/GCF_020740725.1.maf
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_907165065.1.fa
+    output: test/GCA_907165065.1.maf
+    jobid: 18
+    reason: Missing output files: test/GCA_907165065.1.maf
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_016128335.1.fa
+    output: test/GCA_016128335.1.maf
+    jobid: 33
+    reason: Missing output files: test/GCA_016128335.1.maf
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_017639655.2.fa
+    output: test/GCF_017639655.2.maf
+    jobid: 26
+    reason: Missing output files: test/GCF_017639655.2.maf
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_018139145.1.fa
+    output: test/GCA_018139145.1.maf
+    jobid: 11
+    reason: Missing output files: test/GCA_018139145.1.maf
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_901933205.1.fa
+    output: test/GCF_901933205.1.maf
+    jobid: 41
+    reason: Missing output files: test/GCF_901933205.1.maf
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_011004875.1.fa
+    output: test/GCA_011004875.1.maf
+    jobid: 19
+    reason: Missing output files: test/GCA_011004875.1.maf
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_013368605.1.fa
+    output: test/GCA_013368605.1.maf
+    jobid: 4
+    reason: Missing output files: test/GCA_013368605.1.maf
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_900496995.4.fa
+    output: test/GCF_900496995.4.maf
+    jobid: 34
+    reason: Missing output files: test/GCF_900496995.4.maf
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_014839835.1.fa
+    output: test/GCA_014839835.1.maf
+    jobid: 27
+    reason: Missing output files: test/GCA_014839835.1.maf
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_009819795.1.fa
+    output: test/GCF_009819795.1.maf
+    jobid: 12
+    reason: Missing output files: test/GCF_009819795.1.maf
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_012275265.1.fa
+    output: test/GCA_012275265.1.maf
+    jobid: 42
+    reason: Missing output files: test/GCA_012275265.1.maf
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017976375.1.fa
+    output: test/GCA_017976375.1.maf
+    jobid: 20
+    reason: Missing output files: test/GCA_017976375.1.maf
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_015220075.1.fa
+    output: test/GCF_015220075.1.maf
+    jobid: 5
+    reason: Missing output files: test/GCF_015220075.1.maf
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020800305.1.fa
+    output: test/GCA_020800305.1.maf
+    jobid: 35
+    reason: Missing output files: test/GCA_020800305.1.maf
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_905368555.1.fa
+    output: test/GCA_905368555.1.maf
+    jobid: 28
+    reason: Missing output files: test/GCA_905368555.1.maf
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819605.1.fa
+    output: test/GCA_009819605.1.maf
+    jobid: 13
+    reason: Missing output files: test/GCA_009819605.1.maf
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_014839755.1.fa
+    output: test/GCA_014839755.1.maf
+    jobid: 21
+    reason: Missing output files: test/GCA_014839755.1.maf
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_017639245.1.fa
+    output: test/GCA_017639245.1.maf
+    jobid: 6
+    reason: Missing output files: test/GCA_017639245.1.maf
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020740795.1.fa
+    output: test/GCA_020740795.1.maf
+    jobid: 36
+    reason: Missing output files: test/GCA_020740795.1.maf
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_016699485.2.fa
+    output: test/GCF_016699485.2.maf
+    jobid: 29
+    reason: Missing output files: test/GCF_016699485.2.maf
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_003957555.1.fa
+    output: test/GCF_003957555.1.maf
+    jobid: 14
+    reason: Missing output files: test/GCF_003957555.1.maf
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_015220805.1.fa
+    output: test/GCA_015220805.1.maf
+    jobid: 22
+    reason: Missing output files: test/GCA_015220805.1.maf
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020745705.1.fa
+    output: test/GCA_020745705.1.maf
+    jobid: 7
+    reason: Missing output files: test/GCA_020745705.1.maf
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_008658365.1.fa
+    output: test/GCA_008658365.1.maf
+    jobid: 37
+    reason: Missing output files: test/GCA_008658365.1.maf
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_016700215.2.fa
+    output: test/GCF_016700215.2.maf
+    jobid: 30
+    reason: Missing output files: test/GCF_016700215.2.maf
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_020746105.1.fa
+    output: test/GCA_020746105.1.maf
+    jobid: 15
+    reason: Missing output files: test/GCA_020746105.1.maf
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819825.1.fa
+    output: test/GCA_009819825.1.maf
+    jobid: 23
+    reason: Missing output files: test/GCA_009819825.1.maf
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_009819775.1.fa
+    output: test/GCA_009819775.1.maf
+    jobid: 8
+    reason: Missing output files: test/GCA_009819775.1.maf
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 23 05:14:33 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCF_000002315.6.fa
+    output: test/GCF_000002315.6.maf
+    jobid: 38
+    reason: Missing output files: test/GCF_000002315.6.maf
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 35
+    output: test/GCA_020800305.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_020800305.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_020800305.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 1
+    output: test/GCA_017639555.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_017639555.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_017639555.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 5
+    output: test/GCF_015220075.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_015220075.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_015220075.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 23
+    output: test/GCA_009819825.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_009819825.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_009819825.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 11
+    output: test/GCA_018139145.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_018139145.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_018139145.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 33
+    output: test/GCA_016128335.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_016128335.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_016128335.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 4
+    output: test/GCA_013368605.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_013368605.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_013368605.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 7
+    output: test/GCA_020745705.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_020745705.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_020745705.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 8
+    output: test/GCA_009819775.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_009819775.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_009819775.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+[Tue Aug 23 05:14:37 2022]
+Error in rule lastz:
+    jobid: 19
+    output: test/GCA_011004875.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_011004875.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_011004875.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 6
+    output: test/GCA_017639245.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_017639245.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_017639245.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 34
+    output: test/GCF_900496995.4.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_900496995.4.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_900496995.4.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 32
+    output: test/GCA_902806625.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_902806625.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_902806625.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 17
+    output: test/GCA_017639485.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_017639485.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_017639485.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 37
+    output: test/GCA_008658365.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_008658365.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_008658365.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 25
+    output: test/GCF_018691265.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_018691265.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_018691265.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 24
+    output: test/GCA_020745775.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_020745775.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_020745775.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 15
+    output: test/GCA_020746105.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_020746105.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_020746105.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 9
+    output: test/GCF_012275295.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_012275295.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_012275295.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 14
+    output: test/GCF_003957555.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_003957555.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_003957555.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 20
+    output: test/GCA_017976375.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_017976375.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_017976375.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 38
+    output: test/GCF_000002315.6.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_000002315.6.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_000002315.6.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 36
+    output: test/GCA_020740795.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_020740795.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_020740795.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 27
+    output: test/GCA_014839835.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_014839835.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_014839835.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 31
+    output: test/GCA_013407035.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_013407035.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_013407035.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 26
+    output: test/GCF_017639655.2.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_017639655.2.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_017639655.2.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 16
+    output: test/GCF_009829145.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_009829145.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_009829145.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 22
+    output: test/GCA_015220805.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_015220805.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_015220805.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 39
+    output: test/GCA_016904835.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_016904835.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_016904835.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 21
+    output: test/GCA_014839755.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_014839755.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_014839755.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 29
+    output: test/GCF_016699485.2.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_016699485.2.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_016699485.2.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 40
+    output: test/GCF_020740725.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_020740725.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_020740725.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 41
+    output: test/GCF_901933205.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_901933205.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_901933205.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 13
+    output: test/GCA_009819605.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_009819605.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_009819605.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 28
+    output: test/GCA_905368555.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_905368555.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_905368555.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 18
+    output: test/GCA_907165065.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_907165065.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_907165065.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 30
+    output: test/GCF_016700215.2.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_016700215.2.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_016700215.2.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 42
+    output: test/GCA_012275265.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_012275265.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_012275265.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 10
+    output: test/GCA_020801775.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_020801775.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_020801775.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 12
+    output: test/GCF_009819795.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCF_009819795.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCF_009819795.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-08-23T051433.321015.snakemake.log
