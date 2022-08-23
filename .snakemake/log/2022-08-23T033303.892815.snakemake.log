@@ -1,0 +1,61 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+get_seeding            1              1              1
+lastz                  1              1              1
+sequence_select        1             16             16
+total                  4              1             16
+
+Select jobs to execute...
+
+[Tue Aug 23 03:33:04 2022]
+rule get_seeding:
+    input: ../genomes_top40
+    output: sequence_select/index.csv
+    jobid: 3
+    reason: Missing output files: sequence_select/index.csv
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 03:33:04 2022]
+Finished job 3.
+1 of 4 steps (25%) done
+Select jobs to execute...
+
+[Tue Aug 23 03:33:04 2022]
+rule sequence_select:
+    input: sequence_select/index.csv, ../genomes_top40
+    output: sequence_select/out.fasta
+    jobid: 2
+    reason: Missing output files: sequence_select/out.fasta; Input files updated by another job: sequence_select/index.csv; Code has changed since last execution
+    threads: 16
+    resources: tmpdir=/tmp
+
+[Tue Aug 23 03:33:17 2022]
+Finished job 2.
+2 of 4 steps (50%) done
+Select jobs to execute...
+
+[Tue Aug 23 03:33:17 2022]
+rule lastz:
+    input: sequence_select/out.fasta, ../genomes_top40/GCA_008658365.1.fa
+    output: test/GCA_008658365.1.maf
+    jobid: 1
+    reason: Missing output files: test/GCA_008658365.1.maf; Input files updated by another job: sequence_select/out.fasta
+    wildcards: samples=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Tue Aug 23 03:33:25 2022]
+Error in rule lastz:
+    jobid: 1
+    output: test/GCA_008658365.1.maf
+    shell:
+        /home/AD.UCSD.EDU/ttl074/lastz-distrib/bin/lastz_32 ../genomes_top40/GCA_008658365.1.fa[multiple] sequence_select/out.fasta[multiple] --filter=coverage:70 --filter=identity:70 --format=maf --output=test/GCA_008658365.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-08-23T033303.892815.snakemake.log

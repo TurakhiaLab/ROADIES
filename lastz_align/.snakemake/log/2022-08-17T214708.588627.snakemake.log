@@ -1,0 +1,23 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job stats:
+job      count    min threads    max threads
+-----  -------  -------------  -------------
+all          1              1              1
+lastz        1             16             16
+total        2              1             16
+
+Select jobs to execute...
+
+[Wed Aug 17 21:47:08 2022]
+rule lastz:
+    input: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/sequence_select/out.fasta, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_008658365.1.fa
+    output: /alignments/GCA_008658365.1.fa.maf
+    jobid: 1
+    reason: Missing output files: /alignments/GCA_008658365.1.fa.maf
+    wildcards: genomes=GCA_008658365.1.fa
+    threads: 16
+    resources: tmpdir=/tmp
+

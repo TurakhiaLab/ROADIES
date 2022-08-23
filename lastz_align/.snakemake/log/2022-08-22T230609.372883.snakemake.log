@@ -1,0 +1,3 @@
+NameErrorin line 4 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
+name 'GENOMES' is not defined
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile", line 4, in <module>

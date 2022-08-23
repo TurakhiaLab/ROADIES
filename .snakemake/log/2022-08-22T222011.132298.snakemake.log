@@ -1,0 +1,57 @@
+Building DAG of jobs...
+Relative file path './sequence_select/out.fasta' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './sequence_select/index.csv' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './sequence_select/out.fasta' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './sequence_select/index.csv' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Using shell: /usr/bin/bash
+Provided cores: 16
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+get_seeding            1              1              1
+sequence_select        1             16             16
+total                  3              1             16
+
+Select jobs to execute...
+
+[Mon Aug 22 22:20:11 2022]
+rule get_seeding:
+    input: ../genomes_top40
+    output: ./sequence_select/index.csv
+    jobid: 2
+    reason: Missing output files: ./sequence_select/index.csv; Set of input files has changed since last execution; Params have changed since last execution
+    resources: tmpdir=/tmp
+
+[Mon Aug 22 22:20:11 2022]
+Finished job 2.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Mon Aug 22 22:20:11 2022]
+rule sequence_select:
+    input: ./sequence_select/index.csv, ../genomes_top40
+    output: ./sequence_select/out.fasta
+    jobid: 1
+    reason: Missing output files: ./sequence_select/out.fasta; Input files updated by another job: ./sequence_select/index.csv
+    threads: 16
+    resources: tmpdir=/tmp
+
+[Mon Aug 22 22:20:11 2022]
+Error in rule sequence_select:
+    jobid: 1
+    output: ./sequence_select/out.fasta
+    shell:
+        
+        cd sequence_select
+        ./get_seq.sh .././sequence_select/index.csv ../../genomes_top40 .././sequence_select/out.fasta 1000
+        cd ..
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job sequence_select since they might be corrupted:
+./sequence_select/out.fasta
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-08-22T222011.132298.snakemake.log

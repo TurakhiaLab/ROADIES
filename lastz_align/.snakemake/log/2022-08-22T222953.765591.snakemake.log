@@ -1,0 +1,8 @@
+Building DAG of jobs...
+InputFunctionExceptionin line 7 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
+Error:
+  TypeError: string indices must be integers
+Wildcards:
+  genomes=GCA_008658365.1.fa
+Traceback:
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile", line 6, in get_samples

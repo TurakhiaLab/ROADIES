@@ -1,0 +1,7 @@
+Building DAG of jobs...
+MissingInputException in rule lastz in line 9 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
+Missing input files for rule lastz:
+    output: ../../genomes_top40/../../genomes_top40.maf
+    wildcards: genomes=/../../genomes_top40
+    affected files:
+        ../../genomes_top40/../../genomes_top40

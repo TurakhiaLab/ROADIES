@@ -1,0 +1,3 @@
+KeyErrorin line 11 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
+'SEQ'
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile", line 11, in <module>

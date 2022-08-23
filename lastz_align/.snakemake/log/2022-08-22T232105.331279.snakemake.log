@@ -1,0 +1,3 @@
+TypeErrorin line 14 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
+can only concatenate tuple (not "str") to tuple
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile", line 14, in <module>
