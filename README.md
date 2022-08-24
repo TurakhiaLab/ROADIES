@@ -1,9 +1,9 @@
 # wga-phylo
 
-SnakeMake workflow for just sequence selection
+SnakeMake workflow for sequence selection to lastz
 
-`snakemake --core [number of cores] --config PATH=[path directory containing all fasta files] LENGTH=[Length of region] KREG=[Number of regions]`
+`snakemake --core [number of cores] --config PATH=["path directory containing all genomic fasta files"] LENGTH=[Length of region] KREG=[Number of regions]`--OUT=["output directory"]
 
-If you want a new out.fasta file in Sequence.Select, please use following code to get rid of previous version
+If you want to rerun please use following code to get rid of previous files
 
 `./clean.sh`
