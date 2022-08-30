@@ -13,7 +13,7 @@ def get_index(wildcards):
     return od[wildcards]
 
 rule all:
-    input:"sequence_select/out.fasta"
+    input:expand(config["OUT"]+"/{samples}.maf",samples=SAMPLES)	
 
 rule lastz:
 	input:
