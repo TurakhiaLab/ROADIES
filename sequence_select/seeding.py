@@ -31,3 +31,5 @@ for key,value in od.items():
     # print(str(key)+ ", "+dir_list[key] +", " +str(value))
     f.write(dir_list[key]+","+str(value)+'\n')
 
+""" input:expand(config["OUT"]+"/{samples}.maf",samples=SAMPLES) """
+

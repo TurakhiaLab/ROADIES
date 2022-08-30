@@ -1,8 +1,20 @@
 import glob
+from collections import OrderedDict
+import random
 SAMPLES = glob_wildcards(config["PATH"]+"/{samples}.fa").samples
-print(SAMPLES)
+od = OrderedDict([(key,0) for key in SAMPLES])
+num=config["KREG"]
+num_genomes = len(SAMPLES)
+for i in range(num):
+    index = random.randint(0,num_genomes-1)
+    od[SAMPLES[index]] = od[SAMPLES[index]]+1
+
+def get_index(wildcards):
+    return od[wildcards]
+
 rule all:
-	input:expand(config["OUT"]+"/{samples}.maf",samples=SAMPLES)	
+    input:"sequence_select/out.fasta"
+
 rule lastz:
 	input:
 		"sequence_select/out.fasta",
@@ -12,34 +24,31 @@ rule lastz:
 	shell:
 		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output={output}"
 
-rule sequence_select:
+rule sequence_merge:
     input:
-        "sequence_select/index.csv",
-        PATH=config["PATH"]
-    threads:
-        16
-    params:
-        LENGTH=config["LENGTH"] 
+        expand("sequence_select/{sample}_temp.fa", sample=SAMPLES)
     output:
         "sequence_select/out.fasta"
     shell:
         '''
-	echo "{SAMPLES}"
         cd sequence_select
-        ./get_seq.sh ../{input[0]} ../{input.PATH} ../{output} {params.LENGTH}
+        cat *.fa >> ../{output} 
         cd ..
         '''
 
-rule get_seeding:
+rule sequence_select:
     input:
-        config["PATH"]
+        config["PATH"]+"/{sample}.fa"
+    threads:
+        64
     params:
-        config["KREG"]
+        LENGTH=config["LENGTH"],
+        KFAC=lambda wildcards: get_index(wildcards.sample)
     output:
-        "sequence_select/index.csv"
-    shell: 
+        temp("sequence_select/{sample}_temp.fa")
+    shell:
         '''
         cd sequence_select
-        python3 seeding.py -k {params[0]} --output ../{output[0]} --path ../{input[0]}
+        python my_select.py --input ../{input[0]} -k {params.KFAC} -l {params.LENGTH} --output ../{output}
         cd ..
         '''

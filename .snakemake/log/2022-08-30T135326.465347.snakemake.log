@@ -1,0 +1,123 @@
+Building DAG of jobs...
+Relative file path './get_genomes/small_genomes/GCA_017639555.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_013368605.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_015220075.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_017639245.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020745705.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_009819775.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_012275295.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020801775.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_018139145.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_009819795.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_009819605.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_003957555.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020746105.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_009829145.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_017639485.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_907165065.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_011004875.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_017976375.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_014839755.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_015220805.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_009819825.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020745775.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_018691265.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_017639655.2.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_014839835.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_905368555.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_016699485.2.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_016700215.2.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_013407035.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_902806625.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_016128335.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_900496995.4.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020800305.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020740795.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_008658365.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_000002315.6.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_016904835.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_020740725.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_901933205.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_012275265.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+get_seeding            1              1              1
+sequence_merge         1              1              1
+sequence_select       40             16             16
+total                 43              1             16
+
+Select jobs to execute...
+
+[Tue Aug 30 13:53:26 2022]
+rule get_seeding:
+    input: ./get_genomes/small_genomes
+    output: sequence_select/index.csv
+    jobid: 3
+    reason: Missing output files: sequence_select/index.csv; Set of input files has changed since last execution; Code has changed since last execution; Params have changed since last execution
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 13:53:27 2022]
+Finished job 3.
+1 of 43 steps (2%) done
+Select jobs to execute...
+
+[Tue Aug 30 13:53:27 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_009819605.1.fa, sequence_select/index.csv
+    output: sequence_select/GCA_009819605.1_temp.fa
+    jobid: 13
+    reason: Missing output files: sequence_select/GCA_009819605.1_temp.fa; Input files updated by another job: sequence_select/index.csv
+    wildcards: sample=GCA_009819605.1
+    threads: 16
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 30 13:53:27 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_008658365.1.fa, sequence_select/index.csv
+    output: sequence_select/GCA_008658365.1_temp.fa
+    jobid: 37
+    reason: Missing output files: sequence_select/GCA_008658365.1_temp.fa; Input files updated by another job: sequence_select/index.csv
+    wildcards: sample=GCA_008658365.1
+    threads: 16
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 30 13:53:27 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_905368555.1.fa, sequence_select/index.csv
+    output: sequence_select/GCA_905368555.1_temp.fa
+    jobid: 28
+    reason: Missing output files: sequence_select/GCA_905368555.1_temp.fa; Input files updated by another job: sequence_select/index.csv
+    wildcards: sample=GCA_905368555.1
+    threads: 16
+    resources: tmpdir=/tmp
+
+
+[Tue Aug 30 13:53:27 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_015220075.1.fa, sequence_select/index.csv
+    output: sequence_select/GCF_015220075.1_temp.fa
+    jobid: 5
+    reason: Missing output files: sequence_select/GCF_015220075.1_temp.fa; Input files updated by another job: sequence_select/index.csv
+    wildcards: sample=GCF_015220075.1
+    threads: 16
+    resources: tmpdir=/tmp
+
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 36 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+Job Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+sequence_select/GCA_905368555.1_temp.fa completed successfully, but some output files are missing. 28
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 36 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+Job Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+sequence_select/GCA_008658365.1_temp.fa completed successfully, but some output files are missing. 37
+Waiting at most 5 seconds for missing files.
+Terminating processes on user request, this might take some time.
+Complete log: .snakemake/log/2022-08-30T135326.465347.snakemake.log

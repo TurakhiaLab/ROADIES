@@ -7,16 +7,19 @@ import random
 import numpy as np
 import os
 from alive_progress import alive_bar 
+import argparse, os
 # Get the list of all files and directories
 # Arguments passed
-k= random.randint(0,10) 
-l= random.randint(0,300) 
-for i in range(1, len(sys.argv)):
-    if sys.argv[i]=="-l":
-        l=int(sys.argv[i+1])
-    elif sys.argv[i]=="-k":
-        k=int(sys.argv[i+1])
-path = sys.argv[1]
+parser = argparse.ArgumentParser(description='genome selection')
+parser.add_argument('-l',type=int,default = 1000)
+parser.add_argument('-k',type=int,default=300)
+parser.add_argument('--input',default="./../genomes")
+parser.add_argument('--output',default="./index.csv")
+args = parser.parse_args()
+k= args.k
+l= args.l
+path = args.input
+output=args.output
 """ print("Number of regions:", k)
 print("Region Length :", l)
 print("Input Directory:" +path)
@@ -49,10 +52,6 @@ with alive_bar(k) as bar:
             
         time.sleep(0.01)
         bar()
-frag = ''
-split = path.split('/')
-for s in split:
-    if 'fa' in s:
-        frag = s
-SeqIO.write(sequence, "frag_"+ s, "fasta")
+
+SeqIO.write(sequence, output, "fasta")
 

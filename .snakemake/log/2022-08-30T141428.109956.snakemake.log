@@ -1,0 +1,603 @@
+Building DAG of jobs...
+Relative file path './get_genomes/small_genomes/GCA_017639555.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_013368605.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_015220075.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_017639245.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020745705.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_009819775.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_012275295.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020801775.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_018139145.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_009819795.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_009819605.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_003957555.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020746105.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_009829145.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_017639485.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_907165065.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_011004875.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_017976375.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_014839755.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_015220805.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_009819825.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020745775.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_018691265.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_017639655.2.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_014839835.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_905368555.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_016699485.2.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_016700215.2.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_013407035.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_902806625.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_016128335.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_900496995.4.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020800305.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_020740795.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_008658365.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_000002315.6.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_016904835.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_020740725.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCF_901933205.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Relative file path './get_genomes/small_genomes/GCA_012275265.1.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+sequence_merge         1              1              1
+sequence_select       40             64             64
+total                 42              1             64
+
+Select jobs to execute...
+
+[Tue Aug 30 14:14:28 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_014839755.1.fa
+    output: sequence_select/GCA_014839755.1_temp.fa
+    jobid: 20
+    reason: Missing output files: sequence_select/GCA_014839755.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_014839755.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:14:35 2022]
+Finished job 20.
+1 of 42 steps (2%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:14:35 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_020740795.1.fa
+    output: sequence_select/GCA_020740795.1_temp.fa
+    jobid: 35
+    reason: Missing output files: sequence_select/GCA_020740795.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020740795.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:14:43 2022]
+Finished job 35.
+2 of 42 steps (5%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:14:43 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_017639245.1.fa
+    output: sequence_select/GCA_017639245.1_temp.fa
+    jobid: 5
+    reason: Missing output files: sequence_select/GCA_017639245.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639245.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:14:51 2022]
+Finished job 5.
+3 of 42 steps (7%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:14:51 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_009819605.1.fa
+    output: sequence_select/GCA_009819605.1_temp.fa
+    jobid: 12
+    reason: Missing output files: sequence_select/GCA_009819605.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819605.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:00 2022]
+Finished job 12.
+4 of 42 steps (10%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:00 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_016699485.2.fa
+    output: sequence_select/GCF_016699485.2_temp.fa
+    jobid: 28
+    reason: Missing output files: sequence_select/GCF_016699485.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_016699485.2
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:07 2022]
+Finished job 28.
+5 of 42 steps (12%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:07 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_905368555.1.fa
+    output: sequence_select/GCA_905368555.1_temp.fa
+    jobid: 27
+    reason: Missing output files: sequence_select/GCA_905368555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_905368555.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:14 2022]
+Finished job 27.
+6 of 42 steps (14%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:14 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_003957555.1.fa
+    output: sequence_select/GCF_003957555.1_temp.fa
+    jobid: 13
+    reason: Missing output files: sequence_select/GCF_003957555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_003957555.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:22 2022]
+Finished job 13.
+7 of 42 steps (17%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:22 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_012275295.1.fa
+    output: sequence_select/GCF_012275295.1_temp.fa
+    jobid: 8
+    reason: Missing output files: sequence_select/GCF_012275295.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_012275295.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:30 2022]
+Finished job 8.
+8 of 42 steps (19%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:30 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_016904835.1.fa
+    output: sequence_select/GCA_016904835.1_temp.fa
+    jobid: 38
+    reason: Missing output files: sequence_select/GCA_016904835.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_016904835.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:38 2022]
+Finished job 38.
+9 of 42 steps (21%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:38 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_902806625.1.fa
+    output: sequence_select/GCA_902806625.1_temp.fa
+    jobid: 31
+    reason: Missing output files: sequence_select/GCA_902806625.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_902806625.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:45 2022]
+Finished job 31.
+10 of 42 steps (24%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:45 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_017639485.1.fa
+    output: sequence_select/GCA_017639485.1_temp.fa
+    jobid: 16
+    reason: Missing output files: sequence_select/GCA_017639485.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639485.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:15:54 2022]
+Finished job 16.
+11 of 42 steps (26%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:15:54 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_017639555.1.fa
+    output: sequence_select/GCA_017639555.1_temp.fa
+    jobid: 2
+    reason: Missing output files: sequence_select/GCA_017639555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639555.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:03 2022]
+Finished job 2.
+12 of 42 steps (29%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:03 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_018691265.1.fa
+    output: sequence_select/GCF_018691265.1_temp.fa
+    jobid: 24
+    reason: Missing output files: sequence_select/GCF_018691265.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_018691265.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:11 2022]
+Finished job 24.
+13 of 42 steps (31%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:11 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_020801775.1.fa
+    output: sequence_select/GCA_020801775.1_temp.fa
+    jobid: 9
+    reason: Missing output files: sequence_select/GCA_020801775.1_temp.fa
+    wildcards: sample=GCA_020801775.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:20 2022]
+Finished job 9.
+14 of 42 steps (33%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:20 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_020740725.1.fa
+    output: sequence_select/GCF_020740725.1_temp.fa
+    jobid: 39
+    reason: Missing output files: sequence_select/GCF_020740725.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_020740725.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:28 2022]
+Finished job 39.
+15 of 42 steps (36%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:28 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_016128335.1.fa
+    output: sequence_select/GCA_016128335.1_temp.fa
+    jobid: 32
+    reason: Missing output files: sequence_select/GCA_016128335.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_016128335.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:36 2022]
+Finished job 32.
+16 of 42 steps (38%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:36 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_907165065.1.fa
+    output: sequence_select/GCA_907165065.1_temp.fa
+    jobid: 17
+    reason: Missing output files: sequence_select/GCA_907165065.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_907165065.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:45 2022]
+Finished job 17.
+17 of 42 steps (40%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:45 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_017639655.2.fa
+    output: sequence_select/GCF_017639655.2_temp.fa
+    jobid: 25
+    reason: Missing output files: sequence_select/GCF_017639655.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_017639655.2
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:16:53 2022]
+Finished job 25.
+18 of 42 steps (43%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:16:53 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_018139145.1.fa
+    output: sequence_select/GCA_018139145.1_temp.fa
+    jobid: 10
+    reason: Missing output files: sequence_select/GCA_018139145.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_018139145.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:02 2022]
+Finished job 10.
+19 of 42 steps (45%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:02 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_901933205.1.fa
+    output: sequence_select/GCF_901933205.1_temp.fa
+    jobid: 40
+    reason: Missing output files: sequence_select/GCF_901933205.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_901933205.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:10 2022]
+Finished job 40.
+20 of 42 steps (48%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:10 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_900496995.4.fa
+    output: sequence_select/GCF_900496995.4_temp.fa
+    jobid: 33
+    reason: Missing output files: sequence_select/GCF_900496995.4_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_900496995.4
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:18 2022]
+Finished job 33.
+21 of 42 steps (50%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:18 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_011004875.1.fa
+    output: sequence_select/GCA_011004875.1_temp.fa
+    jobid: 18
+    reason: Missing output files: sequence_select/GCA_011004875.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_011004875.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:27 2022]
+Finished job 18.
+22 of 42 steps (52%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:27 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_020745775.1.fa
+    output: sequence_select/GCA_020745775.1_temp.fa
+    jobid: 23
+    reason: Missing output files: sequence_select/GCA_020745775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020745775.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:36 2022]
+Finished job 23.
+23 of 42 steps (55%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:36 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_016700215.2.fa
+    output: sequence_select/GCF_016700215.2_temp.fa
+    jobid: 29
+    reason: Missing output files: sequence_select/GCF_016700215.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_016700215.2
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:43 2022]
+Finished job 29.
+24 of 42 steps (57%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:43 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_012275265.1.fa
+    output: sequence_select/GCA_012275265.1_temp.fa
+    jobid: 41
+    reason: Missing output files: sequence_select/GCA_012275265.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_012275265.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:51 2022]
+Finished job 41.
+25 of 42 steps (60%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:51 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_013407035.1.fa
+    output: sequence_select/GCA_013407035.1_temp.fa
+    jobid: 30
+    reason: Missing output files: sequence_select/GCA_013407035.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_013407035.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:17:59 2022]
+Finished job 30.
+26 of 42 steps (62%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:17:59 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_009829145.1.fa
+    output: sequence_select/GCF_009829145.1_temp.fa
+    jobid: 15
+    reason: Missing output files: sequence_select/GCF_009829145.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_009829145.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:06 2022]
+Finished job 15.
+27 of 42 steps (64%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:06 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_020800305.1.fa
+    output: sequence_select/GCA_020800305.1_temp.fa
+    jobid: 34
+    reason: Missing output files: sequence_select/GCA_020800305.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020800305.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:15 2022]
+Finished job 34.
+28 of 42 steps (67%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:15 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_017976375.1.fa
+    output: sequence_select/GCA_017976375.1_temp.fa
+    jobid: 19
+    reason: Missing output files: sequence_select/GCA_017976375.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017976375.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:24 2022]
+Finished job 19.
+29 of 42 steps (69%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:24 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_008658365.1.fa
+    output: sequence_select/GCA_008658365.1_temp.fa
+    jobid: 36
+    reason: Missing output files: sequence_select/GCA_008658365.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_008658365.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:32 2022]
+Finished job 36.
+30 of 42 steps (71%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:32 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_015220805.1.fa
+    output: sequence_select/GCA_015220805.1_temp.fa
+    jobid: 21
+    reason: Missing output files: sequence_select/GCA_015220805.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_015220805.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:41 2022]
+Finished job 21.
+31 of 42 steps (74%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:41 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_015220075.1.fa
+    output: sequence_select/GCF_015220075.1_temp.fa
+    jobid: 4
+    reason: Missing output files: sequence_select/GCF_015220075.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_015220075.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:50 2022]
+Finished job 4.
+32 of 42 steps (76%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:50 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCF_009819795.1.fa
+    output: sequence_select/GCF_009819795.1_temp.fa
+    jobid: 11
+    reason: Missing output files: sequence_select/GCF_009819795.1_temp.fa
+    wildcards: sample=GCF_009819795.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:18:58 2022]
+Finished job 11.
+33 of 42 steps (79%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:18:58 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_014839835.1.fa
+    output: sequence_select/GCA_014839835.1_temp.fa
+    jobid: 26
+    reason: Missing output files: sequence_select/GCA_014839835.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_014839835.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:19:06 2022]
+Finished job 26.
+34 of 42 steps (81%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:19:06 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_009819775.1.fa
+    output: sequence_select/GCA_009819775.1_temp.fa
+    jobid: 7
+    reason: Missing output files: sequence_select/GCA_009819775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819775.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+[Tue Aug 30 14:19:15 2022]
+Finished job 7.
+35 of 42 steps (83%) done
+Select jobs to execute...
+
+[Tue Aug 30 14:19:15 2022]
+rule sequence_select:
+    input: ./get_genomes/small_genomes/GCA_009819825.1.fa
+    output: sequence_select/GCA_009819825.1_temp.fa
+    jobid: 22
+    reason: Missing output files: sequence_select/GCA_009819825.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819825.1
+    threads: 64
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Tue Aug 30 14:19:19 2022]
+Error in rule sequence_select:
+    jobid: 22
+    output: sequence_select/GCA_009819825.1_temp.fa
+    shell:
+        
+        cd sequence_select
+        python my_select.py --input .././get_genomes/small_genomes/GCA_009819825.1.fa -k 9 -l 1000 --output ../sequence_select/GCA_009819825.1_temp.fa
+        cd ..
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-08-30T141428.109956.snakemake.log

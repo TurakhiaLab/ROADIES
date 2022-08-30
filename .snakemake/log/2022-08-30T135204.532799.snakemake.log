@@ -1,0 +1,3 @@
+NameError in line 40 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+name 'sample' is not defined
+  File "/home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile", line 40, in <module>

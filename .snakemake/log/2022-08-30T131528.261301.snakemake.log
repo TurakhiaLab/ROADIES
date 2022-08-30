@@ -1,0 +1,2 @@
+SyntaxError in line 39 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+positional argument follows keyword argument

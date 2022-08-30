@@ -1,0 +1,8 @@
+Building DAG of jobs...
+InputFunctionException in line 34 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
+Error:
+  KeyError: ['GCA_017639555.1']
+Wildcards:
+  sample=GCA_017639555.1
+Traceback:
+  File "/home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile", line 8, in get_index
