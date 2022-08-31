@@ -39,8 +39,6 @@ rule sequence_merge:
 rule sequence_select:
     input:
         config["PATH"]+"/{sample}.fa"
-    threads:
-        64
     params:
         LENGTH=config["LENGTH"],
         KFAC=lambda wildcards: get_index(wildcards.sample)
