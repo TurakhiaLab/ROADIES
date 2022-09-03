@@ -13,28 +13,25 @@ def get_index(wildcards):
     return od[wildcards]
 
 rule all:
-    input:expand(config["OUT"]+"/{samples}.maf",samples=SAMPLES)	
+    input:expand(config["OUT"]+"/alignments/{samples}.maf",samples=SAMPLES)	
 
 rule lastz:
 	input:
-		"sequence_select/out.fasta",
+		config["OUT"]+"/samples/out.fasta",
 		config["PATH"]+"/{sample}.fa"
 	output:
-		config["OUT"]+"/{sample}.maf"
+		config["OUT"]+"/alignments/{sample}.maf"
 	shell:
 		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output={output}"
 
 rule sequence_merge:
     input:
-        expand("sequence_select/{sample}_temp.fa", sample=SAMPLES)
+        expand(config["OUT"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
+	dir = config["OUT"]
     output:
-        "sequence_select/out.fasta"
+        config["OUT"]+"/samples/out.fasta"
     shell:
-        '''
-        cd sequence_select
-        cat *.fa >> ../{output} 
-        cd ..
-        '''
+       "cat {input.dir}/samples/*.fa >> {output}" 
 
 rule sequence_select:
     input:
@@ -43,7 +40,7 @@ rule sequence_select:
         LENGTH=config["LENGTH"],
         KFAC=lambda wildcards: get_index(wildcards.sample)
     output:
-        temp("sequence_select/{sample}_temp.fa")
+        temp(config["OUT"]+"/samples/{sample}_temp.fa")
     shell:
         '''
         cd sequence_select
