@@ -9,9 +9,17 @@ num_genomes = len(SAMPLES)
 for i in range(num):
     index = random.randint(0,num_genomes-1)
     od[SAMPLES[index]] = od[SAMPLES[index]]+1
-
-def get_index(wildcards):
+temp=0
+od_e = OrderedDict([(key,0) for key in SAMPLES])
+for i in range(num_genomes):
+    od_e[SAMPLES[i]]=od[SAMPLES[i]]+temp
+    od[SAMPLES[i]]=temp
+    temp=od_e[SAMPLES[i]]
+def get_index_s(wildcards):
     return od[wildcards]
+
+def get_index_e(wildcards):
+    return od_e[wildcards]
 
 rule all:
     input:expand(config["OUT"]+"/alignments/{samples}.maf",samples=SAMPLES)	
@@ -39,13 +47,14 @@ rule sequence_select:
         config["PATH"]+"/{sample}.fa"
     params:
         LENGTH=config["LENGTH"],
-        KFAC=lambda wildcards: get_index(wildcards.sample)
+        KFAC=lambda wildcards: get_index_s(wildcards.sample),
+        KFAC_e=lambda wildcards: get_index_e(wildcards.sample)
     output:
         temp(config["OUT"]+"/samples/{sample}_temp.fa")
     shell:
         '''
         cd sequence_select
-        python my_select.py --input ../{input[0]} -k {params.KFAC} -l {params.LENGTH} --output ../{output}
+        python new_select.py --input ../{input[0]} -s {params.KFAC} -e {params.KFAC_e} -l {params.LENGTH} --output ../{output} 
         cd ..
         '''
 
