@@ -1,6 +1,6 @@
 # wga-phylo
 
-SnakeMake workflow for sequence selection to lastz
+SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file
 
 `snakemake --core [number of cores] --config-file="config.yaml"`
 
