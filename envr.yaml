@@ -1,0 +1,10 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - pip:
+    - bio
+    - alive-progress
+  

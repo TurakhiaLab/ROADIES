@@ -23,7 +23,7 @@ def get_index_e(wildcards):
 
 rule all:
     input:expand(config["OUT"]+"/alignments/{samples}.maf",samples=SAMPLES)	
-
+    
 rule lastz:
 	input:
 		config["OUT"]+"/samples/out.fasta",
@@ -48,13 +48,17 @@ rule sequence_select:
     params:
         LENGTH=config["LENGTH"],
         KFAC=lambda wildcards: get_index_s(wildcards.sample),
-        KFAC_e=lambda wildcards: get_index_e(wildcards.sample)
+        KFAC_e=lambda wildcards: get_index_e(wildcards.sample),
+        THRES=config["THRESHOLD"],
+        TRIES=config["RERUN"]
+    conda:
+        "envr.yaml"
     output:
         temp(config["OUT"]+"/samples/{sample}_temp.fa")
     shell:
         '''
         cd sequence_select
-        python new_select.py --input ../{input[0]} -s {params.KFAC} -e {params.KFAC_e} -l {params.LENGTH} --output ../{output} 
+        python new_select.py --input ../{input[0]} -s {params.KFAC} -r {params.TRIES} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output ../{output} 
         cd ..
         '''
 
