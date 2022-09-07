@@ -9,12 +9,12 @@ num_genomes = len(SAMPLES)
 for i in range(num):
     index = random.randint(0,num_genomes-1)
     od[SAMPLES[index]] = od[SAMPLES[index]]+1
-temp=0
+temInt=0
 od_e = OrderedDict([(key,0) for key in SAMPLES])
 for i in range(num_genomes):
-    od_e[SAMPLES[i]]=od[SAMPLES[i]]+temp
-    od[SAMPLES[i]]=temp
-    temp=od_e[SAMPLES[i]]
+    od_e[SAMPLES[i]]=od[SAMPLES[i]]+temInt
+    od[SAMPLES[i]]=temInt
+    temInt=od_e[SAMPLES[i]]
 def get_index_s(wildcards):
     return od[wildcards]
 
