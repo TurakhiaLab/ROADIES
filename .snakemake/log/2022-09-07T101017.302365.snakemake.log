@@ -1,0 +1,9 @@
+Migrating .snakemake folder to new format...
+Migration complete
+Building DAG of jobs...
+Relative file path './genomes/sample.fa' starts with './'. This is redundant and strongly discouraged. It can also lead to inconsistent results of the file-matching approach used by Snakemake. You can simply omit the './' for relative file paths.
+MissingInputException in line 29 of /Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile:
+Missing input files for rule sequence_merge:
+    output: test/samples/out.fasta
+    affected files:
+        test

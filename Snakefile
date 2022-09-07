@@ -1,6 +1,7 @@
 import glob
 from collections import OrderedDict
 import random
+
 SAMPLES = glob_wildcards(config["PATH"]+"/{samples}.fa").samples
 od = OrderedDict([(key,0) for key in SAMPLES])
 num=config["KREG"]
@@ -27,7 +28,7 @@ rule lastz:
 rule sequence_merge:
     input:
         expand(config["OUT"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
-	dir = config["OUT"]
+	    dir = config["OUT"]
     output:
         config["OUT"]+"/samples/out.fasta"
     shell:
@@ -45,5 +46,19 @@ rule sequence_select:
         '''
         cd sequence_select
         python my_select.py --input ../{input[0]} -k {params.KFAC} -l {params.LENGTH} --output ../{output}
+        cd ..
+        '''
+
+rule clean:
+    input:
+        dir=config["OUT"]
+    shell:
+        '''
+        cd sequence_select
+        rm out.fasta
+        rm *.fa
+        cd ..
+        cd input.dir
+        rm *.maf
         cd ..
         '''

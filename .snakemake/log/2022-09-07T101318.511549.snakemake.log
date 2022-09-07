@@ -1,0 +1,3 @@
+KeyError in line 5 of /Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile:
+'PATH'
+  File "/Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile", line 5, in <module>

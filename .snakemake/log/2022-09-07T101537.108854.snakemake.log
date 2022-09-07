@@ -1,0 +1,36 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 32
+Rules claiming more threads will be scaled down.
+Job stats:
+job      count    min threads    max threads
+-----  -------  -------------  -------------
+clean        1              1              1
+total        1              1              1
+
+Select jobs to execute...
+
+[Wed Sep  7 10:15:37 2022]
+rule clean:
+    jobid: 0
+    reason: Rules with neither input nor output files are always executed.
+    resources: tmpdir=/var/folders/7_/_8g79pkn7ql_118lcqsf2rtw0000gn/T
+
+[Wed Sep  7 10:15:37 2022]
+Error in rule clean:
+    jobid: 0
+    shell:
+        
+        cd sequence_select
+        rm out.fasta
+        rm *.fa
+        cd ..
+        cd test
+        rm *.maf
+        cd ..
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-09-07T101537.108854.snakemake.log
