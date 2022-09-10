@@ -1,6 +1,5 @@
-PATH: "./get_genomes/fasta_genomes_small"
+PATH: "../genomes_top40"
 LENGTH: 1000
 KREG: 300
 THRESHOLD: 0.7
-RERUN:  5
-OUT: "./test"
+OUT: "test"

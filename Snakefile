@@ -20,13 +20,19 @@ def get_index_s(wildcards):
 
 def get_index_e(wildcards):
     return od_e[wildcards]
-
+IDS = list(range(1,num+1)
 rule all:
-    input:expand(config["OUT"]+"/alignments/{samples}.maf",samples=SAMPLES)	
-    
+    input:expand(config["OUT"]+"/genes/gene_{id}.fa",id=IDS)	
+rule lastz2fasta:
+	input:
+		expand(config["OUT"]+"/alignments/{sample}.maf")   
+	output:
+		expand(config["OUT"]+"/genes/gene_{id}.fa",id=IDS)
+	shell:
+		"python lastz_align/lastz2fasta.py "
 rule lastz:
 	input:
-		config["OUT"]+"/samples/out.fasta",
+		config["OUT"]+"/samples/out.fa",
 		config["PATH"]+"/{sample}.fa"
 	output:
 		config["OUT"]+"/alignments/{sample}.maf"
@@ -38,7 +44,7 @@ rule sequence_merge:
         expand(config["OUT"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
 	    dir = config["OUT"]
     output:
-        config["OUT"]+"/samples/out.fasta"
+        config["OUT"]+"/samples/out.fa"
     shell:
        "cat {input.dir}/samples/*.fa >> {output}" 
 
@@ -50,28 +56,24 @@ rule sequence_select:
         KFAC=lambda wildcards: get_index_s(wildcards.sample),
         KFAC_e=lambda wildcards: get_index_e(wildcards.sample),
         THRES=config["THRESHOLD"],
-        TRIES=config["RERUN"]
     conda:
         "envr.yaml"
     output:
         temp(config["OUT"]+"/samples/{sample}_temp.fa")
     shell:
-        '''
-        cd sequence_select
-        python new_select.py --input ../{input[0]} -s {params.KFAC} -r {params.TRIES} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output ../{output} 
-        cd ..
-        '''
+       "python sequence_select/new_select.py --input {input[0]} -s {params.KFAC} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output ../{output}" 
 
 rule clean:
     input:
         dir=config["OUT"]
     shell:
         '''
-        cd sequence_select
-        rm out.fasta
-        rm *.fa
-        cd ..
-        cd input.dir
-        rm *.maf
-        cd ..
-        '''
+        cd {input.dir}
+        cd samples
+	rm *.fa
+	cd ..
+	cd alignments
+	rm *.maf
+	cd ..
+	cd ..
+	'''

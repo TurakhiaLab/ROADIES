@@ -1,0 +1,3 @@
+KeyErrorin line 53 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile:
+'RERUN'
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile", line 53, in <module>
