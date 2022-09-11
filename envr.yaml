@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python
   - numpy
+  - lastz
   - pip:
     - bio
     - alive-progress
