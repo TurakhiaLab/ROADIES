@@ -29,8 +29,13 @@ rule lastz2fasta:
 		expand(config["OUT"]+"/alignments/{sample}.maf",sample=SAMPLES)   
 	output:
 		expand(config["OUT"]+"/genes/gene_{id}.fa",id=IDS)
+	params:
+		k = num
+		out = config["OUT"]+"/genes"
+		p = config["OUT"]+"/alignments"
+		m = config["MIN_ALIGN"]
 	shell:
-		"python lastz_align/lastz2fasta.py"
+		"python lastz_align/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m}"
 rule lastz:
 	input:
 		config["OUT"]+"/samples/out.fa",
