@@ -1,9 +1,18 @@
 import re
 import os, glob
 import sys
-k = sys.argv[3]
-path = sys.argv[1]
-outdir = sys.argv[2]
+import argparse
+parser = argparse.ArgumentParser(description='get gene fasta')
+parser.add_argument('-k',type=int,default=400)
+parser.add_argument('--path')
+parser.add_argument('--outdir')
+parser.add_argument('-m',type=int,default=4)
+args = parser.parse_args()
+path = args.path
+outdir = args.outdir
+k = args.k
+m = args.m
+
 counts = {}
 isin=[]
 for filename in glob.glob(os.path.join(path,'*.maf')):
@@ -38,3 +47,7 @@ print(counts)
 for i in range(1,int(k)):
     if i not in isin:
         print("no matches for gene: ",i)
+for filename in glob.glob(os.path.join(path,'*.fa')):
+    records = list(Seq.IO.parse(filename),"fasta")
+    if len(records)< m:
+        os.remove(path)
