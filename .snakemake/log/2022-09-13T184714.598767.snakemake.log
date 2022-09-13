@@ -1,0 +1,39 @@
+Building DAG of jobs...
+IncompleteFilesException:
+The files below seem to be incomplete. If you are sure that certain files are not incomplete, mark them as complete with
+
+    snakemake --cleanup-metadata <filenames>
+
+To re-generate the files rerun your command with the --rerun-incomplete flag.
+Incomplete files:
+test/msa/gene_aln_4.fa
+test/msa/gene_aln_31.fa
+test/msa/gene_aln_50.fa
+test/msa/gene_aln_81.fa
+test/msa/gene_aln_84.fa
+test/msa/gene_aln_87.fa
+test/msa/gene_aln_90.fa
+test/msa/gene_aln_111.fa
+test/msa/gene_aln_114.fa
+test/msa/gene_aln_117.fa
+test/msa/gene_aln_120.fa
+test/msa/gene_aln_139.fa
+test/msa/gene_aln_141.fa
+test/msa/gene_aln_144.fa
+test/msa/gene_aln_147.fa
+test/msa/gene_aln_150.fa
+test/msa/gene_aln_153.fa
+test/msa/gene_aln_156.fa
+test/msa/gene_aln_169.fa
+test/msa/gene_aln_199.fa
+test/msa/gene_aln_216.fa
+test/msa/gene_aln_224.fa
+test/msa/gene_aln_229.fa
+test/msa/gene_aln_235.fa
+test/msa/gene_aln_241.fa
+test/msa/gene_aln_244.fa
+test/msa/gene_aln_254.fa
+test/msa/gene_aln_259.fa
+test/msa/gene_aln_284.fa
+test/msa/gene_aln_288.fa
+test/msa/gene_aln_289.fa

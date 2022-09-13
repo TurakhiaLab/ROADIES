@@ -1,0 +1,6 @@
+Building DAG of jobs...
+MissingInputException in rule sequence_merge in line 43 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile:
+Missing input files for rule sequence_merge:
+    output: test/samples/out.fa
+    affected files:
+        test

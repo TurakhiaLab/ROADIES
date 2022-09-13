@@ -1,0 +1,2 @@
+TokenError:
+('EOF in multi-line statement', (80, 0))

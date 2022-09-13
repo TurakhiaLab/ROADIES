@@ -1,0 +1,778 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 64
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+lastz                 40              1              1
+lastz2fasta            1              1              1
+sequence_merge         1              1              1
+sequence_select       40              1              1
+total                 83              1              1
+
+Select jobs to execute...
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020746105.1.fa
+    output: test/samples/GCA_020746105.1_temp.fa
+    jobid: 16
+    reason: Missing output files: test/samples/GCA_020746105.1_temp.fa
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_016700215.2.fa
+    output: test/samples/GCF_016700215.2_temp.fa
+    jobid: 31
+    reason: Missing output files: test/samples/GCF_016700215.2_temp.fa
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_009819825.1.fa
+    output: test/samples/GCA_009819825.1_temp.fa
+    jobid: 24
+    reason: Missing output files: test/samples/GCA_009819825.1_temp.fa
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_009819775.1.fa
+    output: test/samples/GCA_009819775.1_temp.fa
+    jobid: 9
+    reason: Missing output files: test/samples/GCA_009819775.1_temp.fa
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_000002315.6.fa
+    output: test/samples/GCF_000002315.6_temp.fa
+    jobid: 39
+    reason: Missing output files: test/samples/GCF_000002315.6_temp.fa
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_009829145.1.fa
+    output: test/samples/GCF_009829145.1_temp.fa
+    jobid: 17
+    reason: Missing output files: test/samples/GCF_009829145.1_temp.fa
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_013407035.1.fa
+    output: test/samples/GCA_013407035.1_temp.fa
+    jobid: 32
+    reason: Missing output files: test/samples/GCA_013407035.1_temp.fa
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020745775.1.fa
+    output: test/samples/GCA_020745775.1_temp.fa
+    jobid: 25
+    reason: Missing output files: test/samples/GCA_020745775.1_temp.fa
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_012275295.1.fa
+    output: test/samples/GCF_012275295.1_temp.fa
+    jobid: 10
+    reason: Missing output files: test/samples/GCF_012275295.1_temp.fa
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_016904835.1.fa
+    output: test/samples/GCA_016904835.1_temp.fa
+    jobid: 40
+    reason: Missing output files: test/samples/GCA_016904835.1_temp.fa
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017639485.1.fa
+    output: test/samples/GCA_017639485.1_temp.fa
+    jobid: 18
+    reason: Missing output files: test/samples/GCA_017639485.1_temp.fa
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_902806625.1.fa
+    output: test/samples/GCA_902806625.1_temp.fa
+    jobid: 33
+    reason: Missing output files: test/samples/GCA_902806625.1_temp.fa
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_018691265.1.fa
+    output: test/samples/GCF_018691265.1_temp.fa
+    jobid: 26
+    reason: Missing output files: test/samples/GCF_018691265.1_temp.fa
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020801775.1.fa
+    output: test/samples/GCA_020801775.1_temp.fa
+    jobid: 11
+    reason: Missing output files: test/samples/GCA_020801775.1_temp.fa
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_020740725.1.fa
+    output: test/samples/GCF_020740725.1_temp.fa
+    jobid: 41
+    reason: Missing output files: test/samples/GCF_020740725.1_temp.fa
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_907165065.1.fa
+    output: test/samples/GCA_907165065.1_temp.fa
+    jobid: 19
+    reason: Missing output files: test/samples/GCA_907165065.1_temp.fa
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017639555.1.fa
+    output: test/samples/GCA_017639555.1_temp.fa
+    jobid: 4
+    reason: Missing output files: test/samples/GCA_017639555.1_temp.fa
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_016128335.1.fa
+    output: test/samples/GCA_016128335.1_temp.fa
+    jobid: 34
+    reason: Missing output files: test/samples/GCA_016128335.1_temp.fa
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_017639655.2.fa
+    output: test/samples/GCF_017639655.2_temp.fa
+    jobid: 27
+    reason: Missing output files: test/samples/GCF_017639655.2_temp.fa
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_018139145.1.fa
+    output: test/samples/GCA_018139145.1_temp.fa
+    jobid: 12
+    reason: Missing output files: test/samples/GCA_018139145.1_temp.fa
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_901933205.1.fa
+    output: test/samples/GCF_901933205.1_temp.fa
+    jobid: 42
+    reason: Missing output files: test/samples/GCF_901933205.1_temp.fa
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_011004875.1.fa
+    output: test/samples/GCA_011004875.1_temp.fa
+    jobid: 20
+    reason: Missing output files: test/samples/GCA_011004875.1_temp.fa
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_013368605.1.fa
+    output: test/samples/GCA_013368605.1_temp.fa
+    jobid: 5
+    reason: Missing output files: test/samples/GCA_013368605.1_temp.fa
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_900496995.4.fa
+    output: test/samples/GCF_900496995.4_temp.fa
+    jobid: 35
+    reason: Missing output files: test/samples/GCF_900496995.4_temp.fa
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_014839835.1.fa
+    output: test/samples/GCA_014839835.1_temp.fa
+    jobid: 28
+    reason: Missing output files: test/samples/GCA_014839835.1_temp.fa
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_009819795.1.fa
+    output: test/samples/GCF_009819795.1_temp.fa
+    jobid: 13
+    reason: Missing output files: test/samples/GCF_009819795.1_temp.fa
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_012275265.1.fa
+    output: test/samples/GCA_012275265.1_temp.fa
+    jobid: 43
+    reason: Missing output files: test/samples/GCA_012275265.1_temp.fa
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017976375.1.fa
+    output: test/samples/GCA_017976375.1_temp.fa
+    jobid: 21
+    reason: Missing output files: test/samples/GCA_017976375.1_temp.fa
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_015220075.1.fa
+    output: test/samples/GCF_015220075.1_temp.fa
+    jobid: 6
+    reason: Missing output files: test/samples/GCF_015220075.1_temp.fa
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020800305.1.fa
+    output: test/samples/GCA_020800305.1_temp.fa
+    jobid: 36
+    reason: Missing output files: test/samples/GCA_020800305.1_temp.fa
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_905368555.1.fa
+    output: test/samples/GCA_905368555.1_temp.fa
+    jobid: 29
+    reason: Missing output files: test/samples/GCA_905368555.1_temp.fa
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_009819605.1.fa
+    output: test/samples/GCA_009819605.1_temp.fa
+    jobid: 14
+    reason: Missing output files: test/samples/GCA_009819605.1_temp.fa
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_014839755.1.fa
+    output: test/samples/GCA_014839755.1_temp.fa
+    jobid: 22
+    reason: Missing output files: test/samples/GCA_014839755.1_temp.fa
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017639245.1.fa
+    output: test/samples/GCA_017639245.1_temp.fa
+    jobid: 7
+    reason: Missing output files: test/samples/GCA_017639245.1_temp.fa
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020740795.1.fa
+    output: test/samples/GCA_020740795.1_temp.fa
+    jobid: 37
+    reason: Missing output files: test/samples/GCA_020740795.1_temp.fa
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_016699485.2.fa
+    output: test/samples/GCF_016699485.2_temp.fa
+    jobid: 30
+    reason: Missing output files: test/samples/GCF_016699485.2_temp.fa
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_003957555.1.fa
+    output: test/samples/GCF_003957555.1_temp.fa
+    jobid: 15
+    reason: Missing output files: test/samples/GCF_003957555.1_temp.fa
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_015220805.1.fa
+    output: test/samples/GCA_015220805.1_temp.fa
+    jobid: 23
+    reason: Missing output files: test/samples/GCA_015220805.1_temp.fa
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020745705.1.fa
+    output: test/samples/GCA_020745705.1_temp.fa
+    jobid: 8
+    reason: Missing output files: test/samples/GCA_020745705.1_temp.fa
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Mon Sep 12 20:17:20 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_008658365.1.fa
+    output: test/samples/GCA_008658365.1_temp.fa
+    jobid: 38
+    reason: Missing output files: test/samples/GCA_008658365.1_temp.fa
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 40
+    output: test/samples/GCA_016904835.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_016904835.1.fa -s 268 -t 0.7 -e 277 -l 1000 --output ../test/samples/GCA_016904835.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 26
+    output: test/samples/GCF_018691265.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_018691265.1.fa -s 172 -t 0.7 -e 179 -l 1000 --output ../test/samples/GCF_018691265.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 14
+    output: test/samples/GCA_009819605.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_009819605.1.fa -s 85 -t 0.7 -e 91 -l 1000 --output ../test/samples/GCA_009819605.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 24
+    output: test/samples/GCA_009819825.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_009819825.1.fa -s 162 -t 0.7 -e 169 -l 1000 --output ../test/samples/GCA_009819825.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 9
+    output: test/samples/GCA_009819775.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_009819775.1.fa -s 39 -t 0.7 -e 48 -l 1000 --output ../test/samples/GCA_009819775.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 41
+    output: test/samples/GCF_020740725.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_020740725.1.fa -s 277 -t 0.7 -e 282 -l 1000 --output ../test/samples/GCF_020740725.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 21
+    output: test/samples/GCA_017976375.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_017976375.1.fa -s 139 -t 0.7 -e 145 -l 1000 --output ../test/samples/GCA_017976375.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 6
+    output: test/samples/GCF_015220075.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_015220075.1.fa -s 18 -t 0.7 -e 26 -l 1000 --output ../test/samples/GCF_015220075.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 23
+    output: test/samples/GCA_015220805.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_015220805.1.fa -s 153 -t 0.7 -e 162 -l 1000 --output ../test/samples/GCA_015220805.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 20
+    output: test/samples/GCA_011004875.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_011004875.1.fa -s 134 -t 0.7 -e 139 -l 1000 --output ../test/samples/GCA_011004875.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 12
+    output: test/samples/GCA_018139145.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_018139145.1.fa -s 64 -t 0.7 -e 74 -l 1000 --output ../test/samples/GCA_018139145.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 5
+    output: test/samples/GCA_013368605.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_013368605.1.fa -s 9 -t 0.7 -e 18 -l 1000 --output ../test/samples/GCA_013368605.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 28
+    output: test/samples/GCA_014839835.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_014839835.1.fa -s 184 -t 0.7 -e 192 -l 1000 --output ../test/samples/GCA_014839835.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 22
+    output: test/samples/GCA_014839755.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_014839755.1.fa -s 145 -t 0.7 -e 153 -l 1000 --output ../test/samples/GCA_014839755.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 27
+    output: test/samples/GCF_017639655.2_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_017639655.2.fa -s 179 -t 0.7 -e 184 -l 1000 --output ../test/samples/GCF_017639655.2_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 29
+    output: test/samples/GCA_905368555.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_905368555.1.fa -s 192 -t 0.7 -e 201 -l 1000 --output ../test/samples/GCA_905368555.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 37
+    output: test/samples/GCA_020740795.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_020740795.1.fa -s 251 -t 0.7 -e 257 -l 1000 --output ../test/samples/GCA_020740795.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 25
+    output: test/samples/GCA_020745775.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_020745775.1.fa -s 169 -t 0.7 -e 172 -l 1000 --output ../test/samples/GCA_020745775.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 43
+    output: test/samples/GCA_012275265.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_012275265.1.fa -s 290 -t 0.7 -e 300 -l 1000 --output ../test/samples/GCA_012275265.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 36
+    output: test/samples/GCA_020800305.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_020800305.1.fa -s 245 -t 0.7 -e 251 -l 1000 --output ../test/samples/GCA_020800305.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 16
+    output: test/samples/GCA_020746105.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_020746105.1.fa -s 98 -t 0.7 -e 112 -l 1000 --output ../test/samples/GCA_020746105.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 35
+    output: test/samples/GCF_900496995.4_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_900496995.4.fa -s 239 -t 0.7 -e 245 -l 1000 --output ../test/samples/GCF_900496995.4_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 32
+    output: test/samples/GCA_013407035.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_013407035.1.fa -s 215 -t 0.7 -e 225 -l 1000 --output ../test/samples/GCA_013407035.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 38
+    output: test/samples/GCA_008658365.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_008658365.1.fa -s 257 -t 0.7 -e 262 -l 1000 --output ../test/samples/GCA_008658365.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 42
+    output: test/samples/GCF_901933205.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_901933205.1.fa -s 282 -t 0.7 -e 290 -l 1000 --output ../test/samples/GCF_901933205.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 10
+    output: test/samples/GCF_012275295.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_012275295.1.fa -s 48 -t 0.7 -e 52 -l 1000 --output ../test/samples/GCF_012275295.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 17
+    output: test/samples/GCF_009829145.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_009829145.1.fa -s 112 -t 0.7 -e 119 -l 1000 --output ../test/samples/GCF_009829145.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 39
+    output: test/samples/GCF_000002315.6_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_000002315.6.fa -s 262 -t 0.7 -e 268 -l 1000 --output ../test/samples/GCF_000002315.6_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 19
+    output: test/samples/GCA_907165065.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_907165065.1.fa -s 126 -t 0.7 -e 134 -l 1000 --output ../test/samples/GCA_907165065.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 31
+    output: test/samples/GCF_016700215.2_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_016700215.2.fa -s 209 -t 0.7 -e 215 -l 1000 --output ../test/samples/GCF_016700215.2_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 34
+    output: test/samples/GCA_016128335.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_016128335.1.fa -s 232 -t 0.7 -e 239 -l 1000 --output ../test/samples/GCA_016128335.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 7
+    output: test/samples/GCA_017639245.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_017639245.1.fa -s 26 -t 0.7 -e 35 -l 1000 --output ../test/samples/GCA_017639245.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 11
+    output: test/samples/GCA_020801775.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_020801775.1.fa -s 52 -t 0.7 -e 64 -l 1000 --output ../test/samples/GCA_020801775.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 33
+    output: test/samples/GCA_902806625.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_902806625.1.fa -s 225 -t 0.7 -e 232 -l 1000 --output ../test/samples/GCA_902806625.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 13
+    output: test/samples/GCF_009819795.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_009819795.1.fa -s 74 -t 0.7 -e 85 -l 1000 --output ../test/samples/GCF_009819795.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 30
+    output: test/samples/GCF_016699485.2_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_016699485.2.fa -s 201 -t 0.7 -e 209 -l 1000 --output ../test/samples/GCF_016699485.2_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 18
+    output: test/samples/GCA_017639485.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_017639485.1.fa -s 119 -t 0.7 -e 126 -l 1000 --output ../test/samples/GCA_017639485.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 15
+    output: test/samples/GCF_003957555.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCF_003957555.1.fa -s 91 -t 0.7 -e 98 -l 1000 --output ../test/samples/GCF_003957555.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule sequence_select:
+    jobid: 4
+    output: test/samples/GCA_017639555.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_017639555.1.fa -s 0 -t 0.7 -e 9 -l 1000 --output ../test/samples/GCA_017639555.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Mon Sep 12 20:17:58 2022]
+Error in rule sequence_select:
+    jobid: 8
+    output: test/samples/GCA_020745705.1_temp.fa
+    conda-env: /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/9b0e30fc36de21212fd8a979d3e63728
+    shell:
+        python sequence_select/new_select.py --input ../genomes_top40/GCA_020745705.1.fa -s 35 -t 0.7 -e 39 -l 1000 --output ../test/samples/GCA_020745705.1_temp.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-09-12T201719.604054.snakemake.log

@@ -1,0 +1,2074 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 40
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+all                    1              1              1
+iqtree               300              1              1
+lastz                 40              1              1
+lastz2fasta            1              1              1
+mafft                300              1              1
+sequence_merge         1              1              1
+sequence_select       40              1              1
+total                683              1              1
+
+Select jobs to execute...
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_009819605.1.fa
+    output: test/samples/GCA_009819605.1_temp.fa
+    jobid: 16
+    reason: Missing output files: test/samples/GCA_009819605.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_905368555.1.fa
+    output: test/samples/GCA_905368555.1_temp.fa
+    jobid: 31
+    reason: Missing output files: test/samples/GCA_905368555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_014839755.1.fa
+    output: test/samples/GCA_014839755.1_temp.fa
+    jobid: 24
+    reason: Missing output files: test/samples/GCA_014839755.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017639245.1.fa
+    output: test/samples/GCA_017639245.1_temp.fa
+    jobid: 9
+    reason: Missing output files: test/samples/GCA_017639245.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020740795.1.fa
+    output: test/samples/GCA_020740795.1_temp.fa
+    jobid: 39
+    reason: Missing output files: test/samples/GCA_020740795.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_003957555.1.fa
+    output: test/samples/GCF_003957555.1_temp.fa
+    jobid: 17
+    reason: Missing output files: test/samples/GCF_003957555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_016699485.2.fa
+    output: test/samples/GCF_016699485.2_temp.fa
+    jobid: 32
+    reason: Missing output files: test/samples/GCF_016699485.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_015220805.1.fa
+    output: test/samples/GCA_015220805.1_temp.fa
+    jobid: 25
+    reason: Missing output files: test/samples/GCA_015220805.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020745705.1.fa
+    output: test/samples/GCA_020745705.1_temp.fa
+    jobid: 10
+    reason: Missing output files: test/samples/GCA_020745705.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_008658365.1.fa
+    output: test/samples/GCA_008658365.1_temp.fa
+    jobid: 40
+    reason: Missing output files: test/samples/GCA_008658365.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020746105.1.fa
+    output: test/samples/GCA_020746105.1_temp.fa
+    jobid: 18
+    reason: Missing output files: test/samples/GCA_020746105.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_016700215.2.fa
+    output: test/samples/GCF_016700215.2_temp.fa
+    jobid: 33
+    reason: Missing output files: test/samples/GCF_016700215.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_009819825.1.fa
+    output: test/samples/GCA_009819825.1_temp.fa
+    jobid: 26
+    reason: Missing output files: test/samples/GCA_009819825.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_009819775.1.fa
+    output: test/samples/GCA_009819775.1_temp.fa
+    jobid: 11
+    reason: Missing output files: test/samples/GCA_009819775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_000002315.6.fa
+    output: test/samples/GCF_000002315.6_temp.fa
+    jobid: 41
+    reason: Missing output files: test/samples/GCF_000002315.6_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_009829145.1.fa
+    output: test/samples/GCF_009829145.1_temp.fa
+    jobid: 19
+    reason: Missing output files: test/samples/GCF_009829145.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_013407035.1.fa
+    output: test/samples/GCA_013407035.1_temp.fa
+    jobid: 34
+    reason: Missing output files: test/samples/GCA_013407035.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020745775.1.fa
+    output: test/samples/GCA_020745775.1_temp.fa
+    jobid: 27
+    reason: Missing output files: test/samples/GCA_020745775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_012275295.1.fa
+    output: test/samples/GCF_012275295.1_temp.fa
+    jobid: 12
+    reason: Missing output files: test/samples/GCF_012275295.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_016904835.1.fa
+    output: test/samples/GCA_016904835.1_temp.fa
+    jobid: 42
+    reason: Missing output files: test/samples/GCA_016904835.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017639485.1.fa
+    output: test/samples/GCA_017639485.1_temp.fa
+    jobid: 20
+    reason: Missing output files: test/samples/GCA_017639485.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_902806625.1.fa
+    output: test/samples/GCA_902806625.1_temp.fa
+    jobid: 35
+    reason: Missing output files: test/samples/GCA_902806625.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_018691265.1.fa
+    output: test/samples/GCF_018691265.1_temp.fa
+    jobid: 28
+    reason: Missing output files: test/samples/GCF_018691265.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020801775.1.fa
+    output: test/samples/GCA_020801775.1_temp.fa
+    jobid: 13
+    reason: Missing output files: test/samples/GCA_020801775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_020740725.1.fa
+    output: test/samples/GCF_020740725.1_temp.fa
+    jobid: 43
+    reason: Missing output files: test/samples/GCF_020740725.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_907165065.1.fa
+    output: test/samples/GCA_907165065.1_temp.fa
+    jobid: 21
+    reason: Missing output files: test/samples/GCA_907165065.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017639555.1.fa
+    output: test/samples/GCA_017639555.1_temp.fa
+    jobid: 6
+    reason: Missing output files: test/samples/GCA_017639555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_016128335.1.fa
+    output: test/samples/GCA_016128335.1_temp.fa
+    jobid: 36
+    reason: Missing output files: test/samples/GCA_016128335.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_017639655.2.fa
+    output: test/samples/GCF_017639655.2_temp.fa
+    jobid: 29
+    reason: Missing output files: test/samples/GCF_017639655.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_018139145.1.fa
+    output: test/samples/GCA_018139145.1_temp.fa
+    jobid: 14
+    reason: Missing output files: test/samples/GCA_018139145.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_901933205.1.fa
+    output: test/samples/GCF_901933205.1_temp.fa
+    jobid: 44
+    reason: Missing output files: test/samples/GCF_901933205.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_011004875.1.fa
+    output: test/samples/GCA_011004875.1_temp.fa
+    jobid: 22
+    reason: Missing output files: test/samples/GCA_011004875.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_013368605.1.fa
+    output: test/samples/GCA_013368605.1_temp.fa
+    jobid: 7
+    reason: Missing output files: test/samples/GCA_013368605.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_900496995.4.fa
+    output: test/samples/GCF_900496995.4_temp.fa
+    jobid: 37
+    reason: Missing output files: test/samples/GCF_900496995.4_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_014839835.1.fa
+    output: test/samples/GCA_014839835.1_temp.fa
+    jobid: 30
+    reason: Missing output files: test/samples/GCA_014839835.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_009819795.1.fa
+    output: test/samples/GCF_009819795.1_temp.fa
+    jobid: 15
+    reason: Missing output files: test/samples/GCF_009819795.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_012275265.1.fa
+    output: test/samples/GCA_012275265.1_temp.fa
+    jobid: 45
+    reason: Missing output files: test/samples/GCA_012275265.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_017976375.1.fa
+    output: test/samples/GCA_017976375.1_temp.fa
+    jobid: 23
+    reason: Missing output files: test/samples/GCA_017976375.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCF_015220075.1.fa
+    output: test/samples/GCF_015220075.1_temp.fa
+    jobid: 8
+    reason: Missing output files: test/samples/GCF_015220075.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:21 2022]
+rule sequence_select:
+    input: ../genomes_top40/GCA_020800305.1.fa
+    output: test/samples/GCA_020800305.1_temp.fa
+    jobid: 38
+    reason: Missing output files: test/samples/GCA_020800305.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:08:30 2022]
+Finished job 31.
+1 of 683 steps (0.1%) done
+[Tue Sep 13 21:08:30 2022]
+Finished job 17.
+2 of 683 steps (0.3%) done
+[Tue Sep 13 21:08:31 2022]
+Finished job 41.
+3 of 683 steps (0.4%) done
+[Tue Sep 13 21:08:31 2022]
+Finished job 39.
+4 of 683 steps (1%) done
+[Tue Sep 13 21:08:31 2022]
+Finished job 10.
+5 of 683 steps (1%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 12.
+6 of 683 steps (1%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 9.
+7 of 683 steps (1%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 43.
+8 of 683 steps (1%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 22.
+9 of 683 steps (1%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 8.
+10 of 683 steps (1%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 28.
+11 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 25.
+12 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 29.
+13 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 11.
+14 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 27.
+15 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 37.
+16 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 14.
+17 of 683 steps (2%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 36.
+18 of 683 steps (3%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 6.
+19 of 683 steps (3%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 20.
+20 of 683 steps (3%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 16.
+21 of 683 steps (3%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 13.
+22 of 683 steps (3%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 38.
+23 of 683 steps (3%) done
+[Tue Sep 13 21:08:32 2022]
+Finished job 7.
+24 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 34.
+25 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 24.
+26 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 32.
+27 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 33.
+28 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 42.
+29 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 44.
+30 of 683 steps (4%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 19.
+31 of 683 steps (5%) done
+[Tue Sep 13 21:08:34 2022]
+Finished job 35.
+32 of 683 steps (5%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 18.
+33 of 683 steps (5%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 15.
+34 of 683 steps (5%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 30.
+35 of 683 steps (5%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 23.
+36 of 683 steps (5%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 40.
+37 of 683 steps (5%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 45.
+38 of 683 steps (6%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 26.
+39 of 683 steps (6%) done
+[Tue Sep 13 21:08:35 2022]
+Finished job 21.
+40 of 683 steps (6%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:08:35 2022]
+rule sequence_merge:
+    input: test/samples/GCA_017639555.1_temp.fa, test/samples/GCA_013368605.1_temp.fa, test/samples/GCF_015220075.1_temp.fa, test/samples/GCA_017639245.1_temp.fa, test/samples/GCA_020745705.1_temp.fa, test/samples/GCA_009819775.1_temp.fa, test/samples/GCF_012275295.1_temp.fa, test/samples/GCA_020801775.1_temp.fa, test/samples/GCA_018139145.1_temp.fa, test/samples/GCF_009819795.1_temp.fa, test/samples/GCA_009819605.1_temp.fa, test/samples/GCF_003957555.1_temp.fa, test/samples/GCA_020746105.1_temp.fa, test/samples/GCF_009829145.1_temp.fa, test/samples/GCA_017639485.1_temp.fa, test/samples/GCA_907165065.1_temp.fa, test/samples/GCA_011004875.1_temp.fa, test/samples/GCA_017976375.1_temp.fa, test/samples/GCA_014839755.1_temp.fa, test/samples/GCA_015220805.1_temp.fa, test/samples/GCA_009819825.1_temp.fa, test/samples/GCA_020745775.1_temp.fa, test/samples/GCF_018691265.1_temp.fa, test/samples/GCF_017639655.2_temp.fa, test/samples/GCA_014839835.1_temp.fa, test/samples/GCA_905368555.1_temp.fa, test/samples/GCF_016699485.2_temp.fa, test/samples/GCF_016700215.2_temp.fa, test/samples/GCA_013407035.1_temp.fa, test/samples/GCA_902806625.1_temp.fa, test/samples/GCA_016128335.1_temp.fa, test/samples/GCF_900496995.4_temp.fa, test/samples/GCA_020800305.1_temp.fa, test/samples/GCA_020740795.1_temp.fa, test/samples/GCA_008658365.1_temp.fa, test/samples/GCF_000002315.6_temp.fa, test/samples/GCA_016904835.1_temp.fa, test/samples/GCF_020740725.1_temp.fa, test/samples/GCF_901933205.1_temp.fa, test/samples/GCA_012275265.1_temp.fa, test
+    output: test/samples/out.fa
+    jobid: 5
+    reason: Input files updated by another job: test/samples/GCA_009819775.1_temp.fa, test/samples/GCA_905368555.1_temp.fa, test/samples/GCF_000002315.6_temp.fa, test/samples/GCA_020800305.1_temp.fa, test/samples/GCF_003957555.1_temp.fa, test/samples/GCA_014839835.1_temp.fa, test/samples/GCA_020801775.1_temp.fa, test/samples/GCA_018139145.1_temp.fa, test/samples/GCF_900496995.4_temp.fa, test/samples/GCF_009829145.1_temp.fa, test/samples/GCA_009819605.1_temp.fa, test/samples/GCA_017976375.1_temp.fa, test/samples/GCA_020745775.1_temp.fa, test/samples/GCA_016128335.1_temp.fa, test/samples/GCA_015220805.1_temp.fa, test/samples/GCF_901933205.1_temp.fa, test/samples/GCA_016904835.1_temp.fa, test/samples/GCF_020740725.1_temp.fa, test/samples/GCA_020746105.1_temp.fa, test/samples/GCF_018691265.1_temp.fa, test/samples/GCA_011004875.1_temp.fa, test/samples/GCF_016699485.2_temp.fa, test/samples/GCA_020745705.1_temp.fa, test/samples/GCF_015220075.1_temp.fa, test/samples/GCA_020740795.1_temp.fa, test/samples/GCA_902806625.1_temp.fa, test/samples/GCA_013368605.1_temp.fa, test/samples/GCF_016700215.2_temp.fa, test/samples/GCA_907165065.1_temp.fa, test/samples/GCA_012275265.1_temp.fa, test/samples/GCA_017639485.1_temp.fa, test/samples/GCA_017639555.1_temp.fa, test/samples/GCA_009819825.1_temp.fa, test/samples/GCA_017639245.1_temp.fa, test/samples/GCF_012275295.1_temp.fa, test/samples/GCA_013407035.1_temp.fa, test/samples/GCA_014839755.1_temp.fa, test/samples/GCF_017639655.2_temp.fa, test/samples/GCF_009819795.1_temp.fa, test/samples/GCA_008658365.1_temp.fa
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:08:35 2022]
+Finished job 5.
+41 of 683 steps (6%) done
+Removing temporary output test/samples/GCA_017639555.1_temp.fa.
+Removing temporary output test/samples/GCA_013368605.1_temp.fa.
+Removing temporary output test/samples/GCF_015220075.1_temp.fa.
+Removing temporary output test/samples/GCA_017639245.1_temp.fa.
+Removing temporary output test/samples/GCA_020745705.1_temp.fa.
+Removing temporary output test/samples/GCA_009819775.1_temp.fa.
+Removing temporary output test/samples/GCF_012275295.1_temp.fa.
+Removing temporary output test/samples/GCA_020801775.1_temp.fa.
+Removing temporary output test/samples/GCA_018139145.1_temp.fa.
+Removing temporary output test/samples/GCF_009819795.1_temp.fa.
+Removing temporary output test/samples/GCA_009819605.1_temp.fa.
+Removing temporary output test/samples/GCF_003957555.1_temp.fa.
+Removing temporary output test/samples/GCA_020746105.1_temp.fa.
+Removing temporary output test/samples/GCF_009829145.1_temp.fa.
+Removing temporary output test/samples/GCA_017639485.1_temp.fa.
+Removing temporary output test/samples/GCA_907165065.1_temp.fa.
+Removing temporary output test/samples/GCA_011004875.1_temp.fa.
+Removing temporary output test/samples/GCA_017976375.1_temp.fa.
+Removing temporary output test/samples/GCA_014839755.1_temp.fa.
+Removing temporary output test/samples/GCA_015220805.1_temp.fa.
+Removing temporary output test/samples/GCA_009819825.1_temp.fa.
+Removing temporary output test/samples/GCA_020745775.1_temp.fa.
+Removing temporary output test/samples/GCF_018691265.1_temp.fa.
+Removing temporary output test/samples/GCF_017639655.2_temp.fa.
+Removing temporary output test/samples/GCA_014839835.1_temp.fa.
+Removing temporary output test/samples/GCA_905368555.1_temp.fa.
+Removing temporary output test/samples/GCF_016699485.2_temp.fa.
+Removing temporary output test/samples/GCF_016700215.2_temp.fa.
+Removing temporary output test/samples/GCA_013407035.1_temp.fa.
+Removing temporary output test/samples/GCA_902806625.1_temp.fa.
+Removing temporary output test/samples/GCA_016128335.1_temp.fa.
+Removing temporary output test/samples/GCF_900496995.4_temp.fa.
+Removing temporary output test/samples/GCA_020800305.1_temp.fa.
+Removing temporary output test/samples/GCA_020740795.1_temp.fa.
+Removing temporary output test/samples/GCA_008658365.1_temp.fa.
+Removing temporary output test/samples/GCF_000002315.6_temp.fa.
+Removing temporary output test/samples/GCA_016904835.1_temp.fa.
+Removing temporary output test/samples/GCF_020740725.1_temp.fa.
+Removing temporary output test/samples/GCF_901933205.1_temp.fa.
+Removing temporary output test/samples/GCA_012275265.1_temp.fa.
+Select jobs to execute...
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_900496995.4.fa
+    output: test/alignments/GCF_900496995.4.maf
+    jobid: 76
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_011004875.1.fa
+    output: test/alignments/GCA_011004875.1.maf
+    jobid: 61
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_013368605.1.fa
+    output: test/alignments/GCA_013368605.1.maf
+    jobid: 46
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_012275265.1.fa
+    output: test/alignments/GCA_012275265.1.maf
+    jobid: 84
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_014839835.1.fa
+    output: test/alignments/GCA_014839835.1.maf
+    jobid: 69
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_009819795.1.fa
+    output: test/alignments/GCF_009819795.1.maf
+    jobid: 54
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_020800305.1.fa
+    output: test/alignments/GCA_020800305.1.maf
+    jobid: 77
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_017976375.1.fa
+    output: test/alignments/GCA_017976375.1.maf
+    jobid: 62
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_015220075.1.fa
+    output: test/alignments/GCF_015220075.1.maf
+    jobid: 47
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_905368555.1.fa
+    output: test/alignments/GCA_905368555.1.maf
+    jobid: 70
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_009819605.1.fa
+    output: test/alignments/GCA_009819605.1.maf
+    jobid: 55
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_020740795.1.fa
+    output: test/alignments/GCA_020740795.1.maf
+    jobid: 78
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_014839755.1.fa
+    output: test/alignments/GCA_014839755.1.maf
+    jobid: 63
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_017639245.1.fa
+    output: test/alignments/GCA_017639245.1.maf
+    jobid: 48
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_016699485.2.fa
+    output: test/alignments/GCF_016699485.2.maf
+    jobid: 71
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_003957555.1.fa
+    output: test/alignments/GCF_003957555.1.maf
+    jobid: 56
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_008658365.1.fa
+    output: test/alignments/GCA_008658365.1.maf
+    jobid: 79
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_017639555.1.fa
+    output: test/alignments/GCA_017639555.1.maf
+    jobid: 4
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_020745705.1.fa
+    output: test/alignments/GCA_020745705.1.maf
+    jobid: 49
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_015220805.1.fa
+    output: test/alignments/GCA_015220805.1.maf
+    jobid: 64
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_016700215.2.fa
+    output: test/alignments/GCF_016700215.2.maf
+    jobid: 72
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_020746105.1.fa
+    output: test/alignments/GCA_020746105.1.maf
+    jobid: 57
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_000002315.6.fa
+    output: test/alignments/GCF_000002315.6.maf
+    jobid: 80
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_009819825.1.fa
+    output: test/alignments/GCA_009819825.1.maf
+    jobid: 65
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_009819775.1.fa
+    output: test/alignments/GCA_009819775.1.maf
+    jobid: 50
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_013407035.1.fa
+    output: test/alignments/GCA_013407035.1.maf
+    jobid: 73
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_009829145.1.fa
+    output: test/alignments/GCF_009829145.1.maf
+    jobid: 58
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_016904835.1.fa
+    output: test/alignments/GCA_016904835.1.maf
+    jobid: 81
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_020745775.1.fa
+    output: test/alignments/GCA_020745775.1.maf
+    jobid: 66
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_012275295.1.fa
+    output: test/alignments/GCF_012275295.1.maf
+    jobid: 51
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_902806625.1.fa
+    output: test/alignments/GCA_902806625.1.maf
+    jobid: 74
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_017639485.1.fa
+    output: test/alignments/GCA_017639485.1.maf
+    jobid: 59
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_020740725.1.fa
+    output: test/alignments/GCF_020740725.1.maf
+    jobid: 82
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_018691265.1.fa
+    output: test/alignments/GCF_018691265.1.maf
+    jobid: 67
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_020801775.1.fa
+    output: test/alignments/GCA_020801775.1.maf
+    jobid: 52
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_016128335.1.fa
+    output: test/alignments/GCA_016128335.1.maf
+    jobid: 75
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_907165065.1.fa
+    output: test/alignments/GCA_907165065.1.maf
+    jobid: 60
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_901933205.1.fa
+    output: test/alignments/GCF_901933205.1.maf
+    jobid: 83
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCF_017639655.2.fa
+    output: test/alignments/GCF_017639655.2.maf
+    jobid: 68
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:08:35 2022]
+rule lastz:
+    input: test/samples/out.fa, ../genomes_top40/GCA_018139145.1.fa
+    output: test/alignments/GCA_018139145.1.maf
+    jobid: 53
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:09:20 2022]
+Finished job 70.
+42 of 683 steps (6%) done
+[Tue Sep 13 21:09:23 2022]
+Finished job 72.
+43 of 683 steps (6%) done
+[Tue Sep 13 21:09:24 2022]
+Finished job 71.
+44 of 683 steps (6%) done
+[Tue Sep 13 21:09:26 2022]
+Finished job 81.
+45 of 683 steps (7%) done
+[Tue Sep 13 21:09:26 2022]
+Finished job 54.
+46 of 683 steps (7%) done
+[Tue Sep 13 21:09:26 2022]
+Finished job 79.
+47 of 683 steps (7%) done
+[Tue Sep 13 21:09:27 2022]
+Finished job 69.
+48 of 683 steps (7%) done
+[Tue Sep 13 21:09:27 2022]
+Finished job 78.
+49 of 683 steps (7%) done
+[Tue Sep 13 21:09:27 2022]
+Finished job 57.
+50 of 683 steps (7%) done
+[Tue Sep 13 21:09:29 2022]
+Finished job 84.
+51 of 683 steps (7%) done
+[Tue Sep 13 21:09:30 2022]
+Finished job 51.
+52 of 683 steps (8%) done
+[Tue Sep 13 21:09:30 2022]
+Finished job 49.
+53 of 683 steps (8%) done
+[Tue Sep 13 21:09:31 2022]
+Finished job 53.
+54 of 683 steps (8%) done
+[Tue Sep 13 21:09:31 2022]
+Finished job 4.
+55 of 683 steps (8%) done
+[Tue Sep 13 21:09:32 2022]
+Finished job 50.
+56 of 683 steps (8%) done
+[Tue Sep 13 21:09:32 2022]
+Finished job 60.
+57 of 683 steps (8%) done
+[Tue Sep 13 21:09:33 2022]
+Finished job 67.
+58 of 683 steps (8%) done
+[Tue Sep 13 21:09:33 2022]
+Finished job 47.
+59 of 683 steps (9%) done
+[Tue Sep 13 21:09:34 2022]
+Finished job 76.
+60 of 683 steps (9%) done
+[Tue Sep 13 21:09:35 2022]
+Finished job 46.
+61 of 683 steps (9%) done
+[Tue Sep 13 21:09:35 2022]
+Finished job 59.
+62 of 683 steps (9%) done
+[Tue Sep 13 21:09:36 2022]
+Finished job 65.
+63 of 683 steps (9%) done
+[Tue Sep 13 21:09:39 2022]
+Finished job 82.
+64 of 683 steps (9%) done
+[Tue Sep 13 21:09:46 2022]
+Finished job 73.
+65 of 683 steps (10%) done
+[Tue Sep 13 21:09:46 2022]
+Finished job 80.
+66 of 683 steps (10%) done
+[Tue Sep 13 21:09:48 2022]
+Finished job 55.
+67 of 683 steps (10%) done
+[Tue Sep 13 21:09:50 2022]
+Finished job 83.
+68 of 683 steps (10%) done
+[Tue Sep 13 21:09:51 2022]
+Finished job 63.
+69 of 683 steps (10%) done
+[Tue Sep 13 21:09:51 2022]
+Finished job 58.
+70 of 683 steps (10%) done
+[Tue Sep 13 21:09:51 2022]
+Finished job 56.
+71 of 683 steps (10%) done
+[Tue Sep 13 21:09:52 2022]
+Finished job 74.
+72 of 683 steps (11%) done
+[Tue Sep 13 21:09:52 2022]
+Finished job 62.
+73 of 683 steps (11%) done
+[Tue Sep 13 21:09:52 2022]
+Finished job 66.
+74 of 683 steps (11%) done
+[Tue Sep 13 21:09:53 2022]
+Finished job 75.
+75 of 683 steps (11%) done
+[Tue Sep 13 21:09:53 2022]
+Finished job 61.
+76 of 683 steps (11%) done
+[Tue Sep 13 21:09:53 2022]
+Finished job 52.
+77 of 683 steps (11%) done
+[Tue Sep 13 21:09:54 2022]
+Finished job 64.
+78 of 683 steps (11%) done
+[Tue Sep 13 21:09:55 2022]
+Finished job 77.
+79 of 683 steps (12%) done
+[Tue Sep 13 21:09:57 2022]
+Finished job 68.
+80 of 683 steps (12%) done
+[Tue Sep 13 21:10:12 2022]
+Finished job 48.
+81 of 683 steps (12%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:12 2022]
+rule lastz2fasta:
+    input: test/alignments/GCA_017639555.1.maf, test/alignments/GCA_013368605.1.maf, test/alignments/GCF_015220075.1.maf, test/alignments/GCA_017639245.1.maf, test/alignments/GCA_020745705.1.maf, test/alignments/GCA_009819775.1.maf, test/alignments/GCF_012275295.1.maf, test/alignments/GCA_020801775.1.maf, test/alignments/GCA_018139145.1.maf, test/alignments/GCF_009819795.1.maf, test/alignments/GCA_009819605.1.maf, test/alignments/GCF_003957555.1.maf, test/alignments/GCA_020746105.1.maf, test/alignments/GCF_009829145.1.maf, test/alignments/GCA_017639485.1.maf, test/alignments/GCA_907165065.1.maf, test/alignments/GCA_011004875.1.maf, test/alignments/GCA_017976375.1.maf, test/alignments/GCA_014839755.1.maf, test/alignments/GCA_015220805.1.maf, test/alignments/GCA_009819825.1.maf, test/alignments/GCA_020745775.1.maf, test/alignments/GCF_018691265.1.maf, test/alignments/GCF_017639655.2.maf, test/alignments/GCA_014839835.1.maf, test/alignments/GCA_905368555.1.maf, test/alignments/GCF_016699485.2.maf, test/alignments/GCF_016700215.2.maf, test/alignments/GCA_013407035.1.maf, test/alignments/GCA_902806625.1.maf, test/alignments/GCA_016128335.1.maf, test/alignments/GCF_900496995.4.maf, test/alignments/GCA_020800305.1.maf, test/alignments/GCA_020740795.1.maf, test/alignments/GCA_008658365.1.maf, test/alignments/GCF_000002315.6.maf, test/alignments/GCA_016904835.1.maf, test/alignments/GCF_020740725.1.maf, test/alignments/GCF_901933205.1.maf, test/alignments/GCA_012275265.1.maf
+    output: test/genes/gene_1.fa, test/genes/gene_2.fa, test/genes/gene_3.fa, test/genes/gene_4.fa, test/genes/gene_5.fa, test/genes/gene_6.fa, test/genes/gene_7.fa, test/genes/gene_8.fa, test/genes/gene_9.fa, test/genes/gene_10.fa, test/genes/gene_11.fa, test/genes/gene_12.fa, test/genes/gene_13.fa, test/genes/gene_14.fa, test/genes/gene_15.fa, test/genes/gene_16.fa, test/genes/gene_17.fa, test/genes/gene_18.fa, test/genes/gene_19.fa, test/genes/gene_20.fa, test/genes/gene_21.fa, test/genes/gene_22.fa, test/genes/gene_23.fa, test/genes/gene_24.fa, test/genes/gene_25.fa, test/genes/gene_26.fa, test/genes/gene_27.fa, test/genes/gene_28.fa, test/genes/gene_29.fa, test/genes/gene_30.fa, test/genes/gene_31.fa, test/genes/gene_32.fa, test/genes/gene_33.fa, test/genes/gene_34.fa, test/genes/gene_35.fa, test/genes/gene_36.fa, test/genes/gene_37.fa, test/genes/gene_38.fa, test/genes/gene_39.fa, test/genes/gene_40.fa, test/genes/gene_41.fa, test/genes/gene_42.fa, test/genes/gene_43.fa, test/genes/gene_44.fa, test/genes/gene_45.fa, test/genes/gene_46.fa, test/genes/gene_47.fa, test/genes/gene_48.fa, test/genes/gene_49.fa, test/genes/gene_50.fa, test/genes/gene_51.fa, test/genes/gene_52.fa, test/genes/gene_53.fa, test/genes/gene_54.fa, test/genes/gene_55.fa, test/genes/gene_56.fa, test/genes/gene_57.fa, test/genes/gene_58.fa, test/genes/gene_59.fa, test/genes/gene_60.fa, test/genes/gene_61.fa, test/genes/gene_62.fa, test/genes/gene_63.fa, test/genes/gene_64.fa, test/genes/gene_65.fa, test/genes/gene_66.fa, test/genes/gene_67.fa, test/genes/gene_68.fa, test/genes/gene_69.fa, test/genes/gene_70.fa, test/genes/gene_71.fa, test/genes/gene_72.fa, test/genes/gene_73.fa, test/genes/gene_74.fa, test/genes/gene_75.fa, test/genes/gene_76.fa, test/genes/gene_77.fa, test/genes/gene_78.fa, test/genes/gene_79.fa, test/genes/gene_80.fa, test/genes/gene_81.fa, test/genes/gene_82.fa, test/genes/gene_83.fa, test/genes/gene_84.fa, test/genes/gene_85.fa, test/genes/gene_86.fa, test/genes/gene_87.fa, test/genes/gene_88.fa, test/genes/gene_89.fa, test/genes/gene_90.fa, test/genes/gene_91.fa, test/genes/gene_92.fa, test/genes/gene_93.fa, test/genes/gene_94.fa, test/genes/gene_95.fa, test/genes/gene_96.fa, test/genes/gene_97.fa, test/genes/gene_98.fa, test/genes/gene_99.fa, test/genes/gene_100.fa, test/genes/gene_101.fa, test/genes/gene_102.fa, test/genes/gene_103.fa, test/genes/gene_104.fa, test/genes/gene_105.fa, test/genes/gene_106.fa, test/genes/gene_107.fa, test/genes/gene_108.fa, test/genes/gene_109.fa, test/genes/gene_110.fa, test/genes/gene_111.fa, test/genes/gene_112.fa, test/genes/gene_113.fa, test/genes/gene_114.fa, test/genes/gene_115.fa, test/genes/gene_116.fa, test/genes/gene_117.fa, test/genes/gene_118.fa, test/genes/gene_119.fa, test/genes/gene_120.fa, test/genes/gene_121.fa, test/genes/gene_122.fa, test/genes/gene_123.fa, test/genes/gene_124.fa, test/genes/gene_125.fa, test/genes/gene_126.fa, test/genes/gene_127.fa, test/genes/gene_128.fa, test/genes/gene_129.fa, test/genes/gene_130.fa, test/genes/gene_131.fa, test/genes/gene_132.fa, test/genes/gene_133.fa, test/genes/gene_134.fa, test/genes/gene_135.fa, test/genes/gene_136.fa, test/genes/gene_137.fa, test/genes/gene_138.fa, test/genes/gene_139.fa, test/genes/gene_140.fa, test/genes/gene_141.fa, test/genes/gene_142.fa, test/genes/gene_143.fa, test/genes/gene_144.fa, test/genes/gene_145.fa, test/genes/gene_146.fa, test/genes/gene_147.fa, test/genes/gene_148.fa, test/genes/gene_149.fa, test/genes/gene_150.fa, test/genes/gene_151.fa, test/genes/gene_152.fa, test/genes/gene_153.fa, test/genes/gene_154.fa, test/genes/gene_155.fa, test/genes/gene_156.fa, test/genes/gene_157.fa, test/genes/gene_158.fa, test/genes/gene_159.fa, test/genes/gene_160.fa, test/genes/gene_161.fa, test/genes/gene_162.fa, test/genes/gene_163.fa, test/genes/gene_164.fa, test/genes/gene_165.fa, test/genes/gene_166.fa, test/genes/gene_167.fa, test/genes/gene_168.fa, test/genes/gene_169.fa, test/genes/gene_170.fa, test/genes/gene_171.fa, test/genes/gene_172.fa, test/genes/gene_173.fa, test/genes/gene_174.fa, test/genes/gene_175.fa, test/genes/gene_176.fa, test/genes/gene_177.fa, test/genes/gene_178.fa, test/genes/gene_179.fa, test/genes/gene_180.fa, test/genes/gene_181.fa, test/genes/gene_182.fa, test/genes/gene_183.fa, test/genes/gene_184.fa, test/genes/gene_185.fa, test/genes/gene_186.fa, test/genes/gene_187.fa, test/genes/gene_188.fa, test/genes/gene_189.fa, test/genes/gene_190.fa, test/genes/gene_191.fa, test/genes/gene_192.fa, test/genes/gene_193.fa, test/genes/gene_194.fa, test/genes/gene_195.fa, test/genes/gene_196.fa, test/genes/gene_197.fa, test/genes/gene_198.fa, test/genes/gene_199.fa, test/genes/gene_200.fa, test/genes/gene_201.fa, test/genes/gene_202.fa, test/genes/gene_203.fa, test/genes/gene_204.fa, test/genes/gene_205.fa, test/genes/gene_206.fa, test/genes/gene_207.fa, test/genes/gene_208.fa, test/genes/gene_209.fa, test/genes/gene_210.fa, test/genes/gene_211.fa, test/genes/gene_212.fa, test/genes/gene_213.fa, test/genes/gene_214.fa, test/genes/gene_215.fa, test/genes/gene_216.fa, test/genes/gene_217.fa, test/genes/gene_218.fa, test/genes/gene_219.fa, test/genes/gene_220.fa, test/genes/gene_221.fa, test/genes/gene_222.fa, test/genes/gene_223.fa, test/genes/gene_224.fa, test/genes/gene_225.fa, test/genes/gene_226.fa, test/genes/gene_227.fa, test/genes/gene_228.fa, test/genes/gene_229.fa, test/genes/gene_230.fa, test/genes/gene_231.fa, test/genes/gene_232.fa, test/genes/gene_233.fa, test/genes/gene_234.fa, test/genes/gene_235.fa, test/genes/gene_236.fa, test/genes/gene_237.fa, test/genes/gene_238.fa, test/genes/gene_239.fa, test/genes/gene_240.fa, test/genes/gene_241.fa, test/genes/gene_242.fa, test/genes/gene_243.fa, test/genes/gene_244.fa, test/genes/gene_245.fa, test/genes/gene_246.fa, test/genes/gene_247.fa, test/genes/gene_248.fa, test/genes/gene_249.fa, test/genes/gene_250.fa, test/genes/gene_251.fa, test/genes/gene_252.fa, test/genes/gene_253.fa, test/genes/gene_254.fa, test/genes/gene_255.fa, test/genes/gene_256.fa, test/genes/gene_257.fa, test/genes/gene_258.fa, test/genes/gene_259.fa, test/genes/gene_260.fa, test/genes/gene_261.fa, test/genes/gene_262.fa, test/genes/gene_263.fa, test/genes/gene_264.fa, test/genes/gene_265.fa, test/genes/gene_266.fa, test/genes/gene_267.fa, test/genes/gene_268.fa, test/genes/gene_269.fa, test/genes/gene_270.fa, test/genes/gene_271.fa, test/genes/gene_272.fa, test/genes/gene_273.fa, test/genes/gene_274.fa, test/genes/gene_275.fa, test/genes/gene_276.fa, test/genes/gene_277.fa, test/genes/gene_278.fa, test/genes/gene_279.fa, test/genes/gene_280.fa, test/genes/gene_281.fa, test/genes/gene_282.fa, test/genes/gene_283.fa, test/genes/gene_284.fa, test/genes/gene_285.fa, test/genes/gene_286.fa, test/genes/gene_287.fa, test/genes/gene_288.fa, test/genes/gene_289.fa, test/genes/gene_290.fa, test/genes/gene_291.fa, test/genes/gene_292.fa, test/genes/gene_293.fa, test/genes/gene_294.fa, test/genes/gene_295.fa, test/genes/gene_296.fa, test/genes/gene_297.fa, test/genes/gene_298.fa, test/genes/gene_299.fa, test/genes/gene_300.fa
+    jobid: 3
+    reason: Input files updated by another job: test/alignments/GCA_011004875.1.maf, test/alignments/GCF_003957555.1.maf, test/alignments/GCA_016904835.1.maf, test/alignments/GCA_014839755.1.maf, test/alignments/GCA_013407035.1.maf, test/alignments/GCA_020801775.1.maf, test/alignments/GCA_017639245.1.maf, test/alignments/GCA_013368605.1.maf, test/alignments/GCA_012275265.1.maf, test/alignments/GCF_018691265.1.maf, test/alignments/GCF_009829145.1.maf, test/alignments/GCA_020745705.1.maf, test/alignments/GCA_014839835.1.maf, test/alignments/GCA_008658365.1.maf, test/alignments/GCF_000002315.6.maf, test/alignments/GCA_009819825.1.maf, test/alignments/GCA_020740795.1.maf, test/alignments/GCA_016128335.1.maf, test/alignments/GCA_020746105.1.maf, test/alignments/GCA_020800305.1.maf, test/alignments/GCA_907165065.1.maf, test/alignments/GCF_016699485.2.maf, test/alignments/GCA_009819775.1.maf, test/alignments/GCF_016700215.2.maf, test/alignments/GCA_015220805.1.maf, test/alignments/GCF_009819795.1.maf, test/alignments/GCF_015220075.1.maf, test/alignments/GCF_012275295.1.maf, test/alignments/GCA_009819605.1.maf, test/alignments/GCA_020745775.1.maf, test/alignments/GCA_902806625.1.maf, test/alignments/GCA_905368555.1.maf, test/alignments/GCA_017976375.1.maf, test/alignments/GCF_020740725.1.maf, test/alignments/GCA_017639485.1.maf, test/alignments/GCF_900496995.4.maf, test/alignments/GCF_017639655.2.maf, test/alignments/GCF_901933205.1.maf, test/alignments/GCA_018139145.1.maf, test/alignments/GCA_017639555.1.maf
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:13 2022]
+Finished job 3.
+82 of 683 steps (12%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_170.fa
+    output: test/msa/gene_aln_170.fa
+    jobid: 422
+    reason: Missing output files: test/msa/gene_aln_170.fa; Input files updated by another job: test/genes/gene_170.fa
+    wildcards: id=170
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_140.fa
+    output: test/msa/gene_aln_140.fa
+    jobid: 362
+    reason: Missing output files: test/msa/gene_aln_140.fa; Input files updated by another job: test/genes/gene_140.fa
+    wildcards: id=140
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_182.fa
+    output: test/msa/gene_aln_182.fa
+    jobid: 446
+    reason: Missing output files: test/msa/gene_aln_182.fa; Input files updated by another job: test/genes/gene_182.fa
+    wildcards: id=182
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_184.fa
+    output: test/msa/gene_aln_184.fa
+    jobid: 450
+    reason: Missing output files: test/msa/gene_aln_184.fa; Input files updated by another job: test/genes/gene_184.fa
+    wildcards: id=184
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_167.fa
+    output: test/msa/gene_aln_167.fa
+    jobid: 416
+    reason: Missing output files: test/msa/gene_aln_167.fa; Input files updated by another job: test/genes/gene_167.fa
+    wildcards: id=167
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_107.fa
+    output: test/msa/gene_aln_107.fa
+    jobid: 296
+    reason: Missing output files: test/msa/gene_aln_107.fa; Input files updated by another job: test/genes/gene_107.fa
+    wildcards: id=107
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_152.fa
+    output: test/msa/gene_aln_152.fa
+    jobid: 386
+    reason: Missing output files: test/msa/gene_aln_152.fa; Input files updated by another job: test/genes/gene_152.fa
+    wildcards: id=152
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_81.fa
+    output: test/msa/gene_aln_81.fa
+    jobid: 244
+    reason: Input files updated by another job: test/genes/gene_81.fa
+    wildcards: id=81
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_111.fa
+    output: test/msa/gene_aln_111.fa
+    jobid: 304
+    reason: Missing output files: test/msa/gene_aln_111.fa; Input files updated by another job: test/genes/gene_111.fa
+    wildcards: id=111
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_96.fa
+    output: test/msa/gene_aln_96.fa
+    jobid: 274
+    reason: Missing output files: test/msa/gene_aln_96.fa; Input files updated by another job: test/genes/gene_96.fa
+    wildcards: id=96
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_66.fa
+    output: test/msa/gene_aln_66.fa
+    jobid: 214
+    reason: Missing output files: test/msa/gene_aln_66.fa; Input files updated by another job: test/genes/gene_66.fa
+    wildcards: id=66
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_6.fa
+    output: test/msa/gene_aln_6.fa
+    jobid: 94
+    reason: Missing output files: test/msa/gene_aln_6.fa; Input files updated by another job: test/genes/gene_6.fa
+    wildcards: id=6
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_291.fa
+    output: test/msa/gene_aln_291.fa
+    jobid: 664
+    reason: Missing output files: test/msa/gene_aln_291.fa; Input files updated by another job: test/genes/gene_291.fa
+    wildcards: id=291
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_179.fa
+    output: test/msa/gene_aln_179.fa
+    jobid: 440
+    reason: Missing output files: test/msa/gene_aln_179.fa; Input files updated by another job: test/genes/gene_179.fa
+    wildcards: id=179
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_149.fa
+    output: test/msa/gene_aln_149.fa
+    jobid: 380
+    reason: Missing output files: test/msa/gene_aln_149.fa; Input files updated by another job: test/genes/gene_149.fa
+    wildcards: id=149
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_164.fa
+    output: test/msa/gene_aln_164.fa
+    jobid: 410
+    reason: Missing output files: test/msa/gene_aln_164.fa; Input files updated by another job: test/genes/gene_164.fa
+    wildcards: id=164
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_134.fa
+    output: test/msa/gene_aln_134.fa
+    jobid: 350
+    reason: Missing output files: test/msa/gene_aln_134.fa; Input files updated by another job: test/genes/gene_134.fa
+    wildcards: id=134
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_273.fa
+    output: test/msa/gene_aln_273.fa
+    jobid: 628
+    reason: Input files updated by another job: test/genes/gene_273.fa
+    wildcards: id=273
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_243.fa
+    output: test/msa/gene_aln_243.fa
+    jobid: 568
+    reason: Input files updated by another job: test/genes/gene_243.fa
+    wildcards: id=243
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_288.fa
+    output: test/msa/gene_aln_288.fa
+    jobid: 658
+    reason: Input files updated by another job: test/genes/gene_288.fa
+    wildcards: id=288
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_258.fa
+    output: test/msa/gene_aln_258.fa
+    jobid: 598
+    reason: Input files updated by another job: test/genes/gene_258.fa
+    wildcards: id=258
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_213.fa
+    output: test/msa/gene_aln_213.fa
+    jobid: 508
+    reason: Input files updated by another job: test/genes/gene_213.fa
+    wildcards: id=213
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_228.fa
+    output: test/msa/gene_aln_228.fa
+    jobid: 538
+    reason: Input files updated by another job: test/genes/gene_228.fa
+    wildcards: id=228
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_198.fa
+    output: test/msa/gene_aln_198.fa
+    jobid: 478
+    reason: Input files updated by another job: test/genes/gene_198.fa
+    wildcards: id=198
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_183.fa
+    output: test/msa/gene_aln_183.fa
+    jobid: 448
+    reason: Input files updated by another job: test/genes/gene_183.fa
+    wildcards: id=183
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_153.fa
+    output: test/msa/gene_aln_153.fa
+    jobid: 388
+    reason: Input files updated by another job: test/genes/gene_153.fa
+    wildcards: id=153
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_18.fa
+    output: test/msa/gene_aln_18.fa
+    jobid: 118
+    reason: Input files updated by another job: test/genes/gene_18.fa
+    wildcards: id=18
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_176.fa
+    output: test/msa/gene_aln_176.fa
+    jobid: 434
+    reason: Missing output files: test/msa/gene_aln_176.fa; Input files updated by another job: test/genes/gene_176.fa
+    wildcards: id=176
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_64.fa
+    output: test/msa/gene_aln_64.fa
+    jobid: 210
+    reason: Input files updated by another job: test/genes/gene_64.fa
+    wildcards: id=64
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_4.fa
+    output: test/msa/gene_aln_4.fa
+    jobid: 90
+    reason: Input files updated by another job: test/genes/gene_4.fa
+    wildcards: id=4
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_274.fa
+    output: test/msa/gene_aln_274.fa
+    jobid: 630
+    reason: Missing output files: test/msa/gene_aln_274.fa; Input files updated by another job: test/genes/gene_274.fa
+    wildcards: id=274
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_259.fa
+    output: test/msa/gene_aln_259.fa
+    jobid: 600
+    reason: Missing output files: test/msa/gene_aln_259.fa; Input files updated by another job: test/genes/gene_259.fa
+    wildcards: id=259
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_289.fa
+    output: test/msa/gene_aln_289.fa
+    jobid: 660
+    reason: Missing output files: test/msa/gene_aln_289.fa; Input files updated by another job: test/genes/gene_289.fa
+    wildcards: id=289
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_143.fa
+    output: test/msa/gene_aln_143.fa
+    jobid: 368
+    reason: Missing output files: test/msa/gene_aln_143.fa; Input files updated by another job: test/genes/gene_143.fa
+    wildcards: id=143
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_229.fa
+    output: test/msa/gene_aln_229.fa
+    jobid: 540
+    reason: Missing output files: test/msa/gene_aln_229.fa; Input files updated by another job: test/genes/gene_229.fa
+    wildcards: id=229
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_244.fa
+    output: test/msa/gene_aln_244.fa
+    jobid: 570
+    reason: Missing output files: test/msa/gene_aln_244.fa; Input files updated by another job: test/genes/gene_244.fa
+    wildcards: id=244
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_199.fa
+    output: test/msa/gene_aln_199.fa
+    jobid: 480
+    reason: Missing output files: test/msa/gene_aln_199.fa; Input files updated by another job: test/genes/gene_199.fa
+    wildcards: id=199
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_214.fa
+    output: test/msa/gene_aln_214.fa
+    jobid: 510
+    reason: Missing output files: test/msa/gene_aln_214.fa; Input files updated by another job: test/genes/gene_214.fa
+    wildcards: id=214
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_173.fa
+    output: test/msa/gene_aln_173.fa
+    jobid: 428
+    reason: Missing output files: test/msa/gene_aln_173.fa; Input files updated by another job: test/genes/gene_173.fa
+    wildcards: id=173
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_19.fa
+    output: test/msa/gene_aln_19.fa
+    jobid: 120
+    reason: Missing output files: test/msa/gene_aln_19.fa; Input files updated by another job: test/genes/gene_19.fa
+    wildcards: id=19
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:13 2022]
+Finished job 448.
+83 of 683 steps (12%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_233.fa
+    output: test/msa/gene_aln_233.fa
+    jobid: 548
+    reason: Missing output files: test/msa/gene_aln_233.fa; Input files updated by another job: test/genes/gene_233.fa
+    wildcards: id=233
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:13 2022]
+Finished job 388.
+84 of 683 steps (12%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_236.fa
+    output: test/msa/gene_aln_236.fa
+    jobid: 554
+    reason: Missing output files: test/msa/gene_aln_236.fa; Input files updated by another job: test/genes/gene_236.fa
+    wildcards: id=236
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:13 2022]
+Finished job 480.
+85 of 683 steps (12%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:13 2022]
+rule mafft:
+    input: test/genes/gene_239.fa
+    output: test/msa/gene_aln_239.fa
+    jobid: 560
+    reason: Missing output files: test/msa/gene_aln_239.fa; Input files updated by another job: test/genes/gene_239.fa
+    wildcards: id=239
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:13 2022]
+Finished job 380.
+86 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:14 2022]
+rule mafft:
+    input: test/genes/gene_230.fa
+    output: test/msa/gene_aln_230.fa
+    jobid: 542
+    reason: Missing output files: test/msa/gene_aln_230.fa; Input files updated by another job: test/genes/gene_230.fa
+    wildcards: id=230
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:14 2022]
+Finished job 90.
+87 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:14 2022]
+rule mafft:
+    input: test/genes/gene_73.fa
+    output: test/msa/gene_aln_73.fa
+    jobid: 228
+    reason: Missing output files: test/msa/gene_aln_73.fa; Input files updated by another job: test/genes/gene_73.fa
+    wildcards: id=73
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:15 2022]
+Finished job 510.
+88 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:15 2022]
+rule mafft:
+    input: test/genes/gene_76.fa
+    output: test/msa/gene_aln_76.fa
+    jobid: 234
+    reason: Missing output files: test/msa/gene_aln_76.fa; Input files updated by another job: test/genes/gene_76.fa
+    wildcards: id=76
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:15 2022]
+Finished job 296.
+89 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:15 2022]
+rule mafft:
+    input: test/genes/gene_82.fa
+    output: test/msa/gene_aln_82.fa
+    jobid: 246
+    reason: Missing output files: test/msa/gene_aln_82.fa; Input files updated by another job: test/genes/gene_82.fa
+    wildcards: id=82
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:15 2022]
+Finished job 570.
+90 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:16 2022]
+rule mafft:
+    input: test/genes/gene_15.fa
+    output: test/msa/gene_aln_15.fa
+    jobid: 112
+    reason: Missing output files: test/msa/gene_aln_15.fa; Input files updated by another job: test/genes/gene_15.fa
+    wildcards: id=15
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:16 2022]
+Finished job 598.
+91 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:16 2022]
+rule mafft:
+    input: test/genes/gene_165.fa
+    output: test/msa/gene_aln_165.fa
+    jobid: 412
+    reason: Missing output files: test/msa/gene_aln_165.fa; Input files updated by another job: test/genes/gene_165.fa
+    wildcards: id=165
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:17 2022]
+Finished job 658.
+92 of 683 steps (13%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:17 2022]
+rule mafft:
+    input: test/genes/gene_121.fa
+    output: test/msa/gene_aln_121.fa
+    jobid: 324
+    reason: Missing output files: test/msa/gene_aln_121.fa; Input files updated by another job: test/genes/gene_121.fa
+    wildcards: id=121
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:18 2022]
+Finished job 540.
+93 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:18 2022]
+rule mafft:
+    input: test/genes/gene_9.fa
+    output: test/msa/gene_aln_9.fa
+    jobid: 100
+    reason: Missing output files: test/msa/gene_aln_9.fa; Input files updated by another job: test/genes/gene_9.fa
+    wildcards: id=9
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:18 2022]
+Finished job 386.
+94 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:18 2022]
+rule mafft:
+    input: test/genes/gene_21.fa
+    output: test/msa/gene_aln_21.fa
+    jobid: 124
+    reason: Missing output files: test/msa/gene_aln_21.fa; Input files updated by another job: test/genes/gene_21.fa
+    wildcards: id=21
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:18 2022]
+Finished job 440.
+95 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:18 2022]
+rule mafft:
+    input: test/genes/gene_118.fa
+    output: test/msa/gene_aln_118.fa
+    jobid: 318
+    reason: Missing output files: test/msa/gene_aln_118.fa; Input files updated by another job: test/genes/gene_118.fa
+    wildcards: id=118
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:18 2022]
+Finished job 228.
+96 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:19 2022]
+rule mafft:
+    input: test/genes/gene_105.fa
+    output: test/msa/gene_aln_105.fa
+    jobid: 292
+    reason: Missing output files: test/msa/gene_aln_105.fa; Input files updated by another job: test/genes/gene_105.fa
+    wildcards: id=105
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:19 2022]
+Finished job 244.
+97 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:19 2022]
+rule mafft:
+    input: test/genes/gene_60.fa
+    output: test/msa/gene_aln_60.fa
+    jobid: 202
+    reason: Input files updated by another job: test/genes/gene_60.fa
+    wildcards: id=60
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:19 2022]
+Finished job 560.
+98 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:20 2022]
+rule mafft:
+    input: test/genes/gene_90.fa
+    output: test/msa/gene_aln_90.fa
+    jobid: 262
+    reason: Input files updated by another job: test/genes/gene_90.fa
+    wildcards: id=90
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:20 2022]
+Finished job 210.
+99 of 683 steps (14%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:20 2022]
+rule mafft:
+    input: test/genes/gene_24.fa
+    output: test/msa/gene_aln_24.fa
+    jobid: 130
+    reason: Missing output files: test/msa/gene_aln_24.fa; Input files updated by another job: test/genes/gene_24.fa
+    wildcards: id=24
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:22 2022]
+Finished job 478.
+100 of 683 steps (15%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:22 2022]
+rule mafft:
+    input: test/genes/gene_27.fa
+    output: test/msa/gene_aln_27.fa
+    jobid: 136
+    reason: Missing output files: test/msa/gene_aln_27.fa; Input files updated by another job: test/genes/gene_27.fa
+    wildcards: id=27
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:22 2022]
+Finished job 554.
+101 of 683 steps (15%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:22 2022]
+rule mafft:
+    input: test/genes/gene_150.fa
+    output: test/msa/gene_aln_150.fa
+    jobid: 382
+    reason: Missing output files: test/msa/gene_aln_150.fa; Input files updated by another job: test/genes/gene_150.fa
+    wildcards: id=150
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:22 2022]
+Finished job 136.
+102 of 683 steps (15%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:22 2022]
+rule mafft:
+    input: test/genes/gene_255.fa
+    output: test/msa/gene_aln_255.fa
+    jobid: 592
+    reason: Input files updated by another job: test/genes/gene_255.fa
+    wildcards: id=255
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:22 2022]
+Finished job 592.
+103 of 683 steps (15%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:22 2022]
+rule mafft:
+    input: test/genes/gene_285.fa
+    output: test/msa/gene_aln_285.fa
+    jobid: 652
+    reason: Input files updated by another job: test/genes/gene_285.fa
+    wildcards: id=285
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:23 2022]
+Finished job 628.
+104 of 683 steps (15%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:23 2022]
+rule mafft:
+    input: test/genes/gene_270.fa
+    output: test/msa/gene_aln_270.fa
+    jobid: 622
+    reason: Input files updated by another job: test/genes/gene_270.fa
+    wildcards: id=270
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:24 2022]
+Finished job 234.
+105 of 683 steps (15%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:24 2022]
+rule mafft:
+    input: test/genes/gene_115.fa
+    output: test/msa/gene_aln_115.fa
+    jobid: 312
+    reason: Missing output files: test/msa/gene_aln_115.fa; Input files updated by another job: test/genes/gene_115.fa
+    wildcards: id=115
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:24 2022]
+Finished job 246.
+106 of 683 steps (16%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:24 2022]
+rule mafft:
+    input: test/genes/gene_300.fa
+    output: test/msa/gene_aln_300.fa
+    jobid: 682
+    reason: Input files updated by another job: test/genes/gene_300.fa
+    wildcards: id=300
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:25 2022]
+Finished job 450.
+107 of 683 steps (16%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:26 2022]
+rule mafft:
+    input: test/genes/gene_30.fa
+    output: test/msa/gene_aln_30.fa
+    jobid: 142
+    reason: Input files updated by another job: test/genes/gene_30.fa
+    wildcards: id=30
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:26 2022]
+Finished job 130.
+108 of 683 steps (16%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:26 2022]
+rule mafft:
+    input: test/genes/gene_180.fa
+    output: test/msa/gene_aln_180.fa
+    jobid: 442
+    reason: Missing output files: test/msa/gene_aln_180.fa; Input files updated by another job: test/genes/gene_180.fa
+    wildcards: id=180
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:26 2022]
+Finished job 446.
+109 of 683 steps (16%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:26 2022]
+rule mafft:
+    input: test/genes/gene_120.fa
+    output: test/msa/gene_aln_120.fa
+    jobid: 322
+    reason: Input files updated by another job: test/genes/gene_120.fa
+    wildcards: id=120
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:26 2022]
+Finished job 412.
+110 of 683 steps (16%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:26 2022]
+rule mafft:
+    input: test/genes/gene_195.fa
+    output: test/msa/gene_aln_195.fa
+    jobid: 472
+    reason: Missing output files: test/msa/gene_aln_195.fa; Input files updated by another job: test/genes/gene_195.fa
+    wildcards: id=195
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:27 2022]
+Finished job 568.
+111 of 683 steps (16%) done
+Select jobs to execute...
+
+[Tue Sep 13 21:10:27 2022]
+rule iqtree:
+    input: test/msa/gene_aln_76.fa
+    output: test/msa/gene_aln_76.treefile
+    jobid: 233
+    reason: Missing output files: test/msa/gene_aln_76.treefile; Input files updated by another job: test/msa/gene_aln_76.fa
+    wildcards: id=76
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:27 2022]
+Finished job 548.
+112 of 683 steps (16%) done
+Select jobs to execute...
+[Tue Sep 13 21:10:27 2022]
+Error in rule iqtree:
+    jobid: 233
+    output: test/msa/gene_aln_76.treefile
+    shell:
+        ./test2.sh test/msa/gene_aln_76.fa
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+
+[Tue Sep 13 21:10:27 2022]
+rule mafft:
+    input: test/genes/gene_135.fa
+    output: test/msa/gene_aln_135.fa
+    jobid: 352
+    reason: Missing output files: test/msa/gene_aln_135.fa; Input files updated by another job: test/genes/gene_135.fa
+    wildcards: id=135
+    resources: tmpdir=/tmp
+
+[Tue Sep 13 21:10:27 2022]
+Finished job 664.
+113 of 683 steps (17%) done
+[Tue Sep 13 21:10:27 2022]
+Finished job 538.
+114 of 683 steps (17%) done
+[Tue Sep 13 21:10:28 2022]
+Finished job 600.
+115 of 683 steps (17%) done
+[Tue Sep 13 21:10:28 2022]
+Finished job 214.
+116 of 683 steps (17%) done
+[Tue Sep 13 21:10:28 2022]
+Finished job 120.
+117 of 683 steps (17%) done
+[Tue Sep 13 21:10:28 2022]
+Finished job 112.
+118 of 683 steps (17%) done
+[Tue Sep 13 21:10:29 2022]
+Finished job 368.
+119 of 683 steps (17%) done
+[Tue Sep 13 21:10:30 2022]
+Finished job 274.
+120 of 683 steps (18%) done
+[Tue Sep 13 21:10:30 2022]
+Finished job 434.
+121 of 683 steps (18%) done
+[Tue Sep 13 21:10:30 2022]
+Finished job 350.
+122 of 683 steps (18%) done
+[Tue Sep 13 21:10:30 2022]
+Finished job 304.
+123 of 683 steps (18%) done
+[Tue Sep 13 21:10:31 2022]
+Finished job 660.
+124 of 683 steps (18%) done
+[Tue Sep 13 21:10:31 2022]
+Finished job 318.
+125 of 683 steps (18%) done
+[Tue Sep 13 21:10:31 2022]
+Finished job 410.
+126 of 683 steps (18%) done
+[Tue Sep 13 21:10:31 2022]
+Finished job 94.
+127 of 683 steps (19%) done
+[Tue Sep 13 21:10:32 2022]
+Finished job 118.
+128 of 683 steps (19%) done
+[Tue Sep 13 21:10:32 2022]
+Finished job 262.
+129 of 683 steps (19%) done
+[Tue Sep 13 21:10:32 2022]
+Finished job 124.
+130 of 683 steps (19%) done
+[Tue Sep 13 21:10:32 2022]
+Finished job 322.
+131 of 683 steps (19%) done
+[Tue Sep 13 21:10:33 2022]
+Finished job 362.
+132 of 683 steps (19%) done
+[Tue Sep 13 21:10:33 2022]
+Finished job 428.
+133 of 683 steps (19%) done
+[Tue Sep 13 21:10:34 2022]
+Finished job 682.
+134 of 683 steps (20%) done
+[Tue Sep 13 21:10:35 2022]
+Finished job 292.
+135 of 683 steps (20%) done
+[Tue Sep 13 21:10:35 2022]
+Finished job 472.
+136 of 683 steps (20%) done
+[Tue Sep 13 21:10:35 2022]
+Finished job 202.
+137 of 683 steps (20%) done
+[Tue Sep 13 21:10:36 2022]
+Finished job 416.
+138 of 683 steps (20%) done
+[Tue Sep 13 21:10:36 2022]
+Finished job 382.
+139 of 683 steps (20%) done
+[Tue Sep 13 21:10:37 2022]
+Finished job 312.
+140 of 683 steps (20%) done
+[Tue Sep 13 21:10:38 2022]
+Finished job 622.
+141 of 683 steps (21%) done
+[Tue Sep 13 21:10:39 2022]
+Finished job 142.
+142 of 683 steps (21%) done
+[Tue Sep 13 21:10:43 2022]
+Finished job 442.
+143 of 683 steps (21%) done
+[Tue Sep 13 21:10:51 2022]
+Finished job 324.
+144 of 683 steps (21%) done
+[Tue Sep 13 21:10:52 2022]
+Finished job 422.
+145 of 683 steps (21%) done
+[Tue Sep 13 21:10:54 2022]
+Finished job 352.
+146 of 683 steps (21%) done
+[Tue Sep 13 21:11:17 2022]
+Finished job 652.
+147 of 683 steps (22%) done
+[Tue Sep 13 21:11:18 2022]
+Finished job 630.
+148 of 683 steps (22%) done
+[Tue Sep 13 21:11:23 2022]
+Finished job 508.
+149 of 683 steps (22%) done
+[Tue Sep 13 21:11:37 2022]
+Finished job 542.
+150 of 683 steps (22%) done
+[Tue Sep 13 21:12:14 2022]
+Finished job 100.
+151 of 683 steps (22%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-09-13T210821.137265.snakemake.log

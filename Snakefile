@@ -20,16 +20,38 @@ def get_index_s(wildcards):
 def get_index_e(wildcards):
 	return od_e[wildcards]
 IDS = list(range(1,num+1))
+def get_count(gene):
+	f = open(gene,'r')
+	lines = f.read_lines()
+	count = 0	
+	for l in lines:
+		if '>' in l:
+			count = count+1
+	print(count)
+	if count > 1:
+		return 1
+	else:
+		return 0
 rule all:
 	input:
 		expand(config["OUT"]+"/msa/gene_aln_{id}.fa",id=IDS)
+		#expand(config["OUT"]+"/msa/gene_aln_{id}.treefile",id=IDS)
+#rule iqtree:
+#	input:
+#		config["OUT"]+"/msa/gene_aln_{id}.fa"
+#	output:
+#		config["OUT"]+"/msa/gene_aln_{id}.treefile"
+#	shell:
+#		"./test2.sh {input}"
 rule mafft:
 	input:
 		config["OUT"]+"/genes/gene_{id}.fa"
 	output:
 		config["OUT"]+"/msa/gene_aln_{id}.fa"
+	conda: 
+		"envr.yaml"
 	shell:
-		"mafft --auto {input} > {output}"
+		"./test.sh {input} {output}"
 rule lastz2fasta:
 	input:
 		expand(config["OUT"]+"/alignments/{sample}.maf",sample=SAMPLES)   
@@ -40,6 +62,8 @@ rule lastz2fasta:
 		out = config["OUT"]+"/genes",
 		p = config["OUT"]+"/alignments",
 		m = config["MIN_ALIGN"]
+	conda:
+		"envr.yaml"
 	shell:
 		"python lastz_align/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m}"
 		
@@ -50,6 +74,8 @@ rule lastz:
 		config["PATH"]+"/{sample}.fa"
 	output:
 		config["OUT"]+"/alignments/{sample}.maf"
+	conda:
+		"envr.yaml"
 	shell:
 		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output={output}"
 

@@ -1,0 +1,4 @@
+FileNotFoundErrorin line 24 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile:
+[Errno 2] No such file or directory: 'test/genes/gene_{id}.fa'
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile", line 51, in <module>
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile", line 24, in get_count

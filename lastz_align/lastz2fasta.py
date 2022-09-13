@@ -2,6 +2,7 @@ import re
 import os, glob
 import sys
 import argparse
+from Bio import SeqIO
 parser = argparse.ArgumentParser(description='get gene fasta')
 parser.add_argument('-k',type=int,default=400)
 parser.add_argument('--path')
@@ -47,7 +48,10 @@ print(counts)
 for i in range(1,int(k)):
     if i not in isin:
         print("no matches for gene: ",i)
-for filename in glob.glob(os.path.join(path,'*.fa')):
-    records = list(Seq.IO.parse(filename),"fasta")
-    if len(records)< m:
-        os.remove(path)
+#for filename in glob.glob(os.path.join(outdir,'*.fa')):
+ #   print(filename)
+  #  records = list(SeqIO.parse(filename,"fasta"))
+   # print(len(records))
+    #if len(records)< m:
+     #   print(filename)
+      #  os.remove(filename)
