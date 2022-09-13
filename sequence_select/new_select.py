@@ -24,7 +24,7 @@ l= args.l
 t = args.t
 path = args.input
 output=args.output
-k = e-s
+k = e-s+1
 if k < 1:
     print("Invalid indices")
     exit(1)
