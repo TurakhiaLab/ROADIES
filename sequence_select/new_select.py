@@ -29,6 +29,7 @@ if k < 1:
     print("Invalid indices")
     exit(1)
 print("Number of regions:", k)
+print("ID START: "+(str(s))+", ID END: "+str(e))
 print("Region Length:", l)
 print("Input File:" +path)
 records = list(SeqIO.parse(path,"fasta"))
