@@ -22,7 +22,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
         name = s[len(s)-1]
         species = name.replace(".maf","")
         lines = f.readlines()
-        print(species)
+        found = []
         for l in range(15,len(lines)):
             if (l-15)%4 == 0:
                 split = lines[l].split()
@@ -39,14 +39,16 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                     counts[gene]= counts[gene]+1
                 else:
                     counts[gene] = 1
-                with open(outdir+'/'+gene+'.fa','a') as w:
+                index = species+'_'+split[2]
+                if index not in found:
+                    found.append(index)
+                    with open(outdir+'/'+gene+'.fa','a') as w:
                     #print("adding ",gene)
-                    w.write('>'+species+"_"+split[2]+'\n')
-                    w.write(seq+'\n')
-                with open("mapping.txt",'a') as w2:
-                    w2.write(species+split[2]+' ' +species+'\n')
+                        w.write('>'+index+'\n')
+                        w.write(seq+'\n')
+                    with open("mapping.txt",'a') as w2:
+                        w2.write(index+' ' +species+'\n')
                 #print(species,gene,counts[gene])
-print(counts)
 for i in range(1,int(k)):
     if i not in isin:
         print("no matches for gene: ",i)
