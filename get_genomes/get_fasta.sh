@@ -1,5 +1,5 @@
 #!/bin/bash
-home = `pwd`
+home=`pwd`
 python get_seq.py
 input="fasta_links.txt"
 mkdir fasta_genomes

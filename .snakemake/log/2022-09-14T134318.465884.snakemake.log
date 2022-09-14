@@ -1,0 +1,215 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job         count    min threads    max threads
+--------  -------  -------------  -------------
+all             1              1              1
+fastTree      300              1              1
+total         301              1              1
+
+Select jobs to execute...
+
+[Wed Sep 14 13:43:18 2022]
+rule fastTree:
+    input: test/msa/gene_aln_146.fa
+    output: test/geneTree/gene_tree_146.newick
+    jobid: 146
+    reason: Missing output files: test/geneTree/gene_tree_146.newick
+    wildcards: id=146
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:43:20 2022]
+Finished job 146.
+1 of 301 steps (0.3%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:43:20 2022]
+rule fastTree:
+    input: test/msa/gene_aln_176.fa
+    output: test/geneTree/gene_tree_176.newick
+    jobid: 176
+    reason: Missing output files: test/geneTree/gene_tree_176.newick
+    wildcards: id=176
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:43:22 2022]
+Finished job 176.
+2 of 301 steps (1%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:43:22 2022]
+rule fastTree:
+    input: test/msa/gene_aln_206.fa
+    output: test/geneTree/gene_tree_206.newick
+    jobid: 206
+    reason: Missing output files: test/geneTree/gene_tree_206.newick
+    wildcards: id=206
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:43:23 2022]
+Finished job 206.
+3 of 301 steps (1%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:43:23 2022]
+rule fastTree:
+    input: test/msa/gene_aln_236.fa
+    output: test/geneTree/gene_tree_236.newick
+    jobid: 236
+    reason: Missing output files: test/geneTree/gene_tree_236.newick
+    wildcards: id=236
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:44:50 2022]
+Finished job 236.
+4 of 301 steps (1%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:44:50 2022]
+rule fastTree:
+    input: test/msa/gene_aln_116.fa
+    output: test/geneTree/gene_tree_116.newick
+    jobid: 116
+    reason: Missing output files: test/geneTree/gene_tree_116.newick
+    wildcards: id=116
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:44:51 2022]
+Finished job 116.
+5 of 301 steps (2%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:44:51 2022]
+rule fastTree:
+    input: test/msa/gene_aln_266.fa
+    output: test/geneTree/gene_tree_266.newick
+    jobid: 266
+    reason: Missing output files: test/geneTree/gene_tree_266.newick
+    wildcards: id=266
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:44:52 2022]
+Finished job 266.
+6 of 301 steps (2%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:44:52 2022]
+rule fastTree:
+    input: test/msa/gene_aln_56.fa
+    output: test/geneTree/gene_tree_56.newick
+    jobid: 56
+    reason: Missing output files: test/geneTree/gene_tree_56.newick
+    wildcards: id=56
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:44:53 2022]
+Finished job 56.
+7 of 301 steps (2%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:44:53 2022]
+rule fastTree:
+    input: test/msa/gene_aln_296.fa
+    output: test/geneTree/gene_tree_296.newick
+    jobid: 296
+    reason: Missing output files: test/geneTree/gene_tree_296.newick
+    wildcards: id=296
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:44:53 2022]
+Finished job 296.
+8 of 301 steps (3%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:44:53 2022]
+rule fastTree:
+    input: test/msa/gene_aln_86.fa
+    output: test/geneTree/gene_tree_86.newick
+    jobid: 86
+    reason: Missing output files: test/geneTree/gene_tree_86.newick
+    wildcards: id=86
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:45:02 2022]
+Finished job 86.
+9 of 301 steps (3%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:45:02 2022]
+rule fastTree:
+    input: test/msa/gene_aln_27.fa
+    output: test/geneTree/gene_tree_27.newick
+    jobid: 27
+    reason: Missing output files: test/geneTree/gene_tree_27.newick
+    wildcards: id=27
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:45:04 2022]
+Finished job 27.
+10 of 301 steps (3%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:45:04 2022]
+rule fastTree:
+    input: test/msa/gene_aln_87.fa
+    output: test/geneTree/gene_tree_87.newick
+    jobid: 87
+    reason: Missing output files: test/geneTree/gene_tree_87.newick
+    wildcards: id=87
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:45:05 2022]
+Finished job 87.
+11 of 301 steps (4%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:45:05 2022]
+rule fastTree:
+    input: test/msa/gene_aln_147.fa
+    output: test/geneTree/gene_tree_147.newick
+    jobid: 147
+    reason: Missing output files: test/geneTree/gene_tree_147.newick
+    wildcards: id=147
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:45:06 2022]
+Finished job 147.
+12 of 301 steps (4%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:45:06 2022]
+rule fastTree:
+    input: test/msa/gene_aln_26.fa
+    output: test/geneTree/gene_tree_26.newick
+    jobid: 26
+    reason: Missing output files: test/geneTree/gene_tree_26.newick
+    wildcards: id=26
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:45:06 2022]
+Finished job 26.
+13 of 301 steps (4%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:45:07 2022]
+rule fastTree:
+    input: test/msa/gene_aln_207.fa
+    output: test/geneTree/gene_tree_207.newick
+    jobid: 207
+    reason: Missing output files: test/geneTree/gene_tree_207.newick
+    wildcards: id=207
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Wed Sep 14 13:45:31 2022]
+Error in rule fastTree:
+    jobid: 207
+    output: test/geneTree/gene_tree_207.newick
+    shell:
+        ./treeBuilder/ftWrapper.sh test/msa/gene_aln_207.fa test/geneTree/gene_tree_207.newick
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-09-14T134318.465884.snakemake.log

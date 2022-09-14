@@ -1,0 +1,47 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job         count    min threads    max threads
+--------  -------  -------------  -------------
+all             1              1              1
+fastTree      272              1              1
+total         273              1              1
+
+Select jobs to execute...
+
+[Wed Sep 14 13:42:52 2022]
+rule fastTree:
+    input: test/msa/gene_aln_26.fa
+    output: test/geneTree/gene_tree_26.newick
+    jobid: 26
+    reason: Missing output files: test/geneTree/gene_tree_26.newick
+    wildcards: id=26
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 13:42:53 2022]
+Finished job 26.
+1 of 273 steps (0.4%) done
+Select jobs to execute...
+
+[Wed Sep 14 13:42:53 2022]
+rule fastTree:
+    input: test/msa/gene_aln_86.fa
+    output: test/geneTree/gene_tree_86.newick
+    jobid: 86
+    reason: Missing output files: test/geneTree/gene_tree_86.newick
+    wildcards: id=86
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Wed Sep 14 13:42:59 2022]
+Error in rule fastTree:
+    jobid: 86
+    output: test/geneTree/gene_tree_86.newick
+    shell:
+        ./treeBuilder/ftWrapper.sh test/msa/gene_aln_86.fa test/geneTree/gene_tree_86.newick
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-09-14T134252.061156.snakemake.log

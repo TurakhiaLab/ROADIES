@@ -43,6 +43,8 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                     #print("adding ",gene)
                     w.write('>'+species+"_"+split[2]+'\n')
                     w.write(seq+'\n')
+                with open("mapping.txt",'a') as w2:
+                    w2.write(species+split[2]+' ' +species+'\n')
                 #print(species,gene,counts[gene])
 print(counts)
 for i in range(1,int(k)):

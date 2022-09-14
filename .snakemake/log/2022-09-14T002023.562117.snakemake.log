@@ -1,0 +1,1209 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 32
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                count    min threads    max threads
+---------------  -------  -------------  -------------
+fastTree               1              1              1
+lastz                 40              1              1
+lastz2fasta            1              1              1
+mafft                  1              1              1
+sequence_merge         1              1              1
+sequence_select       40              1              1
+total                 84              1              1
+
+Select jobs to execute...
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_014839755.1.fa
+    output: test/samples/GCA_014839755.1_temp.fa
+    jobid: 23
+    reason: Missing output files: test/samples/GCA_014839755.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639245.1.fa
+    output: test/samples/GCA_017639245.1_temp.fa
+    jobid: 8
+    reason: Missing output files: test/samples/GCA_017639245.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_016699485.2.fa
+    output: test/samples/GCF_016699485.2_temp.fa
+    jobid: 31
+    reason: Missing output files: test/samples/GCF_016699485.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_003957555.1.fa
+    output: test/samples/GCF_003957555.1_temp.fa
+    jobid: 16
+    reason: Missing output files: test/samples/GCF_003957555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_015220805.1.fa
+    output: test/samples/GCA_015220805.1_temp.fa
+    jobid: 24
+    reason: Missing output files: test/samples/GCA_015220805.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020745705.1.fa
+    output: test/samples/GCA_020745705.1_temp.fa
+    jobid: 9
+    reason: Missing output files: test/samples/GCA_020745705.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_008658365.1.fa
+    output: test/samples/GCA_008658365.1_temp.fa
+    jobid: 39
+    reason: Missing output files: test/samples/GCA_008658365.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_016700215.2.fa
+    output: test/samples/GCF_016700215.2_temp.fa
+    jobid: 32
+    reason: Missing output files: test/samples/GCF_016700215.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020746105.1.fa
+    output: test/samples/GCA_020746105.1_temp.fa
+    jobid: 17
+    reason: Missing output files: test/samples/GCA_020746105.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_009819825.1.fa
+    output: test/samples/GCA_009819825.1_temp.fa
+    jobid: 25
+    reason: Missing output files: test/samples/GCA_009819825.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819825.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_009819775.1.fa
+    output: test/samples/GCA_009819775.1_temp.fa
+    jobid: 10
+    reason: Missing output files: test/samples/GCA_009819775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819775.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_000002315.6.fa
+    output: test/samples/GCF_000002315.6_temp.fa
+    jobid: 40
+    reason: Missing output files: test/samples/GCF_000002315.6_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_013407035.1.fa
+    output: test/samples/GCA_013407035.1_temp.fa
+    jobid: 33
+    reason: Missing output files: test/samples/GCA_013407035.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_013407035.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_009829145.1.fa
+    output: test/samples/GCF_009829145.1_temp.fa
+    jobid: 18
+    reason: Missing output files: test/samples/GCF_009829145.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_009829145.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020745775.1.fa
+    output: test/samples/GCA_020745775.1_temp.fa
+    jobid: 26
+    reason: Missing output files: test/samples/GCA_020745775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020745775.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_012275295.1.fa
+    output: test/samples/GCF_012275295.1_temp.fa
+    jobid: 11
+    reason: Missing output files: test/samples/GCF_012275295.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_012275295.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_016904835.1.fa
+    output: test/samples/GCA_016904835.1_temp.fa
+    jobid: 41
+    reason: Missing output files: test/samples/GCA_016904835.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_016904835.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_902806625.1.fa
+    output: test/samples/GCA_902806625.1_temp.fa
+    jobid: 34
+    reason: Missing output files: test/samples/GCA_902806625.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639485.1.fa
+    output: test/samples/GCA_017639485.1_temp.fa
+    jobid: 19
+    reason: Missing output files: test/samples/GCA_017639485.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_018139145.1.fa
+    output: test/samples/GCA_018139145.1_temp.fa
+    jobid: 13
+    reason: Missing output files: test/samples/GCA_018139145.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_901933205.1.fa
+    output: test/samples/GCF_901933205.1_temp.fa
+    jobid: 43
+    reason: Missing output files: test/samples/GCF_901933205.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_900496995.4.fa
+    output: test/samples/GCF_900496995.4_temp.fa
+    jobid: 36
+    reason: Missing output files: test/samples/GCF_900496995.4_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_011004875.1.fa
+    output: test/samples/GCA_011004875.1_temp.fa
+    jobid: 21
+    reason: Missing output files: test/samples/GCA_011004875.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_013368605.1.fa
+    output: test/samples/GCA_013368605.1_temp.fa
+    jobid: 6
+    reason: Missing output files: test/samples/GCA_013368605.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_014839835.1.fa
+    output: test/samples/GCA_014839835.1_temp.fa
+    jobid: 29
+    reason: Missing output files: test/samples/GCA_014839835.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_009819795.1.fa
+    output: test/samples/GCF_009819795.1_temp.fa
+    jobid: 14
+    reason: Missing output files: test/samples/GCF_009819795.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_009819795.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_012275265.1.fa
+    output: test/samples/GCA_012275265.1_temp.fa
+    jobid: 44
+    reason: Missing output files: test/samples/GCA_012275265.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020800305.1.fa
+    output: test/samples/GCA_020800305.1_temp.fa
+    jobid: 37
+    reason: Missing output files: test/samples/GCA_020800305.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017976375.1.fa
+    output: test/samples/GCA_017976375.1_temp.fa
+    jobid: 22
+    reason: Missing output files: test/samples/GCA_017976375.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_015220075.1.fa
+    output: test/samples/GCF_015220075.1_temp.fa
+    jobid: 7
+    reason: Missing output files: test/samples/GCF_015220075.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_905368555.1.fa
+    output: test/samples/GCA_905368555.1_temp.fa
+    jobid: 30
+    reason: Missing output files: test/samples/GCA_905368555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:23 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_009819605.1.fa
+    output: test/samples/GCA_009819605.1_temp.fa
+    jobid: 15
+    reason: Missing output files: test/samples/GCA_009819605.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 30.
+1 of 84 steps (1%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_017639655.2.fa
+    output: test/samples/GCF_017639655.2_temp.fa
+    jobid: 28
+    reason: Missing output files: test/samples/GCF_017639655.2_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 33.
+2 of 84 steps (2%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639555.1.fa
+    output: test/samples/GCA_017639555.1_temp.fa
+    jobid: 5
+    reason: Missing output files: test/samples/GCA_017639555.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 43.
+3 of 84 steps (4%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_907165065.1.fa
+    output: test/samples/GCA_907165065.1_temp.fa
+    jobid: 20
+    reason: Missing output files: test/samples/GCA_907165065.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 23.
+4 of 84 steps (5%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_016128335.1.fa
+    output: test/samples/GCA_016128335.1_temp.fa
+    jobid: 35
+    reason: Missing output files: test/samples/GCA_016128335.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 40.
+5 of 84 steps (6%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020801775.1.fa
+    output: test/samples/GCA_020801775.1_temp.fa
+    jobid: 12
+    reason: Missing output files: test/samples/GCA_020801775.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 18.
+6 of 84 steps (7%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_018691265.1.fa
+    output: test/samples/GCF_018691265.1_temp.fa
+    jobid: 27
+    reason: Missing output files: test/samples/GCF_018691265.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 41.
+7 of 84 steps (8%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_020740725.1.fa
+    output: test/samples/GCF_020740725.1_temp.fa
+    jobid: 42
+    reason: Missing output files: test/samples/GCF_020740725.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 16.
+8 of 84 steps (10%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:32 2022]
+rule sequence_select:
+    input: /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020740795.1.fa
+    output: test/samples/GCA_020740795.1_temp.fa
+    jobid: 38
+    reason: Missing output files: test/samples/GCA_020740795.1_temp.fa; Params have changed since last execution
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:32 2022]
+Finished job 32.
+9 of 84 steps (11%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 31.
+10 of 84 steps (12%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 34.
+11 of 84 steps (13%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 14.
+12 of 84 steps (14%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 11.
+13 of 84 steps (15%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 29.
+14 of 84 steps (17%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 44.
+15 of 84 steps (18%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 8.
+16 of 84 steps (19%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 25.
+17 of 84 steps (20%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 9.
+18 of 84 steps (21%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 17.
+19 of 84 steps (23%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 39.
+20 of 84 steps (24%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 26.
+21 of 84 steps (25%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 22.
+22 of 84 steps (26%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 36.
+23 of 84 steps (27%) done
+[Wed Sep 14 00:20:33 2022]
+Finished job 15.
+24 of 84 steps (29%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 10.
+25 of 84 steps (30%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 13.
+26 of 84 steps (31%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 7.
+27 of 84 steps (32%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 21.
+28 of 84 steps (33%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 24.
+29 of 84 steps (35%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 19.
+30 of 84 steps (36%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 6.
+31 of 84 steps (37%) done
+[Wed Sep 14 00:20:34 2022]
+Finished job 37.
+32 of 84 steps (38%) done
+[Wed Sep 14 00:20:41 2022]
+Finished job 38.
+33 of 84 steps (39%) done
+[Wed Sep 14 00:20:41 2022]
+Finished job 20.
+34 of 84 steps (40%) done
+[Wed Sep 14 00:20:41 2022]
+Finished job 28.
+35 of 84 steps (42%) done
+[Wed Sep 14 00:20:41 2022]
+Finished job 42.
+36 of 84 steps (43%) done
+[Wed Sep 14 00:20:42 2022]
+Finished job 27.
+37 of 84 steps (44%) done
+[Wed Sep 14 00:20:42 2022]
+Finished job 5.
+38 of 84 steps (45%) done
+[Wed Sep 14 00:20:42 2022]
+Finished job 35.
+39 of 84 steps (46%) done
+[Wed Sep 14 00:20:42 2022]
+Finished job 12.
+40 of 84 steps (48%) done
+Select jobs to execute...
+
+[Wed Sep 14 00:20:42 2022]
+rule sequence_merge:
+    input: test/samples/GCA_017639555.1_temp.fa, test/samples/GCA_013368605.1_temp.fa, test/samples/GCF_015220075.1_temp.fa, test/samples/GCA_017639245.1_temp.fa, test/samples/GCA_020745705.1_temp.fa, test/samples/GCA_009819775.1_temp.fa, test/samples/GCF_012275295.1_temp.fa, test/samples/GCA_020801775.1_temp.fa, test/samples/GCA_018139145.1_temp.fa, test/samples/GCF_009819795.1_temp.fa, test/samples/GCA_009819605.1_temp.fa, test/samples/GCF_003957555.1_temp.fa, test/samples/GCA_020746105.1_temp.fa, test/samples/GCF_009829145.1_temp.fa, test/samples/GCA_017639485.1_temp.fa, test/samples/GCA_907165065.1_temp.fa, test/samples/GCA_011004875.1_temp.fa, test/samples/GCA_017976375.1_temp.fa, test/samples/GCA_014839755.1_temp.fa, test/samples/GCA_015220805.1_temp.fa, test/samples/GCA_009819825.1_temp.fa, test/samples/GCA_020745775.1_temp.fa, test/samples/GCF_018691265.1_temp.fa, test/samples/GCF_017639655.2_temp.fa, test/samples/GCA_014839835.1_temp.fa, test/samples/GCA_905368555.1_temp.fa, test/samples/GCF_016699485.2_temp.fa, test/samples/GCF_016700215.2_temp.fa, test/samples/GCA_013407035.1_temp.fa, test/samples/GCA_902806625.1_temp.fa, test/samples/GCA_016128335.1_temp.fa, test/samples/GCF_900496995.4_temp.fa, test/samples/GCA_020800305.1_temp.fa, test/samples/GCA_020740795.1_temp.fa, test/samples/GCA_008658365.1_temp.fa, test/samples/GCF_000002315.6_temp.fa, test/samples/GCA_016904835.1_temp.fa, test/samples/GCF_020740725.1_temp.fa, test/samples/GCF_901933205.1_temp.fa, test/samples/GCA_012275265.1_temp.fa, test
+    output: test/samples/out.fa
+    jobid: 4
+    reason: Input files updated by another job: test/samples/GCA_008658365.1_temp.fa, test/samples/GCF_900496995.4_temp.fa, test/samples/GCA_020746105.1_temp.fa, test/samples/GCA_020745705.1_temp.fa, test/samples/GCF_017639655.2_temp.fa, test/samples/GCA_020801775.1_temp.fa, test/samples/GCA_009819775.1_temp.fa, test/samples/GCA_905368555.1_temp.fa, test/samples/GCA_014839835.1_temp.fa, test/samples/GCA_902806625.1_temp.fa, test/samples/GCA_017639245.1_temp.fa, test/samples/GCA_015220805.1_temp.fa, test/samples/GCA_017639485.1_temp.fa, test/samples/GCA_009819605.1_temp.fa, test/samples/GCA_009819825.1_temp.fa, test/samples/GCF_009829145.1_temp.fa, test/samples/GCA_018139145.1_temp.fa, test/samples/GCF_003957555.1_temp.fa, test/samples/GCA_017639555.1_temp.fa, test/samples/GCA_016904835.1_temp.fa, test/samples/GCF_000002315.6_temp.fa, test/samples/GCF_012275295.1_temp.fa, test/samples/GCA_012275265.1_temp.fa, test/samples/GCA_016128335.1_temp.fa, test/samples/GCF_018691265.1_temp.fa, test/samples/GCF_901933205.1_temp.fa, test/samples/GCA_013407035.1_temp.fa, test/samples/GCF_020740725.1_temp.fa, test/samples/GCF_016699485.2_temp.fa, test/samples/GCA_014839755.1_temp.fa, test/samples/GCF_015220075.1_temp.fa, test/samples/GCA_020740795.1_temp.fa, test/samples/GCF_016700215.2_temp.fa, test/samples/GCA_017976375.1_temp.fa, test/samples/GCA_013368605.1_temp.fa, test/samples/GCA_011004875.1_temp.fa, test/samples/GCA_020800305.1_temp.fa, test/samples/GCA_020745775.1_temp.fa, test/samples/GCA_907165065.1_temp.fa, test/samples/GCF_009819795.1_temp.fa
+    resources: tmpdir=/tmp
+
+[Wed Sep 14 00:20:42 2022]
+Finished job 4.
+41 of 84 steps (49%) done
+Removing temporary output test/samples/GCA_017639555.1_temp.fa.
+Removing temporary output test/samples/GCA_013368605.1_temp.fa.
+Removing temporary output test/samples/GCF_015220075.1_temp.fa.
+Removing temporary output test/samples/GCA_017639245.1_temp.fa.
+Removing temporary output test/samples/GCA_020745705.1_temp.fa.
+Removing temporary output test/samples/GCA_009819775.1_temp.fa.
+Removing temporary output test/samples/GCF_012275295.1_temp.fa.
+Removing temporary output test/samples/GCA_020801775.1_temp.fa.
+Removing temporary output test/samples/GCA_018139145.1_temp.fa.
+Removing temporary output test/samples/GCF_009819795.1_temp.fa.
+Removing temporary output test/samples/GCA_009819605.1_temp.fa.
+Removing temporary output test/samples/GCF_003957555.1_temp.fa.
+Removing temporary output test/samples/GCA_020746105.1_temp.fa.
+Removing temporary output test/samples/GCF_009829145.1_temp.fa.
+Removing temporary output test/samples/GCA_017639485.1_temp.fa.
+Removing temporary output test/samples/GCA_907165065.1_temp.fa.
+Removing temporary output test/samples/GCA_011004875.1_temp.fa.
+Removing temporary output test/samples/GCA_017976375.1_temp.fa.
+Removing temporary output test/samples/GCA_014839755.1_temp.fa.
+Removing temporary output test/samples/GCA_015220805.1_temp.fa.
+Removing temporary output test/samples/GCA_009819825.1_temp.fa.
+Removing temporary output test/samples/GCA_020745775.1_temp.fa.
+Removing temporary output test/samples/GCF_018691265.1_temp.fa.
+Removing temporary output test/samples/GCF_017639655.2_temp.fa.
+Removing temporary output test/samples/GCA_014839835.1_temp.fa.
+Removing temporary output test/samples/GCA_905368555.1_temp.fa.
+Removing temporary output test/samples/GCF_016699485.2_temp.fa.
+Removing temporary output test/samples/GCF_016700215.2_temp.fa.
+Removing temporary output test/samples/GCA_013407035.1_temp.fa.
+Removing temporary output test/samples/GCA_902806625.1_temp.fa.
+Removing temporary output test/samples/GCA_016128335.1_temp.fa.
+Removing temporary output test/samples/GCF_900496995.4_temp.fa.
+Removing temporary output test/samples/GCA_020800305.1_temp.fa.
+Removing temporary output test/samples/GCA_020740795.1_temp.fa.
+Removing temporary output test/samples/GCA_008658365.1_temp.fa.
+Removing temporary output test/samples/GCF_000002315.6_temp.fa.
+Removing temporary output test/samples/GCA_016904835.1_temp.fa.
+Removing temporary output test/samples/GCF_020740725.1_temp.fa.
+Removing temporary output test/samples/GCF_901933205.1_temp.fa.
+Removing temporary output test/samples/GCA_012275265.1_temp.fa.
+Select jobs to execute...
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_012275265.1.fa
+    output: test/alignments/GCA_012275265.1.maf
+    jobid: 83
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_012275265.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_014839835.1.fa
+    output: test/alignments/GCA_014839835.1.maf
+    jobid: 68
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_014839835.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020800305.1.fa
+    output: test/alignments/GCA_020800305.1.maf
+    jobid: 76
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020800305.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017976375.1.fa
+    output: test/alignments/GCA_017976375.1.maf
+    jobid: 61
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017976375.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_015220075.1.fa
+    output: test/alignments/GCF_015220075.1.maf
+    jobid: 46
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_015220075.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_905368555.1.fa
+    output: test/alignments/GCA_905368555.1.maf
+    jobid: 69
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_905368555.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_009819605.1.fa
+    output: test/alignments/GCA_009819605.1.maf
+    jobid: 54
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_009819605.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020740795.1.fa
+    output: test/alignments/GCA_020740795.1.maf
+    jobid: 77
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020740795.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_014839755.1.fa
+    output: test/alignments/GCA_014839755.1.maf
+    jobid: 62
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_014839755.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639245.1.fa
+    output: test/alignments/GCA_017639245.1.maf
+    jobid: 47
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017639245.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_016699485.2.fa
+    output: test/alignments/GCF_016699485.2.maf
+    jobid: 70
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_016699485.2
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_003957555.1.fa
+    output: test/alignments/GCF_003957555.1.maf
+    jobid: 55
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_003957555.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_008658365.1.fa
+    output: test/alignments/GCA_008658365.1.maf
+    jobid: 78
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_008658365.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639555.1.fa
+    output: test/alignments/GCA_017639555.1.maf
+    jobid: 3
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017639555.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020745705.1.fa
+    output: test/alignments/GCA_020745705.1.maf
+    jobid: 48
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020745705.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_015220805.1.fa
+    output: test/alignments/GCA_015220805.1.maf
+    jobid: 63
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_015220805.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_016700215.2.fa
+    output: test/alignments/GCF_016700215.2.maf
+    jobid: 71
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_016700215.2
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020746105.1.fa
+    output: test/alignments/GCA_020746105.1.maf
+    jobid: 56
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020746105.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_000002315.6.fa
+    output: test/alignments/GCF_000002315.6.maf
+    jobid: 79
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_000002315.6
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_902806625.1.fa
+    output: test/alignments/GCA_902806625.1.maf
+    jobid: 73
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_902806625.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639485.1.fa
+    output: test/alignments/GCA_017639485.1.maf
+    jobid: 58
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_017639485.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_020740725.1.fa
+    output: test/alignments/GCF_020740725.1.maf
+    jobid: 81
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_020740725.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_018691265.1.fa
+    output: test/alignments/GCF_018691265.1.maf
+    jobid: 66
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_018691265.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020801775.1.fa
+    output: test/alignments/GCA_020801775.1.maf
+    jobid: 51
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_020801775.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_016128335.1.fa
+    output: test/alignments/GCA_016128335.1.maf
+    jobid: 74
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_016128335.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_907165065.1.fa
+    output: test/alignments/GCA_907165065.1.maf
+    jobid: 59
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_907165065.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_901933205.1.fa
+    output: test/alignments/GCF_901933205.1.maf
+    jobid: 82
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_901933205.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_017639655.2.fa
+    output: test/alignments/GCF_017639655.2.maf
+    jobid: 67
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_017639655.2
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_018139145.1.fa
+    output: test/alignments/GCA_018139145.1.maf
+    jobid: 52
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_018139145.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_900496995.4.fa
+    output: test/alignments/GCF_900496995.4.maf
+    jobid: 75
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCF_900496995.4
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_011004875.1.fa
+    output: test/alignments/GCA_011004875.1.maf
+    jobid: 60
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_011004875.1
+    resources: tmpdir=/tmp
+
+
+[Wed Sep 14 00:20:42 2022]
+rule lastz:
+    input: test/samples/out.fa, /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_013368605.1.fa
+    output: test/alignments/GCA_013368605.1.maf
+    jobid: 45
+    reason: Input files updated by another job: test/samples/out.fa
+    wildcards: sample=GCA_013368605.1
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 51
+    output: test/alignments/GCA_020801775.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020801775.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_020801775.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 55
+    output: test/alignments/GCF_003957555.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_003957555.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_003957555.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 56
+    output: test/alignments/GCA_020746105.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020746105.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_020746105.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 52
+    output: test/alignments/GCA_018139145.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_018139145.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_018139145.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 67
+    output: test/alignments/GCF_017639655.2.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_017639655.2.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_017639655.2.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 58
+    output: test/alignments/GCA_017639485.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639485.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_017639485.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 82
+    output: test/alignments/GCF_901933205.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_901933205.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_901933205.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Sep 14 00:20:47 2022]
+Error in rule lastz:
+    jobid: 79
+    output: test/alignments/GCF_000002315.6.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_000002315.6.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_000002315.6.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 73
+    output: test/alignments/GCA_902806625.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_902806625.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_902806625.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 3
+    output: test/alignments/GCA_017639555.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639555.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_017639555.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 66
+    output: test/alignments/GCF_018691265.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_018691265.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_018691265.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 71
+    output: test/alignments/GCF_016700215.2.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_016700215.2.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_016700215.2.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 68
+    output: test/alignments/GCA_014839835.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_014839835.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_014839835.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 75
+    output: test/alignments/GCF_900496995.4.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_900496995.4.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_900496995.4.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 46
+    output: test/alignments/GCF_015220075.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_015220075.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_015220075.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 45
+    output: test/alignments/GCA_013368605.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_013368605.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_013368605.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 48
+    output: test/alignments/GCA_020745705.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020745705.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_020745705.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 69
+    output: test/alignments/GCA_905368555.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_905368555.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_905368555.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 74
+    output: test/alignments/GCA_016128335.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_016128335.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_016128335.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 77
+    output: test/alignments/GCA_020740795.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020740795.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_020740795.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 60
+    output: test/alignments/GCA_011004875.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_011004875.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_011004875.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 63
+    output: test/alignments/GCA_015220805.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_015220805.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_015220805.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 47
+    output: test/alignments/GCA_017639245.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017639245.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_017639245.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 54
+    output: test/alignments/GCA_009819605.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_009819605.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_009819605.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 61
+    output: test/alignments/GCA_017976375.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_017976375.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_017976375.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 62
+    output: test/alignments/GCA_014839755.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_014839755.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_014839755.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 81
+    output: test/alignments/GCF_020740725.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_020740725.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_020740725.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 59
+    output: test/alignments/GCA_907165065.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_907165065.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_907165065.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 78
+    output: test/alignments/GCA_008658365.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_008658365.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_008658365.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 83
+    output: test/alignments/GCA_012275265.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_012275265.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_012275265.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 76
+    output: test/alignments/GCA_020800305.1.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_020800305.1.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCA_020800305.1.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Error in rule lastz:
+    jobid: 70
+    output: test/alignments/GCF_016699485.2.maf
+    conda-env: /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/.snakemake/conda/34f768e9f77cdb9d6d3c86b4308cd7fe
+    shell:
+        lastz_32 /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCF_016699485.2.fa[multiple] test/samples/out.fa[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output=test/alignments/GCF_016699485.2.maf
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Complete log: .snakemake/log/2022-09-14T002023.562117.snakemake.log

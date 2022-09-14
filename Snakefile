@@ -34,15 +34,33 @@ def get_count(gene):
 		return 0
 rule all:
 	input:
-		expand(config["OUT"]+"/msa/gene_aln_{id}.fa",id=IDS)
+		config["OUT"]+"/speciesTree.newick"
+		# config["OUT"]+"/geneTree/gene_tree_merged.newick"
+		# expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
+		# expand(config["OUT"]+"/msa/gene_aln_{id}.fa",id=IDS)
 		#expand(config["OUT"]+"/msa/gene_aln_{id}.treefile",id=IDS)
-#rule iqtree:
-#	input:
-#		config["OUT"]+"/msa/gene_aln_{id}.fa"
-#	output:
-#		config["OUT"]+"/msa/gene_aln_{id}.treefile"
-#	shell:
-#		"./test2.sh {input}"
+rule astral:
+	input:
+		config["OUT"]+"/geneTree/gene_tree_merged.newick"
+	output:
+		config["OUT"]+"/speciesTree.newick"
+	shell:
+		# "astral -i {input} -o {output}"
+		"java -Djava.library.path=A-pro/ASTRAL-MP/lib -jar A-pro/ASTRAL-MP/astral.1.1.6.jar -i {input} -o {output} -a mapping.txt"
+rule mergeTrees:
+	input:
+		expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
+	output:
+		config["OUT"]+"/geneTree/gene_tree_merged.newick"
+	shell:
+		"./treeBuilder/astralWrapper.sh {output} {input}"
+# rule fastTree:
+# 	input:
+# 		config["OUT"]+"/msa/gene_aln_{id}.fa"
+# 	output:
+# 		config["OUT"]+"/geneTree/gene_tree_{id}.newick"
+# 	shell:
+# 		"./treeBuilder/ftWrapper.sh {input} {output}"
 rule mafft:
 	input:
 		config["OUT"]+"/genes/gene_{id}.fa"
@@ -51,7 +69,7 @@ rule mafft:
 	conda: 
 		"envr.yaml"
 	shell:
-		"./test.sh {input} {output}"
+		"./treeBuilder/mafftWrapper.sh {input} {output}"
 rule lastz2fasta:
 	input:
 		expand(config["OUT"]+"/alignments/{sample}.maf",sample=SAMPLES)   

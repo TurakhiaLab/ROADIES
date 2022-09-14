@@ -1,4 +1,4 @@
-PATH: "../genomes_top40"
+PATH: "/home/AD.UCSD.EDU/ttl074/wga/genomes_top40"
 LENGTH: 1000
 KREG: 300
 THRESHOLD: 0.70
