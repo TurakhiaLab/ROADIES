@@ -54,6 +54,15 @@ rule mergeTrees:
 		config["OUT"]+"/geneTree/gene_tree_merged.newick"
 	shell:
 		"./treeBuilder/astralWrapper.sh {output} {input}"
+rule iqtree:
+	input:
+		config["OUT"]+"/msa/gene_aln_{id}.fa"
+	output:
+		config["OUT"]+"/geneTree/gene_tree_{id}.newick"
+	params:
+		logDir = config["OUT"]+"/geneTree/"
+	shell:
+		"./treeBuilder/iqtWrapper.sh {input} {output} {params.logDir}"
 # rule fastTree:
 # 	input:
 # 		config["OUT"]+"/msa/gene_aln_{id}.fa"
@@ -61,15 +70,15 @@ rule mergeTrees:
 # 		config["OUT"]+"/geneTree/gene_tree_{id}.newick"
 # 	shell:
 # 		"./treeBuilder/ftWrapper.sh {input} {output}"
-rule mafft:
-	input:
-		config["OUT"]+"/genes/gene_{id}.fa"
-	output:
-		config["OUT"]+"/msa/gene_aln_{id}.fa"
-	conda: 
-		"envr.yaml"
-	shell:
-		"./treeBuilder/mafftWrapper.sh {input} {output}"
+# rule mafft:
+# 	input:
+# 		config["OUT"]+"/genes/gene_{id}.fa"
+# 	output:
+# 		config["OUT"]+"/msa/gene_aln_{id}.fa"
+# 	conda: 
+# 		"envr.yaml"
+# 	shell:
+# 		"./treeBuilder/mafftWrapper.sh {input} {output}"
 rule lastz2fasta:
 	input:
 		expand(config["OUT"]+"/alignments/{sample}.maf",sample=SAMPLES)   

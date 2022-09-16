@@ -1,0 +1,114 @@
+IQ-TREE 2.0.3 built Dec 20 2020
+
+Input file name: test/msa/gene_aln_218.fa
+Type of analysis: tree reconstruction
+Random seed number: 96570
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Bui Quang Minh, Heiko A. Schmidt, Olga Chernomor, Dominik Schrempf,
+Michael D. Woodhams, Arndt von Haeseler, and Robert Lanfear (2020)
+IQ-TREE 2: New models and efficient methods for phylogenetic inference
+in the genomic era. Mol. Biol. Evol., in press.
+https://doi.org/10.1093/molbev/msaa015
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 16 sequences with 1674 nucleotide sites
+Number of constant sites: 840 (= 50.1792% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 840 (= 50.1792% of all sites)
+Number of parsimony informative sites: 587
+Number of distinct site patterns: 755
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F
+
+Rate parameter R:
+
+  A-C: 0.9139
+  A-G: 3.9089
+  A-T: 0.7343
+  C-G: 0.8776
+  C-T: 4.1727
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.2613
+  pi(C) = 0.1955
+  pi(G) = 0.2593
+  pi(T) = 0.2839
+
+Rate matrix Q:
+
+  A   -0.9785    0.1248     0.708    0.1456
+  C    0.1668    -1.153     0.159    0.8275
+  G    0.7135    0.1199    -1.032    0.1983
+  T     0.134      0.57    0.1811   -0.8852
+
+Model of rate heterogeneity: Uniform
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -6719.6283 (s.e. 114.8371)
+Unconstrained log-likelihood (without tree): -10103.8935
+Number of free parameters (#branches + #model parameters): 37
+Akaike information criterion (AIC) score: 13513.2566
+Corrected Akaike information criterion (AICc) score: 13514.9754
+Bayesian information criterion (BIC) score: 13713.9065
+
+Total tree length (sum of branch lengths): 1.9925
+Sum of internal branch lengths: 1.5897 (79.7810% of tree length)
+
+NOTE: Tree is UNROOTED although outgroup taxon 'GCF_901933205.1_14798029' is drawn at root
+
++--GCF_901933205.1_14798029
+|
+|           +--GCF_901933205.1_18359077
+|     +-----|
+|     |     +**GCA_902806625.1_18406802
+|  +--|
+|  |  |                                                         +--GCF_901933205.1_69594932
+|  |  |                                                      +--|
+|  |  |                                                      |  +--GCA_902806625.1_41384
+|  |  |                                                   +--|
+|  |  |                                                   |  |  +--GCF_901933205.1_4067923
+|  |  |                                                   |  +--|
+|  |  |                                                   |     +--GCA_902806625.1_10981481
+|  |  |  +------------------------------------------------|
+|  |  |  |                                                +--GCF_901933205.1_36621
+|  |  +--|
+|  |     +--GCA_902806625.1_3638305
++--|
+|  |        +--GCF_901933205.1_20057
+|  |     +--|
+|  |     |  +--GCA_902806625.1_82576881
+|  |  +--|
+|  |  |  |  +--GCF_901933205.1_10665
+|  |  |  +--|
+|  |  |     +--GCA_902806625.1_1328
+|  +--|
+|     |  +--GCA_902806625.1_14845198
+|     +--|
+|        +--GCA_902806625.1_406824
+|
++**GCA_902806625.1_604
+
+Tree in newick format:
+
+(GCF_901933205.1_14798029:0.0010893849,(((GCF_901933205.1_18359077:0.0021600638,GCA_902806625.1_18406802:0.0000021657):0.1474875505,((((GCF_901933205.1_69594932:0.0259024690,GCA_902806625.1_41384:0.0418526789):0.0266419716,(GCF_901933205.1_4067923:0.0653687488,GCA_902806625.1_10981481:0.0490026980):0.0531725097):0.0232745746,GCF_901933205.1_36621:0.0104996434):1.1122378330,GCA_902806625.1_3638305:0.0301797299):0.0381054807):0.0195648935,(((GCF_901933205.1_20057:0.0100896253,GCA_902806625.1_82576881:0.0098442570):0.0134022574,(GCF_901933205.1_10665:0.0501936227,GCA_902806625.1_1328:0.0125801569):0.0106552425):0.0244565481,(GCA_902806625.1_14845198:0.0715706364,GCA_902806625.1_406824:0.0225302714):0.0205025060):0.0562805081):0.0438690826,GCA_902806625.1_604:0.0000010000);
+
+TIME STAMP
+----------
+
+Date and time: Thu Sep 15 00:35:53 2022
+Total CPU time used: 2.17869 seconds (0h:0m:2s)
+Total wall-clock time used: 2.23546 seconds (0h:0m:2s)
+

@@ -1,0 +1,117 @@
+IQ-TREE 2.0.3 built Dec 20 2020
+
+Input file name: test/msa/gene_aln_81.fa
+Type of analysis: tree reconstruction
+Random seed number: 783707
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Bui Quang Minh, Heiko A. Schmidt, Olga Chernomor, Dominik Schrempf,
+Michael D. Woodhams, Arndt von Haeseler, and Robert Lanfear (2020)
+IQ-TREE 2: New models and efficient methods for phylogenetic inference
+in the genomic era. Mol. Biol. Evol., in press.
+https://doi.org/10.1093/molbev/msaa015
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 16 sequences with 1172 nucleotide sites
+Number of constant sites: 588 (= 50.1706% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 588 (= 50.1706% of all sites)
+Number of parsimony informative sites: 484
+Number of distinct site patterns: 331
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F
+
+Rate parameter R:
+
+  A-C: 0.8642
+  A-G: 7.3769
+  A-T: 2.1806
+  C-G: 1.4365
+  C-T: 7.5535
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.1869
+  pi(C) = 0.2023
+  pi(G) = 0.3671
+  pi(T) = 0.2437
+
+Rate matrix Q:
+
+  A    -1.415   0.07242     1.122    0.2202
+  C   0.06693    -1.048    0.2185    0.7628
+  G    0.5714    0.1204   -0.7928     0.101
+  T    0.1689     0.633    0.1521   -0.9541
+
+Model of rate heterogeneity: Uniform
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -3563.6989 (s.e. 56.3280)
+Unconstrained log-likelihood (without tree): -5939.3394
+Number of free parameters (#branches + #model parameters): 37
+Akaike information criterion (AIC) score: 7201.3977
+Corrected Akaike information criterion (AICc) score: 7203.8775
+Bayesian information criterion (BIC) score: 7388.8570
+
+Total tree length (sum of branch lengths): 1.8105
+Sum of internal branch lengths: 1.2621 (69.7124% of tree length)
+
+WARNING: 9 near-zero internal branches (<0.0009) should be treated with caution
+         Such branches are denoted by '**' in the figure below
+
+NOTE: Tree is UNROOTED although outgroup taxon 'GCA_009819605.1_53087' is drawn at root
+
++**GCA_009819605.1_53087
+|
++**GCA_009819605.1_53100
+|
+|  +**GCA_009819605.1_53104
++**|
+   |  +**GCA_009819605.1_53150
+   +**|
+      |  +**GCA_009819605.1_53252
+      +**|
+         |  +**GCA_009819605.1_53277
+         +**|
+            |        +**GCA_008658365.1_29176
+            |     +**|
+            |     |  |     +**GCA_008658365.1_29180
+            |     |  |  +**|
+            |     |  |  |  |  +**GCA_008658365.1_29226
+            |     |  |  |  +**|
+            |     |  |  |     |  +**GCA_008658365.1_29257
+            |     |  |  |     +**|
+            |     |  |  |        +**GCA_008658365.1_29296
+            |     |  +**|
+            |     |     +**GCA_008658365.1_29202
+            |  +--|
+            |  |  +**GCA_008658365.1_29192
+            +--|
+               |                                         +------------GCF_009829145.1_10449
+               +-----------------------------------------|
+                                                         |   +**GCA_011004875.1_66760
+                                                         +---|
+                                                             +**GCA_011004875.1_66781
+
+Tree in newick format:
+
+(GCA_009819605.1_53087:0.0000020444,GCA_009819605.1_53100:0.0000010000,(GCA_009819605.1_53104:0.0000010000,(GCA_009819605.1_53150:0.0000010000,(GCA_009819605.1_53252:0.0000010000,(GCA_009819605.1_53277:0.0000010000,(((GCA_008658365.1_29176:0.0000010000,((GCA_008658365.1_29180:0.0000010000,(GCA_008658365.1_29226:0.0000010000,(GCA_008658365.1_29257:0.0000010000,GCA_008658365.1_29296:0.0000010000):0.0000010000):0.0000010000):0.0000010000,GCA_008658365.1_29202:0.0000010000):0.0000010000):0.0000010000,GCA_008658365.1_29192:0.0000010000):0.0597370542,(GCF_009829145.1_10449:0.3671672084,(GCA_011004875.1_66760:0.0000010000,GCA_011004875.1_66781:0.0000010000):0.1214276497):1.1554861116):0.1066457215):0.0000010000):0.0000010000):0.0000010000):0.0000010000);
+
+TIME STAMP
+----------
+
+Date and time: Thu Sep 15 00:36:08 2022
+Total CPU time used: 1.70266 seconds (0h:0m:1s)
+Total wall-clock time used: 1.76774 seconds (0h:0m:1s)
+

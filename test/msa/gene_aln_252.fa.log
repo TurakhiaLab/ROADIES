@@ -1,0 +1,52 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    raptor.ucsd.edu (AVX512, FMA3, 376 GB RAM)
+Command: iqtree -s test/msa/gene_aln_252.fa -m GTR+F -redo
+Seed:    552905 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Sep 15 00:37:40 2022
+Kernel:  AVX+FMA - 1 threads (64 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 64 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file test/msa/gene_aln_252.fa ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 206 sequences with 1970 columns, 1502 distinct patterns
+1256 parsimony-informative, 82 singleton sites, 632 constant sites
+ERROR: Duplicated sequence name GCA_008658365.1_65388
+ERROR: Duplicated sequence name GCA_008658365.1_65388
+ERROR: Duplicated sequence name GCA_009819605.1_219728715
+ERROR: Duplicated sequence name GCA_009819605.1_219728715
+ERROR: Duplicated sequence name GCA_009819775.1_219728919
+ERROR: Duplicated sequence name GCA_009819775.1_219728919
+ERROR: Duplicated sequence name GCA_009819775.1_219728925
+ERROR: Duplicated sequence name GCA_009819775.1_219728926
+ERROR: Duplicated sequence name GCA_011004875.1_217858073
+ERROR: Duplicated sequence name GCA_011004875.1_217858073
+ERROR: Duplicated sequence name GCA_011004875.1_217858073
+ERROR: Duplicated sequence name GCA_011004875.1_217858073
+ERROR: Duplicated sequence name GCA_011004875.1_217858073
+ERROR: Duplicated sequence name GCA_012275265.1_919195
+ERROR: Duplicated sequence name GCA_012275265.1_919195
+ERROR: Duplicated sequence name GCA_013368605.1_126797376
+ERROR: Duplicated sequence name GCA_013368605.1_126797376
+ERROR: Duplicated sequence name GCA_013368605.1_126797376
+ERROR: Duplicated sequence name GCA_017639485.1_1206063
+ERROR: Duplicated sequence name GCA_017639485.1_1206066
+ERROR: Duplicated sequence name GCA_017639485.1_1206066
+ERROR: Duplicated sequence name GCA_017976375.1_885122
+ERROR: Duplicated sequence name GCA_907165065.1_125247275
+ERROR: Duplicated sequence name GCA_907165065.1_125247275
+ERROR: Duplicated sequence name GCA_907165065.1_125247275
+ERROR: Duplicated sequence name GCA_907165065.1_125247275
+ERROR: Duplicated sequence name GCA_907165065.1_125247275
+ERROR: Duplicated sequence name GCF_009819795.1_206016999
+ERROR: Duplicated sequence name GCF_009819795.1_206017014
+ERROR: Duplicated sequence name GCF_009819795.1_206017014
+ERROR: Duplicated sequence name GCF_012275295.1_649071
+ERROR: Duplicated sequence name GCF_018691265.1_1507060
+ERROR: Duplicated sequence name GCF_018691265.1_1507060
+ERROR: Duplicated sequence name GCF_018691265.1_1507060
+ERROR: Please rename sequences listed above!

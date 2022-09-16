@@ -1,0 +1,117 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    raptor.ucsd.edu (AVX512, FMA3, 376 GB RAM)
+Command: iqtree -s test/msa/gene_aln_214.fa -m GTR+F -redo
+Seed:    460280 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Sep 15 00:34:24 2022
+Kernel:  AVX+FMA - 1 threads (64 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 64 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file test/msa/gene_aln_214.fa ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 5 sequences with 1073 columns, 130 distinct patterns
+161 parsimony-informative, 405 singleton sites, 507 constant sites
+                          Gap/Ambiguity  Composition  p-value
+   1  GCF_009829145.1_54408880   17.80%    passed     43.09%
+   2  GCF_020740725.1_54202553    6.99%    passed     64.51%
+   3  GCF_901933205.1_23550056   20.50%    passed     65.53%
+   4  GCA_902806625.1_23311280   20.50%    passed     65.53%
+   5  GCA_013407035.1_65871228    6.80%    passed     72.76%
+****  TOTAL                      14.52%  0 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: GCA_902806625.1_23311280 is identical to GCF_901933205.1_23550056 but kept for subsequent analysis
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.000 seconds
+
+NOTE: 0 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -3297.770
+2. Current log-likelihood: -3244.597
+3. Current log-likelihood: -3241.081
+4. Current log-likelihood: -3240.685
+Optimal log-likelihood: -3240.644
+Rate parameters:  A-C: 1.25956  A-G: 3.57819  A-T: 0.82549  C-G: 1.61795  C-T: 3.04392  G-T: 1.00000
+Base frequencies:  A: 0.294  C: 0.197  G: 0.200  T: 0.309
+Parameters optimization took 4 rounds (0.005 sec)
+Computing ML distances based on estimated model parameters... 0.000 sec
+Computing BIONJ tree...
+0.000 seconds
+Log-likelihood of BIONJ tree: -3240.221
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 0.024 second
+Computing log-likelihood of 3 initial trees ... 0.001 seconds
+Current best score: -3240.221
+
+Do NNI search on 5 best initial trees
+UPDATE BEST LOG-LIKELIHOOD: -3240.221
+Finish initializing candidate tree set (5)
+Current best tree score: -3240.221 / CPU time: 0.461
+Number of iterations: 5
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Iteration 10 / LogL: -3240.374 / Time: 0h:0m:0s
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+Iteration 20 / LogL: -3240.655 / Time: 0h:0m:0s
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+Iteration 30 / LogL: -3240.220 / Time: 0h:0m:0s (0h:0m:1s left)
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+Iteration 40 / LogL: -3240.532 / Time: 0h:0m:0s (0h:0m:0s left)
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+Iteration 50 / LogL: -3240.634 / Time: 0h:0m:0s (0h:0m:0s left)
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+Iteration 60 / LogL: -3240.382 / Time: 0h:0m:0s (0h:0m:0s left)
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+Iteration 70 / LogL: -3240.547 / Time: 0h:0m:0s (0h:0m:0s left)
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+Iteration 80 / LogL: -3240.373 / Time: 0h:0m:0s (0h:0m:0s left)
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+WARNING: NNI search needs unusual large number of steps (5) to converge!
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+Iteration 90 / LogL: -3240.220 / Time: 0h:0m:0s (0h:0m:0s left)
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+UPDATE BEST LOG-LIKELIHOOD: -3240.220
+Iteration 100 / LogL: -3240.369 / Time: 0h:0m:0s (0h:0m:0s left)
+TREE SEARCH COMPLETED AFTER 101 ITERATIONS / Time: 0h:0m:0s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -3240.220
+2. Current log-likelihood: -3240.191
+Optimal log-likelihood: -3240.189
+Rate parameters:  A-C: 1.27407  A-G: 3.70292  A-T: 0.85616  C-G: 1.65402  C-T: 3.05047  G-T: 1.00000
+Base frequencies:  A: 0.294  C: 0.197  G: 0.200  T: 0.309
+Parameters optimization took 2 rounds (0.001 sec)
+BEST SCORE FOUND : -3240.189
+Total tree length: 1.387
+
+Total number of iterations: 101
+CPU time used for tree search: 0.110 sec (0h:0m:0s)
+Wall-clock time used for tree search: 0.605 sec (0h:0m:0s)
+Total CPU time used: 0.129 sec (0h:0m:0s)
+Total wall-clock time used: 0.627 sec (0h:0m:0s)
+
+Analysis results written to: 
+  IQ-TREE report:                test/msa/gene_aln_214.fa.iqtree
+  Maximum-likelihood tree:       test/msa/gene_aln_214.fa.treefile
+  Likelihood distances:          test/msa/gene_aln_214.fa.mldist
+  Screen log file:               test/msa/gene_aln_214.fa.log
+
+Date and Time: Thu Sep 15 00:34:25 2022

@@ -1,0 +1,94 @@
+IQ-TREE 2.0.3 built Dec 20 2020
+
+Input file name: test/msa/gene_aln_37.fa
+Type of analysis: tree reconstruction
+Random seed number: 825388
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Bui Quang Minh, Heiko A. Schmidt, Olga Chernomor, Dominik Schrempf,
+Michael D. Woodhams, Arndt von Haeseler, and Robert Lanfear (2020)
+IQ-TREE 2: New models and efficient methods for phylogenetic inference
+in the genomic era. Mol. Biol. Evol., in press.
+https://doi.org/10.1093/molbev/msaa015
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 6 sequences with 1170 nucleotide sites
+Number of constant sites: 595 (= 50.8547% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 595 (= 50.8547% of all sites)
+Number of parsimony informative sites: 324
+Number of distinct site patterns: 260
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F
+
+Rate parameter R:
+
+  A-C: 0.9465
+  A-G: 3.7677
+  A-T: 0.7478
+  C-G: 0.8178
+  C-T: 2.7558
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.2984
+  pi(C) = 0.2299
+  pi(G) = 0.2003
+  pi(T) = 0.2715
+
+Rate matrix Q:
+
+  A    -0.956     0.177    0.6139    0.1651
+  C    0.2297   -0.9716    0.1332    0.6086
+  G    0.9146    0.1529    -1.288    0.2208
+  T    0.1815    0.5153    0.1629   -0.8597
+
+Model of rate heterogeneity: Uniform
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -3641.1836 (s.e. 59.3229)
+Unconstrained log-likelihood (without tree): -5564.3762
+Number of free parameters (#branches + #model parameters): 17
+Akaike information criterion (AIC) score: 7316.3672
+Corrected Akaike information criterion (AICc) score: 7316.8985
+Bayesian information criterion (BIC) score: 7402.4681
+
+Total tree length (sum of branch lengths): 1.4079
+Sum of internal branch lengths: 1.1212 (79.6366% of tree length)
+
+NOTE: Tree is UNROOTED although outgroup taxon 'GCA_014839755.1_13692781' is drawn at root
+
++--GCA_014839755.1_13692781
+|
+|     +--GCF_020740725.1_3445898
+|  +--|
+|  |  +--GCA_013407035.1_55762698
++--|
+|  |                                                    +---GCF_901933205.1_137268
+|  +----------------------------------------------------|
+|                                                       +---GCA_009819775.1_3121
+|
++--GCA_902806625.1_13943398
+
+Tree in newick format:
+
+(GCA_014839755.1_13692781:0.0445487977,((GCF_020740725.1_3445898:0.0072758763,GCA_013407035.1_55762698:0.0046795564):0.0275761666,(GCF_901933205.1_137268:0.0902274746,GCA_009819775.1_3121:0.0971375879):1.0671927160):0.0264567004,GCA_902806625.1_13943398:0.0428322093);
+
+TIME STAMP
+----------
+
+Date and time: Thu Sep 15 00:35:21 2022
+Total CPU time used: 0.265526 seconds (0h:0m:0s)
+Total wall-clock time used: 0.270174 seconds (0h:0m:0s)
+

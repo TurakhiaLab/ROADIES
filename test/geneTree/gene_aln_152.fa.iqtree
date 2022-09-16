@@ -1,0 +1,128 @@
+IQ-TREE 2.0.3 built Dec 20 2020
+
+Input file name: test/msa/gene_aln_152.fa
+Type of analysis: tree reconstruction
+Random seed number: 413324
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Bui Quang Minh, Heiko A. Schmidt, Olga Chernomor, Dominik Schrempf,
+Michael D. Woodhams, Arndt von Haeseler, and Robert Lanfear (2020)
+IQ-TREE 2: New models and efficient methods for phylogenetic inference
+in the genomic era. Mol. Biol. Evol., in press.
+https://doi.org/10.1093/molbev/msaa015
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 23 sequences with 1358 nucleotide sites
+Number of constant sites: 428 (= 31.5169% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 428 (= 31.5169% of all sites)
+Number of parsimony informative sites: 734
+Number of distinct site patterns: 982
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F
+
+Rate parameter R:
+
+  A-C: 0.8795
+  A-G: 2.8256
+  A-T: 0.5179
+  C-G: 0.7704
+  C-T: 3.4753
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.2817
+  pi(C) = 0.2224
+  pi(G) = 0.2273
+  pi(T) = 0.2687
+
+Rate matrix Q:
+
+  A   -0.8381    0.1678     0.551    0.1194
+  C    0.2125    -1.164    0.1502    0.8011
+  G    0.6828     0.147     -1.06    0.2305
+  T    0.1252     0.663     0.195   -0.9831
+
+Model of rate heterogeneity: Uniform
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -10506.2395 (s.e. 196.2742)
+Unconstrained log-likelihood (without tree): -8728.1132
+Number of free parameters (#branches + #model parameters): 51
+Akaike information criterion (AIC) score: 21114.4790
+Corrected Akaike information criterion (AICc) score: 21118.5402
+Bayesian information criterion (BIC) score: 21380.3812
+
+Total tree length (sum of branch lengths): 3.0930
+Sum of internal branch lengths: 1.6190 (52.3456% of tree length)
+
+NOTE: Tree is UNROOTED although outgroup taxon 'GCA_015220805.1_39871314' is drawn at root
+
++---GCA_015220805.1_39871314
+|
+|                                                                 +--GCA_009819605.1_7752371
+|                                                              +--|
+|                                                              |  +--GCA_008658365.1_7669949
+|                                                           +--|
+|                                                           |  |     +--GCA_020745705.1_7545880
+|                                                           |  |  +--|
+|                                                           |  |  |  +----GCF_003957555.1_6773038
+|                                                           |  +--|
+|                                                           |     +--GCA_009819775.1_7710147
+|                                                        +--|
+|                                                        |  |  +--GCA_011004875.1_7533578
+|                                                        |  +--|
+|                                                        |     |   +**GCA_020800305.1_8070314
+|                                                        |     +---|
+|                                                        |         +**GCA_020801775.1_6735162
+|                                                     +--|
+|                                                     |  |  +--GCF_900496995.4_7502621
+|                                                     |  +--|
+|                                                     |     +--GCA_009819825.1_7307656
+|                                                  +--|
+|                                                  |  +--GCA_020745775.1_7953089
+|  +-----------------------------------------------|
+|  |                                               |             +**GCF_016699485.2_7229641
+|  |                                               |          +--|
+|  |                                               |          |  +**GCF_016700215.2_7347452
+|  |                                               |       +--|
+|  |                                               |       |  +--GCF_000002315.6_7175225
+|  |                                               |  +----|
+|  |                                               |  |    +--GCA_905368555.1_6780957
+|  |                                               +--|
+|  |                                                  +---GCF_009819795.1_6906789
++--|
+|  |           +----GCA_020740795.1_199404095
+|  |        +--|
+|  |        |  +--GCA_907165065.1_74920160
+|  |     +--|
+|  |     |  +-----GCA_017976375.1_201260543
+|  |  +--|
+|  |  |  +--GCA_018139145.1_211678837
+|  +--|
+|     +---GCA_020746105.1_214575061
+|
++--GCA_014839835.1_113678530
+
+Tree in newick format:
+
+(GCA_015220805.1_39871314:0.0978031518,(((((((GCA_009819605.1_7752371:0.0273532400,GCA_008658365.1_7669949:0.0261792873):0.0563853513,((GCA_020745705.1_7545880:0.0742289550,GCF_003957555.1_6773038:0.1343305834):0.0240035678,GCA_009819775.1_7710147:0.0564911420):0.0020640112):0.0012826895,(GCA_011004875.1_7533578:0.0407172346,(GCA_020800305.1_8070314:0.0000010000,GCA_020801775.1_6735162:0.0000010000):0.1093121588):0.0163869925):0.0082080728,(GCF_900496995.4_7502621:0.0593574711,GCA_009819825.1_7307656:0.0675061883):0.0176293491):0.0121558046,GCA_020745775.1_7953089:0.0432725073):0.0146953861,((((GCF_016699485.2_7229641:0.0000010000,GCF_016700215.2_7347452:0.0000010000):0.0040344747,GCF_000002315.6_7175225:0.0013506518):0.0186652562,GCA_905368555.1_6780957:0.0444970569):0.1316912292,GCF_009819795.1_6906789:0.1032828932):0.0686183060):1.1424064904,((((GCA_020740795.1_199404095:0.1387674306,GCA_907165065.1_74920160:0.0903700101):0.0117433969,GCA_017976375.1_201260543:0.1575953448):0.0115492506,GCA_018139145.1_211678837:0.0263895637):0.0061953006,GCA_020746105.1_214575061:0.1069816604):0.0373866849):0.0379624017,GCA_014839835.1_113678530:0.0641069112);
+
+TIME STAMP
+----------
+
+Date and time: Thu Sep 15 00:34:29 2022
+Total CPU time used: 5.03106 seconds (0h:0m:5s)
+Total wall-clock time used: 5.55958 seconds (0h:0m:5s)
+

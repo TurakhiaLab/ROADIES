@@ -1,0 +1,231 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    raptor.ucsd.edu (AVX512, FMA3, 376 GB RAM)
+Command: iqtree -s test/msa/gene_aln_284.fa -m GTR+F -redo
+Seed:    506732 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Sep 15 00:36:40 2022
+Kernel:  AVX+FMA - 1 threads (64 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 64 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file test/msa/gene_aln_284.fa ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 120 sequences with 2404 columns, 1603 distinct patterns
+1169 parsimony-informative, 271 singleton sites, 964 constant sites
+                           Gap/Ambiguity  Composition  p-value
+   1  GCF_900496995.4_3650315     45.63%    passed     19.60%
+   2  GCF_015220075.1_12618885    55.37%    passed     23.65%
+   3  GCF_015220075.1_79742       55.41%    passed     30.62%
+   4  GCA_014839755.1_101825345   60.73%    passed     80.64%
+   5  GCA_014839755.1_112608886   61.27%    passed     96.15%
+   6  GCA_014839755.1_113669678   61.27%    passed     96.91%
+   7  GCA_014839755.1_70015120    59.15%    passed     74.27%
+   8  GCA_014839755.1_49376177    57.95%    passed     88.91%
+   9  GCA_014839755.1_1345698     59.82%    passed     97.55%
+  10  GCA_014839755.1_18691259    59.61%    passed     97.80%
+  11  GCA_014839755.1_11837       59.57%    passed     83.44%
+  12  GCA_014839755.1_24925       59.57%    passed     85.36%
+  13  GCA_014839755.1_15956682    59.94%    passed     92.21%
+  14  GCA_014839755.1_16009717    60.07%    passed     78.51%
+  15  GCA_014839755.1_40323       59.61%    passed     99.08%
+  16  GCA_014839755.1_107476      60.07%    passed     79.60%
+  17  GCA_014839755.1_170829      59.78%    passed     78.81%
+  18  GCA_014839755.1_59491       57.82%    passed     91.43%
+  19  GCA_014839755.1_30361       57.86%    passed     98.53%
+  20  GCA_014839755.1_296556      59.82%    passed     78.02%
+  21  GCA_014839755.1_17670470    57.95%    passed     99.66%
+  22  GCA_014839755.1_45795896    60.07%    passed     80.89%
+  23  GCA_014839755.1_56544737    60.15%    passed     95.23%
+  24  GCA_014839755.1_509223      59.82%    passed     97.17%
+  25  GCA_014839755.1_201409      57.78%    passed     87.24%
+  26  GCA_014839755.1_252202      57.78%    passed     87.24%
+  27  GCA_014839755.1_111694      60.69%    passed     89.71%
+  28  GCA_014839755.1_179267      60.02%    passed     82.62%
+  29  GCA_014839755.1_66020       59.48%    passed     70.38%
+  30  GCA_014839755.1_28677       61.11%    passed     93.87%
+  31  GCA_014839755.1_8296        59.82%    passed     90.60%
+  32  GCA_014839755.1_4249        60.02%    passed     90.65%
+  33  GCA_014839755.1_7312692     59.82%    passed     88.51%
+  34  GCA_014839755.1_17956024    59.28%    passed     73.00%
+  35  GCA_014839755.1_149730120   60.61%    passed     71.62%
+  36  GCA_014839755.1_112815823   60.07%    passed     67.71%
+  37  GCA_014839755.1_51945376    58.86%    passed     79.03%
+  38  GCA_014839755.1_72215533    59.65%    passed     83.74%
+  39  GCA_014839755.1_29948970    59.61%    passed     76.65%
+  40  GCA_014839755.1_182277      59.78%    passed     73.83%
+  41  GCA_014839755.1_79379       59.69%    passed     75.12%
+  42  GCA_014839755.1_169057      59.98%    passed     25.37%
+  43  GCA_014839755.1_232654      59.69%    passed     82.39%
+  44  GCA_014839755.1_3800831     59.32%    passed     97.25%
+  45  GCA_014839755.1_51535411    59.82%    passed     85.05%
+  46  GCA_014839755.1_47522       59.78%    passed     77.23%
+  47  GCA_014839755.1_105085      59.69%    passed     83.86%
+  48  GCA_014839755.1_216674      59.69%    passed     70.19%
+  49  GCA_014839755.1_286787      59.69%    passed     81.52%
+  50  GCA_014839755.1_231316      59.82%    passed     81.04%
+  51  GCA_014839755.1_58711       59.73%    passed     85.44%
+  52  GCA_014839755.1_85252       59.69%    passed     75.15%
+  53  GCA_014839755.1_82946       59.69%    passed     82.93%
+  54  GCA_014839755.1_59493       60.02%    passed     73.39%
+  55  GCA_014839755.1_117936      59.69%    passed     81.52%
+  56  GCA_014839755.1_34788       59.82%    passed     90.72%
+  57  GCF_020740725.1_84275563    53.79%    passed     22.22%
+  58  GCF_020740725.1_34254648    53.91%    passed     30.29%
+  59  GCF_020740725.1_10338190    53.83%    passed     26.23%
+  60  GCF_020740725.1_3374897     74.50%    passed     41.38%
+  61  GCF_020740725.1_6485868     53.83%    passed     30.37%
+  62  GCF_020740725.1_5167382     53.91%    passed     21.74%
+  63  GCF_020740725.1_1808162     54.24%    passed     19.98%
+  64  GCF_020740725.1_1807499     53.83%    passed     30.69%
+  65  GCF_020740725.1_27083       55.28%    failed      0.87%
+  66  GCF_020740725.1_92091975    53.79%    passed     12.58%
+  67  GCF_020740725.1_19590391    53.83%    passed     11.51%
+  68  GCF_020740725.1_113116312   54.28%    passed      6.33%
+  69  GCF_020740725.1_6703939     55.28%    failed      0.46%
+  70  GCF_020740725.1_5676887     53.83%    passed     11.36%
+  71  GCF_020740725.1_526607      74.50%    passed     20.89%
+  72  GCF_901933205.1_9034055     53.58%    passed     80.36%
+  73  GCF_901933205.1_9047798     53.54%    passed     77.80%
+  74  GCF_901933205.1_10593745    58.40%    passed     11.84%
+  75  GCF_901933205.1_33486709    55.91%    passed     41.27%
+  76  GCF_901933205.1_44849165    58.40%    passed     12.71%
+  77  GCF_901933205.1_5328        58.40%    passed     15.66%
+  78  GCF_901933205.1_2211        53.41%    passed     78.69%
+  79  GCF_901933205.1_5999        53.95%    passed     66.52%
+  80  GCF_901933205.1_7177        58.36%    passed      9.66%
+  81  GCF_901933205.1_99623601    49.17%    passed     24.79%
+  82  GCF_901933205.1_41470       58.49%    passed     13.65%
+  83  GCF_901933205.1_3067152     58.44%    passed      5.40%
+  84  GCF_901933205.1_9019620     59.40%    passed     84.61%
+  85  GCF_901933205.1_60750581    58.44%    passed      7.29%
+  86  GCF_901933205.1_2231        53.62%    passed     54.98%
+  87  GCF_901933205.1_48046       57.90%    passed     10.53%
+  88  GCF_901933205.1_8276        58.40%    passed      8.34%
+  89  GCF_901933205.1_23513       53.95%    passed     60.71%
+  90  GCF_901933205.1_10471       66.10%    passed      9.37%
+  91  GCA_902806625.1_113936444   49.17%    passed     47.78%
+  92  GCA_902806625.1_10330514    58.40%    passed     13.99%
+  93  GCA_902806625.1_33279670    55.91%    passed     41.27%
+  94  GCA_902806625.1_48023255    58.40%    passed     12.85%
+  95  GCA_902806625.1_18303905    58.49%    passed     25.22%
+  96  GCA_902806625.1_70491       58.44%    passed     12.58%
+  97  GCA_902806625.1_360388      54.12%    passed     96.82%
+  98  GCA_902806625.1_17790       53.66%    passed     85.82%
+  99  GCA_902806625.1_69095       58.15%    passed      8.15%
+ 100  GCA_902806625.1_25819       58.36%    passed      9.24%
+ 101  GCA_902806625.1_7967        53.49%    passed     65.00%
+ 102  GCA_902806625.1_3452        58.36%    passed     17.36%
+ 103  GCA_902806625.1_18987       58.40%    passed     17.99%
+ 104  GCA_902806625.1_4384        53.54%    passed     25.89%
+ 105  GCA_902806625.1_288         53.41%    passed     78.45%
+ 106  GCA_902806625.1_63938033    58.44%    passed      8.85%
+ 107  GCA_902806625.1_295445      53.62%    passed     58.36%
+ 108  GCA_902806625.1_347763      53.58%    passed     56.86%
+ 109  GCA_902806625.1_368261      53.12%    passed     52.62%
+ 110  GCA_902806625.1_462023      53.58%    passed     58.80%
+ 111  GCA_902806625.1_49453       58.40%    passed      6.46%
+ 112  GCA_902806625.1_35530       53.58%    passed     45.84%
+ 113  GCA_902806625.1_17900       53.58%    passed     49.40%
+ 114  GCA_902806625.1_22299       53.95%    passed     56.24%
+ 115  GCA_902806625.1_3169        56.99%    passed     37.65%
+ 116  GCF_017639655.2_114459751   55.20%    passed     11.66%
+ 117  GCA_013407035.1_11411485    53.87%    passed     22.47%
+ 118  GCA_013407035.1_33065461    54.78%    passed     12.94%
+ 119  GCA_013407035.1_33474428    53.79%    passed     14.46%
+ 120  GCA_013407035.1_289693      53.87%    passed      9.83%
+WARNING: 117 sequences contain more than 50% gaps/ambiguity
+****  TOTAL                       57.58%  2 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: GCA_014839755.1_252202 is identical to GCA_014839755.1_201409 but kept for subsequent analysis
+NOTE: GCA_902806625.1_33279670 is identical to GCF_901933205.1_33486709 but kept for subsequent analysis
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.053 seconds
+
+NOTE: 6 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -29985.465
+2. Current log-likelihood: -26949.760
+3. Current log-likelihood: -26939.000
+Optimal log-likelihood: -26938.894
+Rate parameters:  A-C: 0.96540  A-G: 5.27924  A-T: 0.90960  C-G: 1.07642  C-T: 5.13649  G-T: 1.00000
+Base frequencies:  A: 0.296  C: 0.201  G: 0.203  T: 0.300
+Parameters optimization took 3 rounds (0.757 sec)
+Computing ML distances based on estimated model parameters... 0.208 sec
+Computing BIONJ tree...
+0.007 seconds
+Log-likelihood of BIONJ tree: -27225.149
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 3.650 second
+Computing log-likelihood of 98 initial trees ... 2.311 seconds
+Current best score: -26938.894
+
+Do NNI search on 20 best initial trees
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -26921.171
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 2: -26900.806
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 9: -26897.616
+Iteration 10 / LogL: -26909.776 / Time: 0h:0m:9s
+Iteration 20 / LogL: -26901.738 / Time: 0h:0m:11s
+Finish initializing candidate tree set (19)
+Current best tree score: -26897.616 / CPU time: 10.219
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 21: -26896.000
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 26: -26895.346
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 30: -26893.583
+Iteration 30 / LogL: -26893.583 / Time: 0h:0m:15s (0h:0m:54s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 31: -26893.011
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 37: -26892.913
+Iteration 40 / LogL: -26897.198 / Time: 0h:0m:19s (0h:0m:49s left)
+Iteration 50 / LogL: -26900.698 / Time: 0h:0m:24s (0h:0m:42s left)
+UPDATE BEST LOG-LIKELIHOOD: -26892.912
+Iteration 60 / LogL: -26892.980 / Time: 0h:0m:28s (0h:0m:37s left)
+Iteration 70 / LogL: -26894.784 / Time: 0h:0m:32s (0h:0m:31s left)
+Iteration 80 / LogL: -26929.511 / Time: 0h:0m:36s (0h:0m:26s left)
+Iteration 90 / LogL: -26893.303 / Time: 0h:0m:41s (0h:0m:21s left)
+Iteration 100 / LogL: -26893.344 / Time: 0h:0m:45s (0h:0m:16s left)
+Iteration 110 / LogL: -26905.434 / Time: 0h:0m:48s (0h:0m:12s left)
+UPDATE BEST LOG-LIKELIHOOD: -26892.912
+Iteration 120 / LogL: -26904.724 / Time: 0h:0m:52s (0h:0m:7s left)
+Iteration 130 / LogL: -26907.698 / Time: 0h:0m:57s (0h:0m:3s left)
+TREE SEARCH COMPLETED AFTER 138 ITERATIONS / Time: 0h:1m:0s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -26892.912
+Optimal log-likelihood: -26892.910
+Rate parameters:  A-C: 0.96322  A-G: 5.28913  A-T: 0.89988  C-G: 1.06621  C-T: 5.14204  G-T: 1.00000
+Base frequencies:  A: 0.296  C: 0.201  G: 0.203  T: 0.300
+Parameters optimization took 1 rounds (0.075 sec)
+BEST SCORE FOUND : -26892.910
+Total tree length: 5.713
+
+Total number of iterations: 138
+CPU time used for tree search: 58.807 sec (0h:0m:58s)
+Wall-clock time used for tree search: 59.420 sec (0h:0m:59s)
+Total CPU time used: 60.042 sec (0h:1m:0s)
+Total wall-clock time used: 60.672 sec (0h:1m:0s)
+
+Analysis results written to: 
+  IQ-TREE report:                test/msa/gene_aln_284.fa.iqtree
+  Maximum-likelihood tree:       test/msa/gene_aln_284.fa.treefile
+  Likelihood distances:          test/msa/gene_aln_284.fa.mldist
+  Screen log file:               test/msa/gene_aln_284.fa.log
+
+Date and Time: Thu Sep 15 00:37:41 2022

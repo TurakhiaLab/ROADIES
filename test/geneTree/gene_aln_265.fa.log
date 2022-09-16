@@ -1,0 +1,133 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    raptor.ucsd.edu (AVX512, FMA3, 376 GB RAM)
+Command: iqtree -s test/msa/gene_aln_265.fa -m GTR+F -redo
+Seed:    563485 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Sep 15 00:34:44 2022
+Kernel:  AVX+FMA - 1 threads (64 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 64 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file test/msa/gene_aln_265.fa ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 36 sequences with 1488 columns, 1261 distinct patterns
+864 parsimony-informative, 266 singleton sites, 358 constant sites
+                          Gap/Ambiguity  Composition  p-value
+   1  GCA_015220805.1_16346243   35.95%    failed      0.35%
+   2  GCA_016128335.1_5520205    29.97%    passed     26.21%
+   3  GCF_016699485.2_14935078   35.42%    failed      0.00%
+   4  GCF_900496995.4_18867017   28.70%    failed      2.10%
+   5  GCA_020740795.1_10452053   26.88%    failed      0.07%
+   6  GCF_015220075.1_6015858    31.45%    passed      5.15%
+   7  GCA_907165065.1_5719033    29.17%    failed      0.64%
+   8  GCF_016700215.2_14967931   35.55%    failed      0.00%
+   9  GCF_012275295.1_82190345   31.79%    passed     18.69%
+  10  GCF_009829145.1_13082855   32.33%    passed     17.55%
+  11  GCA_012275265.1_82238210   31.79%    passed     18.69%
+  12  GCA_017976375.1_16571237   33.13%    passed      5.02%
+  13  GCA_014839835.1_11835987   30.58%    failed      1.45%
+  14  GCF_000002315.6_14977235   35.42%    failed      0.00%
+  15  GCA_011004875.1_19037037   27.62%    failed      0.14%
+  16  GCA_014839755.1_1247007    35.82%    failed      0.00%
+  17  GCA_013368605.1_17181126   45.63%    passed     16.19%
+  18  GCA_018139145.1_19222993   30.17%    passed     10.17%
+  19  GCA_020800305.1_21475133   31.45%    failed      1.32%
+  20  GCA_905368555.1_14825828   29.30%    failed      0.00%
+  21  GCA_020745705.1_10990360   28.09%    failed      0.08%
+  22  GCF_020740725.1_13568204   33.20%    failed      3.77%
+  23  GCF_901933205.1_10317986   32.86%    passed      9.29%
+  24  GCA_020801775.1_21305524   31.45%    failed      1.32%
+  25  GCF_003957555.1_14212700   26.48%    failed      0.00%
+  26  GCA_902806625.1_9373370    32.86%    passed     11.60%
+  27  GCA_020746105.1_10370802   33.53%    failed      0.21%
+  28  GCF_017639655.2_5959445    31.25%    failed      3.88%
+  29  GCA_016904835.1_22770717   32.80%    failed      1.03%
+  30  GCA_017639245.1_7418632    29.64%    failed      1.42%
+  31  GCF_018691265.1_5717608    29.57%    passed      7.54%
+  32  GCA_020745775.1_5819655    27.22%    failed      0.11%
+  33  GCA_009819825.1_18416128   26.08%    passed      5.67%
+  34  GCA_009819775.1_5893863    29.57%    failed      4.05%
+  35  GCA_017639555.1_6030846    30.91%    failed      2.10%
+  36  GCA_013407035.1_11324931   32.66%    passed      5.29%
+****  TOTAL                      31.56%  23 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: GCF_000002315.6_14977235 is identical to GCF_016699485.2_14935078 but kept for subsequent analysis
+NOTE: GCA_012275265.1_82238210 is identical to GCF_012275295.1_82190345 but kept for subsequent analysis
+NOTE: GCA_020801775.1_21305524 is identical to GCA_020800305.1_21475133 but kept for subsequent analysis
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.012 seconds
+
+NOTE: 1 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -16380.138
+2. Current log-likelihood: -15562.047
+3. Current log-likelihood: -15557.975
+Optimal log-likelihood: -15557.919
+Rate parameters:  A-C: 1.09926  A-G: 2.87729  A-T: 0.57584  C-G: 1.35568  C-T: 2.87070  G-T: 1.00000
+Base frequencies:  A: 0.320  C: 0.179  G: 0.181  T: 0.320
+Parameters optimization took 3 rounds (0.193 sec)
+Computing ML distances based on estimated model parameters... 0.029 sec
+Computing BIONJ tree...
+0.001 seconds
+Log-likelihood of BIONJ tree: -15567.046
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 0.721 second
+Computing log-likelihood of 98 initial trees ... 0.466 seconds
+Current best score: -15540.467
+
+Do NNI search on 20 best initial trees
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -15526.916
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 2: -15525.176
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 5: -15521.270
+Iteration 10 / LogL: -15529.153 / Time: 0h:0m:2s
+Iteration 20 / LogL: -15524.103 / Time: 0h:0m:2s
+Finish initializing candidate tree set (18)
+Current best tree score: -15521.270 / CPU time: 2.573
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Iteration 30 / LogL: -15521.473 / Time: 0h:0m:3s (0h:0m:9s left)
+UPDATE BEST LOG-LIKELIHOOD: -15521.270
+Iteration 40 / LogL: -15523.691 / Time: 0h:0m:4s (0h:0m:7s left)
+Iteration 50 / LogL: -15522.402 / Time: 0h:0m:5s (0h:0m:6s left)
+Iteration 60 / LogL: -15521.346 / Time: 0h:0m:6s (0h:0m:4s left)
+Iteration 70 / LogL: -15524.784 / Time: 0h:0m:7s (0h:0m:3s left)
+Iteration 80 / LogL: -15521.957 / Time: 0h:0m:7s (0h:0m:2s left)
+Iteration 90 / LogL: -15525.931 / Time: 0h:0m:8s (0h:0m:1s left)
+Iteration 100 / LogL: -15521.276 / Time: 0h:0m:9s (0h:0m:0s left)
+TREE SEARCH COMPLETED AFTER 106 ITERATIONS / Time: 0h:0m:10s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -15521.270
+Optimal log-likelihood: -15521.265
+Rate parameters:  A-C: 1.08928  A-G: 2.90109  A-T: 0.57266  C-G: 1.36121  C-T: 2.91938  G-T: 1.00000
+Base frequencies:  A: 0.320  C: 0.179  G: 0.181  T: 0.320
+Parameters optimization took 1 rounds (0.016 sec)
+BEST SCORE FOUND : -15521.265
+Total tree length: 3.907
+
+Total number of iterations: 106
+CPU time used for tree search: 9.648 sec (0h:0m:9s)
+Wall-clock time used for tree search: 9.752 sec (0h:0m:9s)
+Total CPU time used: 9.939 sec (0h:0m:9s)
+Total wall-clock time used: 10.044 sec (0h:0m:10s)
+
+Analysis results written to: 
+  IQ-TREE report:                test/msa/gene_aln_265.fa.iqtree
+  Maximum-likelihood tree:       test/msa/gene_aln_265.fa.treefile
+  Likelihood distances:          test/msa/gene_aln_265.fa.mldist
+  Screen log file:               test/msa/gene_aln_265.fa.log
+
+Date and Time: Thu Sep 15 00:34:54 2022

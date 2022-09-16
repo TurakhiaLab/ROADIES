@@ -1,0 +1,25 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    raptor.ucsd.edu (AVX512, FMA3, 376 GB RAM)
+Command: iqtree -s test/msa/gene_aln_253.fa -m GTR+F -redo
+Seed:    255659 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Sep 15 00:36:43 2022
+Kernel:  AVX+FMA - 1 threads (64 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 64 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file test/msa/gene_aln_253.fa ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 107 sequences with 2774 columns, 2008 distinct patterns
+1611 parsimony-informative, 133 singleton sites, 1030 constant sites
+ERROR: Duplicated sequence name GCA_009819825.1_27177
+ERROR: Duplicated sequence name GCA_013368605.1_312381
+ERROR: Duplicated sequence name GCA_017639485.1_594478
+ERROR: Duplicated sequence name GCA_017639485.1_594494
+ERROR: Duplicated sequence name GCA_020745775.1_6699
+ERROR: Duplicated sequence name GCF_009819795.1_1141865
+ERROR: Duplicated sequence name GCF_015220075.1_14581980
+ERROR: Please rename sequences listed above!

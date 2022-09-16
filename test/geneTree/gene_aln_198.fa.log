@@ -1,0 +1,182 @@
+IQ-TREE multicore version 2.0.3 for Linux 64-bit built Dec 20 2020
+Developed by Bui Quang Minh, Nguyen Lam Tung, Olga Chernomor,
+Heiko Schmidt, Dominik Schrempf, Michael Woodhams.
+
+Host:    raptor.ucsd.edu (AVX512, FMA3, 376 GB RAM)
+Command: iqtree -s test/msa/gene_aln_198.fa -m GTR+F -redo
+Seed:    291193 (Using SPRNG - Scalable Parallel Random Number Generator)
+Time:    Thu Sep 15 00:37:06 2022
+Kernel:  AVX+FMA - 1 threads (64 CPU cores detected)
+
+HINT: Use -nt option to specify number of threads because your CPU has 64 cores!
+HINT: -nt AUTO will automatically determine the best number of threads to use.
+
+Reading alignment file test/msa/gene_aln_198.fa ... Fasta format detected
+Alignment most likely contains DNA/RNA sequences
+Alignment has 56 sequences with 1973 columns, 1464 distinct patterns
+1167 parsimony-informative, 174 singleton sites, 632 constant sites
+                          Gap/Ambiguity  Composition  p-value
+   1  GCA_015220805.1_13527155   52.20%    failed      1.18%
+   2  GCA_009819605.1_35531343   41.76%    passed      7.40%
+   3  GCA_009819605.1_47406038   53.27%    failed      0.00%
+   4  GCA_016128335.1_14549038   50.99%    failed      2.02%
+   5  GCF_016699485.2_1118005    49.32%    failed      0.00%
+   6  GCF_016699485.2_11532396   49.16%    failed      1.34%
+   7  GCA_008658365.1_32903236   41.66%    passed     19.24%
+   8  GCF_900496995.4_51109073   54.38%    failed      0.17%
+   9  GCF_900496995.4_17699445   49.37%    failed      0.00%
+  10  GCA_020740795.1_33186100   46.33%    failed      0.00%
+  11  GCA_020740795.1_11974951   52.81%    failed      1.31%
+  12  GCF_015220075.1_52199485   61.63%    failed      0.00%
+  13  GCF_015220075.1_13672208   52.56%    failed      0.00%
+  14  GCA_907165065.1_54664611   50.79%    failed      0.05%
+  15  GCF_016700215.2_1057177    49.21%    failed      0.00%
+  16  GCF_016700215.2_11406002   49.32%    failed      1.36%
+  17  GCF_012275295.1_9657598    51.80%    failed      0.00%
+  18  GCF_009829145.1_9741341    50.73%    failed      0.00%
+  19  GCA_012275265.1_9657598    51.80%    failed      0.00%
+  20  GCA_017976375.1_6507885    52.86%    failed      0.83%
+  21  GCF_009819795.1_12128196   49.21%    failed      0.11%
+  22  GCA_014839835.1_11266573   51.09%    failed      0.00%
+  23  GCF_000002315.6_1066044    49.16%    failed      0.00%
+  24  GCF_000002315.6_11958399   49.16%    failed      1.50%
+  25  GCA_011004875.1_13288366   51.60%    failed      0.77%
+  26  GCA_011004875.1_7958314    54.49%    failed      0.00%
+  27  GCA_014839755.1_11181179   51.55%    failed      1.12%
+  28  GCA_013368605.1_17071869   51.70%    failed      0.10%
+  29  GCA_018139145.1_13810889   51.09%    failed      0.37%
+  30  GCA_018139145.1_8182633    45.01%    failed      0.00%
+  31  GCA_020800305.1_1518331    51.24%    failed      0.01%
+  32  GCA_017639485.1_11165510   41.66%    failed      0.03%
+  33  GCA_905368555.1_2742934    50.18%    failed      0.00%
+  34  GCA_905368555.1_10932376   49.82%    failed      3.79%
+  35  GCA_020745705.1_12243066   51.39%    failed      0.47%
+  36  GCF_020740725.1_3739863    49.27%    failed      0.05%
+  37  GCF_901933205.1_11129984   50.68%    failed      1.41%
+  38  GCA_020801775.1_22727172   51.24%    failed      0.30%
+  39  GCF_003957555.1_12274013   51.39%    failed      0.39%
+  40  GCA_902806625.1_9189220    50.63%    failed      0.05%
+  41  GCA_020746105.1_11929764   51.75%    failed      0.48%
+  42  GCF_017639655.2_52170865   61.63%    failed      0.00%
+  43  GCF_017639655.2_13716385   52.81%    failed      0.00%
+  44  GCA_016904835.1_11029805   51.39%    passed      7.32%
+  45  GCA_017639245.1_10076621   51.19%    failed      0.00%
+  46  GCF_018691265.1_36194970   46.02%    failed      0.00%
+  47  GCF_018691265.1_10822855   51.44%    failed      0.00%
+  48  GCA_020745775.1_36517690   45.06%    failed      0.00%
+  49  GCA_020745775.1_39296968   53.57%    failed      0.56%
+  50  GCA_009819825.1_36673274   47.29%    failed      0.00%
+  51  GCA_009819825.1_10992358   51.24%    failed      0.06%
+  52  GCA_009819775.1_7803256    67.82%    failed      0.00%
+  53  GCA_009819775.1_11050759   51.44%    failed      0.13%
+  54  GCA_017639555.1_56328788   50.99%    failed      2.92%
+  55  GCA_017639555.1_36830403   45.21%    failed      0.00%
+  56  GCA_013407035.1_3708199    50.63%    failed      0.51%
+WARNING: 37 sequences contain more than 50% gaps/ambiguity
+****  TOTAL                      50.77%  53 sequences failed composition chi2 test (p-value<5%; df=3)
+NOTE: GCA_012275265.1_9657598 is identical to GCF_012275295.1_9657598 but kept for subsequent analysis
+
+Create initial parsimony tree by phylogenetic likelihood library (PLL)... 0.024 seconds
+
+NOTE: 2 MB RAM (0 GB) is required!
+Estimate model parameters (epsilon = 0.100)
+1. Initial log-likelihood: -24385.310
+2. Current log-likelihood: -22339.645
+3. Current log-likelihood: -22330.465
+Optimal log-likelihood: -22330.393
+Rate parameters:  A-C: 1.00356  A-G: 3.33682  A-T: 0.60447  C-G: 1.24070  C-T: 3.23712  G-T: 1.00000
+Base frequencies:  A: 0.311  C: 0.176  G: 0.195  T: 0.318
+Parameters optimization took 3 rounds (0.485 sec)
+Computing ML distances based on estimated model parameters... 0.044 sec
+Computing BIONJ tree...
+0.002 seconds
+Log-likelihood of BIONJ tree: -22359.633
+--------------------------------------------------------------------
+|             INITIALIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Generating 98 parsimony trees... 1.220 second
+Computing log-likelihood of 98 initial trees ... 0.898 seconds
+Current best score: -22330.393
+
+Do NNI search on 20 best initial trees
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 1: -22320.387
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 2: -22315.731
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 4: -22313.561
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 7: -22312.920
+Iteration 10 / LogL: -22316.557 / Time: 0h:0m:4s
+Iteration 20 / LogL: -22318.747 / Time: 0h:0m:5s
+Finish initializing candidate tree set (19)
+Current best tree score: -22312.920 / CPU time: 4.982
+Number of iterations: 20
+--------------------------------------------------------------------
+|               OPTIMIZING CANDIDATE TREE SET                      |
+--------------------------------------------------------------------
+Iteration 30 / LogL: -22406.655 / Time: 0h:0m:7s (0h:0m:19s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 31: -22310.699
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 33: -22309.048
+Iteration 40 / LogL: -22309.586 / Time: 0h:0m:9s (0h:0m:23s left)
+Iteration 50 / LogL: -22309.585 / Time: 0h:0m:11s (0h:0m:19s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 56: -22307.398
+Iteration 60 / LogL: -22313.029 / Time: 0h:0m:13s (0h:0m:22s left)
+Iteration 70 / LogL: -22325.294 / Time: 0h:0m:15s (0h:0m:19s left)
+Iteration 80 / LogL: -22309.177 / Time: 0h:0m:17s (0h:0m:16s left)
+Iteration 90 / LogL: -22317.600 / Time: 0h:0m:19s (0h:0m:14s left)
+Iteration 100 / LogL: -22324.604 / Time: 0h:0m:21s (0h:0m:11s left)
+Iteration 110 / LogL: -22307.804 / Time: 0h:0m:23s (0h:0m:9s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 112: -22306.792
+Iteration 120 / LogL: -22313.765 / Time: 0h:0m:25s (0h:0m:19s left)
+Iteration 130 / LogL: -22307.662 / Time: 0h:0m:27s (0h:0m:17s left)
+Iteration 140 / LogL: -22308.159 / Time: 0h:0m:29s (0h:0m:15s left)
+Iteration 150 / LogL: -22306.937 / Time: 0h:0m:31s (0h:0m:12s left)
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 154: -22306.408
+Estimate model parameters (epsilon = 0.100)
+BETTER TREE FOUND at iteration 160: -22305.865
+Iteration 160 / LogL: -22305.865 / Time: 0h:0m:33s (0h:0m:20s left)
+Iteration 170 / LogL: -22380.542 / Time: 0h:0m:35s (0h:0m:18s left)
+UPDATE BEST LOG-LIKELIHOOD: -22305.856
+Iteration 180 / LogL: -22310.002 / Time: 0h:0m:37s (0h:0m:16s left)
+Iteration 190 / LogL: -22317.397 / Time: 0h:0m:39s (0h:0m:14s left)
+Iteration 200 / LogL: -22326.107 / Time: 0h:0m:40s (0h:0m:12s left)
+Iteration 210 / LogL: -22306.074 / Time: 0h:0m:42s (0h:0m:10s left)
+Iteration 220 / LogL: -22311.295 / Time: 0h:0m:44s (0h:0m:8s left)
+Iteration 230 / LogL: -22306.956 / Time: 0h:0m:46s (0h:0m:6s left)
+Iteration 240 / LogL: -22326.265 / Time: 0h:0m:48s (0h:0m:4s left)
+Iteration 250 / LogL: -22309.242 / Time: 0h:0m:50s (0h:0m:2s left)
+Iteration 260 / LogL: -22306.575 / Time: 0h:0m:52s (0h:0m:0s left)
+TREE SEARCH COMPLETED AFTER 261 ITERATIONS / Time: 0h:0m:52s
+
+--------------------------------------------------------------------
+|                    FINALIZING TREE SEARCH                        |
+--------------------------------------------------------------------
+Performs final model parameters optimization
+Estimate model parameters (epsilon = 0.010)
+1. Initial log-likelihood: -22305.856
+Optimal log-likelihood: -22305.852
+Rate parameters:  A-C: 1.01250  A-G: 3.36811  A-T: 0.60327  C-G: 1.24383  C-T: 3.26975  G-T: 1.00000
+Base frequencies:  A: 0.311  C: 0.176  G: 0.195  T: 0.318
+Parameters optimization took 1 rounds (0.030 sec)
+BEST SCORE FOUND : -22305.852
+Total tree length: 6.415
+
+Total number of iterations: 261
+CPU time used for tree search: 51.307 sec (0h:0m:51s)
+Wall-clock time used for tree search: 51.896 sec (0h:0m:51s)
+Total CPU time used: 51.952 sec (0h:0m:51s)
+Total wall-clock time used: 52.549 sec (0h:0m:52s)
+
+Analysis results written to: 
+  IQ-TREE report:                test/msa/gene_aln_198.fa.iqtree
+  Maximum-likelihood tree:       test/msa/gene_aln_198.fa.treefile
+  Likelihood distances:          test/msa/gene_aln_198.fa.mldist
+  Screen log file:               test/msa/gene_aln_198.fa.log
+
+Date and Time: Thu Sep 15 00:37:58 2022

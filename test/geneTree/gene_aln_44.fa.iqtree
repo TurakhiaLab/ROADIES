@@ -1,0 +1,147 @@
+IQ-TREE 2.0.3 built Dec 20 2020
+
+Input file name: test/msa/gene_aln_44.fa
+Type of analysis: tree reconstruction
+Random seed number: 677314
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Bui Quang Minh, Heiko A. Schmidt, Olga Chernomor, Dominik Schrempf,
+Michael D. Woodhams, Arndt von Haeseler, and Robert Lanfear (2020)
+IQ-TREE 2: New models and efficient methods for phylogenetic inference
+in the genomic era. Mol. Biol. Evol., in press.
+https://doi.org/10.1093/molbev/msaa015
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 31 sequences with 1687 nucleotide sites
+Number of constant sites: 575 (= 34.0842% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 575 (= 34.0842% of all sites)
+Number of parsimony informative sites: 873
+Number of distinct site patterns: 1226
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: GTR+F
+
+Rate parameter R:
+
+  A-C: 0.9614
+  A-G: 3.4800
+  A-T: 0.8028
+  C-G: 1.2200
+  C-T: 3.5654
+  G-T: 1.0000
+
+State frequencies: (empirical counts from alignment)
+
+  pi(A) = 0.2749
+  pi(C) = 0.2192
+  pi(G) = 0.2305
+  pi(T) = 0.2753
+
+Rate matrix Q:
+
+  A    -0.908    0.1551    0.5903    0.1626
+  C    0.1945    -1.124    0.2069    0.7223
+  G    0.7039    0.1968    -1.103    0.2026
+  T    0.1624     0.575    0.1696    -0.907
+
+Model of rate heterogeneity: Uniform
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -14550.8387 (s.e. 275.7339)
+Unconstrained log-likelihood (without tree): -11219.8423
+Number of free parameters (#branches + #model parameters): 67
+Akaike information criterion (AIC) score: 29235.6775
+Corrected Akaike information criterion (AICc) score: 29241.3056
+Bayesian information criterion (BIC) score: 29599.5348
+
+Total tree length (sum of branch lengths): 3.9599
+Sum of internal branch lengths: 1.2547 (31.6859% of tree length)
+
+WARNING: 3 near-zero internal branches (<0.0006) should be treated with caution
+         Such branches are denoted by '**' in the figure below
+
+NOTE: Tree is UNROOTED although outgroup taxon 'GCA_009819605.1_36124889' is drawn at root
+
++----GCA_009819605.1_36124889
+|
+|                                                                              +--GCA_008658365.1_49099918
+|                                                                           +--|
+|                                                                           |  +--GCA_017639485.1_50114155
+|                                                                        +**|
+|                                                                        |  |           +----GCA_907165065.1_32509056
+|                                                                        |  |        +--|
+|                                                                        |  |        |  |      +**GCA_020800305.1_51143983
+|                                                                        |  |        |  +------|
+|                                                                        |  |        |         +**GCA_020801775.1_51143983
+|                                                                        |  |     +--|
+|                                                                        |  |     |  +--GCA_009819775.1_50184075
+|                                                                        |  |  +--|
+|                                                                        |  |  |  +--GCA_020745775.1_50353289
+|                                                                        |  +--|
+|                                                                        |     +--------GCA_016904835.1_66158610
+|                                                                     +--|
+|                                                                     |  +----GCF_018691265.1_40451193
+|                                                                  +--|
+|                                                                  |  |    +--GCF_012275295.1_47616109
+|                                                                  |  +----|
+|                                                                  |       +--GCA_017639245.1_47802894
+|                    +---------------------------------------------|
+|                    |                                             +-----------GCF_009819795.1_49056298
+|                 +**|
+|                 |  +--GCA_018139145.1_35882944
+|              +--|
+|              |  |  +--GCF_900496995.4_37869058
+|              |  +--|
+|              |     |        +**GCF_012275295.1_5468
+|              |     +--------|
+|              |              +**GCA_012275265.1_5468
+|           +--|
+|           |  +-----GCA_020746105.1_12343374
+|        +--|
+|        |  |  +---GCA_009819825.1_37324328
+|        |  +--|
+|        |     +--GCA_017639555.1_37311971
+|     +--|
+|     |  |     +--GCA_020740795.1_44054684
+|     |  |  +--|
+|     |  |  |  +--GCA_020745705.1_75061606
+|     |  +--|
+|     |     +----------GCF_003957555.1_30565075
+|  +**|
+|  |  |      +--GCF_015220075.1_36662198
+|  |  |  +---|
+|  |  |  |   +--GCF_017639655.2_37699394
+|  |  +--|
+|  |     |  +------GCF_009829145.1_71657956
+|  |     +--|
+|  |        |       +**GCF_901933205.1_33126474
+|  |        +-------|
+|  |                +**GCA_902806625.1_32919446
++--|
+|  +---GCA_011004875.1_37380617
+|
+|  +------GCA_017976375.1_35237864
++--|
+   +--GCA_013368605.1_64444684
+
+Tree in newick format:
+
+(GCA_009819605.1_36124889:0.0948815580,((((((((((((GCA_008658365.1_49099918:0.0753139878,GCA_017639485.1_50114155:0.0694486289):0.0134586450,((((GCA_907165065.1_32509056:0.1059523459,(GCA_020800305.1_51143983:0.0000010000,GCA_020801775.1_51143983:0.0000010000):0.1491192805):0.0015085289,GCA_009819775.1_50184075:0.0573943635):0.0035520126,GCA_020745775.1_50353289:0.0576123326):0.0007594768,GCA_016904835.1_66158610:0.1802836517):0.0010903875):0.0000023559,GCF_018691265.1_40451193:0.0956033893):0.0133602559,(GCF_012275295.1_47616109:0.0664408206,GCA_017639245.1_47802894:0.0323074337):0.1058612378):0.0112705153,GCF_009819795.1_49056298:0.2399134713):0.8800002693,GCA_018139145.1_35882944:0.0562710160):0.0000020914,(GCF_900496995.4_37869058:0.0471624024,(GCF_012275295.1_5468:0.0000010000,GCA_012275265.1_5468:0.0000010000):0.1756636094):0.0060167971):0.0012494450,GCA_020746105.1_12343374:0.1224025990):0.0011982137,(GCA_009819825.1_37324328:0.0875061447,GCA_017639555.1_37311971:0.0382535137):0.0028336988):0.0022045648,((GCA_020740795.1_44054684:0.0638738975,GCA_020745705.1_75061606:0.0517739526):0.0346943589,GCF_003957555.1_30565075:0.2088322563):0.0286894652):0.0041656202,((GCF_015220075.1_36662198:0.0116494967,GCF_017639655.2_37699394:0.0132247137):0.0785549369,(GCF_009829145.1_71657956:0.1345772161,(GCF_901933205.1_33126474:0.0000010000,GCA_902806625.1_32919446:0.0000010000):0.1695229269):0.0449096598):0.0094785808):0.0001427872,GCA_011004875.1_37380617:0.0878213828):0.0047988864,(GCA_017976375.1_35237864:0.1398133373,GCA_013368605.1_64444684:0.0725524642):0.0049328947);
+
+TIME STAMP
+----------
+
+Date and time: Thu Sep 15 00:36:56 2022
+Total CPU time used: 15.3331 seconds (0h:0m:15s)
+Total wall-clock time used: 15.5595 seconds (0h:0m:15s)
+
