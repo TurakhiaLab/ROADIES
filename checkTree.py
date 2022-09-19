@@ -12,11 +12,11 @@ gtList = [f for f in listdir('test/geneTree/') if f.find('.newick') != -1 and f.
 # tree = read_tree_newick('test/geneTree/gene_tree_4.newick')
 # tree.draw()
 for gtFile in gtList:
-    print(gtFile)
+    # print(gtFile)
     flag = 0
     tree = read_tree_newick('test/geneTree/' + gtFile)
     for n in tree.traverse_preorder(leaves=False):
-        if(len(n.child_nodes()) != 2):
+        if(len(n.child_nodes()) > 2):
             print(len(n.child_nodes()))
             flag = 1
             # break

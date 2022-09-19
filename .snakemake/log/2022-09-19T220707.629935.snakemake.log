@@ -1,0 +1,29 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 32
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+all           1              1              1
+astral        1              1              1
+total         2              1              1
+
+Select jobs to execute...
+
+[Mon Sep 19 22:07:07 2022]
+rule astral:
+    input: test/geneTree/gene_tree_merged.newick
+    output: test/speciesTree.newick
+    jobid: 1
+    reason: Missing output files: test/speciesTree.newick
+    resources: tmpdir=/tmp
+
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 42 of /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/Snakefile:
+Job Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+test/speciesTree.newick completed successfully, but some output files are missing. 1
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2022-09-19T220707.629935.snakemake.log

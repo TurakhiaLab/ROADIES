@@ -1,0 +1,24 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 32
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job       count    min threads    max threads
+------  -------  -------------  -------------
+all           1              1              1
+astral        1              1              1
+total         2              1              1
+
+Select jobs to execute...
+
+[Mon Sep 19 17:27:43 2022]
+rule astral:
+    input: test/geneTree/gene_tree_merged.newick
+    output: test/speciesTree.newick
+    jobid: 1
+    reason: Missing output files: test/speciesTree.newick
+    resources: tmpdir=/tmp
+
+Terminating processes on user request, this might take some time.
+Cancelling snakemake on user request.

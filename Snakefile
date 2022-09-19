@@ -46,7 +46,7 @@ rule astral:
 		config["OUT"]+"/speciesTree.newick"
 	shell:
 		# "astral -i {input} -o {output}"
-		"java -Djava.library.path=A-pro/ASTRAL-MP/lib -jar A-pro/ASTRAL-MP/astral.1.1.6.jar -i {input} -o {output} -a mapping.txt"
+		"java -Djava.library.path=A-pro/ASTRAL-MP/lib -jar A-pro/ASTRAL-MP/astral.1.1.6.jar -i {input} -o {output} -a mapping.txt --polylimit 3"
 rule mergeTrees:
 	input:
 		expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
@@ -70,15 +70,15 @@ rule iqtree:
 # 		config["OUT"]+"/geneTree/gene_tree_{id}.newick"
 # 	shell:
 # 		"./treeBuilder/ftWrapper.sh {input} {output}"
-# rule mafft:
-# 	input:
-# 		config["OUT"]+"/genes/gene_{id}.fa"
-# 	output:
-# 		config["OUT"]+"/msa/gene_aln_{id}.fa"
-# 	conda: 
-# 		"envr.yaml"
-# 	shell:
-# 		"./treeBuilder/mafftWrapper.sh {input} {output}"
+rule mafft:
+	input:
+		config["OUT"]+"/genes/gene_{id}.fa"
+	output:
+		config["OUT"]+"/msa/gene_aln_{id}.fa"
+	conda: 
+		"envr.yaml"
+	shell:
+		"./treeBuilder/mafftWrapper.sh {input} {output}"
 rule lastz2fasta:
 	input:
 		expand(config["OUT"]+"/alignments/{sample}.maf",sample=SAMPLES)   
@@ -104,7 +104,7 @@ rule lastz:
 	conda:
 		"envr.yaml"
 	shell:
-		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:70 --filter=identity:70 --step=20 --format=maf --output={output}"
+		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:90 --filter=identity:90 --step=20 --format=maf --output={output}"
 
 rule sequence_merge:
 	input:
