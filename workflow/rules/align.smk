@@ -33,4 +33,4 @@ rule lastz:
 	conda:
 		"../envs/align.yaml"
 	shell:
-		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:90 --filter=identity:90 --format=maf --steps=20 --output={output}"
+		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:90 --filter=identity:90 --format=maf --output={output}"
