@@ -1,7 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule lastz in line 5 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
-Missing input files for rule lastz:
-    output: GCA_008658365.fa.maf
-    wildcards: genomes=GCA_008658365.fa
-    affected files:
-        /home/AD.UCSD.EDU/ttl074/wga/genomes_top40/GCA_008658365.fa

@@ -1,0 +1,14 @@
+name: envr
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - alive-progress
+  - biopython=1.79
+  - iqtree=2.2.0.3
+  - lastz=1.04.15
+  - mafft=7.505
+  - numpy=1.23.2
+  - python>=3.7
+  - snakemake-minimal=7.12.1
+  - treeswift=1.1.28

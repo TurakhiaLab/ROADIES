@@ -1,0 +1,140 @@
+{
+  "build": "pyh5e36f6f_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/bioconda/noarch",
+  "constrains": [],
+  "depends": [
+    "python"
+  ],
+  "extracted_package_dir": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/treeswift-1.1.28-pyh5e36f6f_0",
+  "features": "",
+  "files": [
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/INSTALLER",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/LICENSE",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/METADATA",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/RECORD",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/REQUESTED",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/WHEEL",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/direct_url.json",
+    "lib/python3.10/site-packages/treeswift-1.1.28.dist-info/top_level.txt",
+    "lib/python3.10/site-packages/treeswift/Node.py",
+    "lib/python3.10/site-packages/treeswift/Tree.py",
+    "lib/python3.10/site-packages/treeswift/__init__.py",
+    "lib/python3.10/site-packages/treeswift/__pycache__/Node.cpython-310.pyc",
+    "lib/python3.10/site-packages/treeswift/__pycache__/Tree.cpython-310.pyc",
+    "lib/python3.10/site-packages/treeswift/__pycache__/__init__.cpython-310.pyc"
+  ],
+  "fn": "treeswift-1.1.28-pyh5e36f6f_0.tar.bz2",
+  "license": "GPL-3.0-or-later",
+  "link": {
+    "source": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/treeswift-1.1.28-pyh5e36f6f_0",
+    "type": 1
+  },
+  "md5": "cfc944f0424f330d6543cea3c2b1ef8e",
+  "name": "treeswift",
+  "noarch": "python",
+  "package_tarball_full_path": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/treeswift-1.1.28-pyh5e36f6f_0.tar.bz2",
+  "package_type": "noarch_python",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/LICENSE",
+        "path_type": "hardlink",
+        "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "sha256_in_prefix": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+        "size_in_bytes": 35147
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "ed75b4fb17c46b5bcaf1724d207993667a423f45c6c0290e2cb98ea196c449ca",
+        "sha256_in_prefix": "ed75b4fb17c46b5bcaf1724d207993667a423f45c6c0290e2cb98ea196c449ca",
+        "size_in_bytes": 1211
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "ba7a76eefd28a7d4f274c4beb04831255b36ada6d7def8c0b12822eaeb9d700d",
+        "sha256_in_prefix": "ba7a76eefd28a7d4f274c4beb04831255b36ada6d7def8c0b12822eaeb9d700d",
+        "size_in_bytes": 1057
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "cfd8f4c406bf26650a3299b3ef62b464600b48cfe7fb04159866e5797c765478",
+        "sha256_in_prefix": "cfd8f4c406bf26650a3299b3ef62b464600b48cfe7fb04159866e5797c765478",
+        "size_in_bytes": 110
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "2408afaf2a96834f45d67f95eae1d8d15f8a0a0c3279f6b83737375b9e79db79",
+        "sha256_in_prefix": "2408afaf2a96834f45d67f95eae1d8d15f8a0a0c3279f6b83737375b9e79db79",
+        "size_in_bytes": 83
+      },
+      {
+        "_path": "site-packages/treeswift-1.1.28.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "4e189ee4225d3075e3000f3b254d7ace048c55e450a3be11457719037854a0d3",
+        "sha256_in_prefix": "4e189ee4225d3075e3000f3b254d7ace048c55e450a3be11457719037854a0d3",
+        "size_in_bytes": 10
+      },
+      {
+        "_path": "site-packages/treeswift/Node.py",
+        "path_type": "hardlink",
+        "sha256": "18f3b3a425b85eee352aecc135123ebd474a32e2a3bbb5fdee9596fc9854d907",
+        "sha256_in_prefix": "18f3b3a425b85eee352aecc135123ebd474a32e2a3bbb5fdee9596fc9854d907",
+        "size_in_bytes": 13667
+      },
+      {
+        "_path": "site-packages/treeswift/Tree.py",
+        "path_type": "hardlink",
+        "sha256": "0e189814f5caaa9b08d2d4a95af904ae265583efe34fc32576120542646046b5",
+        "sha256_in_prefix": "0e189814f5caaa9b08d2d4a95af904ae265583efe34fc32576120542646046b5",
+        "size_in_bytes": 76250
+      },
+      {
+        "_path": "site-packages/treeswift/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "f02e9406b3e1c527e31a5e7d57494b8910ff2f0dcd6dd258c1690b2463064cff",
+        "sha256_in_prefix": "f02e9406b3e1c527e31a5e7d57494b8910ff2f0dcd6dd258c1690b2463064cff",
+        "size_in_bytes": 265
+      },
+      {
+        "_path": "lib/python3.10/site-packages/treeswift/__pycache__/Node.cpython-310.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.10/site-packages/treeswift/__pycache__/Tree.cpython-310.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.10/site-packages/treeswift/__pycache__/__init__.cpython-310.pyc",
+        "path_type": "pyc_file"
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "treeswift=1.1.28",
+  "sha256": "7eb403c5750ef79f1344d307a9b089598d0c715f7cacb117e2f703718c3be16d",
+  "size": 38514,
+  "subdir": "noarch",
+  "timestamp": 1649442303000,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/bioconda/noarch/treeswift-1.1.28-pyh5e36f6f_0.tar.bz2",
+  "version": "1.1.28"
+}

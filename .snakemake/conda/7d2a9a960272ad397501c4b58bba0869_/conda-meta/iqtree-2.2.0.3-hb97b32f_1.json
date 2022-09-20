@@ -1,0 +1,89 @@
+{
+  "build": "hb97b32f_1",
+  "build_number": 1,
+  "channel": "https://conda.anaconda.org/bioconda/linux-64",
+  "constrains": [],
+  "depends": [
+    "libgcc-ng >=12",
+    "libstdcxx-ng >=12",
+    "libzlib >=1.2.12,<1.3.0a0"
+  ],
+  "extracted_package_dir": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/iqtree-2.2.0.3-hb97b32f_1",
+  "features": "",
+  "files": [
+    "bin/iqtree",
+    "bin/iqtree2",
+    "example.cf",
+    "example.nex",
+    "example.phy",
+    "models.nex"
+  ],
+  "fn": "iqtree-2.2.0.3-hb97b32f_1.tar.bz2",
+  "license": "GPL-2.0-or-later",
+  "link": {
+    "source": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/iqtree-2.2.0.3-hb97b32f_1",
+    "type": 1
+  },
+  "md5": "2c6d7c926bbcd161e5501e3ba0f774eb",
+  "name": "iqtree",
+  "package_tarball_full_path": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/iqtree-2.2.0.3-hb97b32f_1.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "bin/iqtree",
+        "file_mode": "binary",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/conda/conda-bld/iqtree_1659430421693/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+        "sha256": "154c7048b3096c5dc7c1548cb28c8ad6823987788f7c32cc982d4e0e68ed91bc",
+        "sha256_in_prefix": "ca80f00001a56c572beb3d79412b5c1c3a993c3bbcc4b3c51a844c7ec0d52f80",
+        "size_in_bytes": 9291088
+      },
+      {
+        "_path": "bin/iqtree2",
+        "file_mode": "binary",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/conda/conda-bld/iqtree_1659430421693/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeh",
+        "sha256": "154c7048b3096c5dc7c1548cb28c8ad6823987788f7c32cc982d4e0e68ed91bc",
+        "sha256_in_prefix": "ca80f00001a56c572beb3d79412b5c1c3a993c3bbcc4b3c51a844c7ec0d52f80",
+        "size_in_bytes": 9291088
+      },
+      {
+        "_path": "example.cf",
+        "path_type": "hardlink",
+        "sha256": "9e41faaea1c845b0c3a2e2f87a41e12966c26c1383382a98d3585ffe1da515dd",
+        "sha256_in_prefix": "9e41faaea1c845b0c3a2e2f87a41e12966c26c1383382a98d3585ffe1da515dd",
+        "size_in_bytes": 2237314
+      },
+      {
+        "_path": "example.nex",
+        "path_type": "hardlink",
+        "sha256": "359f1c6bdbaea2aaff49f233b9ba9afecad653ab68442775240e228a196eff83",
+        "sha256_in_prefix": "359f1c6bdbaea2aaff49f233b9ba9afecad653ab68442775240e228a196eff83",
+        "size_in_bytes": 174
+      },
+      {
+        "_path": "example.phy",
+        "path_type": "hardlink",
+        "sha256": "d3365cbea79ab6d7b184d1bd9153871616041c6e0e8e591d2a0b4bd08dc0b9bf",
+        "sha256_in_prefix": "d3365cbea79ab6d7b184d1bd9153871616041c6e0e8e591d2a0b4bd08dc0b9bf",
+        "size_in_bytes": 34178
+      },
+      {
+        "_path": "models.nex",
+        "path_type": "hardlink",
+        "sha256": "2645e5906033fe9ae0deb0c9a2598b296330a5ba7d618785bb3f59cd8bca2da0",
+        "sha256_in_prefix": "2645e5906033fe9ae0deb0c9a2598b296330a5ba7d618785bb3f59cd8bca2da0",
+        "size_in_bytes": 121669
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "iqtree=2.2.0.3",
+  "sha256": "d33d865e78f2b9f4e0ed825bdce6d00b5c7360ab656f6e52c7fea63becb14803",
+  "size": 7209953,
+  "subdir": "linux-64",
+  "timestamp": 1659430934000,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/bioconda/linux-64/iqtree-2.2.0.3-hb97b32f_1.tar.bz2",
+  "version": "2.2.0.3"
+}

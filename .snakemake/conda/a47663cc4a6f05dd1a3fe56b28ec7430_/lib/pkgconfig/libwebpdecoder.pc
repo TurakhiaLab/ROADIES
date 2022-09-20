@@ -1,0 +1,11 @@
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/a47663cc4a6f05dd1a3fe56b28ec7430_
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libwebpdecoder
+Description: Library for the WebP graphics format (decode only)
+Version: 1.2.4
+Cflags: -I${includedir}
+Libs: -L${libdir} -lwebpdecoder
+Libs.private: -lm -pthread 

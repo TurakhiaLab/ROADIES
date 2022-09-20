@@ -1,3 +1,0 @@
-WildcardErrorin line 4 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
-No values given for wildcard 'genomes'.
-  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile", line 4, in <module>

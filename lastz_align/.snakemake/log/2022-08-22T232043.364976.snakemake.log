@@ -1,3 +1,0 @@
-KeyErrorin line 14 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile:
-'PATH'
-  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/lastz_align/Snakefile", line 14, in <module>

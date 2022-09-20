@@ -1,0 +1,13 @@
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/ad2fc4a5b498557b4b6a4fbe192b10f0_
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+enginesdir=${libdir}/engines-3
+modulesdir=${libdir}/ossl-modules
+
+Name: OpenSSL-libcrypto
+Description: OpenSSL cryptography library
+Version: 3.0.5
+Libs: -L${libdir} -lcrypto
+Libs.private: -ldl -pthread 
+Cflags: -I${includedir}

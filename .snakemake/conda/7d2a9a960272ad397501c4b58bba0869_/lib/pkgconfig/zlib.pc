@@ -1,0 +1,13 @@
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+sharedlibdir=${libdir}
+includedir=${prefix}/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.12
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

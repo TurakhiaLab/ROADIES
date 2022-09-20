@@ -1,0 +1,14 @@
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_
+exec_prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_
+libdir=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_/lib
+includedir=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_/include
+
+Name: FreeType 2
+URL: https://freetype.org
+Description: A free, high-quality, and portable font engine.
+Version: 24.3.18
+Requires: 
+Requires.private: zlib, libpng
+Libs: -L/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_/lib -lfreetype
+Libs.private: 
+Cflags: -I${includedir}/freetype2

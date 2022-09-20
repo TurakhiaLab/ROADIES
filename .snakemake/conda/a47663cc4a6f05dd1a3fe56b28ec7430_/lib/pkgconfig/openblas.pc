@@ -1,0 +1,11 @@
+libdir=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/a47663cc4a6f05dd1a3fe56b28ec7430_/lib
+includedir=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/a47663cc4a6f05dd1a3fe56b28ec7430_/include
+version=0.2.20
+extralib=-lm -lpthread -lgfortran -lm -lpthread -lgfortran
+Name: openblas
+Description: OpenBLAS is an optimized BLAS library based on GotoBLAS2 1.13 BSD version
+Version: ${version}
+URL: https://github.com/xianyi/OpenBLAS
+Libs: -L${libdir} -lopenblas
+Libs.private: ${extralib}
+Cflags: -I${includedir}

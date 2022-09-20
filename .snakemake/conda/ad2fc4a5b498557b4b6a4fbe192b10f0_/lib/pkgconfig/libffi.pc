@@ -1,0 +1,11 @@
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/ad2fc4a5b498557b4b6a4fbe192b10f0_
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+toolexeclibdir=${libdir}
+includedir=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/ad2fc4a5b498557b4b6a4fbe192b10f0_/include
+
+Name: libffi
+Description: Library supporting Foreign Function Interfaces
+Version: 3.4.2
+Libs: -L${toolexeclibdir} -lffi
+Cflags: -I${includedir}

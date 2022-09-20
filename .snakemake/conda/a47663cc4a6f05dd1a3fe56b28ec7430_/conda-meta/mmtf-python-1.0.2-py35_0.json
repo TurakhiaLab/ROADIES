@@ -1,0 +1,53 @@
+{
+  "build": "py35_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/bioconda/linux-64",
+  "constrains": [],
+  "depends": [
+    "msgpack-python",
+    "python 3.5*"
+  ],
+  "extracted_package_dir": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/mmtf-python-1.0.2-py35_0",
+  "features": "",
+  "files": [
+    "bin/sample",
+    "lib/python3.5/site-packages/mmtf_python-1.0.2-py3.5.egg",
+    "lib/python3.5/site-packages/mmtf_python.pth"
+  ],
+  "fn": "mmtf-python-1.0.2-py35_0.tar.bz2",
+  "license": "MIT License",
+  "link": {
+    "source": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/mmtf-python-1.0.2-py35_0",
+    "type": 1
+  },
+  "md5": "3cd3a98a05ee5c136064518f8a229cf0",
+  "name": "mmtf-python",
+  "package_tarball_full_path": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/mmtf-python-1.0.2-py35_0.tar.bz2",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "bin/sample",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/anaconda1anaconda2anaconda3",
+        "sha256_in_prefix": "53c08d8b192a188e9edda49cc0aed63d3f732e2c56d780bbe9b5681a299cc3b9"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/mmtf_python-1.0.2-py3.5.egg",
+        "path_type": "hardlink"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/mmtf_python.pth",
+        "path_type": "hardlink"
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "5064cc27c021d9cda8abe3e4e2881d7ee037669d99903ed165ad214a904c1f3e",
+  "size": 35441,
+  "subdir": "linux-64",
+  "track_features": "",
+  "url": "https://conda.anaconda.org/bioconda/linux-64/mmtf-python-1.0.2-py35_0.tar.bz2",
+  "version": "1.0.2"
+}

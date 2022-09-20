@@ -1,0 +1,13 @@
+# See: man pkg-config
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/ad2fc4a5b498557b4b6a4fbe192b10f0_
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Python
+Description: Build a C extension for Python
+Requires:
+Version: 3.10
+Libs.private: -lcrypt -lpthread -ldl  -lutil -lrt -lm
+Libs:
+Cflags: -I${includedir}/python3.10

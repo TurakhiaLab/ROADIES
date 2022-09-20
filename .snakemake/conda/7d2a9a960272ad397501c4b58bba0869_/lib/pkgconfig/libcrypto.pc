@@ -1,0 +1,13 @@
+prefix=/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+enginesdir=${libdir}/engines
+
+Name: OpenSSL-libcrypto
+Description: OpenSSL cryptography library
+Version: 1.0.2u
+Requires: 
+Libs: -L${libdir} -lcrypto
+Libs.private: -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,-rpath,/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_/lib -Wl,-rpath-link,/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_/lib -L/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/7d2a9a960272ad397501c4b58bba0869_/lib -ldl
+Cflags: -I${includedir} 

@@ -1,0 +1,434 @@
+{
+  "build": "pyhd3deb0d_0",
+  "build_number": 0,
+  "channel": "https://conda.anaconda.org/conda-forge/noarch",
+  "constrains": [],
+  "depends": [
+    "python"
+  ],
+  "extracted_package_dir": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/alive-progress-1.6.2-pyhd3deb0d_0",
+  "features": "",
+  "files": [
+    "LICENSE",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/INSTALLER",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/LICENSE",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/METADATA",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/RECORD",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/REQUESTED",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/WHEEL",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/direct_url.json",
+    "lib/python3.5/site-packages/alive_progress-1.6.2.dist-info/top_level.txt",
+    "lib/python3.5/site-packages/alive_progress/__init__.py",
+    "lib/python3.5/site-packages/alive_progress/animations/__init__.py",
+    "lib/python3.5/site-packages/alive_progress/animations/bars.py",
+    "lib/python3.5/site-packages/alive_progress/animations/spinners.py",
+    "lib/python3.5/site-packages/alive_progress/animations/utils.py",
+    "lib/python3.5/site-packages/alive_progress/core/__init__.py",
+    "lib/python3.5/site-packages/alive_progress/core/configuration.py",
+    "lib/python3.5/site-packages/alive_progress/core/logging_hook.py",
+    "lib/python3.5/site-packages/alive_progress/core/progress.py",
+    "lib/python3.5/site-packages/alive_progress/core/timing.py",
+    "lib/python3.5/site-packages/alive_progress/core/utils.py",
+    "lib/python3.5/site-packages/alive_progress/styles/__init__.py",
+    "lib/python3.5/site-packages/alive_progress/styles/exhibit.py",
+    "lib/python3.5/site-packages/alive_progress/styles/internal.py",
+    "lib/python3.5/site-packages/tests/__init__.py",
+    "lib/python3.5/site-packages/tests/animations/__init__.py",
+    "lib/python3.5/site-packages/tests/animations/test_bars.py",
+    "lib/python3.5/site-packages/tests/animations/test_spinners.py",
+    "lib/python3.5/site-packages/tests/animations/test_utils.py",
+    "lib/python3.5/site-packages/tests/conftest.py",
+    "lib/python3.5/site-packages/tests/core/__init__.py",
+    "lib/python3.5/site-packages/tests/core/test_configuration.py",
+    "lib/python3.5/site-packages/tests/core/test_logging_hook.py",
+    "lib/python3.5/site-packages/tests/core/test_timing.py",
+    "lib/python3.5/site-packages/tests/core/test_utils.py",
+    "lib/python3.5/site-packages/alive_progress/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/animations/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/animations/__pycache__/bars.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/animations/__pycache__/spinners.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/animations/__pycache__/utils.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/core/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/core/__pycache__/configuration.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/core/__pycache__/logging_hook.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/core/__pycache__/progress.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/core/__pycache__/timing.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/core/__pycache__/utils.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/styles/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/styles/__pycache__/exhibit.cpython-35.pyc",
+    "lib/python3.5/site-packages/alive_progress/styles/__pycache__/internal.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/animations/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/animations/__pycache__/test_bars.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/animations/__pycache__/test_spinners.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/animations/__pycache__/test_utils.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/__pycache__/conftest.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/core/__pycache__/__init__.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/core/__pycache__/test_configuration.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/core/__pycache__/test_logging_hook.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/core/__pycache__/test_timing.cpython-35.pyc",
+    "lib/python3.5/site-packages/tests/core/__pycache__/test_utils.cpython-35.pyc"
+  ],
+  "fn": "alive-progress-1.6.2-pyhd3deb0d_0.tar.bz2",
+  "license": "MIT",
+  "link": {
+    "source": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/alive-progress-1.6.2-pyhd3deb0d_0",
+    "type": 1
+  },
+  "md5": "0bd8234d7f24c2846dc33a9a7e40caef",
+  "name": "alive-progress",
+  "noarch": "python",
+  "package_tarball_full_path": "/home/AD.UCSD.EDU/ttl074/mambaforge/pkgs/alive-progress-1.6.2-pyhd3deb0d_0.tar.bz2",
+  "package_type": "noarch_python",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "LICENSE",
+        "path_type": "hardlink",
+        "sha256": "a3ffb77996202d7f3314b4161a1661fb9c092ac878af4391e79d301aedc15866",
+        "sha256_in_prefix": "a3ffb77996202d7f3314b4161a1661fb9c092ac878af4391e79d301aedc15866",
+        "size_in_bytes": 1084
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/INSTALLER",
+        "path_type": "hardlink",
+        "sha256": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "sha256_in_prefix": "d0edee15f91b406f3f99726e44eb990be6e34fd0345b52b910c568e0eef6a2a8",
+        "size_in_bytes": 5
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/LICENSE",
+        "path_type": "hardlink",
+        "sha256": "a3ffb77996202d7f3314b4161a1661fb9c092ac878af4391e79d301aedc15866",
+        "sha256_in_prefix": "a3ffb77996202d7f3314b4161a1661fb9c092ac878af4391e79d301aedc15866",
+        "size_in_bytes": 1084
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/METADATA",
+        "path_type": "hardlink",
+        "sha256": "6275515f3d1ecb0398eead37d282f35d243d51173286fcd31d68868538c96d4b",
+        "sha256_in_prefix": "6275515f3d1ecb0398eead37d282f35d243d51173286fcd31d68868538c96d4b",
+        "size_in_bytes": 29609
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/RECORD",
+        "path_type": "hardlink",
+        "sha256": "5f90d47d630dfcdcba143b1cae56f907c99301e86fad3555dacf286b6cefc58a",
+        "sha256_in_prefix": "5f90d47d630dfcdcba143b1cae56f907c99301e86fad3555dacf286b6cefc58a",
+        "size_in_bytes": 4410
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/REQUESTED",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/WHEEL",
+        "path_type": "hardlink",
+        "sha256": "3aa464174798e461ecb0ca2b16395b4c8ab4ef6be91e917ad1f21003a952f710",
+        "sha256_in_prefix": "3aa464174798e461ecb0ca2b16395b4c8ab4ef6be91e917ad1f21003a952f710",
+        "size_in_bytes": 92
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/direct_url.json",
+        "path_type": "hardlink",
+        "sha256": "9b37a8c88b0c99334d29b93595673a7e345fea830df014e8786f0da4b2abe809",
+        "sha256_in_prefix": "9b37a8c88b0c99334d29b93595673a7e345fea830df014e8786f0da4b2abe809",
+        "size_in_bytes": 110
+      },
+      {
+        "_path": "site-packages/alive_progress-1.6.2.dist-info/top_level.txt",
+        "path_type": "hardlink",
+        "sha256": "8cfaeac2402b21ccfd3437ea939de919718b0dcfe1ea93537d81d589dfd429b6",
+        "sha256_in_prefix": "8cfaeac2402b21ccfd3437ea939de919718b0dcfe1ea93537d81d589dfd429b6",
+        "size_in_bytes": 21
+      },
+      {
+        "_path": "site-packages/alive_progress/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "0837b585835741b5d775af490b5553ae4d60e270e2ee1a784513c962efee2bb2",
+        "sha256_in_prefix": "0837b585835741b5d775af490b5553ae4d60e270e2ee1a784513c962efee2bb2",
+        "size_in_bytes": 1327
+      },
+      {
+        "_path": "site-packages/alive_progress/animations/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/alive_progress/animations/bars.py",
+        "path_type": "hardlink",
+        "sha256": "85df361d2cee2347ba0b3c66061f3164ed60e07a4f14833ff98184bf28b03f62",
+        "sha256_in_prefix": "85df361d2cee2347ba0b3c66061f3164ed60e07a4f14833ff98184bf28b03f62",
+        "size_in_bytes": 2067
+      },
+      {
+        "_path": "site-packages/alive_progress/animations/spinners.py",
+        "path_type": "hardlink",
+        "sha256": "28ddc3296f20b6287499f669d3949ad79833d7cef38745ed55e1be925cea7ac3",
+        "sha256_in_prefix": "28ddc3296f20b6287499f669d3949ad79833d7cef38745ed55e1be925cea7ac3",
+        "size_in_bytes": 6224
+      },
+      {
+        "_path": "site-packages/alive_progress/animations/utils.py",
+        "path_type": "hardlink",
+        "sha256": "cc5b3ba5092099ba9d8fc039ba6c9c6c8f97f5f6a6950fdd3342cdc60dce34d4",
+        "sha256_in_prefix": "cc5b3ba5092099ba9d8fc039ba6c9c6c8f97f5f6a6950fdd3342cdc60dce34d4",
+        "size_in_bytes": 1508
+      },
+      {
+        "_path": "site-packages/alive_progress/core/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/alive_progress/core/configuration.py",
+        "path_type": "hardlink",
+        "sha256": "c761eb1aa434607836c078a6f37d7f8860cea6f157aa847184ddef69f6d635a2",
+        "sha256_in_prefix": "c761eb1aa434607836c078a6f37d7f8860cea6f157aa847184ddef69f6d635a2",
+        "size_in_bytes": 3517
+      },
+      {
+        "_path": "site-packages/alive_progress/core/logging_hook.py",
+        "path_type": "hardlink",
+        "sha256": "382458e11637837b057cd46838d0616d0f0745cc56920777c4b8d82c358c69ac",
+        "sha256_in_prefix": "382458e11637837b057cd46838d0616d0f0745cc56920777c4b8d82c358c69ac",
+        "size_in_bytes": 851
+      },
+      {
+        "_path": "site-packages/alive_progress/core/progress.py",
+        "path_type": "hardlink",
+        "sha256": "879cfb4d2d540402787176fb20cbb7383404218364fc8673926f4b890416a1f7",
+        "sha256_in_prefix": "879cfb4d2d540402787176fb20cbb7383404218364fc8673926f4b890416a1f7",
+        "size_in_bytes": 12512
+      },
+      {
+        "_path": "site-packages/alive_progress/core/timing.py",
+        "path_type": "hardlink",
+        "sha256": "a24f7da3845b5e5ae091f660ffbe56ccafb259eec1566637f3214a7beb1cf01f",
+        "sha256_in_prefix": "a24f7da3845b5e5ae091f660ffbe56ccafb259eec1566637f3214a7beb1cf01f",
+        "size_in_bytes": 1571
+      },
+      {
+        "_path": "site-packages/alive_progress/core/utils.py",
+        "path_type": "hardlink",
+        "sha256": "795b8710e202e2667c648a7ad65322a2809cec9617ae04e701c4153b294de98f",
+        "sha256_in_prefix": "795b8710e202e2667c648a7ad65322a2809cec9617ae04e701c4153b294de98f",
+        "size_in_bytes": 2692
+      },
+      {
+        "_path": "site-packages/alive_progress/styles/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/alive_progress/styles/exhibit.py",
+        "path_type": "hardlink",
+        "sha256": "4eec2a0a56eec6ef3a6f21f7deb93fb3551af97f7c72633b0a71b7cc8b7300cc",
+        "sha256_in_prefix": "4eec2a0a56eec6ef3a6f21f7deb93fb3551af97f7c72633b0a71b7cc8b7300cc",
+        "size_in_bytes": 5687
+      },
+      {
+        "_path": "site-packages/alive_progress/styles/internal.py",
+        "path_type": "hardlink",
+        "sha256": "0ddb86ab8cdfae0a8fcf8acdd3d2649049133ac1a05332ce9b3e81b93b1aa323",
+        "sha256_in_prefix": "0ddb86ab8cdfae0a8fcf8acdd3d2649049133ac1a05332ce9b3e81b93b1aa323",
+        "size_in_bytes": 7008
+      },
+      {
+        "_path": "site-packages/tests/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/tests/animations/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/tests/animations/test_bars.py",
+        "path_type": "hardlink",
+        "sha256": "07d1cee5964ec8ffe8bbb35368dc811ddafe3d81f0579361116a6a2903b921b2",
+        "sha256_in_prefix": "07d1cee5964ec8ffe8bbb35368dc811ddafe3d81f0579361116a6a2903b921b2",
+        "size_in_bytes": 1104
+      },
+      {
+        "_path": "site-packages/tests/animations/test_spinners.py",
+        "path_type": "hardlink",
+        "sha256": "f0a0130ed509e97f549dd60473c3170f61490b8b663f9e04c17459f11d19bcad",
+        "sha256_in_prefix": "f0a0130ed509e97f549dd60473c3170f61490b8b663f9e04c17459f11d19bcad",
+        "size_in_bytes": 4283
+      },
+      {
+        "_path": "site-packages/tests/animations/test_utils.py",
+        "path_type": "hardlink",
+        "sha256": "2bcfd59b3984fdf0b3340c8c93b6f37452691ef6f6182736e3e60e0cdab650b8",
+        "sha256_in_prefix": "2bcfd59b3984fdf0b3340c8c93b6f37452691ef6f6182736e3e60e0cdab650b8",
+        "size_in_bytes": 1748
+      },
+      {
+        "_path": "site-packages/tests/conftest.py",
+        "path_type": "hardlink",
+        "sha256": "930fde27c2db684e7697b5e5a49b0478b8a295200043e9397bbb26b79bcc3d65",
+        "sha256_in_prefix": "930fde27c2db684e7697b5e5a49b0478b8a295200043e9397bbb26b79bcc3d65",
+        "size_in_bytes": 558
+      },
+      {
+        "_path": "site-packages/tests/core/__init__.py",
+        "path_type": "hardlink",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_in_prefix": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_in_bytes": 0
+      },
+      {
+        "_path": "site-packages/tests/core/test_configuration.py",
+        "path_type": "hardlink",
+        "sha256": "16ed0a20aee93485594b67bf696cb339dfabe44bb86599c2edbaee2960b475a5",
+        "sha256_in_prefix": "16ed0a20aee93485594b67bf696cb339dfabe44bb86599c2edbaee2960b475a5",
+        "size_in_bytes": 4226
+      },
+      {
+        "_path": "site-packages/tests/core/test_logging_hook.py",
+        "path_type": "hardlink",
+        "sha256": "570f2b7c655a52087f342a1016be9df0ce9b073ae7212219f0280569f6f23876",
+        "sha256_in_prefix": "570f2b7c655a52087f342a1016be9df0ce9b073ae7212219f0280569f6f23876",
+        "size_in_bytes": 891
+      },
+      {
+        "_path": "site-packages/tests/core/test_timing.py",
+        "path_type": "hardlink",
+        "sha256": "e25cbd7161b1e2d471fcf88c12a8bdc03c23112a4302c337afab93178e791768",
+        "sha256_in_prefix": "e25cbd7161b1e2d471fcf88c12a8bdc03c23112a4302c337afab93178e791768",
+        "size_in_bytes": 2256
+      },
+      {
+        "_path": "site-packages/tests/core/test_utils.py",
+        "path_type": "hardlink",
+        "sha256": "759952f68532a5a084bc924bc61e6d4ab81fae0e9017bb6d7939a29ba0f9516b",
+        "sha256_in_prefix": "759952f68532a5a084bc924bc61e6d4ab81fae0e9017bb6d7939a29ba0f9516b",
+        "size_in_bytes": 2028
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/animations/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/animations/__pycache__/bars.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/animations/__pycache__/spinners.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/animations/__pycache__/utils.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/core/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/core/__pycache__/configuration.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/core/__pycache__/logging_hook.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/core/__pycache__/progress.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/core/__pycache__/timing.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/core/__pycache__/utils.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/styles/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/styles/__pycache__/exhibit.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/alive_progress/styles/__pycache__/internal.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/animations/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/animations/__pycache__/test_bars.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/animations/__pycache__/test_spinners.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/animations/__pycache__/test_utils.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/__pycache__/conftest.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/core/__pycache__/__init__.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/core/__pycache__/test_configuration.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/core/__pycache__/test_logging_hook.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/core/__pycache__/test_timing.cpython-35.pyc",
+        "path_type": "pyc_file"
+      },
+      {
+        "_path": "lib/python3.5/site-packages/tests/core/__pycache__/test_utils.cpython-35.pyc",
+        "path_type": "pyc_file"
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "alive-progress",
+  "sha256": "e39de310c268ded50f9be25241434bbc8952594705db3a65685cce267431e500",
+  "size": 33124,
+  "subdir": "noarch",
+  "timestamp": 1610076774000,
+  "track_features": "",
+  "url": "https://conda.anaconda.org/conda-forge/noarch/alive-progress-1.6.2-pyhd3deb0d_0.tar.bz2",
+  "version": "1.6.2"
+}

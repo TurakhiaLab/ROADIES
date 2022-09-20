@@ -1,0 +1,4 @@
+WorkflowErrorin line 8 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/Snakefile:
+Failed to open source file /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/astral.smk
+FileNotFoundError: [Errno 2] No such file or directory: '/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/astral.smk'
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/Snakefile", line 8, in <module>

@@ -1,0 +1,46 @@
+==> 2022-09-20 04:11:10 <==
+# cmd: /home/AD.UCSD.EDU/ttl074/mambaforge/condabin/mamba create --quiet --file /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/dd7c56b30172c9f4b260dd4cfa37f7a4_.yaml --prefix /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/.snakemake/conda/dd7c56b30172c9f4b260dd4cfa37f7a4_
+# conda version: 4.14.0
++bioconda/linux-64::biopython-1.70-np112py35_1
++bioconda/linux-64::iqtree-2.2.0.3-hb97b32f_1
++bioconda/linux-64::lastz-1.04.15-hec16e2b_1
++bioconda/linux-64::mafft-7.505-hec16e2b_0
++bioconda/linux-64::mmtf-python-1.0.2-py35_0
++bioconda/noarch::treeswift-1.1.28-pyh5e36f6f_0
++conda-forge/linux-64::_libgcc_mutex-0.1-conda_forge
++conda-forge/linux-64::_openmp_mutex-4.5-2_gnu
++conda-forge/linux-64::blas-1.1-openblas
++conda-forge/linux-64::bzip2-1.0.8-h7f98852_4
++conda-forge/linux-64::ca-certificates-2022.9.14-ha878542_0
++conda-forge/linux-64::certifi-2018.8.24-py35_1001
++conda-forge/linux-64::freetype-2.12.1-hca18f0e_0
++conda-forge/linux-64::jpeg-9e-h166bdaf_2
++conda-forge/linux-64::libffi-3.2.1-he1b5a44_1007
++conda-forge/linux-64::libgcc-ng-12.1.0-h8d9b700_16
++conda-forge/linux-64::libgfortran-3.0.0-1
++conda-forge/linux-64::libgomp-12.1.0-h8d9b700_16
++conda-forge/linux-64::libpng-1.6.38-h753d276_0
++conda-forge/linux-64::libstdcxx-ng-12.1.0-ha89aaad_16
++conda-forge/linux-64::libtiff-4.2.0-hf544144_3
++conda-forge/linux-64::libwebp-base-1.2.4-h166bdaf_0
++conda-forge/linux-64::libzlib-1.2.12-h166bdaf_3
++conda-forge/linux-64::msgpack-python-0.5.6-py35h2d50403_3
++conda-forge/linux-64::ncurses-6.3-h27087fc_1
++conda-forge/linux-64::numpy-1.12.1-py35_blas_openblas_201
++conda-forge/linux-64::openblas-0.2.20-8
++conda-forge/linux-64::openssl-1.0.2u-h516909a_0
++conda-forge/linux-64::pillow-5.3.0-py35hc736899_0
++conda-forge/linux-64::python-3.5.5-h5001a0f_2
++conda-forge/linux-64::readline-7.0-hf8c457e_1001
++conda-forge/linux-64::reportlab-3.5.8-py35h77bcf2c_0
++conda-forge/linux-64::setuptools-40.4.3-py35_0
++conda-forge/linux-64::sqlite-3.28.0-h8b20d00_0
++conda-forge/linux-64::tk-8.6.12-h27826a3_0
++conda-forge/linux-64::xz-5.2.6-h166bdaf_0
++conda-forge/linux-64::zlib-1.2.12-h166bdaf_3
++conda-forge/linux-64::zstd-1.5.2-h6239696_4
++conda-forge/noarch::alive-progress-1.6.2-pyhd3deb0d_0
++conda-forge/noarch::olefile-0.46-pyh9f0ad1d_1
++conda-forge/noarch::pip-20.3.4-pyhd8ed1ab_0
++conda-forge/noarch::wheel-0.37.1-pyhd8ed1ab_0
+# update specs: ['alive-progress', 'biopython', 'iqtree=2.2.0.3', 'lastz=1.04.15', 'mafft=7.505', 'numpy', 'treeswift=1.1.28']

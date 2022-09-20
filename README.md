@@ -1,9 +1,14 @@
 # wga-phylo
+# once the workflow is standardized most githubs just refer to snakemake catalog
+Snakemake and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via Mambaforge. 
 
+Given that Mamba is installed, run
+
+mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
+to install both Snakemake and Snakedeploy in an isolated environment. For all following commands ensure that this environment is activated via
+conda activate snakemake
 SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file
 
-`snakemake --core [number of cores] --configfile="config.yaml"`
+`snakemake --core [number of cores] --use-conda`
 
-If you want to rerun please use following code to get rid of previous files
-
-`snakemake clean --core [number of cores] --configfile="config.yaml"`
+Snakemake will automatically detect the main Snakefile in the workflow subfolder and execute the workflow module that has been defined by the deployment in step 2.

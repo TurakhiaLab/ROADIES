@@ -1,0 +1,3 @@
+SyntaxErrorin line 39 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/rules/sampling.smk:
+Command must be given as string after the shell keyword. (sampling.smk, line 39)
+  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/Snakefile", line 9, in <module>
