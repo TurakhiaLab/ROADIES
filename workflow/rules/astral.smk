@@ -9,5 +9,6 @@ rule astral:
 	shell:
 		# "astral -i {input} -o {output}"
 		"""
-		java -D"java.library.path=/A-pro/ASTRAL-MP/lib" -jar /A-pro/ASTRAL-MP/astral.1.1.6.jar -i {input} -o {output} -a {params.genes}/mapping.txt --polylimit {params.p}
+		pwd
+		java -D"java.library.path=A-pro/ASTRAL-MP/lib" -jar A-pro/ASTRAL-MP/astral.1.1.6.jar -i {input} -o {output} -a {params.genes}/mapping.txt --polylimit {params.p}
 		"""
