@@ -16,6 +16,7 @@ parser.add_argument('-d',type=int,default=5)
 args = parser.parse_args()
 path = args.path
 outdir = args.outdir
+m = args.m
 k = args.k
 d= args.d
 num_genes = {}
@@ -91,7 +92,7 @@ print(num_genes)
 print(num_homologues)
 x = list(num_genes.keys())
 y = list(num_genes.values())
-with open('results/statistics/num_genes.txt','w') as f:
+with open('results/statistics/num_genes.csv','w') as f:
     for i in range(len(x)):
         f.write(x[i]+','+str(y[i])+'\n')
 ax = sns.barplot(x=x,y=y)
@@ -101,13 +102,26 @@ plt.tight_layout()
 fig = ax.get_figure()
 fig.savefig("results/plots/num_genes.png")
 od = OrderedDict(sorted(num_homologues.items()))
-with open('results/statistics/homologues.txt','w') as f:
+with open('results/statistics/homologues.csv','w') as f:
     for key, val in od.items():
-        f.write('gene'+str(key)+','+str(val)+'\n')
-#for filename in glob.glob(os.path.join(outdir,'*.fa')):
+        f.write('gene_'+str(key)+','+str(val)+'\n')
+count = 0
+for filename in glob.glob(os.path.join(outdir,'*.fa')):
  #   print(filename)
-  #  records = list(SeqIO.parse(filename,"fasta"))
-   # print(len(records))
+    records = list(SeqIO.parse(filename,"fasta"))
+    found = []
+    for record in records:
+        n = record.name
+        ns = n.split('_')
+        name = ns[0]+ns[1]
+        if name not in found:
+            found.append(name)
+    if len(found)>m:
+        print(len(found),found)
+        count += 1
+print("Number of gene trees: ",count)
+with open("results/statistics/num_gt.txt",'w') as f:
+    f.write("Number of gene trees: "+str(count)+'\n')
     #if len(records)< m:
      #   print(filename)
       #  os.remove(filename)
