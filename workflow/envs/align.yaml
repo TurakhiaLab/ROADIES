@@ -1,8 +1,0 @@
-name: align
-channels:
-  - bioconda
-  - conda-forge
-dependencies:
-  - biopython
-  - lastz=1.04.15
-  - mafft=7.505

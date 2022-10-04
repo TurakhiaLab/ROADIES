@@ -15,4 +15,4 @@ rule all:
 		# expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
 		# expand(config["OUT"]+"/msa/gene_aln_{id}.fa",id=IDS)
 		#expand(config["OUT"]+"/msa/gene_aln_{id}.treefile",id=IDS)
-
+		#expand(config["OUT"]+"/genes/gene_{id}.fa",id=IDS)

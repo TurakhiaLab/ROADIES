@@ -1,0 +1,5 @@
+name: lastz
+channels:
+  - bioconda
+dependencies:
+  - lastz=1.04.15
