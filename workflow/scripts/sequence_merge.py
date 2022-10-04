@@ -15,7 +15,7 @@ with open(output, 'wb') as outfile:
         t = f.read()
         num = t.count('>')
         s = filename.split('/')
-        print(s[len(s)-1])
+        #print(s[len(s)-1])
         n = s[len(s)-1].split('_')
         name = n[0]+'_'+n[1]
         species_count[name] = num

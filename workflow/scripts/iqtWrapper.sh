@@ -1,5 +1,5 @@
 num=`grep -n '>' $1 | wc -l`
-if [[ ${num} -gt 2 ]]
+if [[ ${num} -gt $4 ]]
 then
 	iqtree -s $1 -m GTR+F -redo
 	if [[ $? -eq 0 ]]

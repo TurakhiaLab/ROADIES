@@ -14,8 +14,9 @@ rule iqtree:
 	output:
 		config["OUT"]+"/geneTree/gene_tree_{id}.newick"
 	params:
-		logDir = config["OUT"]+"/geneTree/"
+		logDir = config["OUT"]+"/geneTree/",
+		m = config["MIN_ALIGN"]
 	conda: 
 		"../envs/tree.yaml"	
 	shell:
-		"workflow/scripts/iqtWrapper.sh {input} {output} {params.logDir}"
+		"workflow/scripts/iqtWrapper.sh {input} {output} {params.logDir} {params.m}"

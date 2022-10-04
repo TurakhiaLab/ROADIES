@@ -4,6 +4,9 @@ import sys
 import argparse
 from Bio import SeqIO
 from operator import itemgetter
+import seaborn as sns
+import matplotlib.pyplot as plt
+from collections import OrderedDict
 parser = argparse.ArgumentParser(description='get gene fasta')
 parser.add_argument('-k',type=int,default=400)
 parser.add_argument('--path')
@@ -15,7 +18,8 @@ path = args.path
 outdir = args.outdir
 k = args.k
 d= args.d
-m = args.m
+num_genes = {}
+num_homologues = {}
 for filename in glob.glob(os.path.join(path,'*.maf')):
     with open(os.path.join(os.getcwd(),filename),'r') as f:
         s = filename.split('/')
@@ -33,63 +37,73 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 score_line = lines[l-1].split()
                 score_expr = score_line[1].split('=')
                 score = int(score_expr[1])
+                seq_line = lines[l].split()
+                position = int(seq_line[2])
                 if gene_id not in genes:
-                    genes[gene_id] = [(score,l)]
+                    genes[gene_id] = [(score,l,position)]
                 else:
-                    genes[gene_id].append((score,l))
+                    genes[gene_id].append((score,l,position))
+        num_genes[species] = len(genes)
         for gene in genes:
             gene_list = genes[gene]
-            if len(gene_list) < d:
-                for i in range(len(gene_list)):
-                    l = gene_list[i][1]
-                    seq_line = lines[l].split()
-                    seq = seq_line[len(seq_line)-1]
-                    index = species+'_'+seq_line[2]
-                    with open(outdir+'/gene_'+gene+'.fa','a') as w:
-                        #print("adding ",gene)
-                            w.write('>'+index+'\n')
-                            w.write(seq+'\n')
-                    w.close()
-                    with open(outdir+"/mapping.txt",'a') as w2:
-                        w2.write(index+' ' +species+'\n')
-                    w2.close()
-            else:
-                max_scores = list(range(0,d))
+            #skip if no homologue
+            #sort homologues by score
+            gene_list.sort(reverse=True)
+            max_scores = [0]
+            positions = [gene_list[0][2]]
+            idx = 1
+            while(idx < len(gene_list) and len(max_scores)<d):
+                pos = gene_list[idx][2]
+                tooClose = False
+                for p in positions:
+                    if abs(p-pos)<(2*1000):
+                        tooClose = True
+                        break
+                if not tooClose:
+                    positions.append(pos)
+                    max_scores.append(idx)
+                    tooClose = False
+                idx = idx+1
+            if len(max_scores)>1:
+                if gene in num_homologues:
+                    num_homologues[gene] += len(max_scores)
+                else:
+                    num_homologues[gene] = len(max_scores)
+            for i in range(len(max_scores)):
+                l = gene_list[i][1]
+                seq_line = lines[l].split()
+                seq = seq_line[len(seq_line)-1]
+                seq = seq.replace('-','')
+                index = species+'_'+seq_line[2]
+                #output to gene fasta
+                with open(outdir+'/gene_'+gene+'.fa','a') as w:
+                        w.write('>'+index+'\n')
+                        w.write(seq+'\n')
+                w.close()
+                #add to mapping file 
+                with open(outdir+"/mapping.txt",'a') as w2:
+                    w2.write(index+' ' +species+'\n')
+                w2.close()
                 #print(max_scores)
-                m = 0
-                ms = gene_list[0][0]
-                for i in range(1,d):
-                    score = gene_list[i][0]
-                    if score < ms:
-                        ms = score
-                        m = i
-                for g in range(d,len(gene_list)):
-                    score = gene_list[g][0]
-                    if score > ms:
-                        max_scores[m] = g
-                        m = 0
-                        ms= gene_list[max_scores[0]][0]
-                        for i in range(d):
-                            idx = max_scores[i]
-                            score = gene_list[idx][0]
-                            if score < ms:
-                                ms = score
-                                m = i
-                for i in max_scores:
-                    l = gene_list[i][1]
-                    seq_line = lines[l].split()
-                    seq = seq_line[len(seq_line)-1]
-                    index = species+'_'+seq_line[2]
-                    with open(outdir+'/gene_'+gene+'.fa','a') as w:
-                        #print("adding ",gene)
-                            w.write('>'+index+'\n')
-                            w.write(seq+'\n')
-                    w.close()
-                    with open(outdir+"/mapping.txt",'a') as w2:
-                        w2.write(index+' ' +species+'\n')
-                    w2.close()
+                
                 #print(species,gene,counts[gene])
-
+print(num_genes)
+print(num_homologues)
+x = list(num_genes.keys())
+y = list(num_genes.values())
+with open('results/statistics/num_genes.txt','w') as f:
+    for i in range(len(x)):
+        f.write(x[i]+','+str(y[i])+'\n')
+ax = sns.barplot(x=x,y=y)
+ax.set_xticklabels(ax.get_xticklabels(),rotation=40,ha='right')
+ax.set_title('Number of Genes Aligned To Each Genome')
+plt.tight_layout()
+fig = ax.get_figure()
+fig.savefig("results/plots/num_genes.png")
+od = OrderedDict(sorted(num_homologues.items()))
+with open('results/statistics/homologues.txt','w') as f:
+    for key, val in od.items():
+        f.write('gene'+str(key)+','+str(val)+'\n')
 #for filename in glob.glob(os.path.join(outdir,'*.fa')):
  #   print(filename)
   #  records = list(SeqIO.parse(filename,"fasta"))

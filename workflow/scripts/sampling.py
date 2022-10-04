@@ -39,6 +39,7 @@ threshold = int(t*l)
 with alive_bar(k) as bar:
     for i in range(k):
         notFound =True
+        count = 0
         while notFound:
             c_seq=random.randint(0,len(records)-1)
             seq_len=len(records[c_seq].seq)
@@ -57,6 +58,8 @@ with alive_bar(k) as bar:
                 sequence.append(record)
                 index = index+1
                 break
+            count = count+1
+        print('# of resampling: '+str(count))
         time.sleep(0.01)
         bar()
 

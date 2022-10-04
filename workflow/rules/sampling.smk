@@ -36,13 +36,17 @@ rule sequence_select:
 	output:
         	temp(config["OUT"]+"/samples/{sample}_temp.fa")
 	shell:
-        	"python workflow/scripts/sampling.py --input {input[0]} -s {params.KFAC} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output {output}"
+        	"python3 workflow/scripts/sampling.py --input {input[0]} -s {params.KFAC} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output {output}"
 
 rule sequence_merge:
 	input:
 		expand(config["OUT"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
-		dir = config["OUT"]
+	params:
+		dir = config["OUT"]+"/samples"
+	conda: 
+		"../envs/plots.yaml"
 	output:
-        	config["OUT"]+"/samples/out.fa"
+        	config["OUT"]+"/samples/out.fa",
+			report(config["OUT"]+"/plots/sampling.png",caption="sampling.rst",category='Sampling Report')
 	shell:
-		"cat {input.dir}/samples/*.fa >> {output}" 
+		"python3 workflow/scripts/sequence_merge.py {params.dir} {output}"
