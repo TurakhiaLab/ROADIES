@@ -1,3 +1,4 @@
+#each gene plot 
 import re
 import os, glob
 import sys
@@ -46,6 +47,11 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                     genes[gene_id].append((score,l,position))
         num_genes[species] = len(genes)
         for gene in genes:
+            if gene in num_homologues:
+                num_homologues[gene] += 1
+            else:
+                num_homologues[gene] = 1
+            print(gene,num_homologues[gene])
             gene_list = genes[gene]
             #skip if no homologue
             #sort homologues by score
@@ -65,11 +71,6 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                     max_scores.append(idx)
                     tooClose = False
                 idx = idx+1
-            if len(max_scores)>1:
-                if gene in num_homologues:
-                    num_homologues[gene] += len(max_scores)
-                else:
-                    num_homologues[gene] = len(max_scores)
             for i in range(len(max_scores)):
                 l = gene_list[i][1]
                 seq_line = lines[l].split()
@@ -88,8 +89,8 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 #print(max_scores)
                 
                 #print(species,gene,counts[gene])
-print(num_genes)
-print(num_homologues)
+#print(num_genes)
+#print(num_homologues)
 x = list(num_genes.keys())
 y = list(num_genes.values())
 with open('results/statistics/num_genes.csv','w') as f:
@@ -105,10 +106,24 @@ od = OrderedDict(sorted(num_homologues.items()))
 with open('results/statistics/homologues.csv','w') as f:
     for key, val in od.items():
         f.write('gene_'+str(key)+','+str(val)+'\n')
+x2 = od.values()
+ax2 = sns.displot(x=x2,kde=True)
+#fig2 = ax2.get_figure()
+ax2.savefig("results/plots/homologues.png")
 count = 0
+gene_dup = []
 for filename in glob.glob(os.path.join(outdir,'*.fa')):
- #   print(filename)
+    #print(filename)
+    fs = filename.split('/')
+    fs2 = fs[len(fs)-1]
+    fs2 = fs2.replace('gene_','')
+    fs2 = fs2.replace('.fa','')
+    #print(fs2)
     records = list(SeqIO.parse(filename,"fasta"))
+    #print(fs2,len(records),num_homologues[fs2])
+    avg = len(records)/num_homologues[fs2]
+    #print(avg)
+    gene_dup.append((int(fs2),avg))
     found = []
     for record in records:
         n = record.name
@@ -117,9 +132,20 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
         if name not in found:
             found.append(name)
     if len(found)>m:
-        print(len(found),found)
+        #print(len(found),found)
         count += 1
-print("Number of gene trees: ",count)
+sorted(gene_dup)
+#print(gene_dup)
+with open('results/statistics/gene_dup.csv','w') as f:
+    for i in range(len(gene_dup)):
+        f.write(str(gene_dup[i][0])+','+str(gene_dup[i][1])+'\n')
+x3 = []
+for i in range(len(gene_dup)):
+    x3.append(gene_dup[i][1])
+ax3 = sns.displot(x=x3,kde=True)
+#fig2 = ax2.get_figure()
+ax3.savefig("results/plots/gene_dup.png")
+#print("Number of gene trees: ",count)
 with open("results/statistics/num_gt.txt",'w') as f:
     f.write("Number of gene trees: "+str(count)+'\n')
     #if len(records)< m:
