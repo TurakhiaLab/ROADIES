@@ -1,4 +1,0 @@
-Building DAG of jobs...
-WorkflowError:
-Failed to open source file /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/rules/align.yaml
-FileNotFoundError: [Errno 2] No such file or directory: '/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/workflow/rules/align.yaml'

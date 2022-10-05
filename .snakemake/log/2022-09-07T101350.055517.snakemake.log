@@ -1,3 +1,0 @@
-Building DAG of jobs...
-MissingRuleException:
-No rule to produce sequence_select/out.fasta (if you use input functions make sure that they don't raise unexpected exceptions).

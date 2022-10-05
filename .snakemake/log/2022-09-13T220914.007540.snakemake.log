@@ -1,8 +1,0 @@
-Migrating .snakemake folder to new format...
-Migration complete
-Building DAG of jobs...
-MissingInputException in line 82 of /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/Snakefile:
-Missing input files for rule sequence_merge:
-    output: test/samples/out.fa
-    affected files:
-        test

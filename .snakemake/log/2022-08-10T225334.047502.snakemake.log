@@ -1,3 +1,0 @@
-SyntaxError:
-Input and output files have to be specified as strings or lists of strings.
-  File "/home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile", line 13, in <module>

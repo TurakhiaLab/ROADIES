@@ -1,3 +1,0 @@
-TypeErrorin line 11 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile:
-can only concatenate list (not "str") to list
-  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile", line 11, in <module>

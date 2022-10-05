@@ -1,3 +1,0 @@
-KeyError in line 15 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
-'OUT'
-  File "/home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile", line 15, in <module>

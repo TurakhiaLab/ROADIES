@@ -1,3 +1,0 @@
-KeyError in line 9 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
-'LENGTH'
-  File "/home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile", line 9, in <module>

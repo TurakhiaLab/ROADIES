@@ -1,4 +1,0 @@
-Building DAG of jobs...
-WildcardErrorin line 1 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile:
-Wildcards in input files cannot be determined from output files:
-'samples'

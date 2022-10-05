@@ -1,3 +1,0 @@
-KeyError in line 20 of /home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile:
-('PATH', 'KREG')
-  File "/home/AD.UCSD.EDU/xizou/wga-phylo/Snakefile", line 20, in <module>

@@ -1,3 +1,0 @@
-RuleExceptionin line 52 of /home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile:
-Conda environments are only allowed with shell, script, notebook, or wrapper directives (not with run or template_engine).
-  File "/home/AD.UCSD.EDU/ttl074/wga/wga-phylo/Snakefile", line 52, in <module>

@@ -1,5 +1,0 @@
-ValueError in line 10 of /Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile:
-empty range for randrange() (0, 0, 0)
-  File "/Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile", line 10, in <module>
-  File "/Users/xiaoxiaozou/opt/anaconda3/envs/snakemake/lib/python3.10/random.py", line 370, in randint
-  File "/Users/xiaoxiaozou/opt/anaconda3/envs/snakemake/lib/python3.10/random.py", line 353, in randrange

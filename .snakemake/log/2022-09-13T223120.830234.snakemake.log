@@ -1,3 +1,0 @@
-KeyError in line 4 of /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/Snakefile:
-'PATH'
-  File "/home/AD.UCSD.EDU/amohammadidoost/wga-phylo/Snakefile", line 4, in <module>

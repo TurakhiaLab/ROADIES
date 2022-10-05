@@ -1,6 +1,0 @@
-Building DAG of jobs...
-MissingInputException in line 50 of /home/AD.UCSD.EDU/amohammadidoost/wga-phylo/Snakefile:
-Missing input files for rule mergeTrees:
-    output: test/geneTree/gene_tree_merged.newick
-    affected files:
-        test/geneTree/gene_tree_107.newick

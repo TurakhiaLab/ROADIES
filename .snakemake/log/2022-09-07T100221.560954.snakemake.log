@@ -1,3 +1,0 @@
-KeyError in line 20 of /Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile:
-'OUT'
-  File "/Users/xiaoxiaozou/Desktop/wga-phylo/Snakefile", line 20, in <module>
