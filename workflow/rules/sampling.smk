@@ -42,11 +42,12 @@ rule sequence_merge:
 	input:
 		expand(config["OUT"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
 	params:
-		dir = config["OUT"]+"/samples"
+		dir = config["OUT"]+"/samples",
+		plotdir = config["OUT"]+"/plots"
 	conda: 
 		"../envs/plots.yaml"
 	output:
         	config["OUT"]+"/samples/out.fa",
-			report(config["OUT"]+"/plots/sampling.png",caption="sampling.rst",category='Sampling Report')
+			report(config["OUT"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
 	shell:
-		"python3 workflow/scripts/sequence_merge.py {params.dir} {output}"
+		"python3 workflow/scripts/sequence_merge.py {params.dir} {output} {params.plotdir}"

@@ -68,7 +68,7 @@ with open(log_file,'r') as f:
                 iqtree[num].append(to_seconds(time))
                 #print(iqtree[num])
 t = list(mafft.values())
-#print(t)
+print(t)
 s = t[0][0]
 e = t[0][1]
 for j in t:
@@ -85,7 +85,7 @@ rules.insert(5,'iqtree')
 times.insert(5,e)
 x = rules[:len(rules)-1]
 runtimes= []
-with open('results/statistics/runtime.txt','w') as w:
+with open(output+'/statistics/runtime.txt','w') as w:
     for i in range(len(rules)-1):
         start = times[i]
         end = times[i+1]
@@ -116,5 +116,5 @@ for tick in ax.get_xticklabels():
 plt.tight_layout()
 ax.set_title('Runtime of each rule')
 fig = ax.get_figure()
-fig.savefig("runtime.png")
+fig.savefig(output+"/plots/runtime.png")
 

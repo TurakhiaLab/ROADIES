@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 directory = sys.argv[1]
 output = sys.argv[2]
+plotdir = sys.argv[3]
 #stats = sys.argv[3]
 species_count = {}
 with open(output, 'wb') as outfile:
@@ -29,8 +30,8 @@ print(species_count)
 x = list(species_count.keys())
 y = list(species_count.values())
 ax = sns.barplot(x=x,y=y)
-ax.set_xticklabels(ax.get_xticklabels(),rotation=40,ha='right')
+ax.set_xticklabels(ax.get_xticklabels(),rotation=90,ha='right')
 ax.set_title('Number of Reference Genes from Each Genome')
 plt.tight_layout()
 fig = ax.get_figure()
-fig.savefig("results/plots/sampling.png")
+fig.savefig(plotdir)

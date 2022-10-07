@@ -1,0 +1,1 @@
+Histogram of duplicity of each gene. (average number of homologues per species for each gene)

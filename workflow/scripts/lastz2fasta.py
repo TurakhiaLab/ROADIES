@@ -10,13 +10,17 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 parser = argparse.ArgumentParser(description='get gene fasta')
 parser.add_argument('-k',type=int,default=400)
-parser.add_argument('--path')
-parser.add_argument('--outdir')
+parser.add_argument('--path',default='results/alignments')
+parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
 parser.add_argument('-d',type=int,default=5)
+parser.add_argument('--plotdir',default='results/plots')
+parser.add_argument('--statdir',default='results/statistics')
 args = parser.parse_args()
 path = args.path
 outdir = args.outdir
+plotdir = args.plotdir
+statdir = args.statdir
 m = args.m
 k = args.k
 d= args.d
@@ -93,7 +97,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
 #print(num_homologues)
 x = list(num_genes.keys())
 y = list(num_genes.values())
-with open('results/statistics/num_genes.csv','w') as f:
+with open(statdir+'/num_genes.csv','w') as f:
     for i in range(len(x)):
         f.write(x[i]+','+str(y[i])+'\n')
 ax = sns.barplot(x=x,y=y)
@@ -101,15 +105,15 @@ ax.set_xticklabels(ax.get_xticklabels(),rotation=40,ha='right')
 ax.set_title('Number of Genes Aligned To Each Genome')
 plt.tight_layout()
 fig = ax.get_figure()
-fig.savefig("results/plots/num_genes.png")
+fig.savefig(plotdir+"/num_genes.png")
 od = OrderedDict(sorted(num_homologues.items()))
-with open('results/statistics/homologues.csv','w') as f:
+with open(statdir+'/homologues.csv','w') as f:
     for key, val in od.items():
         f.write('gene_'+str(key)+','+str(val)+'\n')
 x2 = od.values()
 ax2 = sns.displot(x=x2,kde=True)
 #fig2 = ax2.get_figure()
-ax2.savefig("results/plots/homologues.png")
+ax2.savefig(plotdir+"/homologues.png")
 count = 0
 gene_dup = []
 for filename in glob.glob(os.path.join(outdir,'*.fa')):
@@ -136,7 +140,7 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
         count += 1
 sorted(gene_dup)
 #print(gene_dup)
-with open('results/statistics/gene_dup.csv','w') as f:
+with open(statdir+'/gene_dup.csv','w') as f:
     for i in range(len(gene_dup)):
         f.write(str(gene_dup[i][0])+','+str(gene_dup[i][1])+'\n')
 x3 = []
@@ -144,9 +148,9 @@ for i in range(len(gene_dup)):
     x3.append(gene_dup[i][1])
 ax3 = sns.displot(x=x3,kde=True)
 #fig2 = ax2.get_figure()
-ax3.savefig("results/plots/gene_dup.png")
+ax3.savefig(plotdir+"/gene_dup.png")
 #print("Number of gene trees: ",count)
-with open("results/statistics/num_gt.txt",'w') as f:
+with open(statdir+"/num_gt.txt",'w') as f:
     f.write("Number of gene trees: "+str(count)+'\n')
     #if len(records)< m:
      #   print(filename)
