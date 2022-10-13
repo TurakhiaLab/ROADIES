@@ -2,7 +2,7 @@ PATH: "/home/AD.UCSD.EDU/ttl074/wga/bird_genomes"
 LENGTH: 1000
 KREG: 300
 THRESHOLD: 0.70
-OUT: "test"
+OUT: "results"
 MIN_ALIGN: 2
 APRO: 
 polylimit: 3
