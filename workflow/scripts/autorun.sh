@@ -1,10 +1,16 @@
-for L in 200 500 1000
+rm -r runs
+mkdir -p runs
+for L in 200 500 1000 1500
 do
-    for n in 1 2 3
+    for K in 200 500 1000 1500
     do
-        rm -r test/*
-        snakemake -c16 --config LENGTH=$L
-        ./workflow/scripts/get_run.sh run_L$L.$n
-        snakemake --report runs/run_L$L.$n/report.html
+        rm -r results
+        mkdir results
+        snakemake --core $1 --config LENGTH=$L KREG=$K --use-conda --rerun-incomplete
+        ./workflow/scripts/get_run.sh run_L$L.K$K
+        log=`ls .snakemake/log | tail -n 1`
+        echo "$log"
+        python3 workflow/scripts/logparser.py .snakemake/log/$log runs/run_L$L.K$K
+        snakemake --report runs/run_L$L.K$K/report.html
     done
 done
