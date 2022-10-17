@@ -4,10 +4,12 @@ rule mafft:
 		config["OUT"]+"/genes/gene_{id}.fa"
 	output:
 		config["OUT"]+"/msa/gene_aln_{id}.fa"
+	params:
+		m=config["MIN_ALIGN"]
 	conda: 
 		"../envs/mafft.yaml"
 	shell:
-		"workflow/scripts/mafftWrapper.sh {input} {output}"
+		"workflow/scripts/mafftWrapper.sh {input} {output} {params.m}"
 rule lastz2fasta:
 	input:
 		expand(config["OUT"]+"/alignments/{sample}.maf",sample=SAMPLES)   

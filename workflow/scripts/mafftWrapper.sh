@@ -1,7 +1,7 @@
 num=`grep -n '>' $1 | wc -l`
-if [[ ${num} -gt 2 ]]
+if [[ ${num} -gt $4 ]]
 then
 	mafft --auto $1 > $2
 else
-	cp $1 $2
+	touch $2
 fi
