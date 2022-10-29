@@ -28,3 +28,4 @@ do
     done
     ./c_stats.sh $1/length_$L $4/length$L $L $5
 done
+python combined.py $4 $4 converge
