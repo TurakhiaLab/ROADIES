@@ -2,6 +2,7 @@
 rm -r $1
 mkdir -p $1
 END=$3
+mkdir -p $4
 for L in 500
 do
     mkdir $1/length_$L
