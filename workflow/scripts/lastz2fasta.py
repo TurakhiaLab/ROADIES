@@ -14,7 +14,6 @@ parser.add_argument('-k',type=int,default=400)
 parser.add_argument('--path',default='results/alignments')
 parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
-parser.add_argument('-d',type=int,default=5)
 parser.add_argument('--plotdir',default='results/plots')
 parser.add_argument('--statdir',default='results/statistics')
 args = parser.parse_args()
@@ -24,7 +23,6 @@ plotdir = args.plotdir
 statdir = args.statdir
 m = args.m
 k = args.k
-d= args.d
 num_genes = {}
 num_homologues = {}
 #open all lastz alignment outputs
@@ -76,7 +74,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
             positions = [gene_list[0][2]]
             idx = 1
             #go through gene list 
-            while(idx < len(gene_list) and len(max_scores)<d):
+            while idx < len(gene_list):
                 #get position of that alignment
                 pos = gene_list[idx][2]
                 # if it's within 2000 bp of another higher scoring alignment skip that alignment
@@ -117,7 +115,7 @@ with open(statdir+'/num_genes.csv','w') as f:
         f.write(x[i]+','+str(y[i])+'\n')
 #make barplot of number of genes for each species
 ax = sns.barplot(x=x,y=y)
-ax.set_xticklabels(ax.get_xticklabels(),rotation=40,ha='right')
+ax.set_xticklabels(ax.get_xticklabels(),rotation=60,ha='right')
 ax.set_title('Number of Genes Aligned To Each Genome')
 plt.tight_layout()
 fig = ax.get_figure()
@@ -162,6 +160,9 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
     if len(found)>m:
         #print(len(found),found)
         count += 1
+    else:
+        with open(filename,'w') as w:
+            w.write('')
 sorted(gene_dup)
 #output duplicity as csv
 with open(statdir+'/gene_dup.csv','w') as f:

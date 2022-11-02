@@ -44,5 +44,8 @@ rule lastz:
 		config["OUT"]+"/alignments/{sample}.maf"
 	conda:
 		"../envs/lastz.yaml"
+	params:
+		i = config['IDENTITY'],
+		c = config['COVERAGE']
 	shell:
-		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:75 --filter=identity:75 --format=maf --output={output}"
+		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:{params.c} --filter=identity:{params.i} --step=20 --format=maf --output={output}"

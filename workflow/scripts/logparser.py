@@ -86,6 +86,7 @@ times.insert(5,e)
 x = rules[:len(rules)-1]
 runtimes= []
 with open(output+'/statistics/runtime.txt','w') as w:
+    w.write(log_file+'\n')
     for i in range(len(rules)-1):
         start = times[i]
         end = times[i+1]
