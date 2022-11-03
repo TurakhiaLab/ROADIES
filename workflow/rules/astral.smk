@@ -10,5 +10,5 @@ rule astral:
 		# "astral -i {input} -o {output}"
 		"""
 		pwd
-		ASTER-LINUX/bin/astral-pro -i {input} -o {output} -a {params.genes}/mapping.txt --polylimit {params.p}
+		ASTER-Linux/bin/astral-pro -i {input} -o {output} -a {params.genes}/mapping.txt --polylimit {params.p}
 		"""

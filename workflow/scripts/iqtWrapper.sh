@@ -1,7 +1,7 @@
 num=`grep -n '>' $1 | wc -l`
 if [[ ${num} -gt $4 ]]
 then
-	iqtree -s $1 -redo
+	iqtree -s $1 -m GTR+I+G -redo
 	if [[ $? -eq 0 ]]
 	then
         mv "${1}.treefile" $2
