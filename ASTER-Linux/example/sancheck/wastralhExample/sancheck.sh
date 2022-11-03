@@ -1,1 +1,0 @@
-bin/astral-hybrid -t 2 -a example/genetree.map example/genetree.nw

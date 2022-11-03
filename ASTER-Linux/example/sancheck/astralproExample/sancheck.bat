@@ -1,1 +1,0 @@
-exe\astral-pro.exe -t 2 -o example\multitree.nw.stree example\multitree.nw

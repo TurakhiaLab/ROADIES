@@ -1,1 +1,0 @@
-exe\astral.exe -t 4 -a example\genetree.map example\genetree.nw

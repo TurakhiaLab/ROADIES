@@ -1,1 +1,0 @@
-bin/astral-pro -t 2 -o example/multitree.nw.stree example/multitree.nw 2>example/multitree.nw.log
