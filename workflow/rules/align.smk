@@ -48,4 +48,4 @@ rule lastz:
 		i = config['IDENTITY'],
 		c = config['COVERAGE']
 	shell:
-		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:{params.c} --filter=identity:{params.i} --step=20 --format=maf --output={output}"
+		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:{params.c} --filter=identity:{params.i} --format=maf --step=20 --output={output}"
