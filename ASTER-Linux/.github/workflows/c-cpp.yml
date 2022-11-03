@@ -1,0 +1,72 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  linux-build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: make
+    - name: commit
+      run: |
+            git config --local user.email "github-actions[bot]@github.com"
+            git config --local user.name "github-actions[bot]"
+            git add *
+            git commit -m "Update to newest version with binaries"
+    - name: push
+      uses: chaoszhang/github-push-action@master
+      with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: Linux
+          force: true
+  macos-build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: make
+      run: make
+    - name: commit
+      run: |
+            git config --local user.email "github-actions[bot]@github.com"
+            git config --local user.name "github-actions[bot]"
+            git add *
+            git commit -m "Update to newest version with binaries"
+    - name: push
+      uses: chaoszhang/github-push-action@master
+      with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: MacOS
+          force: true
+  windows-build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: configure
+      run: |
+            choco uninstall mingw
+            choco install mingw --version=4.9.3 --force
+    - name: make
+      run: .\make.bat
+    - name: commit
+      run: |
+            git config --local user.email "github-actions[bot]@github.com"
+            git config --local user.name "github-actions[bot]"
+            git add *
+            git commit -m "Update to newest version with binaries"
+    - name: push
+      uses: chaoszhang/github-push-action@master
+      with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: Windows
+          force: true
