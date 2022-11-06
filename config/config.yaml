@@ -1,6 +1,6 @@
 PATH: "/home/AD.UCSD.EDU/ttl074/wga/cn_bird48"
-LENGTH: 1000
-KREG: 500
+LENGTH: 500
+KREG: 1000
 THRESHOLD: 0.80
 OUT: "results"
 MIN_ALIGN: 4
