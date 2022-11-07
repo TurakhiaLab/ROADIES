@@ -1,36 +1,31 @@
+list.of.packages <- c("TreeDist", "ape")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages,repos='http://cran.us.r-project.org')
+args = commandArgs (trailingOnly=TRUE)
+
 library("ape")
 library("TreeDist")
 
-param <- "K"
-treePath <- "./treedist/trees/"
+treePath <- args[1]
+filePattern <- args[2]
 
-lenDirs <- list.files(path = treePath, pattern=param)
-lens <- c()
-for (dir in lenDirs){
-    lens <- append(lens, as.integer(substring(dir, 2, 1000)))
+files <- list.files(path = treePath, pattern=filePattern)
+files
+
+trees <- c()
+for(file in files){
+    filePath <- paste(treePath, '/', file, sep='')
+    tree <- ape::read.tree(filePath)
+    trees <- append(trees, tree)
 }
 
-distMat <- list()
-for(len in sort(lens)){
-    files <- list.files(path = paste(treePath, param, as.character(len), sep = ""))
-    trees <- c()
-    for(file in files){
-        filePath <- paste(treePath, param, as.character(len), "/", as.character(file), sep = "")
-        tree <- ape::read.tree(filePath)
-        trees <- append(trees, tree)
-    }
+rfMat <- RobinsonFoulds(trees)
+rfMat
 
-    rfMat <- RobinsonFoulds(trees)
-    distMat <- append(distMat, rfMat)
-
-    cat("=========", param, "=", as.character(len), "=========\n")
-    print(rfMat)
-    cat("\n")
-    cat("mean =", as.character(mean(rfMat)), "\n")
-    cat("min =", as.character(min(rfMat)), "\n")
-    cat("max =", as.character(max(rfMat)), "\n")
-    cat("\n")
-}
+cat("mean =", as.character(mean(rfMat)), "\n")
+cat("min =", as.character(min(rfMat)), "\n")
+cat("max =", as.character(max(rfMat)), "\n")
+cat("\n")
 
 # distMat
 
