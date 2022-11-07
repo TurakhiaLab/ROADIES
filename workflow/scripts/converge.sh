@@ -24,7 +24,7 @@ do
         cat $1/length_$L/run_$i/gene_tree_merged.newick >> $1/length_$L/combined_gt.tre
         cat $1/length_$L/run_$i/mapping.txt >> $1/length_$L/combined_mapping.txt
         ASTER-Linux/bin/astral-pro -i $1/length_$L/combined_gt.tre -o $1/length_$L/run_$i.nwk -a $1/length_$L/combined_mapping.txt
-    ./workflow/scripts/c_stats.sh $1/length_$L $5/length$_L $L $4
+    ./workflow/scripts/c_stats.sh $1/length_$L $5/length_$L $L $4
     done
 done
 mkdir -p $5/combined

@@ -37,7 +37,7 @@ do
         i=$((i+1))
         echo $i
         echo $counter
-    ./workflow/scripts/c_stats.sh $1/length_$L $6/length$_L $L $8
+    ./workflow/scripts/c_stats.sh $1/length_$L $6/length_$L $L $8
     done
 done
 mkdir -p $6/combined
