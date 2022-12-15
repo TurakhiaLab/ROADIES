@@ -1,0 +1,10 @@
+.snakemake/log/2022-10-27T133130.771807.snakemake.log
+sequence_select, 0:00:47
+sequence_merge, 0:00:02
+lastz, 0:12:26
+lastz2fasta, 0:00:03
+mafft, 0:04:09
+iqtree, 0:01:05
+mergeTrees, 0:00:00
+astral, 0:00:11
+total_time, 0:18:43
