@@ -33,26 +33,45 @@ print("ID START: "+(str(s))+", ID END: "+str(e))
 print("Region Length:", l)
 print("Input File:" +path)
 records = list(SeqIO.parse(path,"fasta"))
+total_length = 0
+indices = []
+for record in records:
+    total_length += len(record.seq)
+    indices.append(total_length)
+#print(indices)
 sequence=[]
 index = s
 threshold = int(t*l)
+#keeps track of time
 with alive_bar(k) as bar:
+    #for specified number of genes
     for i in range(k):
         notFound =True
         count = 0
+        #until a passing sample is found
         while notFound:
-            c_seq=random.randint(0,len(records)-1)
-            seq_len=len(records[c_seq].seq)
-            if l>seq_len:
-                continue
-            start = random.randint(0,seq_len-l)
-            frag = records[c_seq].seq[start:(start+l)]
-            upper = 0
-            for i in range(len(frag)):
-                if frag[i] =='N':
+            #print(k)
+            k = random.randint(0,total_length-l)
+            loc = 0
+            idx = 0
+            start = 0 
+            for index in indices:
+                if k > index:
+                    loc += 1 
+                else:
+                    start = index - k
                     break
-                if frag[i]=='A' or frag[i] =='T' or frag[i]=='G' or frag[i]=='T':
-                    upper = upper +1
+            if start < l:
+                continue
+            frag = records[loc].seq[start:start+l]
+            upper = 0
+            uppercase = ['A','T','C','G']
+            accepted = ['a','t','c','g']
+            for f in frag:
+                if f not in accepted and f not in uppercase:
+                    break
+                elif f in uppercase:
+                    upper += 1
             if upper >= threshold:
                 record = SeqRecord(frag, "gene_"+str(index),"","")
                 sequence.append(record)
