@@ -1,9 +1,9 @@
-PATH: "/home/AD.UCSD.EDU/ttl074/wga/cn_bird48"
+PATH: "/home/roadies-datasets/birds"
 LENGTH: 500
-KREG: 1000
+KREG: 200
 THRESHOLD: 0.80
 OUT: "results"
 MIN_ALIGN: 4
 polylimit: 3
-IDENTITY: 75
-COVERAGE: 75
+IDENTITY: 65
+COVERAGE: 85
