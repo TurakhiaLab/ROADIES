@@ -14,6 +14,6 @@ Snakemake will automatically detect the main Snakefile in the workflow subfolder
 
 In order to run the pipeline, a manual installation of ASTRAL-PRO(latest version) is required. Replace the ASTER-Linux directory with the ASTRAL-PRO git repository. 
 
-rmdir ASTER-Linux
-wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip
+rmdir ASTER-Linux\
+wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip\
 unzip Linux.zip
