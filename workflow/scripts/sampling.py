@@ -43,47 +43,50 @@ sequence=[]
 index = s
 threshold = int(t*l)
 #keeps track of time
-with alive_bar(k) as bar:
     #for specified number of genes
-    for i in range(k):
-        notFound =True
-        count = 0
-        #until a passing sample is found
-        while notFound:
-            #print(k)
-            k = random.randint(0,total_length-l)
-            loc = 0
-            idx = 0
-            start = 0 
-            for i in indices:
-                if k > i:
-                    loc += 1 
-                else:
-                    start = i - k
-                    break
-            if start < l:
-                count += 1
-                continue
-            frag = records[loc].seq[start:start+l]
-            print(len(frag))
-            print(frag)
-            upper = 0
-            uppercase = ['A','T','C','G']
-            accepted = ['a','t','c','g']
-            for f in frag:
-                if f not in accepted and f not in uppercase:
-                    break
-                elif f in uppercase:
-                    upper += 1
-            if upper >= threshold:
-                record = SeqRecord(frag, "gene_"+str(index),"","")
-                sequence.append(record)
-                index = index+1
+count = 0
+for i in range(k-1):
+    notFound =True
+    sample = ''
+    #until a passing sample is found
+    while notFound:
+        #print(k)
+        k = random.randint(0,total_length-l)
+        loc = 0
+        idx = 0
+        start = 0 
+        for i in indices:
+            if k > i:
+                loc += 1 
+            else:
+                start = i - k
                 break
+        if start < l:
+            count += 1
+            continue
+        frag = records[loc].seq[start:start+l]
+        upper = 0
+        uppercase = ['A','T','C','G']
+        accepted = ['a','t','c','g']
+        accept = True
+        if 'N' in frag:
+            continue
+        for f in frag:
+            if f not in uppercase:
+                if f not in accepted:
+                    accept = False
+                    break
+            else:
+                upper += 1
+        if accept == False:
+            continue
+        if upper >= threshold:
+            sample = SeqRecord(frag, "gene_"+str(index),"","")
+            break
+        else:
             count = count+1
-        print('# of resampling: '+str(count))
-        time.sleep(0.01)
-        bar()
-
+    sequence.append(sample)
+    index = index+1
+print('Total # of resampling: '+str(count))
 SeqIO.write(sequence, output, "fasta")
 
