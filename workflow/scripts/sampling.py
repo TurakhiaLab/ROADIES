@@ -55,11 +55,11 @@ with alive_bar(k) as bar:
             loc = 0
             idx = 0
             start = 0 
-            for index in indices:
-                if k > index:
+            for i in indices:
+                if k > i:
                     loc += 1 
                 else:
-                    start = index - k
+                    start = i - k
                     break
             if start < l:
                 count += 1
