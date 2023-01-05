@@ -62,8 +62,11 @@ with alive_bar(k) as bar:
                     start = index - k
                     break
             if start < l:
+                count += 1
                 continue
             frag = records[loc].seq[start:start+l]
+            print(len(frag))
+            print(frag)
             upper = 0
             uppercase = ['A','T','C','G']
             accepted = ['a','t','c','g']
