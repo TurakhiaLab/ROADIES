@@ -1,5 +1,7 @@
 name: lastz
 channels:
   - bioconda
+  - conda-forge
 dependencies:
-  - lastz=1.04.15
+  - lastz
+  - biopython

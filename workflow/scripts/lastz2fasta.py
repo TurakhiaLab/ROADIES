@@ -93,14 +93,23 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 #get line number
                 l = gene_list[i][1]
                 #get sequence
+                orient_line = lines[l+1].split()
+                orientation = orient_line[4] 
+                seq = ""
                 seq_line = lines[l].split()
                 seq = seq_line[len(seq_line)-1]
                 seq = seq.replace('-','')
+                rev = ""
+                rev_map = {'A':'T','C':'G','G':'C','T':'A'}
+                if orientation == '-':
+                    for s in seq:
+                        rev = rev + str(s)
+                    seq = rev[::-1]
                 index = species+'_'+seq_line[2]
                 #output to gene fasta
                 with open(outdir+'/gene_'+gene+'.fa','a') as w:
-                        w.write('>'+index+'\n')
-                        w.write(seq+'\n')
+                    w.write('>'+index+'\n')
+                    w.write(seq+'\n')
                 w.close()
                 #add to mapping file 
                 with open(outdir+"/mapping.txt",'a') as w2:

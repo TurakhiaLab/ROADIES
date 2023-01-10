@@ -45,7 +45,9 @@ rule lastz:
 	conda:
 		"../envs/lastz.yaml"
 	params:
+		s = "{sample}",
 		i = config['IDENTITY'],
-		c = config['COVERAGE']
+		c = config['COVERAGE'],
+		d = config['OUT']+ "/alignments"
 	shell:
-		"lastz_32 {input[1]}[multiple] {input[0]}[multiple] --filter=coverage:{params.c} --filter=identity:{params.i} --format=maf --output={output}"
+		"./workflow/scripts/lastzwrapper.sh {input[1]} {input[0]} {params.c} {params.i} {output} {params.d} {params.s}" 
