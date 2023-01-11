@@ -8,6 +8,7 @@ from operator import itemgetter
 import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
+from Bio.Seq import Seq
 #get arguments 
 parser = argparse.ArgumentParser(description='get gene fasta')
 parser.add_argument('-k',type=int,default=400)
@@ -99,12 +100,10 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 seq_line = lines[l].split()
                 seq = seq_line[len(seq_line)-1]
                 seq = seq.replace('-','')
-                rev = ""
-                rev_map = {'A':'T','C':'G','G':'C','T':'A'}
                 if orientation == '-':
-                    for s in seq:
-                        rev = rev + str(s)
-                    seq = rev[::-1]
+                    print(seq)
+                    seq = str(Seq(seq).reverse_complement())
+                    print(seq)
                 index = species+'_'+seq_line[2]
                 #output to gene fasta
                 with open(outdir+'/gene_'+gene+'.fa','a') as w:
@@ -154,7 +153,7 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
     #get the sequences
     records = list(SeqIO.parse(filename,"fasta"))
     #get the duplicity by diving #sequences by # species
-    avg = len(records)/num_homologues[fs2]
+    avg = len(records)/int(num_homologues[fs2])
     gene_dup.append((int(fs2),avg))
     found = []
     #iterate through seqs
