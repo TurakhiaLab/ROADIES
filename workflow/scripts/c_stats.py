@@ -8,7 +8,7 @@ import subprocess
 dir = sys.argv[1]
 #length of genes
 length = sys.argv[2]
-geneiter = sus.argv[3]
+geneiter = sys.argv[3]
 #function to parse stat file for x and y values
 def get_run(statfile):
     run_dict=OrderedDict()
