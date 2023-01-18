@@ -96,7 +96,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
             if n > d:
                 n = d
             #for highest scoring alignments 
-            for i in range(len(n)):
+            for i in range(n):
                 #get line number
                 l = gene_list[i][1]
                 #get sequence
