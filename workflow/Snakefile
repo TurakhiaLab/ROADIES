@@ -3,14 +3,14 @@ min_version("7.12.1")
 configfile: "config/config.yaml"
 num = config["KREG"]
 IDS = list(range(1,num+1))
-SAMPLES = glob_wildcards(config["PATH"]+"/{samples}.fa").samples
+SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa").samples
 include: "rules/align.smk"
 include: "rules/astral.smk"
 include: "rules/sampling.smk"
 include: "rules/tree.smk"
 rule all:
 	input:
-		config["OUT"]+"/speciesTree.newick"
+		config["OUT_DIR"]+"/speciesTree.newick"
 		#config["OUT"]+"/geneTree/gene_tree_merged.newick"
 		# expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
 		# expand(config["OUT"]+"/msa/gene_aln_{id}.fa",id=IDS)
