@@ -1,8 +1,10 @@
 #usage ./converge.sh [output dir] [cores] [number of iterations] [number of genes per iter] [statdir] [ref tree]
+rm -r results
 mkdir -p $1 
 END=$3
+rm -r $5
 mkdir -p $5
-for L in 500 600 700
+for L in 500
 do
     mkdir -p $1/length_$L
     touch $1/length_$L/combined_gt.tre
@@ -27,5 +29,3 @@ do
     ./workflow/scripts/c_stats.sh $1/length_$L $5/length_$L $L $4 $6
     done
 done
-mkdir -p $5/combined
-python workflow/scripts/combine_plots.py $5 $5/combined converge
