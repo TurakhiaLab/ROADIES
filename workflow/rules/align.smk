@@ -40,7 +40,7 @@ rule lastz2fasta:
 rule lastz:
 	input:
 		config["OUT_DIR"]+"/samples/out.fa",
-		config["PATH"]+"/{sample}.fa"
+		config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	conda:

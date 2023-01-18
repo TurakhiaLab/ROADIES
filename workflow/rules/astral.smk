@@ -1,11 +1,10 @@
 rule astral:
 	input:
-		config["OUT"]+"/geneTree/gene_tree_merged.newick"
+		config["OUT_DIR"]+"/geneTree/gene_tree_merged.newick"
 	output:
-		config["OUT"]+"/speciesTree.newick"
+		config["OUT_DIR"]+"/speciesTree.newick"
 	params:
-		p = config["polylimit"],
-		genes = config["OUT"]+"/genes"
+		genes = config["OUT_DIR"]+"/genes"
 	shell:
 		# "astral -i {input} -o {output}"
 		"""

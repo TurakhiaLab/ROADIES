@@ -1,20 +1,20 @@
 
 rule mergeTrees:
 	input:
-		expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
+		expand(config["OUT_DIR"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
 	output:
-		config["OUT"]+"/geneTree/gene_tree_merged.newick"
+		config["OUT_DIR"]+"/geneTree/gene_tree_merged.newick"
 	conda: 
 		"../envs/tree.yaml"
 	shell:
 		"workflow/scripts/astralWrapper.sh {output} {input}"
 rule iqtree:
 	input:
-		config["OUT"]+"/msa/gene_aln_{id}.fa"
+		config["OUT_DIR"]+"/msa/gene_aln_{id}.fa"
 	output:
-		config["OUT"]+"/geneTree/gene_tree_{id}.newick"
+		config["OUT_DIR"]+"/geneTree/gene_tree_{id}.newick"
 	params:
-		logDir = config["OUT"]+"/geneTree/",
+		logDir = config["OUT_DIR"]+"/geneTree/",
 		m = config["MIN_ALIGN"]
 	conda: 
 		"../envs/tree.yaml"	
