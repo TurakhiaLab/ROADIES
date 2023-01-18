@@ -1,4 +1,4 @@
-PATH: "/home/roadies-datasets/birds"
+GENOMES: "/home/roadies-datasets/birds"
 LENGTH: 200
 KREG: 100
 UPPER_CASE: 0.80
