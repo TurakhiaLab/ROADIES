@@ -1,9 +1,9 @@
 PATH: "/home/roadies-datasets/birds"
-LENGTH: 500
-KREG: 200
-THRESHOLD: 0.80
-OUT: "results"
+LENGTH: 200
+KREG: 100
+UPPER_CASE: 0.80
+OUT_DIR: "results"
 MIN_ALIGN: 4
-polylimit: 3
 IDENTITY: 65
 COVERAGE: 85
+MAX_DUP: 100

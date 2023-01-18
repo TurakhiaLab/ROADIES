@@ -17,6 +17,7 @@ parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
 parser.add_argument('--plotdir',default='results/plots')
 parser.add_argument('--statdir',default='results/statistics')
+parser.add_argument('-d',type=int,default=100)
 args = parser.parse_args()
 path = args.path
 outdir = args.outdir
@@ -24,6 +25,7 @@ plotdir = args.plotdir
 statdir = args.statdir
 m = args.m
 k = args.k
+d = args.d
 num_genes = {}
 num_homologues = {}
 #open all lastz alignment outputs
@@ -89,8 +91,12 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                     max_scores.append(idx)
                     tooClose = False
                 idx = idx+1
+            #limits the number of alignments
+            n = len(max_scores)
+            if n > d:
+                n = d
             #for highest scoring alignments 
-            for i in range(len(max_scores)):
+            for i in range(len(n)):
                 #get line number
                 l = gene_list[i][1]
                 #get sequence
