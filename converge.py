@@ -127,7 +127,7 @@ if __name__=="__main__":
     parser.add_argument('--bootstrap',type=int,default=10,help='number of trees for bootstrapping when comparing')
     parser.add_argument('--max_iter',type=int,default=5,help='maximum number of runs before stopping')
     parser.add_argument('--stop_iter',type=int,default=3,help='number of runs satisfying threshold before halt')
-    parser.add_argument('--out_dir',default='converge',help='reference tree (input as .nwk or .newick')
+    parser.add_argument('--out_dir',default='converge',help='output dir')
     parser.add_argument('--smk_dir',default='results',help='Snakemake output directory')
     #assigning argument values to variables
     args = vars(parser.parse_args())
@@ -161,7 +161,7 @@ if __name__=="__main__":
     iter_dists=[]
     ref_dists = []
     #for max iteration runs; start from 1 index instead of 0
-    for i in range(1,max_iter+1):
+    for i in range(max_iter):
         
         #returns an array of b bootstrapped trees
         run = converge_run(i,l,k,c,out_dir,b)
@@ -175,19 +175,20 @@ if __name__=="__main__":
         ref_dists.append(ref_dist)
         print("Average distance to self per iter: ",self_dists)
         print("Average distance to ref per iter: ",ref_dists)
-        if i > 1:
+        if i > 0:
             print(len(runs))
             print(runs)
             #compare between iterations, indexes due to starting from 1 index
-            iter_dist = comp_runs(runs[i-2],runs[i-1],i)
-            print("Average distance between iteration {0} and {1} is: {2}".format(i,i-1,iter_dist))
+            iter_dist = comp_runs(runs[i-1],runs[i],i)
+            print("Average distance between iteration {0} and {1} is: {2}".format(i-1,i,iter_dist))
             iter_dists.append(iter_dist)
             if i >stop_iter+1:
+                print("Seeing if We should stop")
                 selfs = self_dists[i-stop_iter:i]
                 iters= iter_dists[i-stop_iter:i]
                 stop_run = True
-                for i in range(stop_iter):
-                    if selfs[i] > t or iters[i] > t:
+                for j in range(stop_iter):
+                    if selfs[j] > t or iters[j] > t:
                         stop_run = False
                         break
                 if stop_run:
