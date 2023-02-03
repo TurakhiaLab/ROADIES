@@ -37,10 +37,11 @@ def comp_runs(run1,run2,i):
     dist = 0
     for i in range(len(run1)):
         for j in range(len(run2)):
+            count += 1
             d = run1[i].compare(run2[j])
             dist += d['norm_rf']
     avg = float(dist)/count
-    with open(out_dir+'/iter_dist.csv','w') as w:
+    with open(out_dir+'/iter_dist.csv','a') as w:
         w.write(str(i)+','+str(avg)+'\n')
     return avg
 class Alarm(Exception):
@@ -161,7 +162,7 @@ if __name__=="__main__":
     iter_dists=[]
     ref_dists = []
     #for max iteration runs; start from 1 index instead of 0
-    for i in range(max_iter):
+    for i in range(3):
         
         #returns an array of b bootstrapped trees
         run = converge_run(i,l,k,c,out_dir,b)
@@ -175,26 +176,29 @@ if __name__=="__main__":
         ref_dists.append(ref_dist)
         print("Average distance to self per iter: ",self_dists)
         print("Average distance to ref per iter: ",ref_dists)
-        if i > 0:
+
+        stop_run = False
+
+        if i >= 1:
             print(len(runs))
             print(runs)
             #compare between iterations, indexes due to starting from 1 index
             iter_dist = comp_runs(runs[i-1],runs[i],i)
             print("Average distance between iteration {0} and {1} is: {2}".format(i-1,i,iter_dist))
             iter_dists.append(iter_dist)
-            if i >stop_iter+1:
+            if i > stop_iter-1:
                 print("Seeing if We should stop")
-                selfs = self_dists[i-stop_iter:i]
-                iters= iter_dists[i-stop_iter:i]
-                stop_run = True
+             
                 for j in range(stop_iter):
-                    if selfs[j] > t or iters[j] > t:
-                        stop_run = False
+                    if self_dists[i-j] < t or iter_dists[i-j-1] < t:
+                        stop_run = True
                         break
                 if stop_run:
                     break
                 print("Average distance to prev per iter: ",iter_dists)
-            
 
-                        
-        
+            if stop_run:
+                break
+        if stop_run:
+            break
+
