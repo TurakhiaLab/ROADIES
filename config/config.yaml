@@ -1,9 +1,10 @@
-GENOMES: "/home/roadies-datasets/birds"
+GENOMES: "/home/roadies-datasets/drosophila"
 LENGTH: 200
 KREG: 100
-UPPER_CASE: 0.80
+UPPER_CASE: 0.90
 OUT_DIR: "results"
 MIN_ALIGN: 4
 IDENTITY: 65
 COVERAGE: 85
 MAX_DUP: 100
+GAPS: 1.2
