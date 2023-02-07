@@ -67,18 +67,18 @@ def bootstrap(b,out_dir,run,gene_trees):
         tmp_path = out_dir+'/tmp/'+run+'.'+str(i)
         out = open(tmp_path+'.gt.nwk','w')
         leaves = []
+        w = open(tmp_path+'.map.txt','w')
         #sample a random line and output to tmp file
         for k in range(len(gene_trees)):
             n = random.randint(0,len(gene_trees)-1)
             out.write(gene_trees[n])
             n = Tree(gene_trees[n])
             leaves = n.get_leaf_names()
-            with open(tmp_path+'.map.txt','w') as w:
-                for leaf in leaves:
-                    w.write(leaf+' ')
-                    s = leaf.split('_')
-                    w.write(s[0]+'\n')
-                    print(leaf +' '+ s[0])
+            for leaf in leaves:
+                w.write(leaf+' ')
+                s = leaf.split('_')
+                w.write(s[0]+'\n')
+                print(leaf +' '+ s[0])
         out.close()
 
         #run astral on bootstrapped tree
