@@ -14,7 +14,7 @@ def comp_ref(run,ref,i):
         d = run[i].compare(ref)
         dist += d['norm_rf']
     avg = float(dist)/len(run)
-    with open(out_dir+'/ref_dist.csv','w') as w:
+    with open(out_dir+'/ref_dist.csv','a') as w:
         w.write(str(i)+','+str(avg)+'\n')
     return avg
 def comp_self(run,i):
@@ -27,7 +27,7 @@ def comp_self(run,i):
             d = run[i].compare(run[j])
             dist += d['norm_rf']
     avg = float(dist)/count
-    with open(out_dir+'/self_dist.csv','w') as w:
+    with open(out_dir+'/self_dist.csv','a') as w:
         w.write(str(i)+','+str(avg)+'\n')
     return avg
 
@@ -66,6 +66,7 @@ def bootstrap(b,out_dir,run,gene_trees):
         #path to temp gt
         tmp_path = out_dir+'/tmp/'+run+'.'+str(i)
         out = open(tmp_path+'.gt.nwk','w')
+        leaves = []
         #sample a random line and output to tmp file
         for k in range(len(gene_trees)):
             n = random.randint(0,len(gene_trees)-1)
