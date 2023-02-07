@@ -1,3 +1,4 @@
+#!/bin/bash
 size=`stat --printf="%s" $1`
 echo $size
 if [[ ${size} -gt 3000000000 ]]

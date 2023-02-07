@@ -58,7 +58,7 @@ def run_snakemake(c,l,k,out_dir,run):
     os.system('./workflow/scripts/get_run.sh {0}/{1}'.format(out_dir,run))
 
 #function that returns an array of b bootstrapped newick trees 
-def bootstrap(b,out_dir,run,gene_trees,mapping):
+def bootstrap(b,out_dir,run,gene_trees):
     bs_trees = []
     for i in range(b):
         
@@ -66,16 +66,22 @@ def bootstrap(b,out_dir,run,gene_trees,mapping):
         #path to temp gt
         tmp_path = out_dir+'/tmp/'+run+'.'+str(i)
         out = open(tmp_path+'.gt.nwk','w')
-        out2 = open(tmp_path+'.map.txt','w')
         #sample a random line and output to tmp file
         for k in range(len(gene_trees)):
             n = random.randint(0,len(gene_trees)-1)
             out.write(gene_trees[n])
-            out2.write(mapping[n])
+            n = Tree(gene_trees[n])
+            leaves = n.get_leaf_names()
+            with open(tmp_path+'.map.txt','w') as w:
+                for leaf in leaves:
+                    w.write(leaf+' ')
+                    s = leaf.split('_')
+                    w.write(s[0]+'\n')
+                    print(leaf +' '+ s[0])
         out.close()
-        out2.close() 
+
         #run astral on bootstrapped tree
-        os.system('ASTER-Linux/bin/astral-pro -i {0}.gt.nwk -o {0}.nwk -a {0}/map.txt'.format(tmp_path))
+        os.system('ASTER-Linux/bin/astral-pro -i {0}.gt.nwk -o {0}.nwk -a {0}.map.txt'.format(tmp_path))
         boot_tree=Tree(tmp_path+'.nwk')
         bs_trees.append(boot_tree)
     return bs_trees
@@ -110,7 +116,7 @@ def converge_run(i,l,k,c,out_dir,b):
     #merging gene trees and mapping files
     gene_trees,mapping = combine_iter(out_dir,run)
     #create bootstrapping trees
-    return bootstrap(b,out_dir,run,gene_trees,mapping)
+    return bootstrap(b,out_dir,run,gene_trees)
 
 if __name__=="__main__":
 #taking in arguments, have default values for most
@@ -201,4 +207,3 @@ if __name__=="__main__":
                 break
         if stop_run:
             break
-

@@ -15,6 +15,7 @@ parser.add_argument('-k',type=int,default=400)
 parser.add_argument('--path',default='results/alignments')
 parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
+parser.add_argument('-l',type=int,default=500)
 parser.add_argument('--plotdir',default='results/plots')
 parser.add_argument('--statdir',default='results/statistics')
 parser.add_argument('-d',type=int,default=100)
@@ -23,11 +24,13 @@ path = args.path
 outdir = args.outdir
 plotdir = args.plotdir
 statdir = args.statdir
+l = args.l
 m = args.m
 k = args.k
 d = args.d
 num_genes = {}
 num_homologues = {}
+print("converting alignments to fastas")
 #open all lastz alignment outputs
 for filename in glob.glob(os.path.join(path,'*.maf')):
     with open(os.path.join(os.getcwd(),filename),'r') as f:
@@ -66,6 +69,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 num_homologues[gene] += 1
             else:
                 num_homologues[gene] = 1
+            print(gene,num_homologues[gene])
             #make list of genes 
             gene_list = genes[gene]
             #skip if no homologue
@@ -106,17 +110,11 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 seq = seq_line[len(seq_line)-1]
                 seq = seq.replace('-','')
                 if orientation == '-':
+                    print(seq)
                     seq = str(Seq(seq).reverse_complement())
+                    print(seq)
                 index = species+'_'+seq_line[2]
                 #output to gene fasta
-                allowed = ['a','t','c','g','A','T','C','G']
-                good_seq =True
-                for i in range(len(seq)):
-                    if seq[i] not in allowed:
-                        good_seq =False
-                        break
-                if not good_seq:
-                    continue
                 with open(outdir+'/gene_'+gene+'.fa','a') as w:
                     w.write('>'+index+'\n')
                     w.write(seq+'\n')
@@ -172,14 +170,12 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
         #get species name
         n = record.name
         ns = n.split('_')
-        name = ""
-        for i in range(len(ns)-1):
-            name += ns[i]
+        name = ns[0]+ns[1]
         if name not in found:
             found.append(name)
     #if number of species is > threhold count it 
     if len(found)>m:
-        print(len(found),found)
+        #print(len(found),found)
         count += 1
     else:
         with open(filename,'w') as w:

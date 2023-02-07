@@ -15,8 +15,13 @@ rule iqtree:
 		config["OUT_DIR"]+"/geneTree/gene_tree_{id}.newick"
 	params:
 		logDir = config["OUT_DIR"]+"/geneTree/",
-		m = config["MIN_ALIGN"]
+		m = config["MIN_ALIGN"],
+		l = config["LENGTH"],
+		t = config["GAPS"]
 	conda: 
 		"../envs/tree.yaml"	
 	shell:
-		"workflow/scripts/iqtWrapper.sh {input} {output} {params.logDir} {params.m}"
+		'''
+		python workflow/scripts/filter_msa.py {input} {params.l} {params.t}
+		workflow/scripts/iqtWrapper.sh {input} {output} {params.logDir} {params.m}
+		'''
