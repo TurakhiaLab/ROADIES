@@ -7,7 +7,7 @@ import signal
 from ete3 import Tree 
 
 #function that finds the average distance between an array of trees and itself
-def comp_ref(run,ref,i):
+def comp_ref(run,ref,idx):
     dist = 0
     print(run)
     for i in range(len(run)):
@@ -15,9 +15,9 @@ def comp_ref(run,ref,i):
         dist += d['norm_rf']
     avg = float(dist)/len(run)
     with open(out_dir+'/ref_dist.csv','a') as w:
-        w.write(str(i)+','+str(avg)+'\n')
+        w.write(str(idx)+','+str(avg)+'\n')
     return avg
-def comp_self(run,i):
+def comp_self(run,idx):
     dist = 0
     count = 0
     print(run)
@@ -28,11 +28,11 @@ def comp_self(run,i):
             dist += d['norm_rf']
     avg = float(dist)/count
     with open(out_dir+'/self_dist.csv','a') as w:
-        w.write(str(i)+','+str(avg)+'\n')
+        w.write(str(idx)+','+str(avg)+'\n')
     return avg
 
 #function that finds the average distance between two arrays of trees
-def comp_runs(run1,run2,i):
+def comp_runs(run1,run2,idx):
     count = 0
     dist = 0
     for i in range(len(run1)):
@@ -42,7 +42,7 @@ def comp_runs(run1,run2,i):
             dist += d['norm_rf']
     avg = float(dist)/count
     with open(out_dir+'/iter_dist.csv','a') as w:
-        w.write(str(i)+','+str(avg)+'\n')
+        w.write(str(idx)+','+str(avg)+'\n')
     return avg
 class Alarm(Exception):
     pass
@@ -66,8 +66,8 @@ def bootstrap(b,out_dir,run,gene_trees):
         #path to temp gt
         tmp_path = out_dir+'/tmp/'+run+'.'+str(i)
         out = open(tmp_path+'.gt.nwk','w')
-        leaves = []
         w = open(tmp_path+'.map.txt','w')
+        leaves = []
         #sample a random line and output to tmp file
         for k in range(len(gene_trees)):
             n = random.randint(0,len(gene_trees)-1)
@@ -78,15 +78,15 @@ def bootstrap(b,out_dir,run,gene_trees):
                 w.write(leaf+' ')
                 s = leaf.split('_')
                 w.write(s[0]+'\n')
-                print(leaf +' '+ s[0])
+                #print(leaf +' '+ s[0])
         out.close()
-
+        w.close()
         #run astral on bootstrapped tree
+        print('ASTER-Linux/bin/astral-pro -i {0}.gt.nwk -o {0}.nwk -a {0}.map.txt'.format(tmp_path))
         os.system('ASTER-Linux/bin/astral-pro -i {0}.gt.nwk -o {0}.nwk -a {0}.map.txt'.format(tmp_path))
-        boot_tree=Tree(tmp_path+'.nwk')
+        boot_tree = Tree(tmp_path+'.nwk')
         bs_trees.append(boot_tree)
     return bs_trees
-
 def combine_iter(out_dir,run):
     print("Concatenating run's gene trees and mapping files with master versions")
     os.system('cat {0}/{1}/gene_tree_merged.newick >> {0}/master_gt.nwk'.format(out_dir,run))
@@ -169,7 +169,7 @@ if __name__=="__main__":
     iter_dists=[]
     ref_dists = []
     #for max iteration runs; start from 1 index instead of 0
-    for i in range(3):
+    for i in range(max_iter):
         
         #returns an array of b bootstrapped trees
         run = converge_run(i,l,k,c,out_dir,b)
@@ -197,7 +197,7 @@ if __name__=="__main__":
                 print("Seeing if We should stop")
              
                 for j in range(stop_iter):
-                    if self_dists[i-j] < t or iter_dists[i-j-1] < t:
+                    if self_dists[i-j] < t and iter_dists[i-j-1] < t:
                         stop_run = True
                         break
                 if stop_run:
