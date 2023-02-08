@@ -198,11 +198,15 @@ if __name__=="__main__":
              
                 for j in range(stop_iter):
                     if self_dists[i-j] < t and iter_dists[i-j-1] < t:
+                        print("crossed threshold")
                         stop_run = True
-                        break
+                    else:
+                        stop_run = False
+                        #break
+                print("Average distance to prev per iter: ",iter_dists)
                 if stop_run:
                     break
-                print("Average distance to prev per iter: ",iter_dists)
+                #print("Average distance to prev per iter: ",iter_dists)
 
             if stop_run:
                 break
