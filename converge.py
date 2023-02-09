@@ -130,7 +130,7 @@ if __name__=="__main__":
     parser.add_argument('--ref',default='trees/cn48.nwk',help='reference tree (input as .nwk or .newick')
     parser.add_argument('-c',type=int,default=16,help='number of cores')
     parser.add_argument('-k',type=int,default=100,help='number of genes')
-    parser.add_argument('-t',type=float,default=0.1,help=' maximum TreeDistance threshold')
+    parser.add_argument('-t',type=float,default=0.05,help=' maximum TreeDistance threshold')
     parser.add_argument('-l',type=int,default=500,help='length of genes')
     parser.add_argument('--bootstrap',type=int,default=10,help='number of trees for bootstrapping when comparing')
     parser.add_argument('--max_iter',type=int,default=5,help='maximum number of runs before stopping')
@@ -185,6 +185,7 @@ if __name__=="__main__":
         print("Average distance to ref per iter: ",ref_dists)
 
         stop_run = False
+        iter_flag = False
 
         if i >= 1:
             print(len(runs))
@@ -199,16 +200,23 @@ if __name__=="__main__":
                 for j in range(stop_iter):
                     if self_dists[i-j] < t and iter_dists[i-j-1] < t:
                         print("crossed threshold")
+                        #print("stop iteration number", j)
                         stop_run = True
+                        #print("stop run value is", stop_run)
                     else:
+                        print("did not cross threshold")
                         stop_run = False
+                        iter_flag = True
+                        #print("stop run value is", stop_run)
+                        #print("iter flag value is", iter_flag)
                         #break
-                print("Average distance to prev per iter: ",iter_dists)
-                if stop_run:
+                #print("Average distance to prev per iter: ",iter_dists)
+                #print("stop run value at the end of iterations", stop_run)
+                if stop_run == True and iter_flag == False:
                     break
                 #print("Average distance to prev per iter: ",iter_dists)
 
-            if stop_run:
+            if stop_run == True and iter_flag == False:
                 break
-        if stop_run:
+        if stop_run == True and iter_flag == False:
             break
