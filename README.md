@@ -16,7 +16,10 @@ In order to run the pipeline, a manual installation of ASTRAL-PRO(latest version
 
 `rmdir ASTER-Linux`\
 `wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip `\
-`unzip Linux.zip`
+`unzip Linux.zip`\
+`cd ASTER-Linux`\
+`make`\
+`cd ..`
 
 Running converge:\
 REQUIREMENTS:
