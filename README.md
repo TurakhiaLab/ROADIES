@@ -19,6 +19,9 @@ wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip \
 unzip Linux.zip\
 
 Running converge:\
+REQUIREMENTS:\
+snakemake installation\
+ete3 in snakemake conda environment\
 Default settings are fit to avian dataset \
 conda activate snakemake\
 python converge.py {args}\
@@ -36,14 +39,14 @@ list of arguments\
 --out_dir {converge output directory}\
 --smk_dir {snakemake output directory}\
 
-Running drosophila dataset
-(will add genome flag for genomes this week)
-edit config/config.yaml GENOMES to "/home/roadies-datasets/drosophila"
-Suggested command:
-python converge.py -c 16 --ref trees/refTree.nwk 
-Reference Trees:
-Avian: trees/cn48.nwk
-Drosphila: trees/refTree.nwk
+Running drosophila dataset\
+(will add genome flag for genomes this week)\
+edit config/config.yaml GENOMES to "/home/roadies-datasets/drosophila"\
+Suggested command:\
+python converge.py -c 16 --ref trees/refTree.nwk --stop_iter 1 \
+Reference Trees:\
+Avian: trees/cn48.nwk\
+Drosphila: trees/refTree.nwk\
+\
 
-
-*after filtering number of genes might be less than k per iteration
+*after filtering number of genes might be less than k per iteration\
