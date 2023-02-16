@@ -16,15 +16,17 @@ In order to run the pipeline, a manual installation of ASTRAL-PRO(latest version
 
 rmdir ASTER-Linux\
 wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip \
-unzip Linux.zip\
+unzip Linux.zip
 
 Running converge:\
-REQUIREMENTS:\
-snakemake installation\
-ete3 in snakemake conda environment\
-Default settings are fit to avian dataset \
+REQUIREMENTS:
+
+Working Snakemake installation\
+ete3 in Snakemake conda environment
+
 conda activate snakemake\
-python converge.py {args}\
+python converge.py {args}
+
 list of arguments\
 --ref {reference tree to compare to}\
 --input_gt {input gene trees newick for A-Pro}\
@@ -37,16 +39,17 @@ list of arguments\
 --max_iter {maximum number of converge runs}\
 --stop_ter {number of consecutive bootstrapped self_dists and ref_dists satisfying threshold before stopping}\
 --out_dir {converge output directory}\
---smk_dir {snakemake output directory}\
+--smk_dir {snakemake output directory}
 
 Running drosophila dataset\
-(will add genome flag for genomes this week)\
-edit config/config.yaml GENOMES to "/home/roadies-datasets/drosophila"\
+Default Settings are set to avian dataset to change genomes:
+edit config/config.yaml GENOMES to "/home/roadies-datasets/drosophila"
+
 Suggested command:\
-python converge.py -c 16 --ref trees/refTree.nwk --stop_iter 1 \
+python converge.py -c 16 --ref trees/refTree.nwk --stop_iter 1 
+
 Reference Trees:\
 Avian: trees/cn48.nwk\
 Drosphila: trees/refTree.nwk\
-\
 
 *after filtering number of genes might be less than k per iteration\
