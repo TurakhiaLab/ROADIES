@@ -50,6 +50,6 @@ python converge.py -c 16 --ref trees/refTree.nwk --stop_iter 1
 
 Reference Trees:\
 Avian: trees/cn48.nwk\
-Drosphila: trees/refTree.nwk\
+Drosphila: trees/refTree.nwk
 
-*after filtering number of genes might be less than k per iteration\
+*after filtering number of genes might be less than k per iteration
