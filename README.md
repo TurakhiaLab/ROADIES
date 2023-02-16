@@ -14,9 +14,9 @@ Snakemake will automatically detect the main Snakefile in the workflow subfolder
 
 In order to run the pipeline, a manual installation of ASTRAL-PRO(latest version) is required. Replace the ASTER-Linux directory with the ASTRAL-PRO git repository. 
 
-rmdir ASTER-Linux\
-wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip \
-unzip Linux.zip
+`rmdir ASTER-Linux`\
+`wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip `\
+`unzip Linux.zip`
 
 Running converge:\
 REQUIREMENTS:
@@ -24,8 +24,8 @@ REQUIREMENTS:
 Working Snakemake installation\
 ete3 in Snakemake conda environment
 
-conda activate snakemake\
-python converge.py {args}
+`conda activate snakemake`\
+`python converge.py {args}`
 
 list of arguments\
 --ref {reference tree to compare to}\
@@ -46,7 +46,7 @@ Default Settings are set to avian dataset to change genomes:
 edit config/config.yaml GENOMES to "/home/roadies-datasets/drosophila"
 
 Suggested command:\
-python converge.py -c 16 --ref trees/refTree.nwk --stop_iter 1 
+`python converge.py -c 16 --ref trees/refTree.nwk --stop_iter 1 `
 
 Reference Trees:\
 Avian: trees/cn48.nwk\
