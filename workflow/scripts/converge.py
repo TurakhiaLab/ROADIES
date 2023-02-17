@@ -102,8 +102,8 @@ def combine_iter(out_dir,run):
     return gene_trees
 
 def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
-    os.system('rm -r results')
-    os.system('mkdir results')
+    os.system('rm -r {0}'.format(roadies_dir))
+    os.system('mkdir {0}'.format(roadies_dir))
     run = "run_"
     #allows sorting runs correctly
     if i < 10:
