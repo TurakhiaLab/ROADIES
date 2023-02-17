@@ -42,7 +42,7 @@ list of arguments\
 --max_iter {maximum number of converge runs}\
 --stop_ter {number of consecutive bootstrapped self_dists and ref_dists satisfying threshold before stopping}\
 --out_dir {converge output directory}\
---snakemake_dir {snakemake output directory}
+--roadies_dir {roadies output directory}
 
 Running drosophila dataset\
 Default Settings are set to avian dataset to change genomes:
