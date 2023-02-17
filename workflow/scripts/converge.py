@@ -183,7 +183,6 @@ if __name__=="__main__":
     iter_dists_bs=[]
     if ref_exist:
         ref_dists = []
-        ref_dists_bs = []
     #list of roadies trees after each iteration
     trees = []
     #open files for writing distances
@@ -210,7 +209,6 @@ if __name__=="__main__":
         print("Average distance to self per iter so far: ",self_dists)
         for i in range(len(self_dists)):
             print("Run: "+ str(i)+": " + str(self_dists[i]))
-        print("Average distance to ref per iter so far: ",ref_dists_bs)
         for i in range(len(ref_dists)):
             print("Run: "+ str(i)+": " + str(ref_dists[i]))
         
@@ -229,7 +227,6 @@ if __name__=="__main__":
             iter_dist = comp_tree(trees[i],trees[i-1])
             print("Distance between iteration {0} and {1} is: {2}".format(i-1,i,iter_dist))
             iter_dists.append(iter_dist)
-            print("Average distance previous so far: ",ref_dists_bs)
             iter_out.write(str(i)+','+str(iter_dist)+'\n')
 
             for i in range(len(iter_dists_bs)):
