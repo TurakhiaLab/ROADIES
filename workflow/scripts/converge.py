@@ -162,7 +162,7 @@ if __name__=="__main__":
     max_iter = args['max_iter']
     stop_iter= args['stop_iter']
     out_dir = args['out_dir']
-    smk_dir=args['smk_dir']
+    roadies_dir=args['roadies_dir']
     os.system('rm -r '+out_dir)
     os.system('mkdir -p '+out_dir)
     os.system('mkdir '+out_dir+'/tmp')
@@ -189,9 +189,9 @@ if __name__=="__main__":
     #open files for writing distances
     if ref_exist:
         ref_out = open(out_dir+'/ref_dist.csv','w')
-    iter_out = open(out_dir+'iter_dist.csv','w')
-    self_out = open(out_dir+'self_dist.csv','w')
-    iter_bs = open(out_dir+'iter_dist_bs.csv','w')
+    iter_out = open(out_dir+'/iter_dist.csv','w')
+    self_out = open(out_dir+'/self_dist.csv','w')
+    iter_bs = open(out_dir+'/iter_dist_bs.csv','w')
     #for max iteration runs; start from 1 index instead of 0
     for i in range(max_iter): 
         #returns an array of b bootstrapped trees
