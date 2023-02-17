@@ -10,7 +10,7 @@ include: "rules/sampling.smk"
 include: "rules/tree.smk"
 rule all:
 	input:
-		config["OUT_DIR"]+"/speciesTree.newick"
+		config["OUT_DIR"]+"/roadies.nwk"
 		#config["OUT"]+"/geneTree/gene_tree_merged.newick"
 		# expand(config["OUT"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
 		# expand(config["OUT"]+"/msa/gene_aln_{id}.fa",id=IDS)

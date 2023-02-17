@@ -1,27 +1,36 @@
 
 rule mergeTrees:
 	input:
-		expand(config["OUT_DIR"]+"/geneTree/gene_tree_{id}.newick",id=IDS)
+		expand(config["OUT_DIR"]+"/msa/gene_aln_{id}.fa.treefile",id=IDS)
 	output:
-		config["OUT_DIR"]+"/geneTree/gene_tree_merged.newick"
+		config["OUT_DIR"]+"/geneTree/gene_tree_merged.nwk"
+	params:
+		msa_dir = config["OUT_DIR"]+"/msa"
 	conda: 
 		"../envs/tree.yaml"
 	shell:
-		"workflow/scripts/astralWrapper.sh {output} {input}"
+		'''
+		cat {params.msa_dir}/*.treefile > {output}
+		'''
+
 rule iqtree:
 	input:
-		config["OUT_DIR"]+"/msa/gene_aln_{id}.fa"
+		msa = config["OUT_DIR"]+"/msa/gene_aln_{id}.fa"
 	output:
-		config["OUT_DIR"]+"/geneTree/gene_tree_{id}.newick"
+		gene_tree = config["OUT_DIR"]+"/msa/gene_aln_{id}.fa.treefile"
 	params:
-		logDir = config["OUT_DIR"]+"/geneTree/",
 		m = config["MIN_ALIGN"],
 		l = config["LENGTH"],
-		t = config["GAPS"]
+		g= config["GAPS"]
 	conda: 
 		"../envs/tree.yaml"	
 	shell:
 		'''
-		python workflow/scripts/filter_msa.py {input} {params.l} {params.t}
-		workflow/scripts/iqtWrapper.sh {input} {output} {params.logDir} {params.m}
+		python workflow/scripts/filter_msa.py {input.msa} {params.l} {params.g}
+		if [[ `grep -n '>' {input.msa} | wc -l` -gt {params.m} ]]
+		then
+			iqtree -s {input.msa} -m GTR+I+G -redo
+		else
+			touch {output.gene_tree}
+		fi
 		'''
