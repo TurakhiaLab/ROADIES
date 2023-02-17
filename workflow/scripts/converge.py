@@ -145,7 +145,7 @@ if __name__=="__main__":
     parser.add_argument('--max_iter',type=int,default=50,help='maximum number of runs before stopping')
     parser.add_argument('--stop_iter',type=int,default=1,help='number of runs satisfying threshold before halt')
     parser.add_argument('--out_dir',default='converge',help='output dir')
-    parser.add_argument('--smk_dir',default='results',help='Snakemake output directory')
+    parser.add_argument('--roadies_dir',default='results',help='Roadies output directory')
     #assigning argument values to variables
     args = vars(parser.parse_args())
     ref_exist = False
