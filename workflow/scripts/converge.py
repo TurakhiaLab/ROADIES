@@ -44,9 +44,9 @@ class Alarm(Exception):
 def alarm_handler(*args):
     raise Alarm("timeout")
 #function to run snakemake with settings and add to run folder
-def run_snakemake(c,l,k,out_dir,run):
+def run_snakemake(c,l,k,out_dir,run,roadies_dir):
 
-    cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2}'.format(c,l,k)
+    cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
     os.system(cmd)
     #get the run output in folder
     print("Adding run to converge folder")
@@ -101,7 +101,7 @@ def combine_iter(out_dir,run):
     gt.close()
     return gene_trees
 
-def converge_run(i,l,k,c,out_dir,b,ref_exist,trees):
+def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
     os.system('rm -r results')
     os.system('mkdir results')
     run = "run_"
@@ -112,7 +112,7 @@ def converge_run(i,l,k,c,out_dir,b,ref_exist,trees):
         run += str(i)
     print("Starting " +run)
     #run snakemake with specificed gene number and length
-    run_snakemake(c,l,k,out_dir,run)
+    run_snakemake(c,l,k,out_dir,run,roadies_dir)
     #merging gene trees and mapping files
     gene_trees = combine_iter(out_dir,run)
     t = Tree(out_dir+'/'+run+'.nwk')
@@ -145,7 +145,7 @@ if __name__=="__main__":
     parser.add_argument('--max_iter',type=int,default=50,help='maximum number of runs before stopping')
     parser.add_argument('--stop_iter',type=int,default=1,help='number of runs satisfying threshold before halt')
     parser.add_argument('--out_dir',default='converge',help='output dir')
-    parser.add_argument('--roadies_dir',default='results',help='Roadies output directory')
+    parser.add_argument('--roadies_dir',default='results',help='Snakemake output directory')
     #assigning argument values to variables
     args = vars(parser.parse_args())
     ref_exist = False
@@ -195,7 +195,7 @@ if __name__=="__main__":
     #for max iteration runs; start from 1 index instead of 0
     for i in range(max_iter): 
         #returns an array of b bootstrapped trees
-        run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees)
+        run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir)
         runs.append(run)
         #get bootstrapped distance to itself
         self_dist = comp_self(run,i)
