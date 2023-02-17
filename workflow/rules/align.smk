@@ -9,7 +9,16 @@ rule mafft:
 	conda: 
 		"../envs/mafft.yaml"
 	shell:
-		"workflow/scripts/mafftWrapper.sh {input} {output} {params.m}"
+		'''
+		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]]
+		then
+			#mafft --anysymbol --localpair --retree 2 --maxiterate 10 {input} > {output}
+			mafft --anysymbol --auto {input} > {output}
+		else
+			touch {output}
+		fi
+
+		'''
 rule lastz2fasta:
 	input:
 		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   
@@ -39,16 +48,31 @@ rule lastz2fasta:
 		
 rule lastz:
 	input:
-		config["OUT_DIR"]+"/samples/out.fa",
-		config["GENOMES"]+"/{sample}.fa"
+		genes = config["OUT_DIR"]+"/samples/out.fa",
+		genome = config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	conda:
 		"../envs/lastz.yaml"
 	params:
-		s = "{sample}",
-		i = config['IDENTITY'],
-		c = config['COVERAGE'],
-		d = config['OUT_DIR']+ "/alignments"
+		species = "{sample}",
+		identity = config['IDENTITY'],
+		coverage = config['COVERAGE'],
+		align_dir = config['OUT_DIR']+ "/alignments"
 	shell:
-		"./workflow/scripts/lastzwrapper.sh {input[1]} {input[0]} {params.c} {params.i} {output} {params.d} {params.s}" 
+		'''
+		if [[ `stat --printf="%s" {input.genome}` -gt 3000000000 ]]
+		then
+			echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` which is greater than the lastz limit so subsetting fasta"
+			python3 workflow/scripts/get_names.py {input.genome} {params.align_dir} 2
+			echo "Aligning {params.align_dir}/{params.species}.0.subset"
+			lastz_32 {input.genome}[subset={params.align_dir}/{params.species}.0.subset,multiple] {input.genes}[multiple] --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac
+			echo "Aligning {params.align_dir}/{params.species}.1.subset"
+			lastz_32 {input.genome}[subset={params.align_dir}/{params.species}.1.subset,multiple] {input.genes}[multiple] --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac
+			cat {params.align_dir}/{params.species}.0.maf >> {output}
+			cat {params.align_dir}/{params.species}.1.maf >> {output}
+		else
+			echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` so aligning normally"
+			lastz_32 {input.genome}[multiple] {input.genes}[multiple] --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=100
+		fi
+		'''

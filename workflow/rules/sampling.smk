@@ -34,7 +34,7 @@ rule sequence_select:
 	conda:
         	"../envs/bio.yaml"
 	output:
-        	temp(config["OUT_DIR"]+"/samples/{sample}_temp.fa")
+        	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
 	shell:
         	"python3 workflow/scripts/sampling.py --input {input[0]} -s {params.KFAC} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output {output}"
 
@@ -42,7 +42,7 @@ rule sequence_merge:
 	input:
 		expand(config["OUT_DIR"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
 	params:
-		dir = config["OUT_DIR"]+"/samples",
+		gene_dir = config["OUT_DIR"]+"/samples",
 		plotdir = config["OUT_DIR"]+"/plots"
 	conda: 
 		"../envs/plots.yaml"
@@ -50,4 +50,4 @@ rule sequence_merge:
         	config["OUT_DIR"]+"/samples/out.fa",
 			report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
 	shell:
-		"python3 workflow/scripts/sequence_merge.py {params.dir} {output} {params.plotdir}"
+		"python3 workflow/scripts/sequence_merge.py {params.gene_dir} {output} {params.plotdir}"
