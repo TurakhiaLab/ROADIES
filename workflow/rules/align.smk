@@ -73,6 +73,6 @@ rule lastz:
 			cat {params.align_dir}/{params.species}.1.maf >> {output}
 		else
 			echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` so aligning normally"
-			lastz_32 {input.genome}[multiple] {input.genes}[multiple] --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=100
+			lastz_32 {input.genome}[multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=100
 		fi
 		'''
