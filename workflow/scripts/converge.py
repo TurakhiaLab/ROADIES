@@ -209,8 +209,9 @@ if __name__=="__main__":
         print("Average distance to self per iter so far: ",self_dists)
         for i in range(len(self_dists)):
             print("Run: "+ str(i)+": " + str(self_dists[i]))
-        for i in range(len(ref_dists)):
-            print("Run: "+ str(i)+": " + str(ref_dists[i]))
+        if ref_exist:
+            for i in range(len(ref_dists)):
+                print("Run: "+ str(i)+": " + str(ref_dists[i]))
         
         stop_run = False
         iter_flag = False

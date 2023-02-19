@@ -58,21 +58,22 @@ rule lastz:
 		species = "{sample}",
 		identity = config['IDENTITY'],
 		coverage = config['COVERAGE'],
-		align_dir = config['OUT_DIR']+ "/alignments"
+		align_dir = config['OUT_DIR']+ "/alignments",
+                max_dup = 2*int(config['MAX_DUP'])
 	shell:
 		'''
-		if [[ `stat --printf="%s" {input.genome}` -gt 3000000000 ]]
-		then
-			echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` which is greater than the lastz limit so subsetting fasta"
-			python3 workflow/scripts/get_names.py {input.genome} {params.align_dir} 2
-			echo "Aligning {params.align_dir}/{params.species}.0.subset"
-			lastz_32 {input.genome}[subset={params.align_dir}/{params.species}.0.subset,multiple] {input.genes}[multiple] --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac
-			echo "Aligning {params.align_dir}/{params.species}.1.subset"
-			lastz_32 {input.genome}[subset={params.align_dir}/{params.species}.1.subset,multiple] {input.genes}[multiple] --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac
-			cat {params.align_dir}/{params.species}.0.maf >> {output}
-			cat {params.align_dir}/{params.species}.1.maf >> {output}
-		else
-			echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` so aligning normally"
-			lastz_32 {input.genome}[multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=100
-		fi
+		#if [[ `stat --printf="%s" {input.genome}` -gt 3000000000 ]]
+		#then
+		#	echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` which is greater than the lastz limit so subsetting fasta"
+		#	python3 workflow/scripts/get_names.py {input.genome} {params.align_dir} 2
+		#	echo "Aligning {params.align_dir}/{params.species}.0.subset"
+		#	lastz_32 {input.genome}[subset={params.align_dir}/{params.species}.0.subset,multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac
+		#	echo "Aligning {params.align_dir}/{params.species}.1.subset"
+		#	lastz_32 {input.genome}[subset={params.align_dir}/{params.species}.1.subset,multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac
+		#	cat {params.align_dir}/{params.species}.0.maf >> {output}
+		#	cat {params.align_dir}/{params.species}.1.maf >> {output}
+		#else
+		#	echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` so aligning normally"
+			lastz_32 {input.genome}[multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=2 --notransition --queryhspbest={params.max_dup} 
+		#fi
 		'''
