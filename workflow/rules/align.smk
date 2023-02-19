@@ -5,12 +5,13 @@ rule mafft:
 	output:
 		config["OUT_DIR"]+"/msa/gene_aln_{id}.fa"
 	params:
-		m=config["MIN_ALIGN"]
+		m=config["MIN_ALIGN"],
+		max_len=3*config["LENGTH"]
 	conda: 
 		"../envs/mafft.yaml"
 	shell:
 		'''
-		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]]
+		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
 			#mafft --anysymbol --localpair --retree 2 --maxiterate 10 {input} > {output}
 			mafft --anysymbol --auto {input} > {output}
@@ -74,6 +75,6 @@ rule lastz:
 		#	cat {params.align_dir}/{params.species}.1.maf >> {output}
 		#else
 		#	echo "File size of {input.genome} is `stat --printf="%s" {input.genome}` so aligning normally"
-			lastz_32 {input.genome}[multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=2 --notransition --queryhspbest={params.max_dup} 
+			lastz_32 {input.genome}[multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=1 --notransition --queryhspbest={params.max_dup} 
 		#fi
 		'''
