@@ -1,5 +1,5 @@
 GENOMES: "/home/roadies-datasets/drosophila"
-LENGTH: 200
+LENGTH: 500
 KREG: 100
 UPPER_CASE: 0.90
 OUT_DIR: "results"
