@@ -22,12 +22,9 @@ WGA Pipeline steps:
 
 Snakemake and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via Mambaforge. 
 
-Given that Mamba is installed, run
+Given that Mamba is installed, run `mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy` to install both Snakemake and Snakedeploy in an isolated environment. For all following commands ensure that this environment is activated via `conda activate snakemake`
 
-mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
-to install both Snakemake and Snakedeploy in an isolated environment. For all following commands ensure that this environment is activated via
-conda activate snakemake
-SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file
+SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file.
 
 `snakemake --core [number of cores] --use-conda`
 
