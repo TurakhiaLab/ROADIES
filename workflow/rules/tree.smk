@@ -20,14 +20,12 @@ rule iqtree:
 		gene_tree = config["OUT_DIR"]+"/msa/gene_aln_{id}.fa.treefile"
 	params:
 		m = config["MIN_ALIGN"],
-		l = config["LENGTH"],
-		g= config["GAPS"]
+		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
 	conda: 
 		"../envs/tree.yaml"	
 	shell:
 		'''
-		python workflow/scripts/filter_msa.py {input.msa} {params.l} {params.g}
-		if [[ `grep -n '>' {input.msa} | wc -l` -gt {params.m} ]]
+		if [[ `grep -n '>' {input.msa} | wc -l` -gt {params.m} ]] && [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input.msa}` -lt {params.max_len} ]]
 		then
 			iqtree -s {input.msa} -m GTR+I+G -redo
 		else

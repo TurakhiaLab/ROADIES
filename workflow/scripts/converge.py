@@ -262,5 +262,6 @@ if __name__=="__main__":
                 break
         if stop_run == True and iter_flag == False:
             break
-    ref_out.close()
+    if ref_exist:
+        ref_out.close()
     iter_out.close()
