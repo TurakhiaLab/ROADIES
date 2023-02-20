@@ -39,6 +39,6 @@ def rerootTree(refTr, rertTr):
 if __name__=="__main__":
     refTree = Tree(sys.argv[1])
     rerootedTree = Tree(sys.argv[2])
-    reroot(refTree, rerootedTree)
+    rerootTree(refTree, rerootedTree)
     print(rerootedTree)
     rerootedTree.write(outfile=sys.argv[3])
