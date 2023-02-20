@@ -1,3 +1,5 @@
+# This sampling script samples specific number of genes, each of a given specific length, from input files and saves it in fasta format
+
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import sys
