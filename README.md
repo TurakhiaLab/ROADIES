@@ -9,6 +9,15 @@
 
 ## <a name="overview"></a> Overview
 
+Most phylogeny estimation methods use gene markers/gene trees which require computationally expensive, error-prone, and/or semi-automated steps to infer orthology.Our technique uses raw genomes to build phylogenies. <br>
+
+WGA Pipeline steps:
+- Take random sequences of fixed sized sampled from different genomes and treat them as genes
+- Cluster species through alignments with those genes
+- Build gene trees using these clusters
+- Reconstruct a species tree using these gene trees using ASTRAL-PRO
+- ASTRAL-pro can work with homology only, and does not require orthology
+
 ## <a name="installation"></a> Installation
 
 Snakemake and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via Mambaforge. 
