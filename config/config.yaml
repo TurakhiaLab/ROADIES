@@ -1,10 +1,27 @@
+#This file configures the parameters for WGA pipeline
+
+# Path for input dataset
 GENOMES: "/home/roadies-datasets/drosophila"
+
+ #length of genes
 LENGTH: 500
+
+# number of genes
 KREG: 100
+
+# % of accepted upper case letters while sampling
 UPPER_CASE: 0.90
+
+# output directory
 OUT_DIR: "results"
-MIN_ALIGN: 4
+
+MIN_ALIGN: 4 
+
 IDENTITY: 65
+
 COVERAGE: 85
+
+# max number of copies from a genome in an alignment
 MAX_DUP: 100
+
 GAPS: 1.2
