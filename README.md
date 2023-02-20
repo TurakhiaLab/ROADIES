@@ -1,4 +1,16 @@
-# wga-phylo
+# Estimating Ultra-Large Phylogenies from Raw Genome Sequences (wga-phylo)
+
+## Table of Contents
+- [Overview](#Overview)
+- [Installation](#Installation)
+- [Usage](#Usage)
+- [Authors](#Authors)
+- [Acknowledgements](#Acknowledgements)
+
+## <a name="Overview"></a> Overview
+
+## <a name="Installation"></a> Installation
+
 Snakemake and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via Mambaforge. 
 
 Given that Mamba is installed, run
@@ -30,6 +42,8 @@ ete3 in Snakemake conda environment
 `conda activate snakemake`\
 `python converge.py {args}`
 
+## <a name="Usage"></a> Usage
+
 list of arguments\
 --ref {reference tree to compare to}\
 --input_gt {input gene trees newick for A-Pro}\
@@ -57,3 +71,11 @@ Avian: trees/cn48.nwk\
 Drosphila: trees/refTree.nwk
 
 *after filtering number of genes might be less than k per iteration
+
+## <a name="Authors"></a> Authors
+
+## <a name="Acknowledgements"></a> Acknowledgements
+
+
+
+
