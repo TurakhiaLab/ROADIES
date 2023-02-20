@@ -1,4 +1,6 @@
+#This reroot script is used to reroot the generated output tree after completion
 #usage: python3 reroot.py [reference tree] [tree to be rerooted] [output]
+
 import sys
 import numpy as np
 from ete3 import Tree
