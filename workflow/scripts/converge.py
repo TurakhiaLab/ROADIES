@@ -1,3 +1,6 @@
+#This converge script runs WGA pipeline for multiple iterations and stops when RF distance drops below threshold
+#Each run will check for distances between certain number of previous trees with the current tree and compare with threshold value
+
 #requirements ETE and snakemake only
 import os,sys
 import argparse
@@ -43,6 +46,7 @@ class Alarm(Exception):
     pass
 def alarm_handler(*args):
     raise Alarm("timeout")
+
 #function to run snakemake with settings and add to run folder
 def run_snakemake(c,l,k,out_dir,run,roadies_dir):
 
@@ -89,6 +93,8 @@ def bootstrap(b,out_dir,run,gene_trees):
         boot_tree = Tree(tmp_path+'.nwk')
         bs_trees.append(boot_tree)
     return bs_trees
+
+# function to combine gene trees and mapping files from all iterations
 def combine_iter(out_dir,run):
     print("Concatenating run's gene trees and mapping files with master versions")
     os.system('cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk'.format(out_dir,run))
@@ -101,6 +107,7 @@ def combine_iter(out_dir,run):
     gt.close()
     return gene_trees
 
+# function for convergence run
 def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
     os.system('rm -r {0}'.format(roadies_dir))
     os.system('mkdir {0}'.format(roadies_dir))
@@ -128,6 +135,7 @@ def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
     #create bootstrapping trees
     return bootstrap(b,out_dir,run,gene_trees)
 
+# main function
 if __name__=="__main__":
 #taking in arguments, have default values for most; information in README.md
     parser = argparse.ArgumentParser(
@@ -146,6 +154,7 @@ if __name__=="__main__":
     parser.add_argument('--stop_iter',type=int,default=1,help='number of runs satisfying threshold before halt')
     parser.add_argument('--out_dir',default='converge',help='output dir')
     parser.add_argument('--roadies_dir',default='results',help='Snakemake output directory')
+    
     #assigning argument values to variables
     args = vars(parser.parse_args())
     ref_exist = False
@@ -167,6 +176,7 @@ if __name__=="__main__":
     os.system('mkdir -p '+out_dir)
     os.system('mkdir '+out_dir+'/tmp')
     sys.setrecursionlimit(2000)
+    
     # if there are input gene trees use that to build on or else make empty file
     master_gt = out_dir+'/master_gt.nwk'
     master_map = out_dir+'/master_map.txt'
@@ -176,6 +186,7 @@ if __name__=="__main__":
     else:
         os.system('cp {0} {1}'.format(input_gt,master_gt))
         os.system('cp {0} {1}'.format(input_map,master_map))
+        
     #initialize lists for runs and distances
     runs= []
     self_dists = []
@@ -191,6 +202,8 @@ if __name__=="__main__":
     iter_out = open(out_dir+'/iter_dist.csv','w')
     self_out = open(out_dir+'/self_dist.csv','w')
     iter_bs = open(out_dir+'/iter_dist_bs.csv','w')
+    
+    #starts main for loop for multiple iterations
     #for max iteration runs; start from 1 index instead of 0
     for i in range(max_iter): 
         #returns an array of b bootstrapped trees
@@ -215,7 +228,8 @@ if __name__=="__main__":
         
         stop_run = False
         iter_flag = False
-        #since comparing to previous, only after 1st iteration
+        
+        #since comparing to previous, hence starts with 1st iteration
         if i >= 1:
             print(len(runs))
             print(runs)
