@@ -20,37 +20,56 @@ WGA Pipeline steps:
 
 ## <a name="installation"></a> Installation
 
-Snakemake and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via Mambaforge. 
+[Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). 
 
-Given that Mamba is installed, run `mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy` to install both Snakemake and Snakedeploy in an isolated environment. For all following commands ensure that this environment is activated via `conda activate snakemake`
+Given that Mamba is installed, run 
 
-SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file.
+```
+mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
+``` 
 
-`snakemake --core [number of cores] --use-conda`
+to install both Snakemake and Snakedeploy in an isolated environment. 
 
-Snakemake will automatically detect the main Snakefile in the workflow subfolder and execute the workflow module that has been defined by the deployment in step 2.
+Once snakemake is installed, it needs to be activated via
 
-In order to run the pipeline, a manual installation of ASTRAL-PRO(latest version) is required. Replace the ASTER-Linux directory with the ASTRAL-PRO git repository. 
-
-`rmdir ASTER-Linux`\
-`wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip `\
-`unzip Linux.zip`\
-`cd ASTER-Linux`\
-`make`\
-`cd ..`
-
-Running converge:\
-REQUIREMENTS:
-
-Working Snakemake installation\
-ete3 in Snakemake conda environment
-
-`conda activate snakemake`\
-`python converge.py {args}`
+```
+conda activate snakemake
+```
 
 ## <a name="usage"></a> Usage
 
-list of arguments\
+For all following commands ensure that the snakemake environment is activated.
+
+SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file.
+
+```
+snakemake --core [number of cores] --use-conda
+```
+
+Snakemake will automatically detect the main Snakefile in the workflow subfolder and execute the workflow module that has been defined by the deployment in step 2.
+
+In order to run the pipeline, a manual installation of ASTRAL-PRO (latest version) is required. If previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-PRO git repository as mentioned below. 
+
+```
+rmdir ASTER-Linux
+wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip
+unzip Linux.zip
+cd ASTER-Linux
+make
+cd ..
+```
+
+### Requirements for running the convergence:\
+
+- Working Snakemake installation
+- ete3 in Snakemake conda environment
+
+```
+conda activate snakemake
+python converge.py {args}
+```
+
+#### List of arguments for convergence\
 --ref {reference tree to compare to}\
 --input_gt {input gene trees newick for A-Pro}\
 --input_map {input mapping file for A-Pro}\
