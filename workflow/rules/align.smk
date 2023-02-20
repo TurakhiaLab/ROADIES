@@ -6,7 +6,7 @@ rule mafft:
 		config["OUT_DIR"]+"/msa/gene_aln_{id}.fa"
 	params:
 		m=config["MIN_ALIGN"],
-		max_len=3*config["LENGTH"]
+		max_len=int(1.5*config["LENGTH"])
 	conda: 
 		"../envs/mafft.yaml"
 	shell:
