@@ -102,6 +102,12 @@ python converge.py {args}
 
 ### Available reference trees
 
+`trees` folder contain the following reference trees (along with their sources mentioned below)
+
+- 11 Drosophila species - `flies_ref_11.nwk` ([Source]())
+- 100 Drosophila species - `flies_ref_100.nwk` ([Source]())
+- 
+
 
 ## <a name="authors"></a> Authors
 
