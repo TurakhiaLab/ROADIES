@@ -3,9 +3,8 @@
 ## Table of Contents
 - [Overview](#overview)
 - [Getting Started](#gettingstarted) 
-- [Usage](#usage)
+- [How to use](#usage)
 - [Running the convergence](#convergence)
-- [Example](#example)
 - [References](#references)
 
 ## <a name="overview"></a> Overview
@@ -56,13 +55,13 @@ make
 cd ..
 ```
 
-## <a name="usage"></a> Usage
+## <a name="usage"></a> How to use
 
 ### Input Requirements
 
-All input genomic sequences should be in fasta format. The path for input dataset, along with the input configuration parameters should be provided in `config/config.yaml` file.
+All input genomic sequences should be in fasta format. 
 
-Here are the list of available input configurations:
+Provide the path for input dataset, along with the input configuration parameters in `config/config.yaml` file before running the pipeline. Here is the list of available input configurations:
 
 ```yaml
 #This file configures the parameters for ROADIES and converge
@@ -103,7 +102,7 @@ STOP_ITER: 1
 ```
 ### Running Snakemake
 
-Once snakemake environment is activated and `config/config.yaml` is configured, run
+Once snakemake environment is activated and `config.yaml` is configured, run
 ```
 snakemake --core [number of cores] --use-conda
 ```
@@ -134,18 +133,13 @@ To run the convergence, follow the steps below:
 - Provide input reference tree for the species in `trees` folder (make sure that the reference tree is in newick format) and add the path as `REFERENCE` in `config.yaml` file
 - Run
 ```
-python converge.py {args}
+python workflow/scripts/converge.py --ref trees/flies_ref_11.nwk -c 16
 ```
+The above command runs the convergence script on 16 cores by taking 11 drosophila species tree as reference. 
+
 The output after the converge run is saved in a separate `converge` folder, which has the following files:
 
 - 
-
-## <a name="example"></a> Example
-
-- `conda activate snakemake` (activates snakemake environment)
-- `snakemake --core 16 --use-conda` (run snakemake on 16 cores)
-- Results will be saved in `results` folder
-- `python workflow/scripts/converge.py --ref trees/flies_ref_11.nwk -c 16` (run the convergence on 16 cores by taking 11 drosophila species tree as reference)
 
 ### Available reference trees
 
