@@ -73,44 +73,35 @@ snakemake --core [number of cores] --use-conda --rerun-incomplete
 ```
 ### Output options
 
+After completing the run, the output files (along with all intermediate output files for each stage of the pipeline) will be saved in a separate `results` folder, which contains the following subfolders:
 
-### Requirements for running the convergence:\
+- `alignments`
+- `genes`
+- `msa`
+- `plots`
+- `samples`
+- `statistics`
 
-- Working Snakemake installation
-- ete3 in Snakemake conda environment
+### Running the convergence
 
+To rerun the workflow iteratively for checking the convergence, follow the steps below:
+
+- Activate conda environment (make sure that ete3 is present in snakemake conda environment)
+- Configure input parameters like `max_iter`, `stop_iter` in `config.yaml` file
+- Provide input reference tree for the species in `trees` folder (make sure that the reference tree is in newick format)
+- Run
 ```
-conda activate snakemake
 python converge.py {args}
 ```
+## Example
 
-#### List of arguments for convergence\
---ref {reference tree to compare to}\
---input_gt {input gene trees newick for A-Pro}\
---input_map {input mapping file for A-Pro}\
--c {cpu cores to use}\
--l {gene length}\
--k {number of genes sampled*}\
--t {TreeDistance threshold for stopping}\
---bootstrap {number of bootstrap trees to create for comparisons}\
---max_iter {maximum number of converge runs}\
---stop_ter {number of consecutive bootstrapped self_dists and ref_dists satisfying threshold before stopping}\
---out_dir {converge output directory}\
---roadies_dir {roadies output directory}
+- `conda activate snakemake` (activates snakemake environment)
+- `snakemake --core 16 --use-conda` (run snakemake on 16 cores)
+- Results will be saved in `results` folder
+- `python workflow/scripts/converge.py --ref trees/flies_ref_11.nwk -c 16` (run the convergence on 16 cores by taking 11 drosophila species tree as reference)
 
-Running drosophila dataset\
-Default Settings are set to avian dataset to change genomes:
-edit config/config.yaml GENOMES to "/home/roadies-datasets/drosophila"
+### Available reference trees
 
-Suggested command:\
-`python converge.py -c 16 --
-ref trees/refTree.nwk --stop_iter 1 `
-
-Reference Trees:\
-Avian: trees/cn48.nwk\
-Drosphila: trees/refTree.nwk
-
-*after filtering number of genes might be less than k per iteration
 
 ## <a name="authors"></a> Authors
 
