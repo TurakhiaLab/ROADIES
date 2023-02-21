@@ -4,6 +4,7 @@
 - [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Example](#example)
 - [Authors](#authors)
 - [Acknowledgements](#acknowledgements)
 
@@ -93,7 +94,7 @@ To rerun the workflow iteratively for checking the convergence, follow the steps
 ```
 python converge.py {args}
 ```
-## Example
+## <a name="example"></a> Example
 
 - `conda activate snakemake` (activates snakemake environment)
 - `snakemake --core 16 --use-conda` (run snakemake on 16 cores)
