@@ -105,8 +105,8 @@ python converge.py {args}
 
 `trees` folder contain the following reference trees (along with their sources mentioned below)
 
-- 11 Drosophila species - `flies_ref_11.nwk` ([Source]())
-- 100 Drosophila species - `flies_ref_100.nwk` ([Source]())
+- 11 Drosophila species - `flies_ref_11.nwk` ([Source](http://timetree.org/))
+- 100 Drosophila species - `flies_ref_100.nwk` ([Source](https://github.com/flyseq/drosophila_assembly_pipelines/blob/master/figure_data/figure5/busco_species_astral.tree))
 - 
 
 
