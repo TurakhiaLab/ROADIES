@@ -20,6 +20,13 @@ WGA Pipeline steps:
 
 ## <a name="installation"></a> Installation
 
+### Required Installations
+
+- Snakemake
+- ASTRAL-Pro
+
+### Install Snakemake
+
 [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). 
 
 Given that Mamba is installed, run 
@@ -35,18 +42,7 @@ Once snakemake is installed, it needs to be activated via
 ```
 conda activate snakemake
 ```
-
-## <a name="usage"></a> Usage
-
-For all following commands ensure that the snakemake environment is activated.
-
-SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file.
-
-```
-snakemake --core [number of cores] --use-conda
-```
-
-Snakemake will automatically detect the main Snakefile in the workflow subfolder and execute the workflow module that has been defined by the deployment in step 2.
+### Install ASTRAL-Pro
 
 In order to run the pipeline, a manual installation of ASTRAL-PRO (latest version) is required. If previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-PRO git repository as mentioned below. 
 
@@ -58,6 +54,25 @@ cd ASTER-Linux
 make
 cd ..
 ```
+
+## <a name="usage"></a> Usage
+
+### Input Requirements
+
+All input genomic sequences should be in fasta format. The path for input dataset, along with the input configuration parameters should be provided in `config/config.yaml` file.
+
+### Running Snakemake
+
+Once snakemake environment is activated and `config/config.yaml` is configured, run
+```
+snakemake --core [number of cores] --use-conda
+```
+For starting the run from an incomplete previous session instead of starting a fresh run everytime, run
+```
+snakemake --core [number of cores] --use-conda --rerun-incomplete
+```
+### Output options
+
 
 ### Requirements for running the convergence:\
 
