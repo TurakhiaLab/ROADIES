@@ -1,15 +1,10 @@
-# This sampling script samples specific number of genes, each of a given specific length, from input files and saves it in fasta format
-
+#This sampling script samples specific number of genes, each of a given specific length, from input files and saves it in fasta format
+#REQUIRES: Biopython
+#USAGE: `python workflow/scripts/sampling.py {args}`
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
-import sys
-import time
 import random
-# import OS module
-import numpy as np
-import os
-from alive_progress import alive_bar 
-import argparse, os
+import argparse
 # Get the list of all files and directories
 # Arguments passed
 parser = argparse.ArgumentParser(description='genome selection')

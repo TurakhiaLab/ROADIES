@@ -1,3 +1,6 @@
+#logparser.py reads in a snakemake log file and parses the runtime for each rule
+#REQUIRES: pandas, matplotlib, seaborn
+#USAGE: `python workflow/scripts/logparser.py [log_file] [output]`
 import sys
 import datetime
 import seaborn as sns 

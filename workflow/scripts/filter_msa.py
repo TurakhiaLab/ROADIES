@@ -1,5 +1,5 @@
+#filter_msa.py empties a msa if there are too many gaps
 #usage: python filter.py [path] [length of gene] [threshold]
-import os, glob
 import sys
 import linecache
 

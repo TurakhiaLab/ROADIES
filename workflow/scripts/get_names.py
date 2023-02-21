@@ -1,3 +1,6 @@
+#get_names.py reads a fasta file and outputs n subsets of that file by chromosome name
+#REQUIREMENTS: Biopython
+#USAGE: `python workflow/scripts/get_names.py [path] [output_dir] [number of subsets]`
 import os, sys
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord

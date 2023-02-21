@@ -1,4 +1,7 @@
-#each gene plot 
+#lastz2fasta.py takes a directory of .maf alignments for each species, parses, and outputs the alignmnents into k gene fastas
+#filtering and stat-gathering steps are concurrently done that are discussed further in README.md
+#REQUIREMENTS: Biopython, seaborn, matplotlib
+#USAGE: `python workflow/scripts/lastz2fasta.py {args}`
 import re
 import os, glob
 import sys
@@ -10,8 +13,8 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 from Bio.Seq import Seq
 #get arguments 
-parser = argparse.ArgumentParser(description='get gene fasta')
-parser.add_argument('-k',type=int,default=400)
+parser = argparse.ArgumentParser(description='lastz2fasta.py takes a directory of .maf alignments for each species, parses, and outputs the alignmnents into k gene fastas')
+parser.add_argument('-k',type=int,default=200,help="Number of genes")
 parser.add_argument('--path',default='results/alignments')
 parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
