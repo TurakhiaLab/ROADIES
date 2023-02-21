@@ -7,7 +7,7 @@ import numpy as np
 from ete3 import Tree
 
 #by ETE
-def rerootTree(refTr, rertTr):
+def reroot(refTr, rertTr):
     refSub = refTr.children[0]
     refSubTips = set()
     for l in refSub:
