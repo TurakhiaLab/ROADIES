@@ -61,6 +61,46 @@ cd ..
 
 All input genomic sequences should be in fasta format. The path for input dataset, along with the input configuration parameters should be provided in `config/config.yaml` file.
 
+Here are the list of available input configurations:
+
+```yaml
+#This file configures the parameters for ROADIES and converge
+#Path for input genomes
+GENOMES: "/home/roadies-datasets/drosophila"
+#length of genes
+LENGTH: 500
+#number of genes
+KREG: 100
+#minimum % uppercase for genes
+UPPER_CASE: 0.90
+#ROADIES output directory
+OUT_DIR: "results"
+#minimum number of species in a gene fasta (4 min for ASTRAL-PRO)
+MIN_ALIGN: 4 
+#minimum % match in alignment
+IDENTITY: 65
+#minimum input sequence coverage
+COVERAGE: 85
+#max number of copies from a genome in an alignment
+MAX_DUP: 100
+#max msa input length
+GAPS: 1.2
+#reference tree for converge
+REFERENCE: "trees/birds_48.nwk"
+#maximum TreeDistance Threshold for stopping converge
+DIST_THRESHOLD: 0.1
+#number of bootstrapped trees for comparison
+NUM_BOOTSTRAP: 10
+#input ROADIES gene trees for converge
+INPUT_GENE_TREES: null
+#input ROADIES mapping file for converge
+INPUT_MAP: null
+#max converge runs before stopping
+MAX_ITER: 50
+#number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
+STOP_ITER: 1
+```
+
 ### Running Snakemake
 
 Once snakemake environment is activated and `config/config.yaml` is configured, run
