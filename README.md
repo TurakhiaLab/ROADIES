@@ -3,7 +3,7 @@ Snakemake and Snakedeploy are best installed via the Mamba package manager (a dr
 
 Given that Mamba is installed, run
 
-mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
+`mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy`
 to install both Snakemake and Snakedeploy in an isolated environment. For all following commands ensure that this environment is activated via
 conda activate snakemake
 SnakeMake workflow for sequence selection to lastz, change your configuration data in configuration file
@@ -31,18 +31,10 @@ ete3 in Snakemake conda environment
 `python converge.py {args}`
 
 list of arguments\
---ref {reference tree to compare to}\
---input_gt {input gene trees newick for A-Pro}\
---input_map {input mapping file for A-Pro}\
+
 -c {cpu cores to use}\
--l {gene length}\
--k {number of genes sampled*}\
--t {TreeDistance threshold for stopping}\
---bootstrap {number of bootstrap trees to create for comparisons}\
---max_iter {maximum number of converge runs}\
---stop_ter {number of consecutive bootstrapped self_dists and ref_dists satisfying threshold before stopping}\
 --out_dir {converge output directory}\
---roadies_dir {roadies output directory}
+--config {config file}
 
 Running drosophila dataset\
 Default Settings are set to avian dataset to change genomes:
