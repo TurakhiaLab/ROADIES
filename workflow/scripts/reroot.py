@@ -7,7 +7,7 @@ import numpy as np
 from ete3 import Tree
 
 #by ETE
-def reroot(refTr, rertTr):
+def rerootTree(refTr, rertTr):
     refSub = refTr.children[0]
     refSubTips = set()
     for l in refSub:
@@ -28,20 +28,9 @@ def reroot(refTr, rertTr):
 
     rertTr.set_outgroup(newRoot)
 
-
-
-# refTree = read_tree_newick(sys.argv[1])
-# rerootedTree = read_tree_newick(sys.argv[2])
-# reroot_TS(refTree, rerootedTree)
-# rerootedTree.write_tree_newick(sys.argv[3])
-
-# refTree = Phylo.read(sys.argv[1], 'newick')
-# rerootedTree = Phylo.read(sys.argv[2], 'newick')
-# reroot_BP(refTree, rerootedTree)
-# Phylo.write(rerootedTree, sys.argv[3], 'newick')
 if __name__=="__main__":
     refTree = Tree(sys.argv[1])
     rerootedTree = Tree(sys.argv[2])
-    reroot(refTree, rerootedTree)
+    rerootTree(refTree, rerootedTree)
     print(rerootedTree)
     rerootedTree.write(outfile=sys.argv[3])
