@@ -1,4 +1,4 @@
-# Estimating Ultra-Large Phylogenies from Raw Genome Sequences (wga-phylo)
+# Reference free Orthology free Alignment free Discordant Aware Estimation of Species Tree (ROADIES)
 
 ## Table of Contents
 - [Overview](#overview)
