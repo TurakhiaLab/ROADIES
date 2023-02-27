@@ -110,7 +110,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 seq = seq.replace('-','')
                 if orientation == '-':
                     seq = str(Seq(seq).reverse_complement())
-                index = species+'_'+seq_line[2]
+                index = species+'_'+str(i)
                 #output to gene fasta
                 allowed = ['a','t','c','g','A','T','C','G']
                 good_seq =True
@@ -181,7 +181,7 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
         if name not in found:
             found.append(name)
     #if number of species is > threhold count it 
-    if len(found)>m:
+    if len(found)>=m:
         print(len(found),found)
         count += 1
     else:

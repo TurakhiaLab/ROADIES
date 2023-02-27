@@ -17,6 +17,8 @@ from pathlib import Path
 def comp_tree(t1,t2):
     d = t1.compare(t2)
     return d['norm_rf']
+
+"""
 def comp_self(run,idx):
     dist = 0
     count = 0
@@ -46,6 +48,37 @@ def comp_runs_bs(run1,run2,idx):
     with open(out_dir+'/iter_dist_bs.csv','a') as w:
         w.write(str(idx)+','+str(avg)+'\n')
     return avg
+
+"""
+#function that finds the average distance between one array of bootstrapped trees with final tree of current iteration
+def comp_self_final(bs_tree_array,final_tree_cur,idx):
+    dist = 0
+    count = 0
+    for i in range(len(bs_tree_array)):
+        count +=1
+        print("Self-comparing run {0} final tree of current iteration {1} to bootstrap trees {2}".format(idx,idx,i))
+        d = final_tree_cur.compare(bs_tree_array[i])
+        dist += d['norm_rf']
+    avg = float(dist)/count
+    with open(out_dir+'/self_dist.csv','a') as w:
+        w.write(str(idx)+','+str(avg)+'\n')
+    return avg
+
+
+#function that finds the average distance between one array of bootstrapped trees with final tree of previous iteration
+def comp_bs_final(bs_tree_array,final_tree_prev,idx):
+    count = 0
+    dist = 0
+    for i in range(len(bs_tree_array)):
+        count += 1
+        print("Comparing run {0} final tree of previous iteration {1} with bootstrap of iteration {2}".format(idx,idx-1,i))
+        d = final_tree_prev.compare(bs_tree_array[i])
+        dist += d['norm_rf']
+    avg = float(dist)/count
+    with open(out_dir+'/iter_dist_bs.csv','a') as w:
+        w.write(str(idx)+','+str(avg)+'\n')
+    return avg
+
 class Alarm(Exception):
     pass
 def alarm_handler(*args):
@@ -209,7 +242,8 @@ if __name__=="__main__":
         run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir)
         runs.append(run)
         #get bootstrapped distance to itself
-        self_dist = comp_self(run,i)
+        #self_dist = comp_self(run,i)
+        self_dist = comp_self_final(run,trees[i],i)
         print("Run "+str(i)+" average distance to itself: ",self_dist)
         self_dists.append(self_dist)
         self_out.write(str(i)+','+str(self_dist)+'\n')
@@ -233,19 +267,21 @@ if __name__=="__main__":
             print(len(runs))
             print(runs)
             #get bootstrapped iteration distance
-            iter_dist_bs = comp_runs_bs(runs[i-1],runs[i],i)
-            print("Average distance between iteration {0} and {1} is: {2}".format(i-1,i,iter_dist_bs))
+            #iter_dist_bs = comp_runs_bs(runs[i-1],runs[i],i)
+            #get avg distance between current bootstrapped trees and previous iter final tree
+            iter_dist_bs = comp_bs_final(runs[i],trees[i-1],i)
+            print("Average distance between final tree of iteration {0} and bootstrapped tree of iteration {1} is: {2}".format(i-1,i,iter_dist_bs))
             iter_dists_bs.append(iter_dist_bs)
             iter_bs.write(str(i)+','+str(iter_dist_bs)+'\n')
             #get single iteration distance
             iter_dist = comp_tree(trees[i],trees[i-1])
-            print("Distance between iteration {0} and {1} is: {2}".format(i-1,i,iter_dist))
+            print("Distance between final trees of iteration {0} and {1} is: {2}".format(i-1,i,iter_dist))
             iter_dists.append(iter_dist)
             iter_out.write(str(i)+','+str(iter_dist)+'\n')
 
             for i in range(len(iter_dists_bs)):
                 print("Run: "+ str(i)+": " + str(iter_dists_bs[i]))
-            print("Distances to previous so far: ",iter_dists_bs)
+            print("Distances to previous iterations final trees with bootstrapped trees so far: ",iter_dists_bs)
             for i in range(len(iter_dists)):
                 print("Run: "+ str(i)+": " + str(iter_dists[i]))
             #checking to see if we should stop script
@@ -275,5 +311,6 @@ if __name__=="__main__":
                 break
         if stop_run == True and iter_flag == False:
             break
-    ref_out.close()
+    if ref_exist:
+        ref_out.close()
     iter_out.close()
