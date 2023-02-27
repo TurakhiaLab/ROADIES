@@ -1,4 +1,9 @@
-#requirements ETE and snakemake only
+#converge.py is a script that iteratively runs ROADIES, wherein after each run, the resultant gene trees are concatenated into a master file, bootstrapped, and input into ASTRAL-PRO.
+#These bootstrapped trees are then compared within the same run (self_dist), with the previous run (iter_dist), and also with the ref if given(ref_dist)
+#The program stops after either running converge for ‘MAX_ITER’ or satisfying the distance threshold ‘t’ for ‘STOP_ITER’ consecutive runs for both self_dists and iter_dists_bs
+
+#REQUIREMENTS: Activated conda environment with snakemake and ete3
+#USAGE from wga-phylo directory: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
 import os,sys
 import argparse
 import random
@@ -6,6 +11,8 @@ import subprocess
 import signal
 from ete3 import Tree 
 from reroot import rerootTree
+import yaml
+from pathlib import Path
 #function that finds the average distance between an array of trees and itself
 def comp_tree(t1,t2):
     d = t1.compare(t2)
@@ -76,6 +83,7 @@ class Alarm(Exception):
     pass
 def alarm_handler(*args):
     raise Alarm("timeout")
+
 #function to run snakemake with settings and add to run folder
 def run_snakemake(c,l,k,out_dir,run,roadies_dir):
 
@@ -122,6 +130,8 @@ def bootstrap(b,out_dir,run,gene_trees):
         boot_tree = Tree(tmp_path+'.nwk')
         bs_trees.append(boot_tree)
     return bs_trees
+
+# function to combine gene trees and mapping files from all iterations
 def combine_iter(out_dir,run):
     print("Concatenating run's gene trees and mapping files with master versions")
     os.system('cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk'.format(out_dir,run))
@@ -134,6 +144,7 @@ def combine_iter(out_dir,run):
     gt.close()
     return gene_trees
 
+# function for convergence run
 def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
     os.system('rm -r {0}'.format(roadies_dir))
     os.system('mkdir {0}'.format(roadies_dir))
@@ -161,45 +172,43 @@ def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
     #create bootstrapping trees
     return bootstrap(b,out_dir,run,gene_trees)
 
+# main function
 if __name__=="__main__":
 #taking in arguments, have default values for most; information in README.md
     parser = argparse.ArgumentParser(
         prog = 'Converge',
         description = 'Script to continuously run snakemake with a small number of genes combining the gene trees after each run'
     )
-    parser.add_argument('--input_gt',default=None,help='can put in previously generated gene trees')
-    parser.add_argument('--input_map',default=None,help='can put in previously generated mapping')
-    parser.add_argument('--ref',default=None,help='reference tree (input as .nwk or .newick')
+    
     parser.add_argument('-c',type=int,default=16,help='number of cores')
-    parser.add_argument('-k',type=int,default=150,help='number of genes')
-    parser.add_argument('-t',type=float,default=0.05,help=' maximum TreeDistance threshold')
-    parser.add_argument('-l',type=int,default=500,help='length of genes')
-    parser.add_argument('--bootstrap',type=int,default=10,help='number of trees for bootstrapping when comparing')
-    parser.add_argument('--max_iter',type=int,default=50,help='maximum number of runs before stopping')
-    parser.add_argument('--stop_iter',type=int,default=1,help='number of runs satisfying threshold before halt')
     parser.add_argument('--out_dir',default='converge',help='output dir')
-    parser.add_argument('--roadies_dir',default='results',help='Snakemake output directory')
+    parser.add_argument('--config',default='config/config.yaml',help = "Config file containing global variables")
     #assigning argument values to variables
     args = vars(parser.parse_args())
-    ref_exist = False
-    if args['ref']:
-        ref_exist = True
-        ref = Tree(args['ref'])
+    config_path = args['config']
     c = args['c']
-    k = args['k']
-    t = args['t']
-    l = args['l']
-    b= args['bootstrap']
-    input_gt = args['input_gt']
-    input_map = args['input_map']
-    max_iter = args['max_iter']
-    stop_iter= args['stop_iter']
     out_dir = args['out_dir']
-    roadies_dir=args['roadies_dir']
+    #read config.yaml for variables
+    config = yaml.safe_load(Path(config_path).read_text())
+    ref_exist = False
+    if config['REFERENCE'] != None:
+        print("Converge has read reference tree {0}".format(config['REFERENCE']))
+        ref_exist = True
+        ref = Tree(config['REFERENCE'])
+    k = config['KREG']
+    t = config['DIST_THRESHOLD']
+    l = config['LENGTH']
+    b = config['NUM_BOOTSTRAP']
+    input_gt = config['INPUT_GENE_TREES']
+    input_map = config["INPUT_MAP"]
+    max_iter = config['MAX_ITER']
+    stop_iter = config['STOP_ITER']
+    roadies_dir = config["OUT_DIR"]
     os.system('rm -r '+out_dir)
     os.system('mkdir -p '+out_dir)
     os.system('mkdir '+out_dir+'/tmp')
     sys.setrecursionlimit(2000)
+    
     # if there are input gene trees use that to build on or else make empty file
     master_gt = out_dir+'/master_gt.nwk'
     master_map = out_dir+'/master_map.txt'
@@ -209,6 +218,7 @@ if __name__=="__main__":
     else:
         os.system('cp {0} {1}'.format(input_gt,master_gt))
         os.system('cp {0} {1}'.format(input_map,master_map))
+        
     #initialize lists for runs and distances
     runs= []
     self_dists = []
@@ -224,6 +234,8 @@ if __name__=="__main__":
     iter_out = open(out_dir+'/iter_dist.csv','w')
     self_out = open(out_dir+'/self_dist.csv','w')
     iter_bs = open(out_dir+'/iter_dist_bs.csv','w')
+    
+    #starts main for loop for multiple iterations
     #for max iteration runs; start from 1 index instead of 0
     for i in range(max_iter): 
         #returns an array of b bootstrapped trees
@@ -249,7 +261,8 @@ if __name__=="__main__":
         
         stop_run = False
         iter_flag = False
-        #since comparing to previous, only after 1st iteration
+        
+        #since comparing to previous, hence starts with 1st iteration
         if i >= 1:
             print(len(runs))
             print(runs)

@@ -1,3 +1,6 @@
+#sequence_merge.py concats all the genes together and gathers stats
+#REQUIRES: Seaborn and Matplotlib
+#USAGE: `python workflow/scripts/sequence_merge.py [gene directory] [output file] [plot directory]`
 import shutil
 import glob,os,sys
 import seaborn as sns 

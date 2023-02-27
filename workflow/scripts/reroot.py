@@ -1,4 +1,7 @@
+#reroot.py takes in a reference and a input tree and reroots the input with respect to the reference
+#REQUIREMENTS: numpy and ete3
 #usage: python3 reroot.py [reference tree] [tree to be rerooted] [output]
+
 import sys
 import numpy as np
 from ete3 import Tree
@@ -25,17 +28,6 @@ def rerootTree(refTr, rertTr):
 
     rertTr.set_outgroup(newRoot)
 
-
-
-# refTree = read_tree_newick(sys.argv[1])
-# rerootedTree = read_tree_newick(sys.argv[2])
-# reroot_TS(refTree, rerootedTree)
-# rerootedTree.write_tree_newick(sys.argv[3])
-
-# refTree = Phylo.read(sys.argv[1], 'newick')
-# rerootedTree = Phylo.read(sys.argv[2], 'newick')
-# reroot_BP(refTree, rerootedTree)
-# Phylo.write(rerootedTree, sys.argv[3], 'newick')
 if __name__=="__main__":
     refTree = Tree(sys.argv[1])
     rerootedTree = Tree(sys.argv[2])
