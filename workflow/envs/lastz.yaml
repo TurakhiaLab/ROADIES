@@ -1,0 +1,7 @@
+name: lastz
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - lastz
+  - biopython

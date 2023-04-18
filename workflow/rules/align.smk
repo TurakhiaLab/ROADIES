@@ -1,23 +1,23 @@
 
-rule mafft:
+rule pasta:
 	input:
 		config["OUT_DIR"]+"/genes/gene_{id}.fa"
 	output:
-		config["OUT_DIR"]+"/msa/gene_aln_{id}.fa"
+		config["OUT_DIR"]+"/genes/gene_{id}.fa.aln"
 	params:
 		m=config["MIN_ALIGN"],
-		max_len=int(1.5*config["LENGTH"])
+		max_len=int(1.5*config["LENGTH"]),
+		prefix = "gene_{id}",
+		suffix = "fa.aln"
 	conda: 
-		"../envs/mafft.yaml"
+		"../envs/msa.yaml"
 	shell:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
-			#mafft --anysymbol --localpair --retree 2 --maxiterate 10 {input} > {output}
-			mafft --anysymbol --auto {input} > {output}
-		else
-			touch {output}
+			python pasta-code/pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix}
 		fi
+		touch {output}
 
 		'''
 rule lastz2fasta:
@@ -59,9 +59,10 @@ rule lastz:
 		species = "{sample}",
 		identity = config['IDENTITY'],
 		coverage = config['COVERAGE'],
+		continuity = config['CONTINUITY'],
 		align_dir = config['OUT_DIR']+ "/alignments",
-                max_dup = 2*int(config['MAX_DUP'])
+		max_dup = 2*int(config['MAX_DUP'])
 	shell:
 		'''
-		lastz_32 {input.genome}[multiple] {input.genes} --filter=coverage:{params.coverage} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=1 --notransition --queryhspbest={params.max_dup} 
+		lastz_32 {input.genome}[multiple] {input.genes} --step=100 --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=1 --notransition --queryhspbest={params.max_dup} 
 		'''

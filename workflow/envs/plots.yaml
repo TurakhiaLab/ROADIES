@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - anaconda
+dependencies:
+  - matplotlib
+  - seaborn
+  - biopython

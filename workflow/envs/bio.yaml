@@ -1,0 +1,10 @@
+name: envr
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - alive-progress
+  - biopython
+  - iqtree=2.2.0.3
+  - numpy
+ 

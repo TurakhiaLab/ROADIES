@@ -1,6 +1,6 @@
 rule astral:
 	input:
-		config["OUT_DIR"]+"/geneTree/gene_tree_merged.nwk"
+		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	output:
 		config["OUT_DIR"]+"/roadies.nwk"
 	params:
