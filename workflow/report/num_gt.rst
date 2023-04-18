@@ -1,1 +1,0 @@
-The number of gene trees with a minimum number of alignments

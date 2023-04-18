@@ -1,1 +1,0 @@
-A plot showing the number of genes sampled from each genome
