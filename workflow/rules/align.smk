@@ -64,5 +64,5 @@ rule lastz:
 		max_dup = 2*int(config['MAX_DUP'])
 	shell:
 		'''
-		lastz_32 {input.genome}[multiple] {input.genes} --step=100 --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=1 --notransition --queryhspbest={params.max_dup} 
+		lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=1 --notransition --queryhspbest={params.max_dup} 
 		'''
