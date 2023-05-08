@@ -230,14 +230,14 @@ if __name__=="__main__":
     trees = []
     #open files for writing distances
     if ref_exist:
-        ref_out = open(out_dir+'/ref_dist.csv','w')
-    iter_out = open(out_dir+'/iter_dist.csv','w')
-    self_out = open(out_dir+'/self_dist.csv','w')
-    iter_bs = open(out_dir+'/iter_dist_bs.csv','w')
+        ref_out = open(out_dir+'/ref_dist.csv','w+')
+    iter_out = open(out_dir+'/iter_dist.csv','w+')
+    self_out = open(out_dir+'/self_dist.csv','w+')
+    iter_bs = open(out_dir+'/iter_dist_bs.csv','w+')
     
     #starts main for loop for multiple iterations
     #for max iteration runs; start from 1 index instead of 0
-    for i in range(max_iter): 
+    for i in range(max_iter):
         #returns an array of b bootstrapped trees
         run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir)
         runs.append(run)
@@ -278,6 +278,16 @@ if __name__=="__main__":
             print("Distance between final trees of iteration {0} and {1} is: {2}".format(i-1,i,iter_dist))
             iter_dists.append(iter_dist)
             iter_out.write(str(i)+','+str(iter_dist)+'\n')
+
+            if i%10 == 0:
+                iterm = open(out_dir+'/iterm_iter_dist_bs.csv','w')
+                refm = open(out_dir+'/iterm_ref_dist.csv','w')
+                for j in range(len(iter_dists_bs)):
+                    iterm.write(str(j)+','+str(iter_dists_bs[j])+'\n')
+                for j in range(len(ref_dists)):
+                    refm.write(str(j)+','+str(ref_dists[j])+'\n')
+                iterm.close()
+                refm.close()
 
             for i in range(len(iter_dists_bs)):
                 print("Run: "+ str(i)+": " + str(iter_dists_bs[i]))
