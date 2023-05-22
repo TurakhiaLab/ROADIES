@@ -1,4 +1,3 @@
-
 rule pasta:
 	input:
 		config["OUT_DIR"]+"/genes/gene_{id}.fa"
@@ -49,7 +48,7 @@ rule lastz2fasta:
 		
 rule lastz:
 	input:
-		genes = config["OUT_DIR"]+"/samples/out.fa",
+		genes = config["OUT_DIR"]+"/samples/{sample}_genes.fa",
 		genome = config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
@@ -61,8 +60,10 @@ rule lastz:
 		coverage = config['COVERAGE'],
 		continuity = config['CONTINUITY'],
 		align_dir = config['OUT_DIR']+ "/alignments",
-		max_dup = 2*int(config['MAX_DUP'])
+		max_dup = 2*int(config['MAX_DUP']),
+		steps = config["STEPS"]
 	shell:
 		'''
-		lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step=1 --notransition --queryhspbest={params.max_dup} 
+		lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
 		'''
+

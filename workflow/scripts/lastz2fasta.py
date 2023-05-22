@@ -14,7 +14,7 @@ from collections import OrderedDict
 from Bio.Seq import Seq
 #get arguments 
 parser = argparse.ArgumentParser(description='lastz2fasta.py takes a directory of .maf alignments for each species, parses, and outputs the alignmnents into k gene fastas')
-parser.add_argument('-k',type=int,default=200,help="Number of genes")
+parser.add_argument('-k',type=int,default=1000,help="Number of genes")
 parser.add_argument('--path',default='results/alignments')
 parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
@@ -203,5 +203,3 @@ ax3.savefig(plotdir+"/gene_dup.png")
 with open(statdir+"/num_gt.txt",'w') as f:
     f.write("Number of gene trees: "+str(count)+'\n')
     #if len(records)< m:
-     #   print(filename)
-      #  os.remove(filename)
