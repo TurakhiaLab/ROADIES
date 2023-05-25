@@ -85,13 +85,15 @@ def alarm_handler(*args):
     raise Alarm("timeout")
 
 #function to run snakemake with settings and add to run folder
-def run_snakemake(c,l,k,out_dir,run,roadies_dir):
-
-    cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+def run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,species_lists):
+    if weighted:
+        cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+    else:
+        cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=1.0'.format(c,l,k,roadies_dir)
     os.system(cmd)
     #get the run output in folder
     print("Adding run to converge folder")
-    os.system('./workflow/scripts/get_run.sh {0}/{1}'.format(out_dir,run))
+    os.system('./workflow/scripts/get_run.sh {0} {1} {2} {3} {4}'.format(out_dir,run,species_ids,gene_ids,species_lists))
 
 #function that returns an array of b bootstrapped newick trees 
 def bootstrap(b,out_dir,run,gene_trees):
@@ -145,7 +147,7 @@ def combine_iter(out_dir,run):
     return gene_trees
 
 # function for convergence run
-def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
+def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir,weighted,species_ids,gene_ids,species_lists):
     os.system('rm -r {0}'.format(roadies_dir))
     os.system('mkdir {0}'.format(roadies_dir))
     run = "run_"
@@ -156,7 +158,7 @@ def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir):
         run += str(i)
     print("Starting " +run)
     #run snakemake with specificed gene number and length
-    run_snakemake(c,l,k,out_dir,run,roadies_dir)
+    run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,species_lists)
     #merging gene trees and mapping files
     gene_trees = combine_iter(out_dir,run)
     t = Tree(out_dir+'/'+run+'.nwk')
@@ -204,6 +206,9 @@ if __name__=="__main__":
     max_iter = config['MAX_ITER']
     stop_iter = config['STOP_ITER']
     roadies_dir = config["OUT_DIR"]
+    species_ids = config["SPECIES_IDS"]
+    gene_ids = config["GENE_IDS"]
+    species_lists = config["SPECIES_LISTS"]
     os.system('rm -r '+out_dir)
     os.system('mkdir -p '+out_dir)
     os.system('mkdir '+out_dir+'/tmp')
@@ -239,7 +244,10 @@ if __name__=="__main__":
     #for max iteration runs; start from 1 index instead of 0
     for i in range(max_iter): 
         #returns an array of b bootstrapped trees
-        run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir)
+        weighted = True
+        if i == 0:
+            weighted = False
+        run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir,weighted,species_ids,gene_ids,species_lists)
         runs.append(run)
         #get bootstrapped distance to itself
         #self_dist = comp_self(run,i)

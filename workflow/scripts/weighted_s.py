@@ -139,6 +139,11 @@ if WEIGHTED != 0:
         counts[species] += 1
         ctr += 1
         mapping.append((species,i))
+    #in case a species doesn't get sampled 
+    for species in counts:
+        if counts[species] == 0:
+            mapping.append((species,len(species_list)))
+            species_list.append(random.sample(MASTER_SPECIES,num_align))
     #sort the tuples by species
     mapping_sorted = sorted(mapping)
     #iterating through mapping to get index where species changes
@@ -154,7 +159,7 @@ if WEIGHTED != 0:
             species_stops.append(species)
         idx = mapping_sorted[i][1]
         list_of_species = species_list[idx]
-    id_stops.append(KREG)
+    id_stops.append(len(mapping_sorted))
     #writing gene ids
     with open(GENE_ID,'w') as w:
         for i in range(len(species_stops)):

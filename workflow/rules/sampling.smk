@@ -22,7 +22,8 @@ if config["WEIGHTED"] != 0:
 				#print(species,start,end)
 				od[species] = start
 				od_e[species] = end
-		
+		print(od)
+		print(od_e)
 	else:
 		print("Can't find freqQuad.csv for weighted sampling exiting (Either incorrect file location in config or need to run ROADIES to get needed file)")
 		exit()

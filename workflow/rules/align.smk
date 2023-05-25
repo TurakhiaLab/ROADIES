@@ -1,3 +1,7 @@
+if config["WEIGHTED"] != 0:
+	g = config["OUT_DIR"]+"/samples/{sample}_genes.fa"
+else:
+	g = config["OUT_DIR"]+"/samples/out.fa"
 rule pasta:
 	input:
 		config["OUT_DIR"]+"/genes/gene_{id}.fa"
@@ -48,7 +52,7 @@ rule lastz2fasta:
 		
 rule lastz:
 	input:
-		genes = config["OUT_DIR"]+"/samples/{sample}_genes.fa",
+		genes = g,
 		genome = config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
