@@ -1,10 +1,10 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
-GENOMES: "/home/roadies-datasets/birds"
+GENOMES: "/home/roadies-datasets/249_mammals_dataset"
 #length of genes
 LENGTH: 500
 #number of genes
-KREG: 100
+KREG: 500
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -20,9 +20,9 @@ CONTINUITY: 85
 MAX_DUP: 100
 #max msa input length
 GAPS: 1.2
-STEPS: 100
+STEPS: 1
 #reference tree for converge
-REFERENCE: "trees/birds_48.nwk"
+REFERENCE: "trees/mammals_reftree_241_renamed.nwk"
 #maximum TreeDistance Threshold for stopping converge
 DIST_THRESHOLD: 0.1
 #number of bootstrapped trees for comparison
@@ -32,7 +32,7 @@ INPUT_GENE_TREES: null
 #input ROADIES mapping file for converge
 INPUT_MAP: null
 #max converge runs before stopping
-MAX_ITER: 50
+MAX_ITER: 1000
 #number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
 STOP_ITER: 1
 #ASTRAL PRO quartet information output
