@@ -14,7 +14,7 @@ parser.add_argument('--species_out',default="species_id.csv")
 parser.add_argument('--genomes',default='/home/roadies-datasets/birds',help="genome/assembly/fasta directory")
 parser.add_argument('--id_out',default="gene_id.csv",help="output file for gene ids")
 parser.add_argument('--align_out',default="species_lists.csv",help="output file for list of species in weighted sampling")
-parser.add_argument('--to_align',type=float,default=0.5,help="percentage of total species to run lastz with")
+parser.add_argument('--to_align',type=int,required=True,help="# species to align per gene")
 args = parser.parse_args()
 #t = args.t
 KREG = args.k
@@ -35,7 +35,6 @@ for filename in glob.glob(os.path.join(GENOMES,'*.fa')):
 #MASTER LIST OF SPECIES NAMES
 MASTER_SPECIES = list(counts.keys())
 #number of species we are aligning to each gene in lastz
-num_align = int(TO_ALIGN*len(MASTER_SPECIES))
 # if we are doing weighted sampling
 if WEIGHTED != 0:
     #get number of weighted 'genes'
@@ -66,9 +65,9 @@ if WEIGHTED != 0:
     #keep on sampling from low scoring quartet branches until we sample required number of weighted genes
     while num_sampled < num_weighted:
         #list of species to align gene to
-        to_align = []
+        species_to_align = []
         #keep on sampling species until we get to the number we want to align using lastz
-        while len(to_align) < num_align:
+        while len(species_to_align) < TO_ALIGN:
             idx = np.random.choice(len(weights),1,p=weights)[0]
             line = lines[sorted_scores[idx][0]]
             quartet = line.split('\t')[2].strip()
@@ -94,10 +93,10 @@ if WEIGHTED != 0:
                 #pick random species on branch
                 s = random.randint(0,len(node)-1)
                 #only add if species not found already
-                if node[s] not in to_align:
-                    to_align.append(node[s])
+                if node[s] not in species_to_align:
+                    species_to_align.append(node[s])
                     #check if number of species is less than limit 
-                    if len(to_align) == num_align:
+                    if len(species_to_align) == TO_ALIGN:
                         break
                 #remove species from the node list
                 del node[s]
@@ -111,7 +110,7 @@ if WEIGHTED != 0:
                         itr += 1
 
         #print(to_align)
-        species_list.append(to_align)
+        species_list.append(species_to_align)
         num_sampled += 1
     #done with weighted sampling
     #now do the rest of unweighted sampling
@@ -119,7 +118,7 @@ if WEIGHTED != 0:
         for i in range(KREG-num_sampled):
             r = random.randint(0,len(MASTER_SPECIES)-1)
             species = MASTER_SPECIES[r]
-            rand_list = random.sample(MASTER_SPECIES,num_align)
+            rand_list = random.sample(MASTER_SPECIES,TO_ALIGN)
            # print(species,rand_list)
            # counts[species] += 1
             species_list.append(rand_list)

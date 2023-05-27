@@ -21,11 +21,11 @@ l= args.l
 t = args.t
 path = args.input
 output=args.output
-k = e-s+1
-if k < 1:
+num_samples = e-s+1
+if num_samples < 1:
     print("Invalid indices")
     exit(1)
-print("Number of regions:", k)
+print("Number of regions:", num_samples)
 print("ID START: "+(str(s))+", ID END: "+str(e))
 print("Region Length:", l)
 print("Input File:" +path)
@@ -40,9 +40,9 @@ sequence=[]
 index = s
 threshold = int(t*l)
 #keeps track of time
-    #for specified number of genes
+#for specified number of genes
 count = 0
-for i in range(k-1):
+for i in range(num_samples-1):
     notFound =True
     sample = ''
     #until a passing sample is found
@@ -86,4 +86,3 @@ for i in range(k-1):
     index = index+1
 print('Total # of resampling: '+str(count))
 SeqIO.write(sequence, output, "fasta")
-

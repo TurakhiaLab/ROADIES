@@ -87,9 +87,9 @@ def alarm_handler(*args):
 #function to run snakemake with settings and add to run folder
 def run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,species_lists):
     if weighted:
-        cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+        cmd ='snakemake --core {0} --use-conda --resources mem_mb=10000 --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
     else:
-        cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=1.0'.format(c,l,k,roadies_dir)
+        cmd ='snakemake --core {0} --use-conda --resources mem_mb=10000 --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=1.0'.format(c,l,k,roadies_dir)
     os.system(cmd)
     #get the run output in folder
     print("Adding run to converge folder")
