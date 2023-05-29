@@ -6,29 +6,53 @@ import sys
 import numpy as np
 from ete3 import Tree
 
-#by ETE
+
 def rerootTree(refTr, rertTr):
-    refSub = refTr.children[0]
+    refSub1 = refTr.children[0]
+    refSubTips1 = set()
+    for l in refSub1:
+        refSubTips1.add(l.name)
+
+    length1 = len(refSubTips1)
+
+    refSub2 = refTr.children[1]
+    refSubTips2 = set()
+    for l in refSub2:
+        refSubTips2.add(l.name)
+
+    length2 = len(refSubTips2)
     refSubTips = set()
-    for l in refSub:
-        refSubTips.add(l.name)
+
+    if length1 > length2:
+        refSubTips = refSubTips2
+    else:
+        refSubTips = refSubTips1
 
     maxScore = 0
-    for n in rertTr.traverse('preorder'):
+    rertTr_temp = rertTr
+
+    nodes = []
+    for n in rertTr.traverse("preorder"):
+        nodes.append(n)
+
+    for n in nodes:
+        if n == rertTr_temp:
+            continue
         cladeTips = set()
         for l in n:
             cladeTips.add(l.name)
 
         common = refSubTips.intersection(cladeTips)
-        score = len(refTr) - len(refSubTips) - len(cladeTips) + 2*len(common)
-       
+        score = len(refTr) - len(refSubTips) - len(cladeTips) + 2 * len(common)
+
         if score > maxScore:
             newRoot = n
             maxScore = score
 
     rertTr.set_outgroup(newRoot)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     refTree = Tree(sys.argv[1])
     rerootedTree = Tree(sys.argv[2])
     rerootTree(refTree, rerootedTree)
