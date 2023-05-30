@@ -1,4 +1,6 @@
 # Reference free Orthology free Alignment free Discordant Aware Estimation of Species Tree (ROADIES)
+![ROADIES_logo](https://github.com/TurakhiaLab/wga-phylo/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
+
 
 ## Table of Contents
 - [Overview](#overview)
