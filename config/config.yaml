@@ -1,10 +1,12 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
 GENOMES: "/home/roadies-datasets/flies_renamed"
+#reference tree for converge (used for ref_dist.csv)
+REFERENCE: "trees/flies_reftree_100.nwk"
 #length of genes
 LENGTH: 500
 #number of genes
-KREG: 500
+KREG: 200
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -15,14 +17,14 @@ MIN_ALIGN: 4
 IDENTITY: 65
 #minimum input sequence coverage
 COVERAGE: 85
+#minimum continuity of alignments
 CONTINUITY: 85
 #max number of copies from a genome in an alignment
 MAX_DUP: 100
 #max msa input length
 GAPS: 1.2
+#number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
 STEPS: 1
-#reference tree for converge
-REFERENCE: "trees/flies_reftree_100.nwk"
 #maximum TreeDistance Threshold for stopping converge
 DIST_THRESHOLD: 0.1
 #number of bootstrapped trees for comparison
@@ -43,6 +45,7 @@ WEIGHTED: 0.3
 GENE_IDS: "gene_id.csv"
 #file location of species lists for weighted sampling
 SPECIES_LISTS: "species_lists.csv"
+#list of gene ids assigned to each species
 SPECIES_IDS: "species_ids.csv"
 #percentage of species to align during lastz with weighted sampling
 TO_ALIGN: 24

@@ -142,7 +142,7 @@ if WEIGHTED != 0:
     for species in counts:
         if counts[species] == 0:
             mapping.append((species,len(species_list)))
-            species_list.append(random.sample(MASTER_SPECIES,num_align))
+            species_list.append(random.sample(MASTER_SPECIES,TO_ALIGN))
     #sort the tuples by species
     mapping_sorted = sorted(mapping)
     #iterating through mapping to get index where species changes

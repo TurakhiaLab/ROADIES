@@ -1,6 +1,5 @@
 #sequence_merge.py concats all the genes together and gathers stats
 #REQUIRES: Seaborn and Matplotlib
-#USAGE: `python workflow/scripts/sequence_merge.py [gene directory] [output file] [plot directory]`
 #import shutil
 import glob,os,sys
 #import seaborn as sns 
@@ -36,7 +35,6 @@ for i in range(1,len(g)):
    # print(curr_seq)
 #print(id_dict)
 #print(len(id_dict))
-#print(id_dict['484'])
 
 lines = open(species_id,'r').readlines()
 #print(len(lines))

@@ -28,13 +28,14 @@ if num_samples < 1:
 print("Number of regions:", num_samples)
 print("ID START: "+(str(s))+", ID END: "+str(e))
 print("Region Length:", l)
-print("Input File:" +path)
+print("Loading Input File:" +path)
 records = list(SeqIO.parse(path,"fasta"))
 total_length = 0
 indices = []
 for record in records:
     total_length += len(record.seq)
     indices.append(total_length)
+print("Done loading {0} with {1} sequences".format(path,total_length))
 #print(indices)
 sequence=[]
 index = s

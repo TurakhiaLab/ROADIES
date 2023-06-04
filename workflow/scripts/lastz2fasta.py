@@ -14,7 +14,7 @@ from collections import OrderedDict
 from Bio.Seq import Seq
 #get arguments 
 parser = argparse.ArgumentParser(description='lastz2fasta.py takes a directory of .maf alignments for each species, parses, and outputs the alignmnents into k gene fastas')
-parser.add_argument('-k',type=int,default=1000,help="Number of genes")
+parser.add_argument('-k',type=int,default=200,help="Number of genes")
 parser.add_argument('--path',default='results/alignments')
 parser.add_argument('--outdir',default='results/genes')
 parser.add_argument('-m',type=int,default=4)
@@ -31,6 +31,8 @@ k = args.k
 d = args.d
 num_genes = {}
 num_homologues = {}
+for i in range(1,k+1):
+    os.system("touch {0}/gene_{1}.fa".format(outdir,i))
 #open all lastz alignment outputs
 for filename in glob.glob(os.path.join(path,'*.maf')):
     with open(os.path.join(os.getcwd(),filename),'r') as f:
@@ -85,7 +87,7 @@ for filename in glob.glob(os.path.join(path,'*.maf')):
                 # if it's within 2000 bp of another higher scoring alignment skip that alignment
                 tooClose = False
                 for p in positions:
-                    if abs(p-pos)<(2*1000):
+                    if abs(p-pos)<(2*k):
                         tooClose = True
                         break
                 if not tooClose:
@@ -165,6 +167,8 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
     fs2 = fs2.replace('gene_','')
     fs2 = fs2.replace('.fa','')
     #get the sequences
+    if os.stat(filename).st_size == 0:
+        continue
     records = list(SeqIO.parse(filename,"fasta"))
     #get the duplicity by diving #sequences by # species
     avg = len(records)/int(num_homologues[fs2])
@@ -188,7 +192,7 @@ for filename in glob.glob(os.path.join(outdir,'*.fa')):
         with open(filename,'w') as w:
             w.write('')
 sorted(gene_dup)
-#output duplicity as csv
+#output duplicity as csv]
 with open(statdir+'/gene_dup.csv','w') as f:
     for i in range(len(gene_dup)):
         f.write(str(gene_dup[i][0])+','+str(gene_dup[i][1])+'\n')
@@ -203,3 +207,5 @@ ax3.savefig(plotdir+"/gene_dup.png")
 with open(statdir+"/num_gt.txt",'w') as f:
     f.write("Number of gene trees: "+str(count)+'\n')
     #if len(records)< m:
+     #   print(filename)
+      #  os.remove(filename)

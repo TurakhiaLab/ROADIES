@@ -17,7 +17,7 @@ rule lastz2fasta:
 
 
 	params:
-		k = num,
+		k = config["KREG"],
 		out = config["OUT_DIR"]+"/genes",
 		p = config["OUT_DIR"]+"/alignments",
 		m = config["MIN_ALIGN"],
@@ -63,13 +63,14 @@ rule pasta:
 		max_len=int(1.5*config["LENGTH"]),
 		prefix = "gene_{id}",
 		suffix = "fa.aln"
+	threads: 4
 	conda: 
 		"../envs/msa.yaml"
 	shell:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
-			run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix}
+			run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 4
 
 		fi
 		touch {output}
@@ -87,6 +88,6 @@ rule filtermsa:
 		"../envs/filtermsa.yaml"
 	shell:
 		'''
-			python ../pasta-code/pasta/run_seqtools.py -filterfragmentsp 0.50 -infile {input} -outfile {output}
+			python ../pasta-code/pasta/run_seqtools.py -masksitesp 0.02 -filterfragmentsp 0.50 -infile {input} -outfile {output}
 		'''
 

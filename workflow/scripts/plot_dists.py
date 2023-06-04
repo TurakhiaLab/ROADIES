@@ -1,3 +1,4 @@
+#USAGE:: `python workflow/scripts/plot_dists.py [converge dir] [out_file]`
 import sys
 import seaborn as sns
 import pandas as pd
