@@ -1,0 +1,1 @@
+/usr/bin/c++   -O4 -std=c++17 -Wall -g   CMakeFiles/sampling.dir/sampling.cpp.o  -o sampling  /usr/lib/x86_64-linux-gnu/libboost_program_options.a /usr/lib/x86_64-linux-gnu/libz.so 

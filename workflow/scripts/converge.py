@@ -90,13 +90,13 @@ def run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,sp
     print(input_gt)
     if weighted:
         print(1)
-        cmd ='snakemake --core {0} --use-conda --resources mem_mb=10000 --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+        cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
     elif input_gt is not None:
         print(2)
-        cmd ='snakemake --core {0} --use-conda --resources mem_mb=10000 --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+        cmd ='snakemake --core {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
     else:
         print(3)
-        cmd ='snakemake --core {0} --use-conda --resources mem_mb=10000 --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=100'.format(c,l,k,roadies_dir)
+        cmd ='snakemake --core {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=100'.format(c,l,k,roadies_dir)
     os.system(cmd)
     #get the run output in folder
     print("Adding run to converge folder")

@@ -63,12 +63,18 @@ rule sequence_select:
 		KFAC=lambda wildcards: get_index_s(wildcards.sample),
 		KFAC_e=lambda wildcards: get_index_e(wildcards.sample),
 		THRES=config["UPPER_CASE"]
-	conda:
-        	"../envs/bio.yaml"
+	#conda:
+        	#"../envs/bio.yaml"
+	threads:16
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
 	shell:
-        	"python3 workflow/scripts/sampling.py --input {input[0]} -s {params.KFAC} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output {output}"
+			'''
+			echo "We are starting to sample {input}"
+			echo "./sampling/build/sampling -i {input} -o {output} -l {params.LENGTH} -s {params.KFAC} -e {params.KFAC_e} -t {params.THRES}"
+			time ./sampling/build/sampling -i {input} -o {output} -l {params.LENGTH} -s {params.KFAC} -e {params.KFAC_e} -t {params.THRES}
+			'''
+        	#"python3 workflow/scripts/sampling.py --input {input[]} -s {params.KFAC} -t {params.THRES} -e {params.KFAC_e} -l {params.LENGTH} --output {output}"
 
 rule sequence_merge:
 	input:
