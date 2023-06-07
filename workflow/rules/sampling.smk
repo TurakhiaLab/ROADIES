@@ -65,7 +65,7 @@ rule sequence_select:
 		THRES=config["UPPER_CASE"]
 	#conda:
         	#"../envs/bio.yaml"
-	threads:16
+	threads:32
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
 	shell:
