@@ -1,8 +1,8 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
-GENOMES: "/home/roadies-datasets/birds"
+GENOMES: "/home/roadies-datasets/flies_renamed"
 #length of genes
-LENGTH: 250
+LENGTH: 500
 #number of genes
 KREG: 100
 #minimum % uppercase for genes
@@ -21,9 +21,9 @@ MAX_DUP: 100
 #max msa input length
 GAPS: 1.2
 #reference tree for converge
-REFERENCE: "trees/birds_reftree_new_48.nwk"
+REFERENCE: "trees/flies_reftree_100.nwk"
 #maximum TreeDistance Threshold for stopping converge
-DIST_THRESHOLD: 0.05
+DIST_THRESHOLD: 0.01
 #number of bootstrapped trees for comparison
 NUM_BOOTSTRAP: 10
 #input ROADIES gene trees for converge
@@ -31,6 +31,6 @@ INPUT_GENE_TREES: null
 #input ROADIES mapping file for converge
 INPUT_MAP: null
 #max converge runs before stopping
-MAX_ITER: 30
+MAX_ITER: 20
 #number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
-STOP_ITER: 1
+STOP_ITER: 3
