@@ -3,6 +3,7 @@ if config["WEIGHTED"] != 0:
 else:
 	g = config["OUT_DIR"]+"/samples/out.fa"
 
+
 rule lastz2fasta:
 	input:
 		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   

@@ -1,7 +1,7 @@
 
 rule mergeTrees:
 	input:
-		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa.aln.treefile",id=IDS)
+		expand(config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile",id=IDS)
 	output:
 		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
@@ -15,9 +15,9 @@ rule mergeTrees:
 
 rule iqtree:
 	input:
-		msa = config["OUT_DIR"]+"/genes/gene_{id}.fa.aln"
+		msa = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln"
 	output:
-		gene_tree = config["OUT_DIR"]+"/genes/gene_{id}.fa.aln.treefile"
+		gene_tree = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile"
 	params:
 		m = config["MIN_ALIGN"],
 		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
