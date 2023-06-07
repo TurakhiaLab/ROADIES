@@ -1,0 +1,3 @@
+/home/yturakhia@AD.UCSD.EDU/sampling/build/CMakeFiles/rebuild_cache.dir
+/home/yturakhia@AD.UCSD.EDU/sampling/build/CMakeFiles/edit_cache.dir
+/home/yturakhia@AD.UCSD.EDU/sampling/build/CMakeFiles/sampling.dir

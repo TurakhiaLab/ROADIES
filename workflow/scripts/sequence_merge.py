@@ -12,7 +12,7 @@ plotdir = sys.argv[3]
 species_count = {}
 with open(output, 'wb') as outfile:
     for filename in glob.glob(os.path.join(directory,'*.fa')):
-        if filename == output:
+        if filename == output or "temp" not in filename:
             # don't want to copy the output into the output
             continue
         f = open(filename,'r')

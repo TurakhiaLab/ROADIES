@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/yturakhia@AD.UCSD.EDU/sampling/kseq.h
+ctype.h
+-
+string.h
+-
+stdlib.h
+-
+
+/home/yturakhia@AD.UCSD.EDU/sampling/sampling.cpp
+iostream
+-
+boost/program_options.hpp
+-
+time.h
+-
+kseq.h
+/home/yturakhia@AD.UCSD.EDU/sampling/kseq.h
+zlib.h
+/home/yturakhia@AD.UCSD.EDU/sampling/zlib.h
+

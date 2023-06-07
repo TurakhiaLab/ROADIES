@@ -103,15 +103,26 @@ def alarm_handler(*args):
     raise Alarm("timeout")
 
 
-# function to run snakemake with settings and add to run folder
-def run_snakemake(c, l, k, out_dir, run, roadies_dir):
-    cmd = "snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}".format(
-        c, l, k, roadies_dir
-    )
+#function to run snakemake with settings and add to run folder
+def run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,species_lists,input_gt):
+    print(weighted)
+    print(input_gt)
+    if weighted:
+        print(1)
+        cmd ='snakemake --core {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+    elif input_gt is not None:
+        print(2)
+        cmd ='snakemake --core {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
+    else:
+        print(3)
+        cmd ='snakemake --core {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=100'.format(c,l,k,roadies_dir)
+
     os.system(cmd)
     # get the run output in folder
     print("Adding run to converge folder")
-    os.system("./workflow/scripts/get_run.sh {0}/{1}".format(out_dir, run))
+    os.system('./workflow/scripts/get_run.sh {0} {1} {2} {3} {4}'.format(out_dir,run,species_ids,gene_ids,species_lists))
+#function that returns an array of b bootstrapped newick trees 
+
 
 
 def process_bootstrap(i, out_dir, run, gene_trees):
@@ -199,22 +210,23 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(i, l, k, c, out_dir, b, ref_exist, trees, roadies_dir):
-    os.system("rm -r {0}".format(roadies_dir))
-    os.system("mkdir {0}".format(roadies_dir))
+def converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir,weighted,species_ids,gene_ids,species_lists,input_gt):
+    os.system('rm -r {0}'.format(roadies_dir))
+    os.system('mkdir {0}'.format(roadies_dir))
+
     run = "run_"
     # allows sorting runs correctly
     if i < 10:
         run += "0" + str(i)
     else:
         run += str(i)
-    print("Starting " + run)
-    # run snakemake with specificed gene number and length
-    run_snakemake(c, l, k, out_dir, run, roadies_dir)
-    # merging gene trees and mapping files
-    gene_trees = combine_iter(out_dir, run)
-    t = Tree(out_dir + "/" + run + ".nwk")
-    # add species tree to tree list
+    print("Starting " +run)
+    #run snakemake with specificed gene number and length
+    run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,species_lists,input_gt)
+    #merging gene trees and mapping files
+    gene_trees = combine_iter(out_dir,run)
+    t = Tree(out_dir+'/'+run+'.nwk')
+    #add species tree to tree list
     trees.append(t)
     if ref_exist:
         print("Rerooting to reference")
@@ -253,33 +265,44 @@ if __name__ == "__main__":
     if config["REFERENCE"] != None:
         print("Converge has read reference tree {0}".format(config["REFERENCE"]))
         ref_exist = True
-        ref = Tree(config["REFERENCE"])
-    k = config["KREG"]
-    t = config["DIST_THRESHOLD"]
-    l = config["LENGTH"]
-    b = config["NUM_BOOTSTRAP"]
-    input_gt = config["INPUT_GENE_TREES"]
+        ref = Tree(config['REFERENCE'])
+    k = config['KREG']
+    t = config['DIST_THRESHOLD']
+    l = config['LENGTH']
+    b = config['NUM_BOOTSTRAP']
+    input_gt = config['INPUT_GENE_TREES']
     input_map = config["INPUT_MAP"]
     max_iter = config["MAX_ITER"]
     stop_iter = config["STOP_ITER"]
     roadies_dir = config["OUT_DIR"]
-    os.system("rm -r " + out_dir)
-    os.system("mkdir -p " + out_dir)
-    os.system("mkdir " + out_dir + "/tmp")
-    sys.setrecursionlimit(2000)
-
-    # if there are input gene trees use that to build on or else make empty file
-    master_gt = out_dir + "/master_gt.nwk"
-    master_map = out_dir + "/master_map.txt"
+    species_ids = config["SPECIES_IDS"]
+    gene_ids = config["GENE_IDS"]
+    species_lists = config["SPECIES_LISTS"]
+    quartets = config["QUARTETS"]
+    master_gt = out_dir+'/master_gt.nwk'
+    master_map = out_dir+'/master_map.txt'
+    os.system('mkdir -p '+out_dir)
+    if not os.path.isfile(species_ids):
+        print("Creating species id file at {0}".format(species_ids))
+        os.system('touch {0}'.format(species_ids))
+    if not os.path.isfile(gene_ids):
+        print("Creating gene id file at {0}".format(gene_ids))
+        os.system('touch {0}'.format(gene_ids))
     if input_gt is None or input_map is None:
-        os.system("touch {0}".format(master_gt))
-        os.system("touch {0}".format(master_map))
-    else:
-        os.system("cp {0} {1}".format(input_gt, master_gt))
-        os.system("cp {0} {1}".format(input_map, master_map))
+        os.system('touch {0}'.format(master_gt))
+        os.system('touch {0}'.format(master_map))
+    elif input_gt != master_gt or input_map != master_map:
+        os.system('cp {0} {1}'.format(input_gt,master_gt))
+        os.system('cp {0} {1}'.format(input_map,master_map))
+        print("Reading in reference gene trees {0} and reference mapping {1}".format(input_gt,input_map))
+    os.system('mkdir '+out_dir+'/tmp')
+    sys.setrecursionlimit(2000)
+    
+    # if there are input gene trees use that to build on or else make empty file
 
-    # initialize lists for runs and distances
-    runs = []
+        
+    #initialize lists for runs and distances
+    runs= []
     self_dists = []
     iter_dists = []
     iter_dists_bs = []
@@ -289,16 +312,19 @@ if __name__ == "__main__":
     trees = []
     # open files for writing distances
     if ref_exist:
-        ref_out = open(out_dir + "/ref_dist.csv", "w+")
-    iter_out = open(out_dir + "/iter_dist.csv", "w+")
-    self_out = open(out_dir + "/self_dist.csv", "w+")
-    iter_bs = open(out_dir + "/iter_dist_bs.csv", "w+")
-
-    # starts main for loop for multiple iterations
-    # for max iteration runs; start from 1 index instead of 0
-    for i in range(max_iter):
-        # returns an array of b bootstrapped trees
-        run = converge_run(i, l, k, c, out_dir, b, ref_exist, trees, roadies_dir)
+        ref_out = open(out_dir+'/ref_dist.csv','w')
+    iter_out = open(out_dir+'/iter_dist.csv','w')
+    self_out = open(out_dir+'/self_dist.csv','w')
+    iter_bs = open(out_dir+'/iter_dist_bs.csv','w')
+    
+    #starts main for loop for multiple iterations
+    #for max iteration runs; start from 1 index instead of 0
+    for i in range(max_iter): 
+        #returns an array of b bootstrapped trees
+        weighted = True
+        if i == 0:
+            weighted = False
+        run = converge_run(i,l,k,c,out_dir,b,ref_exist,trees,roadies_dir,weighted,species_ids,gene_ids,species_lists,input_gt)
         runs.append(run)
         # get bootstrapped distance to itself
         # self_dist = comp_self(run,i)

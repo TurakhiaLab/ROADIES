@@ -6,4 +6,7 @@ rule astral:
 	params:
 		genes = config["OUT_DIR"]+"/genes"
 	shell:
-		"ASTER-Linux/bin/astral-pro -i {input} -o {output} -a {params.genes}/mapping.txt"
+		'''
+		ASTER-Linux/bin/astral-pro -u 3 -i {input} -o {output} -a {params.genes}/mapping.txt
+		
+		'''

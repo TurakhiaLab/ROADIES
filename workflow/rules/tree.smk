@@ -5,7 +5,7 @@ rule mergeTrees:
 	output:
 		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
-		msa_dir = config["OUT_DIR"]+"/genes"
+		msa_dir = config["OUT_DIR"]+"/genes",
 	conda: 
 		"../envs/tree.yaml"
 	shell:
