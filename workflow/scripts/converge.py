@@ -105,19 +105,12 @@ def alarm_handler(*args):
 
 #function to run snakemake with settings and add to run folder
 def run_snakemake(c,l,k,out_dir,run,roadies_dir,weighted,species_ids,gene_ids,species_lists,input_gt):
-    print(weighted)
-    print(input_gt)
     if weighted:
-        print(1)
         cmd ='snakemake --core {0} --jobs {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
-    elif input_gt is not None:
-        print(2)
-        cmd ='snakemake --core {0} --jobs {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}'.format(c,l,k,roadies_dir)
     else:
-        print(3)
         cmd ='snakemake --core {0} --jobs {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0 TO_ALIGN=100'.format(c,l,k,roadies_dir)
-
     os.system(cmd)
+    os.system('ASTER-Linux/bin/astral-pro -u 3 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies_stats.nwk -a {0}/genes/mapping.txt'.format(out_dir))
     # get the run output in folder
     print("Adding run to converge folder")
     os.system('./workflow/scripts/get_run.sh {0} {1} {2} {3} {4}'.format(out_dir,run,species_ids,gene_ids,species_lists))
