@@ -65,9 +65,11 @@ rule sequence_select:
 		THRES=config["UPPER_CASE"]
 	#conda:
         	#"../envs/bio.yaml"
-	threads:32
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
+	threads:1
+	#resources:
+		#mem_mb=10000
 	shell:
 			'''
 			echo "We are starting to sample {input}"

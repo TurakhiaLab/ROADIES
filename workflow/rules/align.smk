@@ -86,9 +86,9 @@ rule filtermsa:
 		m = 0.05
 
 	conda:
-		"../envs/filtermsa.yaml"
+		"../envs/msa.yaml"
 	shell:
 		'''
-			python ../pasta-code/pasta/run_seqtools.py -masksitesp 0.02 -filterfragmentsp 0.50 -infile {input} -outfile {output}
+			run_seqtools.py -masksitesp 0.02 -filterfragmentsp 0.50 -infile {input} -outfile {output}
 		'''
 

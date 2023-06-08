@@ -47,7 +47,9 @@ if WEIGHTED != 0:
     for i in range(len(lines)):
         if i % 3 == 0:
             s = lines[i].split('\t')
-            scores[i] = float(s[3])
+            support = float(s[4])
+            teb = float(s[5])
+            scores[i] = support/teb
     #sort list of quartets by score
     sorted_scores = sorted(scores.items(),key=lambda x:x[1])
     #only use quartets with a score lesser than t

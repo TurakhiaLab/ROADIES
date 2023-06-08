@@ -1,4 +1,4 @@
-name: mafft
+name: filtermsa
 channels:
   - bioconda
 dependencies:
