@@ -15,7 +15,7 @@ import yaml
 from pathlib import Path
 import multiprocessing
 from multiprocessing import Pool
-
+import math
 
 # function that finds the average distance between an array of trees and itself
 def comp_tree(t1, t2):
@@ -394,7 +394,7 @@ if __name__ == "__main__":
 
                 temp = temp / stop_iter
                 temp2 = temp2 / stop_iter
-                if (temp2 - temp) < t:
+                if math.abs(temp2 - temp) < t:
                     print("crossed threshold")
                     # print("stop iteration number", j)
                     stop_run = True
