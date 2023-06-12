@@ -13,14 +13,17 @@
 
 ## <a name="overview"></a> Overview
 
-Most phylogeny estimation methods use gene markers/gene trees which require computationally expensive, error-prone, and/or semi-automated steps to infer orthology.Our technique uses raw genomes to build phylogenies. <br>
+Welcome to the official repository of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. Our pipeline offers a fully-automated, easy-to-use, scalable solution, eliminating any reference bias and provides unique flexility in adjusting the tradeoff between accuracy and runtime. 
+<br>
+#### Key Features
+- **Automation**: ROADIES automates the process of species tree inference without requiring any intermediate gene annotations or orthologous groups, making it effortless for users to generate accurate species tree.
+- **Scalability**: ROADIES handles both small-scale or large-scale datasets efficiently, including diverse life forms such as mammals, flies, and birds. ROADIES also scales efficiently with multiple cores and produce faster results.
+- **Reference Free**: ROADIES ensures unbiased results by eliminating reference bias, enabling accurate species tree inference from raw genome assemblies.
+- **Flexibility**: ROADIES provides users to tune the tradeoff between accuracy and runtime by configuring the parameters, tailoring the pipeline to their specific needs.
+- **Debugging options**: ROADIES provides multiple plots as output for graphical analysis, making easier for user to debug. 
 
-WGA Pipeline steps:
-- Take random sequences of fixed sized sampled from different genomes and treat them as genes
-- Cluster species through alignments with those genes
-- Build gene trees using these clusters
-- Reconstruct a species tree using these gene trees using ASTRAL-PRO
-- ASTRAL-pro can work with homology only, and does not require orthology
+#### ROADIES Pipeline
+ROADIES pipeline consists of multiple stages from raw genome assemblies to species tree estimation, with several user configurable parameters in each stages. ROADIES samples subsequences from input genomic assemblies as genes which is then pairwise aligned with all assemblies using LASTZ. Next, ROADIES filter the alignments and perform multiple sequence alignment using PASTA for individual genes across all species. Lastly, ROADIES estimates gene trees from MSA using IQTREE and eventually estimates species tree from gene trees using ASTRAL-Pro.
 
 ## <a name="gettingstarted"></a> Getting Started
 
