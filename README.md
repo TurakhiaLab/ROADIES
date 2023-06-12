@@ -1,12 +1,14 @@
-# Reference free Orthology free Alignment free Discordant Aware Estimation of Species Tree (ROADIES)
 ![ROADIES_logo](https://github.com/TurakhiaLab/wga-phylo/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
-
+# Reference free Orthology free Alignment free DIscordant Aware Estimation of Species Tree (ROADIES)
 
 ## Table of Contents
 - [Overview](#overview)
 - [Getting Started](#gettingstarted) 
-- [How to use](#usage)
-- [Running the convergence](#convergence)
+- [Using ROADIES](#usage)
+  - [Step1: Configuring ROADIES](#configuration)
+  - [Step2: Running the pipeline](#run)
+  - [Step3: Analyzing output files](#output)
+- [Example run](#example)
 - [References](#references)
 
 ## <a name="overview"></a> Overview
@@ -21,11 +23,6 @@ WGA Pipeline steps:
 - ASTRAL-pro can work with homology only, and does not require orthology
 
 ## <a name="gettingstarted"></a> Getting Started
-
-### Required Installations
-
-- Snakemake
-- ASTRAL-Pro
 
 ### Install Snakemake
 
@@ -57,9 +54,9 @@ make
 cd ..
 ```
 
-## <a name="usage"></a> How to use
+## <a name="usage"></a> Using ROADIES
 
-### Input Requirements
+## <a name="configuration"></a> Step 1: Configure ROADIES
 
 All input genomic sequences should be in fasta format. 
 
@@ -102,7 +99,7 @@ MAX_ITER: 50
 #number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
 STOP_ITER: 1
 ```
-### Running Snakemake
+## <a name="run"></a> Step 2: Running the pipeline
 
 Once snakemake environment is activated and `config.yaml` is configured, run
 ```
@@ -112,7 +109,7 @@ For starting the run from an incomplete previous session instead of starting a f
 ```
 snakemake --core [number of cores] --use-conda --rerun-incomplete
 ```
-### Output options
+## <a name="output"></a> Step 3: Analyzing output files
 
 After completing the run, the output files (along with all intermediate output files for each stage of the pipeline) will be saved in a separate `results` folder mentioned in `OUT_DIR` parameter, which contains the following subfolders:
 
@@ -123,8 +120,6 @@ After completing the run, the output files (along with all intermediate output f
 - `plots` - 
 - `samples` - 
 - `statistics`- contains the list of input species in `num_genes.csv`, number of gene trees in `num_gt.txt`, number of homologues with corresponding genes in `homologues.csv`
-
-## <a name="convergence"></a> Running the convergence
 
 `converge.py` is a script that iteratively runs ROADIES, wherein after each run, the resultant gene trees are concatenated into a master file, bootstrapped, and input into `ASTRAL-PRO`. These bootstrapped trees are then compared within the same run (self_dist), with the previous run (iter_dist_bs), and also with the reference if given (ref_dist). The program stops after either running converge for `MAX_ITER` or satisfying the distance threshold `DIST_THRESHOLD` for `STOP_ITER` consecutive runs for both self_dist and iter_dists_bs. 
 
@@ -143,13 +138,13 @@ The output after the converge run is saved in a separate `converge` folder, whic
 
 - 
 
-### Available reference trees
-
 `trees` folder contain the following reference trees (along with their sources mentioned below)
 
 - 11 Drosophila species - `flies_ref_11.nwk` ([Source](http://timetree.org/))
 - 100 Drosophila species - `flies_ref_100.nwk` ([Source](https://github.com/flyseq/drosophila_assembly_pipelines/blob/master/figure_data/figure5/busco_species_astral.tree))
-- 
+
+
+## <a name="example"></a> Example run
 
 ## <a name="references"></a> References
 
