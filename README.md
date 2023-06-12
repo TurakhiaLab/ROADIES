@@ -24,7 +24,7 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 - **Debugging options**: ROADIES provides multiple plots as output for graphical analysis, making easier for user to debug. 
 
 #### ROADIES Pipeline
-ROADIES pipeline consists of multiple stages from raw genome assemblies to species tree estimation, with several user configurable parameters in each stages. ROADIES samples subsequences from input genomic assemblies as genes which is then pairwise aligned with all assemblies using LASTZ. Next, ROADIES filter the alignments and perform multiple sequence alignment using PASTA for individual genes across all species. Lastly, ROADIES estimates gene trees from MSA using IQTREE and eventually estimates species tree from gene trees using ASTRAL-Pro. 
+ROADIES pipeline consists of multiple stages from raw genome assemblies to species tree estimation, with several user configurable parameters in each stages. ROADIES samples subsequences from input genomic assemblies as genes which is then pairwise aligned with all assemblies using [LASTZ](https://lastz.github.io/lastz/). Next, ROADIES filter the alignments and perform multiple sequence alignment using [PASTA](https://github.com/smirarab/pasta) for individual genes across all species. Lastly, ROADIES estimates gene trees from MSA using [IQTREE](http://www.iqtree.org/) and eventually estimates species tree from gene trees using [ASTRAL-Pro](https://github.com/chaoszhang/A-pro). 
 
 ROADIES provides a unique feature to estimate converged species tree by following a self-learning approach (where it iterates multiple times and evaluates better tree with successive iterations based on previous iterations' performance) .
 
@@ -54,7 +54,7 @@ conda activate snakemake
 ```
 ### Install ASTRAL-Pro
 
-In order to run ROADIES, a manual installation of ASTRAL-Pro (latest version) is required (if previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-Pro git repository as mentioned below)
+In order to run ROADIES, a manual installation of [ASTRAL-Pro (latest version)](https://github.com/chaoszhang/A-pro) is required (if previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-Pro git repository as mentioned below)
 
 ```
 rmdir ASTER-Linux
