@@ -3,7 +3,7 @@
 
 ## Table of Contents
 - [Overview](#overview)
-- [Getting Started](#gettingstarted) 
+- [Installation](#gettingstarted) 
 - [Using ROADIES](#usage)
   - [Step1: Configuring ROADIES](#configuration)
   - [Step2: Running the pipeline](#run)
@@ -25,28 +25,33 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 #### ROADIES Pipeline
 ROADIES pipeline consists of multiple stages from raw genome assemblies to species tree estimation, with several user configurable parameters in each stages. ROADIES samples subsequences from input genomic assemblies as genes which is then pairwise aligned with all assemblies using LASTZ. Next, ROADIES filter the alignments and perform multiple sequence alignment using PASTA for individual genes across all species. Lastly, ROADIES estimates gene trees from MSA using IQTREE and eventually estimates species tree from gene trees using ASTRAL-Pro.
 
-## <a name="gettingstarted"></a> Getting Started
+## <a name="gettingstarted"></a> Installation
+
+This section provides detailed instruction on how to install and set up ROADIES to get started.
+
+### Dependencies
+- Snakemake
+- ASTRAL-Pro
 
 ### Install Snakemake
 
-[Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) and Snakedeploy are best installed via the Mamba package manager (a drop-in replacement for conda). If you have neither Conda nor Mamba, it can be installed via [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge). 
+To install [Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html), it is recommended to install via the Mamba package manager (a drop-in replacement for conda)
 
-Given that Mamba is installed, run 
+If you have neither Conda nor Mamba, install it by following the steps [here](https://github.com/conda-forge/miniforge#mambaforge). 
 
+Given that Mamba is installed, run
 ```
 mamba create -c conda-forge -c bioconda --name snakemake snakemake snakedeploy
 ``` 
-
 to install both Snakemake and Snakedeploy in an isolated environment. 
 
-Once snakemake is installed, it needs to be activated via
-
+Once snakemake is installed, activate the environment via
 ```
 conda activate snakemake
 ```
 ### Install ASTRAL-Pro
 
-In order to run the pipeline, a manual installation of ASTRAL-PRO (latest version) is required. If previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-PRO git repository as mentioned below. 
+In order to run ROADIES, a manual installation of ASTRAL-Pro (latest version) is required (if previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-Pro git repository as mentioned below)
 
 ```
 rmdir ASTER-Linux
@@ -58,6 +63,8 @@ cd ..
 ```
 
 ## <a name="usage"></a> Using ROADIES
+
+Once the required installation process is complete, follow the steps below for using ROADIES.
 
 ## <a name="configuration"></a> Step 1: Configure ROADIES
 
