@@ -70,13 +70,13 @@ This section provides the detailed instruction on how to configure, run and anal
 
 ROADIES provides multiple option for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters, users are required to modify the values specific to their needs).
 
-- **Input Files**: 
-- **Gene Length**: 
-- **Number of genes**: 
-- **Output directory**: 
-- **Maximum iterations**: 
-- **LASTZ parameters**: 
-- **Mininum number of species in gene fasta**:
+- **Input Files**: Specify the path to your input files which includes raw genome assembiles of the species with `--INPUT_DATASET`. All genome assemblies should be in fasta format. The files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`)
+- **Gene Length**: Configure the lengths of each of the sampled subsequence or genes with `--LENGTH` parameter.
+- **Number of genes**: Configure the number of genes to be sampled at each iteration with `--KREG` parameter
+- **Output directory**: Specify the path where you want ROADIES to store the output files
+- **Maximum iterations**: Provide the maximum number of iterations for ROADIES to run with `--MAX_ITER` parameter. Set high `--MAX_ITER` if you want to run the pipeline longer to generate accurate results. Provide `--MAX_ITER` a small value if you want quicker estimate of species tree (such as guide trees for other phylogenetic tools). 
+- **LASTZ parameters**: LASTZ tool comes with several user-configurable. For ROADIES, we only configure three LASTZ parameters. 1. `--COVERAGE` which sets the percentage of input sequence included in the alignment (default is 85), 2. `--CONTINUITY` which defines the allowable percentage of non-gappy alignment columns (default is 85), 3. `--COVERAGE` which sets the percentage of the aligned base pairs (default is 65). Modify these parameters based on your use-cases
+- **Mininum number of species in gene fasta**: Specify the minimum number of allowed species to exist in gene fasta files using `--MIN_ALIGN` parameter (default is 4). This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. 
 - **Reference tree**:
 - **Convergence parameters**:
 - **Weighted Sampling**:
