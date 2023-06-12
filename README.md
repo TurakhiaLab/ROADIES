@@ -66,7 +66,7 @@ cd ..
 
 This section provides the detailed instruction on how to configure, run and analyze the output of ROADIES for species tree inference. Once the required installation process is complete, follow the steps below for using ROADIES.
 
-## <a name="configuration"></a> Step 1: Configure ROADIES
+### <a name="configuration"></a> Step 1: Configure ROADIES
 
 ROADIES provides multiple option for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters, users are required to modify the values specific to their needs).
 
@@ -81,7 +81,7 @@ ROADIES provides multiple option for the user to configure the pipeline specific
 - **Convergence parameters**:
 - **Weighted Sampling**:
 
-## <a name="run"></a> Step 2: Running the pipeline
+### <a name="run"></a> Step 2: Running the pipeline
 
 Once the required installations are completed and the pipeline is configured, follow the steps below:
 
@@ -97,7 +97,7 @@ python workflow/scripts/converge.py --cores [number of cores] --jobs [number of 
 ```
 snakemake --core [number of cores] --use-conda --rerun-incomplete
 ```
-## <a name="output"></a> Step 3: Analyzing output files
+### <a name="output"></a> Step 3: Analyzing output files
 
 After completing the run, the output files (along with all intermediate output files for each stage of the pipeline) will be saved in a separate `results` folder mentioned in `OUT_DIR` parameter, which contains the following subfolders:
 
