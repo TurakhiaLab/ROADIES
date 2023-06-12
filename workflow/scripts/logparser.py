@@ -3,16 +3,13 @@
 #USAGE: `python workflow/scripts/logparser.py [log_file] [output]`
 import sys
 import datetime
-import seaborn as sns 
-import matplotlib.pyplot as plt
-import pandas as pd
 log_file = sys.argv[1]
 output = sys.argv[2]
 rules = []
 times = []
-mafft = {}
+pasta = {}
 iqtree = {}
-parallel = ['mafft', 'iqtree']
+parallel = ['pasta', 'iqtree']
 def to_seconds(time):
     s = time.split(':')
     secs = int(s[2])+(60*int(s[1]))+(3600*int(s[0]))
@@ -36,8 +33,8 @@ with open(log_file,'r') as f:
                 time_line = lines[idx]
                 ts = time_line.split()
                 time = ts[3]
-                if rule == 'mafft':
-                    mafft[id] = [to_seconds(time)]
+                if rule == 'pasta':
+                    pasta[id] = [to_seconds(time)]
                 else:
                     iqtree[id] = [to_seconds(time)]
             else:
@@ -55,13 +52,13 @@ with open(log_file,'r') as f:
         elif 'Finished' in lines[i]:
             s = lines[i].split()
             num = s[2].replace('.','')
-            if num in mafft:
-                #print('end mafft')
+            if num in pasta:
+                #print('end pasta')
                 time_line = lines[i-1]
                 #print(time_line)
                 ts = time_line.split()
                 time = ts[3]
-                mafft[num].append(to_seconds(time))
+                [num].append(to_seconds(time))
                 #print(mafft[num])
             elif num in iqtree:
                 time_line = lines[i-1]
@@ -70,7 +67,7 @@ with open(log_file,'r') as f:
                 time = ts[3]
                 iqtree[num].append(to_seconds(time))
                 #print(iqtree[num])
-t = list(mafft.values())
+t = list(pasta.values())
 print(t)
 s = t[0][0]
 e = t[0][1]
@@ -82,7 +79,7 @@ for j in t:
     if e2 > e:
         e = e2
 t2 = list(iqtree.values())
-rules.insert(4,'mafft')
+rules.insert(4,'pasta')
 times.insert(4,s)
 rules.insert(5,'iqtree')
 times.insert(5,e)
@@ -106,19 +103,3 @@ with open(output+'/statistics/runtime.txt','w') as w:
     w.write('total_time, '+time+'\n')
     x.append('total')
     runtimes.append(end-start)
-y = runtimes
-d = {'rules': x, 'runtimes': y}
-df = pd.DataFrame(data=d)
-sns.barplot(x='rules',y='runtimes',data=df)
-ax = plt.gca()
-#ax.set_xticklabels(ax.get_xticks(),rotation =45)
-yticks = ax.get_yticks()
-# convert all xtick labels to selected format from ms timestamp
-ax.set_yticklabels([pd.to_datetime(tm, unit='s').strftime('%H:%M:%S') for tm in yticks])
-for tick in ax.get_xticklabels():
-    tick.set_rotation(90)
-plt.tight_layout()
-ax.set_title('Runtime of each rule')
-fig = ax.get_figure()
-fig.savefig(output+"/plots/runtime.png")
-
