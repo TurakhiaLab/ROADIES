@@ -68,18 +68,18 @@ This section provides the detailed instruction on how to configure, run and anal
 
 ### <a name="configuration"></a> Step 1: Configure ROADIES
 
-ROADIES provides multiple option for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters, users are required to modify the values specific to their needs).
+ROADIES provides multiple option for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters which gives the best results, users can modify the values specific to their needs).
 
 - **Input Files**: Specify the path to your input files which includes raw genome assembiles of the species with `--INPUT_DATASET`. All genome assemblies should be in fasta format. The files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`)
-- **Gene Length**: Configure the lengths of each of the sampled subsequence or genes with `--LENGTH` parameter.
-- **Number of genes**: Configure the number of genes to be sampled at each iteration with `--KREG` parameter
+- **Gene Length**: Configure the lengths of each of the sampled subsequence or genes with `--LENGTH` parameter (default is 500).
+- **Number of genes**: Configure the number of genes to be sampled at each iteration with `--KREG` parameter (default is 100).
 - **Output directory**: Specify the path where you want ROADIES to store the output files
 - **Maximum iterations**: Provide the maximum number of iterations for ROADIES to run with `--MAX_ITER` parameter. Set high `--MAX_ITER` if you want to run the pipeline longer to generate accurate results. Provide `--MAX_ITER` a small value if you want quicker estimate of species tree (such as guide trees for other phylogenetic tools). 
-- **LASTZ parameters**: LASTZ tool comes with several user-configurable. For ROADIES, we only configure three LASTZ parameters. 1. `--COVERAGE` which sets the percentage of input sequence included in the alignment (default is 85), 2. `--CONTINUITY` which defines the allowable percentage of non-gappy alignment columns (default is 85), 3. `--COVERAGE` which sets the percentage of the aligned base pairs (default is 65). Modify these parameters based on your use-cases
+- **LASTZ parameters**: LASTZ tool comes with several user-configurable. For ROADIES, we only configure three LASTZ parameters. 1. `--COVERAGE` which sets the percentage of input sequence included in the alignment (default is 85), 2. `--CONTINUITY` which defines the allowable percentage of non-gappy alignment columns (default is 85), 3. `--IDENTITY` which sets the percentage of the aligned base pairs (default is 65). Modify these parameters based on your use-cases
 - **Mininum number of species in gene fasta**: Specify the minimum number of allowed species to exist in gene fasta files using `--MIN_ALIGN` parameter (default is 4). This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. 
-- **Reference tree**:
-- **Convergence parameters**:
-- **Weighted Sampling**:
+- **Reference tree**: Specify path for the reference tree in Newick format using `--REFERENCE` parameter. This is used if user wants to compare ROADIES' results with a state-of-the-art approach. 
+- **Convergence parameters**: ROADIES provides few parameters to configure the convergence criteria. The default convegrence criteria checks the absolute difference in the mean of two windows of bootstrapped distances. This value is compared with a threshold to converge and terminate the pipeline. Set the number of times the final species needs to be bootstrapped with `--BOOSTRAP` parameter (default is 10). Set the window size with `--STOP_ITER` parameter (default is 5). Threshold can be configured using `--DIST_THRESHOLD` parameter (default is 0.01). It is recommended to follow the default convergence criteria for best results, however, users can modify it according to their datasets.
+- **Weighted Sampling**: ROADIES follows a weighted sampling approach to select some species out of all species every iteration where the selection of species is based on past iterations' performance. User can specify the number of species to be aligned with, using `--TO_ALIGN` parameter (default is set as half of the total number of input species). Set lower `TO_ALIGN` if you want speedy results, set `--TO_ALIGN` with a high value if you want slower and stable results. 
 
 ### <a name="run"></a> Step 2: Running the pipeline
 
