@@ -35,6 +35,7 @@ This section provides detailed instruction on how to install and set up ROADIES 
 ### Dependencies
 - Snakemake
 - ASTRAL-Pro
+- PASTA
 
 ### Install Snakemake
 
@@ -63,6 +64,16 @@ unzip Linux.zip
 cd ASTER-Linux
 make
 cd ..
+```
+### Install PASTA
+
+To install PASTA, run the commands below (or follow the instructions [here](https://github.com/smirarab/pasta))
+
+```
+git clone https://github.com/smirarab/pasta.git
+git clone https://github.com/smirarab/sate-tools-linux.git #for Linux
+cd pasta
+python setup.py develop  --user
 ```
 
 ## <a name="usage"></a> Using ROADIES
