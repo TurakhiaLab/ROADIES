@@ -9,7 +9,8 @@
   - [Step2: Running the pipeline](#run)
   - [Step3: Analyzing output files](#output)
 - [Example run](#example)
-- [References](#references)
+- [Contributions and Support](#support)
+- [Citing ROADIES](#citation)
 
 ## <a name="overview"></a> Overview
 
@@ -23,7 +24,9 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 - **Debugging options**: ROADIES provides multiple plots as output for graphical analysis, making easier for user to debug. 
 
 #### ROADIES Pipeline
-ROADIES pipeline consists of multiple stages from raw genome assemblies to species tree estimation, with several user configurable parameters in each stages. ROADIES samples subsequences from input genomic assemblies as genes which is then pairwise aligned with all assemblies using LASTZ. Next, ROADIES filter the alignments and perform multiple sequence alignment using PASTA for individual genes across all species. Lastly, ROADIES estimates gene trees from MSA using IQTREE and eventually estimates species tree from gene trees using ASTRAL-Pro.
+ROADIES pipeline consists of multiple stages from raw genome assemblies to species tree estimation, with several user configurable parameters in each stages. ROADIES samples subsequences from input genomic assemblies as genes which is then pairwise aligned with all assemblies using [LASTZ](https://lastz.github.io/lastz/). Next, ROADIES filter the alignments and perform multiple sequence alignment using [PASTA](https://github.com/smirarab/pasta) for individual genes across all species. Lastly, ROADIES estimates gene trees from MSA using [IQTREE](http://www.iqtree.org/) and eventually estimates species tree from gene trees using [ASTRAL-Pro](https://github.com/chaoszhang/A-pro). 
+
+ROADIES provides a unique feature to estimate converged species tree by following a self-learning approach (where it iterates multiple times and evaluates better tree with successive iterations based on previous iterations' performance) .
 
 ## <a name="gettingstarted"></a> Installation
 
@@ -32,6 +35,7 @@ This section provides detailed instruction on how to install and set up ROADIES 
 ### Dependencies
 - Snakemake
 - ASTRAL-Pro
+- PASTA
 
 ### Install Snakemake
 
@@ -51,7 +55,7 @@ conda activate snakemake
 ```
 ### Install ASTRAL-Pro
 
-In order to run ROADIES, a manual installation of ASTRAL-Pro (latest version) is required (if previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-Pro git repository as mentioned below)
+In order to run ROADIES, a manual installation of [ASTRAL-Pro (latest version)](https://github.com/chaoszhang/A-pro) is required (if previous version of ASTER-Linux is installed, replace the ASTER-Linux directory with the ASTRAL-Pro git repository as mentioned below)
 
 ```
 rmdir ASTER-Linux
@@ -61,25 +65,40 @@ cd ASTER-Linux
 make
 cd ..
 ```
+### Install PASTA
+
+To install PASTA, run the commands below (or follow the instructions [here](https://github.com/smirarab/pasta))
+
+```
+git clone https://github.com/smirarab/pasta.git
+git clone https://github.com/smirarab/sate-tools-linux.git #for Linux
+cd pasta
+python setup.py develop  --user
+```
 
 ## <a name="usage"></a> Using ROADIES
 
 This section provides the detailed instruction on how to configure, run and analyze the output of ROADIES for species tree inference. Once the required installation process is complete, follow the steps below for using ROADIES.
 
-### <a name="configuration"></a> Step 1: Configure ROADIES
+### <a name="configuration"></a> Step 1: Configuring ROADIES
 
 ROADIES provides multiple option for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters which gives the best results, users can modify the values specific to their needs).
 
-- **Input Files**: Specify the path to your input files which includes raw genome assembiles of the species with `--INPUT_DATASET`. All genome assemblies should be in fasta format. The files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`)
+- **Input Files**: Specify the path to your input files which includes raw genome assembiles of the species with `--GENOMES`. All genome assemblies should be in fasta format. The files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`)
 - **Gene Length**: Configure the lengths of each of the sampled subsequence or genes with `--LENGTH` parameter (default is 500).
 - **Number of genes**: Configure the number of genes to be sampled at each iteration with `--KREG` parameter (default is 100).
 - **Output directory**: Specify the path where you want ROADIES to store the output files
+- **Upper Case threshold**: ROADIES samples the genes only if the percentage of upper cases in each gene is more than a particular value, set by `--UPPER_CASE` parameter (default is 0.9). 
 - **Maximum iterations**: Provide the maximum number of iterations for ROADIES to run with `--MAX_ITER` parameter. Set high `--MAX_ITER` if you want to run the pipeline longer to generate accurate results. Provide `--MAX_ITER` a small value if you want quicker estimate of species tree (such as guide trees for other phylogenetic tools). 
 - **LASTZ parameters**: LASTZ tool comes with several user-configurable. For ROADIES, we only configure three LASTZ parameters. 1. `--COVERAGE` which sets the percentage of input sequence included in the alignment (default is 85), 2. `--CONTINUITY` which defines the allowable percentage of non-gappy alignment columns (default is 85), 3. `--IDENTITY` which sets the percentage of the aligned base pairs (default is 65). Modify these parameters based on your use-cases
 - **Mininum number of species in gene fasta**: Specify the minimum number of allowed species to exist in gene fasta files using `--MIN_ALIGN` parameter (default is 4). This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. 
 - **Reference tree**: Specify path for the reference tree in Newick format using `--REFERENCE` parameter. This is used if user wants to compare ROADIES' results with a state-of-the-art approach. 
-- **Convergence parameters**: ROADIES provides few parameters to configure the convergence criteria. The default convegrence criteria checks the absolute difference in the mean of two windows of bootstrapped distances. This value is compared with a threshold to converge and terminate the pipeline. Set the number of times the final species needs to be bootstrapped with `--BOOSTRAP` parameter (default is 10). Set the window size with `--STOP_ITER` parameter (default is 5). Threshold can be configured using `--DIST_THRESHOLD` parameter (default is 0.01). It is recommended to follow the default convergence criteria for best results, however, users can modify it according to their datasets.
-- **Weighted Sampling**: ROADIES follows a weighted sampling approach to select some species out of all species every iteration where the selection of species is based on past iterations' performance. User can specify the number of species to be aligned with, using `--TO_ALIGN` parameter (default is set as half of the total number of input species). Set lower `TO_ALIGN` if you want speedy results, set `--TO_ALIGN` with a high value if you want slower and stable results. 
+- **Convergence parameters**: ROADIES provides few parameters to configure the convergence criteria. The default convegrence criteria checks the absolute difference in the mean of two windows of bootstrapped distances. This value is compared with a threshold to converge and terminate the pipeline. Set the number of times the final species needs to be bootstrapped with `--BOOSTRAP` parameter (default is 10). Set the window size with `--STOP_ITER` parameter (default is 5). Threshold can be configured using `--DIST_THRESHOLD` parameter (default is 0.01). It is recommended to follow the default convergence criteria for best results, however, users can modify it according to their datasets. 
+
+  To restart the convergence from where it stopped before, user need to provide the previous gene trees list and mapping file through `--INPUT_GENE_TREES` and `--INPUT_MAP` parameter respectively. ASTRAL-Pro requires the previous iterations data to estimate converged species tree.
+- **Weighted Sampling**: ROADIES follows a weighted sampling approach to select some species out of all species every iteration where the selection of species is based on past iterations' performance. User can specify the number of species to be aligned with, using `--TO_ALIGN` parameter (default is set as half of the total number of input species). Set lower `--TO_ALIGN` if you want speedy results, set `--TO_ALIGN` with a high value if you want slower and stable results. 
+
+  Each of the sampled species is weighted based on its confidence values (local posterior probability of each quartets by ASTRAL-Pro). Users can control the portion of the input genomic assemblies to be sampled according to weighted genes using `--WEIGHTED` parameter (default is 0.3). Specify the location to save the output files of weighted sampling using `--GENE_IDS`, `--SPECIES_LISTS` and `SPECIES_IDS` parameter. Specify the location to save the quartets data with its corresponding confidence values using `--QUARTETS` parameter. 
 
 ### <a name="run"></a> Step 2: Running the pipeline
 
@@ -99,7 +118,7 @@ snakemake --core [number of cores] --use-conda --rerun-incomplete
 ```
 ### <a name="output"></a> Step 3: Analyzing output files
 
-After completing the run, the output files (along with all intermediate output files for each stage of the pipeline) will be saved in a separate `results` folder mentioned in `OUT_DIR` parameter, which contains the following subfolders:
+After pipeline finishes running, you can analyze the output files (along with all intermediate output files for each stage of the pipeline) saved in a separate `results` folder mentioned in `--OUT_DIR` parameter containing the following subfolders:
 
 - `alignments` - contains the sampled output of each species in `<species_name>.maf` format generated by the sampling step
 - `genes`- contains the fasta files of all highest scoring genes which is filtered after LASTZ step in `gene_<id>.fa` format
@@ -110,16 +129,20 @@ After completing the run, the output files (along with all intermediate output f
 - `statistics`- contains the list of input species in `num_genes.csv`, number of gene trees in `num_gt.txt`, number of homologues with corresponding genes in `homologues.csv`
 
 ## <a name="example"></a> Example run
+
+To help you get started with ROADIES, we provide an example command below. By default, `--GENOMES` points to 48 Avian species datasets and `--MAX_ITER` is set to 50. To execute our pipeline with 16 cores and 16 jobs in parallel, run
 ```
-python workflow/scripts/converge.py --ref trees/flies_ref_11.nwk -c 16
+python workflow/scripts/converge.py --cores 16 --jobs 16
 ```
-The above command runs the convergence script on 16 cores by taking 11 drosophila species tree as reference. 
+This command will execute the converge script to iterate ROADIES 50 times and estimates phylogeny of 48 Avian species. It takes around XXX hours to complete the execution. The output files will be saved in separate `results` directory. The final inferred species tree in Newick format will be saved as `roadies.nwk` file in the same directory.
 
-The output after the converge run is saved in a separate `converge` folder, which has the following files:
+## <a name="support"></a> Contributions and Support
 
-## <a name="references"></a> References
+We welcome contributions from the community to enhance the capabilities of ROADIES. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
 
+## <a name="citation"></a> Citing ROADIES
 
+If you use the ROADIES pipeline for species tree inference in your research or publications, we kindly request that you cite the following paper:
 
 
 

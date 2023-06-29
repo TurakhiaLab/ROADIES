@@ -1,73 +1,74 @@
-#This sampling script samples specific number of genes, each of a given specific length, from input files and saves it in fasta format
-#REQUIRES: Biopython
-#USAGE: `python workflow/scripts/sampling.py {args}`
+# This sampling script samples specific number of genes, each of a given specific length, from input files and saves it in fasta format
+# REQUIRES: Biopython
+# USAGE: `python workflow/scripts/sampling.py {args}`
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 import random
 import argparse
+
 # Get the list of all files and directories
 # Arguments passed
-parser = argparse.ArgumentParser(description='genome selection')
-parser.add_argument('-l',type=int,default = 1000)
-parser.add_argument('-s',type=int,required=True)
-parser.add_argument('-e',type=int,required=True)
-parser.add_argument('-t',type=float,default=0.7)
-parser.add_argument('--input',default="./../genomes")
-parser.add_argument('--output',default="./index.csv")
+parser = argparse.ArgumentParser(description="genome selection")
+parser.add_argument("-l", type=int, default=1000)
+parser.add_argument("-s", type=int, required=True)
+parser.add_argument("-e", type=int, required=True)
+parser.add_argument("-t", type=float, default=0.7)
+parser.add_argument("--input", default="./../genomes")
+parser.add_argument("--output", default="./index.csv")
 args = parser.parse_args()
-s= args.s
-e= args.e
-l= args.l
+s = args.s
+e = args.e
+l = args.l
 t = args.t
 path = args.input
-output=args.output
-num_samples = e-s+1
+output = args.output
+num_samples = e - s + 1
 if num_samples < 1:
     print("Invalid indices")
     exit(1)
 print("Number of regions:", num_samples)
-print("ID START: "+(str(s))+", ID END: "+str(e))
+print("ID START: " + (str(s)) + ", ID END: " + str(e))
 print("Region Length:", l)
-print("Loading Input File:" +path)
-records = list(SeqIO.parse(path,"fasta"))
+print("Loading Input File:" + path)
+records = list(SeqIO.parse(path, "fasta"))
 total_length = 0
 indices = []
 for record in records:
     total_length += len(record.seq)
     indices.append(total_length)
-print("Done loading {0} with {1} sequences".format(path,total_length))
-#print(indices)
-sequence=[]
+print("Done loading {0} with {1} sequences".format(path, total_length))
+# print(indices)
+sequence = []
 index = s
-threshold = int(t*l)
-#keeps track of time
-#for specified number of genes
+threshold = int(t * l)
+# keeps track of time
+# for specified number of genes
 count = 0
-for i in range(num_samples-1):
-    notFound =True
-    sample = ''
-    #until a passing sample is found
+for i in range(num_samples - 1):
+    notFound = True
+    sample = ""
+    # until a passing sample is found
     while notFound:
-        #print(k)
-        k = random.randint(0,total_length-l)
+        # print(k)
+        k = random.randint(0, total_length - l)
         loc = 0
         idx = 0
-        start = 0 
+        start = 0
         for i in indices:
             if k > i:
-                loc += 1 
+                loc += 1
             else:
                 start = i - k
                 break
         if start < l:
             count += 1
             continue
-        frag = records[loc].seq[start:start+l]
+        frag = records[loc].seq[start : start + l]
         upper = 0
-        uppercase = ['A','T','C','G']
-        accepted = ['a','t','c','g']
+        uppercase = ["A", "T", "C", "G"]
+        accepted = ["a", "t", "c", "g"]
         accept = True
-        if 'N' in frag:
+        if "N" in frag:
             continue
         for f in frag:
             if f not in uppercase:
@@ -79,11 +80,11 @@ for i in range(num_samples-1):
         if accept == False:
             continue
         if upper >= threshold:
-            sample = SeqRecord(frag, "gene_"+str(index),"","")
+            sample = SeqRecord(frag, "gene_" + str(index), "", "")
             break
         else:
-            count = count+1
+            count = count + 1
     sequence.append(sample)
-    index = index+1
-print('Total # of resampling: '+str(count))
+    index = index + 1
+print("Total # of resampling: " + str(count))
 SeqIO.write(sequence, output, "fasta")

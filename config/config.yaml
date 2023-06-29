@@ -1,44 +1,21 @@
-#This file configures the parameters for ROADIES and converge
-#Path for input genomes
+#This file configures the parameters for ROADIES
+#Modify the default values as per usecase
 
+#INPUT AND OUTPUT PATHS
+#Path for input genomes
 GENOMES: "/home/roadies-datasets/249_mammals_dataset"
 #reference tree for converge (used for ref_dist.csv)
 REFERENCE: "trees/mammals_reftree_234_latest.nwk"
+#ROADIES output directory
+OUT_DIR: "results"
 
+#SAMPLING PARAMETERS
 #length of genes
 LENGTH: 500
 #number of genes
 KREG: 500
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
-#ROADIES output directory
-OUT_DIR: "results"
-#minimum number of species in a gene fasta (4 min for ASTRAL-PRO)
-MIN_ALIGN: 4 
-#minimum % match in alignment
-IDENTITY: 65
-#minimum input sequence coverage
-COVERAGE: 85
-#minimum continuity of alignments
-CONTINUITY: 85
-#max number of copies from a genome in an alignment
-MAX_DUP: 100
-#max msa input length
-GAPS: 1.2
-#number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
-STEPS: 1
-#maximum TreeDistance Threshold for stopping converge
-DIST_THRESHOLD: 0.01
-#number of bootstrapped trees for comparison
-NUM_BOOTSTRAP: 10
-#input ROADIES gene trees for converge
-INPUT_GENE_TREES: null
-#input ROADIES mapping file for converge
-INPUT_MAP: null
-#max converge runs before stopping
-MAX_ITER: 100
-#number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
-STOP_ITER: 1
 #ASTRAL PRO quartet information output
 QUARTETS: "freqQuad.csv"
 #percentage of genes that use weighted sampling
@@ -51,4 +28,46 @@ SPECIES_LISTS: "species_lists.csv"
 SPECIES_IDS: "species_ids.csv"
 #percentage of species to align during lastz with weighted sampling
 TO_ALIGN: 24
+
+#FILTERING PARAMETERS
+#minimum number of species in a gene fasta (4 min for ASTRAL-PRO)
+MIN_ALIGN: 4
+#max msa input length
+GAPS: 1.2
+
+#LASTZ PARAMETERS
+#minimum % match in alignment
+IDENTITY: 65
+#minimum input sequence coverage
+COVERAGE: 85
+#minimum continuity of alignments
+CONTINUITY: 85
+#max number of copies from a genome in an alignment
+MAX_DUP: 20
+#number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
+STEPS: 1
+
+#PASTA PARAMETERS
+#threshold to filter MSA alignment rows with less than specified portion of non-gaps
+FILTERFRAGMENTS: 0.5
+#threshold to filter MSA alignment sites across columns with less than specified portion of non-gaps
+MASKSITES: 0.02
+
+#CONVERGENCE PARAMETERS
+#maximum TreeDistance Threshold for stopping converge
+DIST_THRESHOLD: 0.01
+#number of bootstrapped trees for comparison
+NUM_BOOTSTRAP: 10
+#input ROADIES gene trees for converge
+INPUT_GENE_TREES: null
+#input ROADIES mapping file for converge
+INPUT_MAP: null
+#max converge runs before stopping
+MAX_ITER: 100
+#number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
+STOP_ITER: 1
+
+
+
+
 

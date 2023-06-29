@@ -82,12 +82,12 @@ rule filtermsa:
 	output:
 		config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln"
 	params:
-		m = 0.05
-
+		m = config["FILTERFRAGMENTS"],
+		n = config["MASKSITES"]
 	conda:
 		"../envs/msa.yaml"
 	shell:
 		'''
-			run_seqtools.py -masksitesp 0.02 -filterfragmentsp 0.50 -infile {input} -outfile {output}
+			run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
 		'''
 
