@@ -43,7 +43,7 @@ COVERAGE: 85
 #minimum continuity of alignments
 CONTINUITY: 85
 #max number of copies from a genome in an alignment
-MAX_DUP: 100
+MAX_DUP: 20
 #number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
 STEPS: 1
 
