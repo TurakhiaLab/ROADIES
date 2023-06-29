@@ -293,7 +293,6 @@ if __name__ == "__main__":
             os.system('cp {0} freqQuad.csv'.format(quartets))
         else:
             os.system('cp {0} freqQuad.csv'.format(quartets))
-        os.system("rm freqQuad.csv")
         os.system("cp {0} freqQuad.csv".format(quartets))
     else:
         if not os.path.isfile("freqQuad.csv"):
