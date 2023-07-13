@@ -15,39 +15,30 @@ parser.add_argument(
     help="number of genes to sample total (weighed + unweighted)",
 )
 parser.add_argument(
-    "--quartets", default="freqQuad.csv", help="location of ASTRAL-PRO quartet file"
-)
-parser.add_argument(
     "--weighted",
     type=float,
     default=0,
     help="percentage of genes using weighted sampling; default is 0 which is totally unweighted",
 )
-parser.add_argument("--species_out", default="species_id.csv")
 parser.add_argument(
     "--genomes",
     default="/home/roadies-datasets/birds",
     help="genome/assembly/fasta directory",
 )
-parser.add_argument("--id_out", default="gene_id.csv", help="output file for gene ids")
-parser.add_argument(
-    "--align_out",
-    default="species_lists.csv",
-    help="output file for list of species in weighted sampling",
-)
+
 parser.add_argument(
     "--to_align", type=int, required=True, help="# species to align per gene"
+)
+parser.add_argument(
+    "--num_species", type=int, required=True, help="# species to align per gene"
 )
 args = parser.parse_args()
 # t = args.t
 KREG = args.k
 WEIGHTED = args.weighted
-QUARTET_FILE = args.quartets
-GENE_ID = args.id_out
-SPECIES_LIST = args.align_out
 TO_ALIGN = args.to_align
 GENOMES = args.genomes
-SPECIES_ID = args.species_out
+NUM_SPECIES = args.num_species
 counts = {}
 # getting list of species names
 for filename in glob.glob(os.path.join(GENOMES, "*.fa")):
@@ -59,84 +50,87 @@ for filename in glob.glob(os.path.join(GENOMES, "*.fa")):
 MASTER_SPECIES = list(counts.keys())
 # number of species we are aligning to each gene in lastz
 # if we are doing weighted sampling
-if WEIGHTED != 0:
+if NUM_SPECIES != TO_ALIGN:
     # get number of weighted 'genes'
     num_weighted = int(KREG * WEIGHTED)
-    print("Doing weighted sampling on {0} of {1} genes".format(num_weighted, KREG))
-    # getting scores of quartet to assign weights
-    lines = open(QUARTET_FILE, "r").readlines()
-    scores = {}
-    # go through freqQuad.csv and get pp scores of t1 of each quartet
-    for i in range(len(lines)):
-        if i % 3 == 0:
-            s = lines[i].split("\t")
-            support = float(s[4])
-            teb = float(s[5])
-            scores[i] = support / teb
-    # sort list of quartets by score
-    sorted_scores = sorted(scores.items(), key=lambda x: x[1])
-    # only use quartets with a score lesser than t
     num_sampled = 0
-    idx = 0
+    species_list = []
+    if num_weighted != 0:
+        print("Doing weighted sampling on {0} of {1} genes".format(num_weighted, KREG))
+    # getting scores of quartet to assign weights
+        lines = open("freqQuad.csv","r").readlines()
+        scores = {}
+    # go through freqQuad.csv and get pp scores of t1 of each quartet
+        for i in range(len(lines)):
+            if i % 3 == 0:
+                s = lines[i].split("\t")
+                support = float(s[4])
+                teb = float(s[5])
+                scores[i] = support / teb
+    # sort list of quartets by score
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1])
+    # only use quartets with a score lesser than t
+        
+        idx = 0
     # assign weighted scheme of (1/c_i)/summation_i of (1/c_i)
-    weights = []
-    scores = [1 / x[1] for x in sorted_scores]
-    m = np.sum(scores)
-    for i in range(len(scores)):
-        weights.append(scores[i] / m)
+        weights = []
+        scores = [1 / x[1] for x in sorted_scores]
+        m = np.sum(scores)
+        for i in range(len(scores)):
+            weights.append(scores[i] / m)
     # print(weights)
     # now we are going to get the list of species for each gene
-    species_list = []
-    # keep on sampling from low scoring quartet branches until we sample required number of weighted genes
-    while num_sampled < num_weighted:
-        # list of species to align gene to
-        species_to_align = []
-        # keep on sampling species until we get to the number we want to align using lastz
-        while len(species_to_align) < TO_ALIGN:
-            idx = np.random.choice(len(weights), 1, p=weights)[0]
-            line = lines[sorted_scores[idx][0]]
-            quartet = line.split("\t")[2].strip()
-            s2 = quartet.split("#")
-            s3 = s2[0].split("|")
-            s4 = s2[1].split("|")
-            R = s3[0]
-            L = s3[1]
-            S = s4[0]
-            O = s4[1]
-            nodes = [R, L, S, O]
-            nodes_list = []
-            # just reformatting for ease
-            for node in nodes:
-                n = node.replace("{", "")
-                n = n.replace("}", "")
-                s = n.split(",")
-                nodes_list.append(s)
-            itr = 0
-            # iterate through each branch of quartet and randomly select one species from that branch
-            while True:
-                node = nodes_list[itr]
-                # pick random species on branch
-                s = random.randint(0, len(node) - 1)
-                # only add if species not found already
-                if node[s] not in species_to_align:
-                    species_to_align.append(node[s])
-                    # check if number of species is less than limit
-                    if len(species_to_align) == TO_ALIGN:
+       
+        # keep on sampling from low scoring quartet branches until we sample required number of weighted genes
+        while num_sampled < num_weighted:
+            # list of species to align gene to
+            species_to_align = []
+            # keep on sampling species until we get to the number we want to align using lastz
+            while len(species_to_align) < TO_ALIGN:
+                idx = np.random.choice(len(weights), 1, p=weights)[0]
+                line = lines[sorted_scores[idx][0]]
+                quartet = line.split("\t")[2].strip()
+                s2 = quartet.split("#")
+                s3 = s2[0].split("|")
+                s4 = s2[1].split("|")
+                R = s3[0]
+                L = s3[1]
+                S = s4[0]
+                O = s4[1]
+                nodes = [R, L, S, O]
+                nodes_list = []
+                # just reformatting for ease
+                for node in nodes:
+                    n = node.replace("{", "")
+                    n = n.replace("}", "")
+                    s = n.split(",")
+                    nodes_list.append(s)
+                itr = 0
+                # iterate through each branch of quartet and randomly select one species from that branch
+                while True:
+                    node = nodes_list[itr]
+                    # pick random species on branch
+                    s = random.randint(0, len(node) - 1)
+                    # only add if species not found already
+                    if node[s] not in species_to_align:
+                        species_to_align.append(node[s])
+                        # check if number of species is less than limit
+                        if len(species_to_align) == TO_ALIGN:
+                            break
+                    # remove species from the node list
+                    del node[s]
+                    if len(node) == 0:
                         break
-                # remove species from the node list
-                del node[s]
-                if len(node) == 0:
-                    break
-                # increment node counter or reset if its at O
-                else:
-                    if itr == 3:
-                        itr = 0
+                    # increment node counter or reset if its at O
                     else:
-                        itr += 1
+                        if itr == 3:
+                            itr = 0
+                        else:
+                            itr += 1
 
-        # print(to_align)
-        species_list.append(species_to_align)
-        num_sampled += 1
+            # print(to_align)
+            species_list.append(species_to_align)
+            num_sampled += 1
     # done with weighted sampling
     # now do the rest of unweighted sampling
     if num_sampled < KREG:
@@ -185,7 +179,7 @@ if WEIGHTED != 0:
         list_of_species = species_list[idx]
     id_stops.append(len(mapping_sorted))
     # writing gene ids
-    with open(GENE_ID, "w") as w:
+    with open("gene_ids.csv", "w") as w:
         for i in range(len(species_stops)):
             species = species_stops[i]
             start = id_stops[i]
@@ -193,7 +187,7 @@ if WEIGHTED != 0:
             # print(species,start,end)
             w.write(species + "," + str(start) + "," + str(end) + "\n")
     # print list of species lists
-    with open(SPECIES_LIST, "w") as w2:
+    with open("species_lists.csv", "w") as w2:
         for i in range(len(species_list)):
             li = species_list[i]
             for j in range(len(li)):
@@ -214,7 +208,7 @@ if WEIGHTED != 0:
                 species_ids[species].append(i + 1)
     # for species in species_ids:
     # print(species,len(species_ids[species]))
-    with open(SPECIES_ID, "w") as w3:
+    with open("species_ids.csv", "w") as w3:
         for species in species_ids:
             # print(species)
             w3.write(species + ",")
@@ -226,5 +220,5 @@ if WEIGHTED != 0:
                     w3.write(str(species_ids[species][i]) + ",")
 
 else:
-    print("weight must be greater than 0")
+    print("NO SAMPLING")
     exit()

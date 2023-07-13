@@ -22,6 +22,8 @@ rule iqtree:
 		m = config["MIN_ALIGN"],
 		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
 	threads: 8
+	benchmark:
+		config["OUT_DIR"]+"/benchmarks/{id}.iqtree.txt"
 	conda: 
 		"../envs/tree.yaml"	
 	shell:

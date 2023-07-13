@@ -4,7 +4,7 @@
 
 # REQUIREMENTS: Activated conda environment with snakemake and ete3
 # USAGE from wga-phylo directory: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
-import os, sys
+import os, sys, glob
 import argparse
 import random
 import subprocess
@@ -15,6 +15,9 @@ import yaml
 from pathlib import Path
 import multiprocessing
 from multiprocessing import Pool
+import time
+import subprocess
+import math
 
 
 # function that finds the average distance between an array of trees and itself
@@ -24,59 +27,59 @@ def comp_tree(t1, t2):
 
 
 # function that finds the average distance between one array of bootstrapped trees with final tree of previous iteration
-def comp_bs_final(bs_tree_array, final_tree_prev, idx):
+def comp_bs_final(bs_tree_array, final_tree_prev, iteration):
     count = 0
     dist = 0
     for i in range(len(bs_tree_array)):
         count += 1
         print(
             "Comparing run {0} final tree of previous iteration {1} with bootstrap of iteration {2}".format(
-                idx, idx - 1, i
+                iteration, iteration - 1, i
             )
         )
         d = final_tree_prev.compare(bs_tree_array[i])
         dist += d["norm_rf"]
     avg = float(dist) / count
     with open(out_dir + "/iter_dist_bs.csv", "a") as w:
-        w.write(str(idx) + "," + str(avg) + "\n")
+        w.write(str((iteration+1)*NUM_GENES) + "," + str(avg) + "\n")
     return avg
 
-
-class Alarm(Exception):
-    pass
-
-
-def alarm_handler(*args):
-    raise Alarm("timeout")
 
 
 # function to run snakemake with settings and add to run folder
 def run_snakemake(
-    c, l, k, out_dir, run, roadies_dir, weighted, species_ids, gene_ids, species_lists
+    cores, out_dir, run,  weighted, genomes, runtime_left
 ):
     if weighted:
-        cmd = "snakemake --core {0} --jobs {0} --use-conda --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3}".format(
-            c, l, k, roadies_dir
-        )
+        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
     else:
-        cmd = "snakemake --core {0} --jobs {0} --use-conda  --rerun-incomplete --config LENGTH={1} KREG={2} OUTDIR={3} WEIGHTED=0.0 TO_ALIGN=".format(
-            c, l, k, roadies_dir
-        )
-    os.system(cmd)
+        num_species = str(len(os.listdir(genomes)))
+        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete','--config','TO_ALIGN='+num_species]
+    print("COMMAND",cmd)
+    if runtime_left == math.inf:
+        print("Running without time limit")
+        subprocess.run(cmd)
+    else:
+        print("Trying to fit in run with time remaining",runtime_left)
+        try:
+            subprocess.run(cmd,timeout=runtime_left)
+        except:
+            print("TIME LIMIT EXCEEDED")
+            sys.exit(0)
     # get the run output in folder
     print("Adding run to converge folder")
     os.system(
-        "./workflow/scripts/get_run.sh {0} {1} {2} {3} {4}".format(
-            out_dir, run, species_ids, gene_ids, species_lists
+        "./workflow/scripts/get_run.sh {0} {1}".format(
+            out_dir, run
         )
     )
 
 
 # function that returns an array of b bootstrapped newick trees
-def process_bootstrap(i, out_dir, run, gene_trees):
-    print("Creating bootstrapping tree: ", i)
+def process_bootstrap(iteration, out_dir, run, gene_trees):
+    print("Creating bootstrapping tree: ", iteration)
     # path to temp gt
-    tmp_path = out_dir + "/tmp/" + run + "." + str(i)
+    tmp_path = out_dir + "/tmp/" + run + "." + str(iteration)
     out = open(tmp_path + ".gt.nwk", "w")
     w = open(tmp_path + ".map.txt", "w")
     leaves = []
@@ -117,10 +120,10 @@ def process_bootstrap(i, out_dir, run, gene_trees):
 
 
 # function that returns an array of b bootstrapped newick trees
-def bootstrap(b, out_dir, run, gene_trees):
+def bootstrap(num_bootstrap, out_dir, run, gene_trees):
     bs_trees = []
-    pool = multiprocessing.Pool(b)
-    args_list = [(i, out_dir, run, gene_trees) for i in range(b)]
+    pool = multiprocessing.Pool(num_bootstrap)
+    args_list = [(i, out_dir, run, gene_trees) for i in range(num_bootstrap)]
     bs_trees = pool.starmap(process_bootstrap, args_list)
     pool.close()
 
@@ -133,7 +136,10 @@ def combine_iter(out_dir, run):
     os.system(
         "cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk".format(out_dir, run)
     )
+    os.system("cp {0}/master_gt.nwk {0}/{1}.gt.nwk")
     os.system("cat {0}/{1}/mapping.txt >> {0}/master_map.txt".format(out_dir, run))
+    os.system("cp {0}/master_map.txt {0}/{1}.map.txt")
+
     # open both files and get lines, each line is a separate gene tree
     os.system(
         "ASTER-Linux/bin/astral-pro -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
@@ -148,44 +154,18 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(
-    i,
-    l,
-    k,
-    c,
-    out_dir,
-    b,
-    ref_exist,
-    trees,
-    roadies_dir,
-    weighted,
-    species_ids,
-    gene_ids,
-    species_lists,
-):
+def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_dir,weighted,genomes,runtime_left):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
-
     run = "run_"
     # allows sorting runs correctly
-    if i < 10:
-        run += "0" + str(i)
+    if iteration < 10:
+        run += "0" + str(iteration)
     else:
-        run += str(i)
+        run += str(iteration)
     print("Starting " + run)
     # run snakemake with specificed gene number and length
-    run_snakemake(
-        c,
-        l,
-        k,
-        out_dir,
-        run,
-        roadies_dir,
-        weighted,
-        species_ids,
-        gene_ids,
-        species_lists,
-    )
+    run_snakemake(cores, out_dir, run,  weighted, genomes, runtime_left)
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run)
     t = Tree(out_dir + "/" + run + ".nwk")
@@ -199,7 +179,7 @@ def converge_run(
         os.system("rm {0}/{1}".format(out_dir, run))
         os.system("mv {0}/{1}.tmp {0}/{1}".format(out_dir, run))
     # create bootstrapping trees
-    return bootstrap(b, out_dir, run, gene_trees)
+    return bootstrap(num_bootstrap, out_dir, run, gene_trees),len(gene_trees)
 
 
 # main function
@@ -220,7 +200,7 @@ if __name__ == "__main__":
     # assigning argument values to variables
     args = vars(parser.parse_args())
     config_path = args["config"]
-    c = args["c"]
+    CORES = args["c"]
     out_dir = args["out_dir"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
@@ -229,19 +209,21 @@ if __name__ == "__main__":
         print("Converge has read reference tree {0}".format(config["REFERENCE"]))
         ref_exist = True
         ref = Tree(config["REFERENCE"])
-    k = config["KREG"]
-    t = config["DIST_THRESHOLD"]
-    l = config["LENGTH"]
-    b = config["NUM_BOOTSTRAP"]
+    genomes= config["GENOMES"]
+    NUM_GENOMES = len(os.listdir(genomes))
+    gene_mult = config["GENE_MULT"]
+    NUM_GENES = gene_mult * NUM_GENOMES
+    LENGTH = config["LENGTH"]
+    NUM_BOOTSTRAP = config["NUM_BOOTSTRAP"]
     input_gt = config["INPUT_GENE_TREES"]
     input_map = config["INPUT_MAP"]
-    max_iter = config["MAX_ITER"]
-    stop_iter = config["STOP_ITER"]
+    MIN_ITER = config["MIN_ITER"]
+    MAX_RUNTIME = config["MAX_RUNTIME"]
     roadies_dir = config["OUT_DIR"]
-    species_ids = config["SPECIES_IDS"]
-    gene_ids = config["GENE_IDS"]
-    species_lists = config["SPECIES_LISTS"]
-    quartets = config["QUARTETS"]
+    species_ids = "species_ids.csv"
+    gene_ids = "gene_ids.csv"
+    species_lists = "species_lists.csv"
+    
     master_gt = out_dir + "/master_gt.nwk"
     master_map = out_dir + "/master_map.txt"
     os.system("mkdir -p " + out_dir)
@@ -262,25 +244,6 @@ if __name__ == "__main__":
         )
         os.system("cp {0} {1}".format(input_gt, master_gt))
         os.system("cp {0} {1}".format(input_map, master_map))
-    if quartets != "freqQuad.csv":
-        print(
-            "Input quartet file is different from ./freqQuad.csv Copying quartet file to ./freqQuad.csv"
-        )
-        if os.path.isfile("freqQuad.csv"):
-            os.system("rm freqQuad.csv")
-            os.system("cp {0} freqQuad.csv".format(quartets))
-        else:
-<<<<<<< HEAD
-            os.system('cp {0} freqQuad.csv'.format(quartets))
-=======
-            os.system("cp {0} freqQuad.csv".format(quartets))
-        os.system("rm freqQuad.csv")
->>>>>>> 82f86047ec925242c2de5d9f4aeabb3be6917da0
-        os.system("cp {0} freqQuad.csv".format(quartets))
-    else:
-        if not os.path.isfile("freqQuad.csv"):
-            print("Cannot find freqQuad.csv in current directory, so making one ")
-            os.system("touch freqQuad.csv")
     os.system("mkdir -p " + out_dir + "/tmp")
     sys.setrecursionlimit(2000)
     # initialize lists for runs and distances
@@ -288,49 +251,43 @@ if __name__ == "__main__":
     iter_dists = []
     iter_dists_bs = []
     window_dists = []
+    time_stamps = []
     if ref_exist:
         ref_dists = []
     # list of roadies trees after each iteration
     trees = []
     # open files for writing distances
-    if ref_exist:
-        ref_out = open(out_dir + "/ref_dist.csv", "w")
-    iter_out = open(out_dir + "/iter_dist.csv", "w")
-    iter_bs = open(out_dir + "/iter_dist_bs.csv", "w")
-    avg_out = open(out_dir + "/window_dist.csv", "w")
+    
     # starts main for loop for multiple iterations
     # for max iteration runs; start from 1 index instead of 0
-    for i in range(max_iter):
+    iteration = 0
+    start_time = time.time()
+    start_time_l = time.asctime(time.localtime(time.time()))
+    time_stamps.append(start_time)
+    runtime_left = math.inf
+    gt_counts = []
+    with open(out_dir+"/time_stamps.csv",'a') as t_out:
+        t_out.write("Start time: "+str(start_time_l)+"\n")
+    while(True):
         # returns an array of b bootstrapped trees
         weighted = True
-        if i == 0 and input_gt is None:
+        if iteration == 0 and input_gt is None:
             weighted = False
-        run = converge_run(
-            i,
-            l,
-            k,
-            c,
-            out_dir,
-            b,
-            ref_exist,
-            trees,
-            roadies_dir,
-            weighted,
-            species_ids,
-            gene_ids,
-            species_lists,
-        )
+        run,num_gt = converge_run(iteration,CORES,out_dir,NUM_BOOTSTRAP,ref_exist,trees,roadies_dir,weighted,genomes,runtime_left)
+        print("There are {0} gene trees after iteration {1}".format(num_gt,iteration))
         runs.append(run)
+        gt_counts.append(num_gt)
         # if reference exists get distance between ref and roadies tree
         if ref_exist:
-            ref_dist = comp_tree(ref, trees[i])
+            ref_dist = comp_tree(ref, trees[iteration])
             ref_dists.append(ref_dist)
-            ref_out.write(str(i) + "," + str(ref_dist) + "\n")
+            with open(out_dir + "/ref_dist.csv", "a") as ref_out:
+                ref_out.write(str(num_gt) + "," + str(ref_dist) + "\n")
         stop_run = False
         iter_flag = False
 
         # since comparing to previous, hence starts with 1st iteration
-        if i >= 1:
+        if iteration >= 1:
             print(len(runs))
             print(runs)
             # get bootstrapped iteration distance
@@ -338,90 +295,65 @@ if __name__ == "__main__":
             # get avg distance between current bootstrapped trees and previous iter final tree
             print(
                 "Getting bootstrapped iteration distances betseen runs {0} and {1}".format(
-                    i, i - 1
+                    iteration, iteration - 1
                 )
             )
-            iter_dist_bs = comp_bs_final(runs[i], trees[i - 1], i)
+            iter_dist_bs = comp_bs_final(runs[iteration], trees[iteration - 1], iteration)
             print(
                 "Average distance between final tree of iteration {0} and bootstrapped tree of iteration {1} is: {2}".format(
-                    i - 1, i, iter_dist_bs
+                    iteration - 1, iteration, iter_dist_bs
                 )
             )
             iter_dists_bs.append(iter_dist_bs)
-            iter_bs.write(str(i) + "," + str(iter_dist_bs) + "\n")
+            
+            
             # get single iteration distance
-            iter_dist = comp_tree(trees[i], trees[i - 1])
+            iter_dist = comp_tree(trees[iteration], trees[iteration - 1])
             print(
                 "Distance between final trees of iteration {0} and {1} is: {2}".format(
-                    i - 1, i, iter_dist
+                    iteration - 1, iteration, iter_dist
                 )
             )
             iter_dists.append(iter_dist)
-            iter_out.write(str(i) + "," + str(iter_dist) + "\n")
+            with open(out_dir + "/iter_dist.csv", "a") as iter_out:
+                iter_out.write(str(num_gt) + "," + str(iter_dist) + "\n")
             # sometimes dist files get updated slowly so create intermediate file for analysis in meantime
-            if i % 5 == 0:
-                print("Outputting intermediate file")
-                iterm = open(out_dir + "/iterm_iter_dist_bs.csv", "w")
-                refm = open(out_dir + "/iterm_ref_dist.csv", "w")
-                for j in range(len(iter_dists_bs)):
-                    iterm.write(str(j) + "," + str(iter_dists_bs[j]) + "\n")
-                for j in range(len(ref_dists)):
-                    refm.write(str(j) + "," + str(ref_dists[j]) + "\n")
-                iterm.close()
-                refm.close()
+    
             # checking to see if we should stop script
             # every distance within the window must be lower than threshold to stop
             temp = 0
             temp2 = 0
             # get the difference of average distances between two windows of size stop_iter
-            if i > 2 * stop_iter - 1:
-                print("Seeing if we should stop")
-                for j in range(stop_iter):
-                    temp = temp + iter_dists_bs[i - j - 1]
-                    temp2 = temp2 + iter_dists_bs[i - j - stop_iter - 1]
-                temp = temp / stop_iter
-                temp2 = temp2 / stop_iter
-                window_diff = abs(temp2 - temp)
-                avg_out.write(str(i) + "," + str(window_diff) + "\n")
-                print(
-                    "The difference between windows of size {0} from run {1} is: {2}".format(
-                        stop_iter, i, window_diff
-                    )
-                )
-                window_dists.append(window_diff)
-                if window_diff < t:
-                    print("crossed threshold")
-                    stop_run = True
-                else:
-                    print("did not cross threshold")
-                    stop_run = False
-                    iter_flag = True
             print("Distance to previous Tree")
             for j in range(len(iter_dists)):
-                print("Run: " + str(j) + ": " + str(iter_dists[j]))
+                print("Run: " + str(j) + " ("+str((j+1)*NUM_GENES)+"): " + str(iter_dists[j]))
             print(
                 "Distances to previous iterations final trees with bootstrapped trees so far:"
             )
             for j in range(len(iter_dists_bs)):
-                print("Run: " + str(j) + ": " + str(iter_dists_bs[j]))
+                print("Run: " + str(j) +" ("+str((j+1)*NUM_GENES)+"): " + str(iter_dists_bs[j]))
             if ref_exist:
                 print("Distance to reference so far:")
                 for j in range(len(ref_dists)):
-                    print("Run: " + str(j) + ": " + str(ref_dists[j]))
-            if i > 2 * stop_iter - 1:
-                print(
-                    "Difference between average of windows of size {0} so far:".format(
-                        stop_iter
-                    )
-                )
-                for j in range(len(window_dists)):
-                    print(
-                        "Run: " + str(j + (2 * stop_iter)) + ": " + str(window_dists[j])
-                    )
-            if stop_run == True and iter_flag == False:
+                    print("Run: " + str(j) + " ("+str((j+1)*NUM_GENES)+"): " + str(ref_dists[j]))
+        curr_time = time.time()
+        curr_time_l = time.asctime(time.localtime(time.time()))
+        to_previous = curr_time - time_stamps[len(time_stamps)-1]
+        time_stamps.append(curr_time)
+        elapsed_time = curr_time - start_time
+        with open(out_dir+"/time_stamps.csv",'a') as t_out:
+            t_out.write(str(num_gt)+','+str(curr_time_l)+','+str(elapsed_time)+','+str(to_previous)+"\n")
+        if iteration+1 >= MIN_ITER:
+            if elapsed_time >= MAX_RUNTIME:
+                print("Current elapsed time",elapsed_time)
+                print("Max Runtime",MAX_RUNTIME)
                 break
-        if stop_run == True and iter_flag == False:
-            break
-    if ref_exist:
-        ref_out.close()
-    iter_out.close()
+            else:
+                runtime_left = MAX_RUNTIME-elapsed_time
+                print("Current elapsed time",elapsed_time)
+                print("Max Runtime",MAX_RUNTIME)
+                print("Runtime left",runtime_left)
+        
+        iteration+=1
+
+          

@@ -1,4 +1,4 @@
-name: mafft
+name: pasta
 channels:
   - bioconda
 dependencies:

@@ -6,9 +6,8 @@ import glob, os, sys
 # import seaborn as sns
 # import matplotlib.pyplot as plt
 genes = sys.argv[1]
-species_id = sys.argv[2]
-species = sys.argv[3]
-out = sys.argv[4]
+species = sys.argv[2]
+out = sys.argv[3]
 # stats = sys.argv[3]
 species_ids = {}
 id_dict = {}
@@ -37,7 +36,7 @@ for i in range(1, len(g)):
 # print(id_dict)
 # print(len(id_dict))
 
-lines = open(species_id, "r").readlines()
+lines = open("species_ids.csv", "r").readlines()
 # print(len(lines))
 for i in range(len(lines)):
     s = lines[i].strip().split(",")

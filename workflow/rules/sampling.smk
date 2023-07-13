@@ -3,15 +3,16 @@ from collections import OrderedDict
 import random,os
 from pathlib import Path
 import subprocess
-if config["WEIGHTED"] != 0:
-	print("Attemping to do weighted sampling")
-	if Path(config["QUARTETS"]).is_file():
-		cmd = "python3 workflow/scripts/weighted_s.py -k {0} --quartets {1} --weighted {2} --genomes {3} --id_out {4} --align_out {5} --to_align {6} --species_out {7}".format(config["KREG"],config["QUARTETS"],config["WEIGHTED"],config["GENOMES"],config["GENE_IDS"],config["SPECIES_LISTS"],config["TO_ALIGN"],config["SPECIES_IDS"])
+num_species = len(os.listdir(config["GENOMES"]))
+if num_species != config["TO_ALIGN"]:
+	print("Attempting to do weighted sampling")
+	if Path("freqQuad.csv").is_file():
+		cmd = "python3 workflow/scripts/weighted_s.py -k {0} --weighted {1} --genomes {2} --to_align {3} --num_species {4}".format(num,config["WEIGHTED"],config["GENOMES"],config["TO_ALIGN"],num_species)
 		print(cmd)
 		subprocess.call(cmd.split(),shell=False)
 		od = {}
 		od_e = {}
-		with open(config["GENE_IDS"],'r') as g:
+		with open("gene_ids.csv",'r') as g:
 			lines = g.readlines()
 			for i in range(len(lines)):
 				s = lines[i].strip().split(',')
@@ -32,7 +33,6 @@ if config["WEIGHTED"] != 0:
 else:
 	print("Doing unweighted sampling")
 	od = OrderedDict([(key,0) for key in SAMPLES])
-	num=config["KREG"]
 	num_genomes = len(SAMPLES)
 	for i in range(num):
 		index = random.randint(0,num_genomes-1)
@@ -52,7 +52,7 @@ def get_index_s(wildcards):
 	return od[wildcards]
 
 def get_index_e(wildcards):
-	if od_e[wildcards] == int(config["KREG"]):
+	if od_e[wildcards] == num:
 		return od_e[wildcards]+1
 	return od_e[wildcards]
 rule sequence_select:
@@ -65,11 +65,11 @@ rule sequence_select:
 		THRES=config["UPPER_CASE"]
 	#conda:
         	#"../envs/bio.yaml"
+	benchmark:
+		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
 	threads:1
-	#resources:
-		#mem_mb=10000
 	shell:
 			'''
 			echo "We are starting to sample {input}"
@@ -94,10 +94,9 @@ rule sequence_merge:
 rule assign_genes:
 	input:
 		genes = config["OUT_DIR"]+"/samples/out.fa",
-		ids = config["SPECIES_IDS"]
 	output:
 		config["OUT_DIR"]+"/samples/{sample}_genes.fa"
 	params:
 		species = "{sample}"
 	shell:
-		"python3 workflow/scripts/weighted_out.py {input.genes} {input.ids} {params.species} {output}"
+		"python3 workflow/scripts/weighted_out.py {input.genes} {params.species} {output}"

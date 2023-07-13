@@ -1,4 +1,5 @@
-if config["WEIGHTED"] != 0:
+num_species = len(os.listdir(config["GENOMES"]))
+if config["TO_ALIGN"] != num_species:
 	g = config["OUT_DIR"]+"/samples/{sample}_genes.fa"
 else:
 	g = config["OUT_DIR"]+"/samples/out.fa"
@@ -17,7 +18,7 @@ rule lastz2fasta:
 
 
 	params:
-		k = config["KREG"],
+		k = num,
 		out = config["OUT_DIR"]+"/genes",
 		p = config["OUT_DIR"]+"/alignments",
 		m = config["MIN_ALIGN"],
@@ -36,6 +37,8 @@ rule lastz:
 		genome = config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
+	benchmark:
+		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
 	conda:
 		"../envs/lastz.yaml"
 	params:
@@ -63,6 +66,8 @@ rule pasta:
 		max_len=int(1.5*config["LENGTH"]),
 		prefix = "gene_{id}",
 		suffix = "fa.aln"
+	benchmark:
+		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
 	threads: 8
 	conda: 
 		"../envs/msa.yaml"
@@ -83,11 +88,12 @@ rule filtermsa:
 		config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln"
 	params:
 		m = config["FILTERFRAGMENTS"],
-		n = config["MASKSITES"]
+		n = config["MASKSITES"],
 	conda:
 		"../envs/msa.yaml"
 	shell:
 		'''
-			run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
+		run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
+			
 		'''
 

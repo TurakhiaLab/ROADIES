@@ -116,7 +116,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 genome_pos = seq_line[2]
                 if orientation == "-":
                     seq = str(Seq(seq).reverse_complement())
-                index = species + "_" + genome_pos
+                index = species + "_" + str(i)
                 # output to gene fasta
                 allowed = ["a", "t", "c", "g", "A", "T", "C", "G"]
                 good_seq = True
