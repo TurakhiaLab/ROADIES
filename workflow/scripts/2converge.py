@@ -50,11 +50,7 @@ def comp_bs_final(bs_tree_array, final_tree_prev, iteration):
 def run_snakemake(
     cores, out_dir, run,  weighted, genomes, runtime_left
 ):
-    if weighted:
-        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
-    else:
-        num_species = str(len(os.listdir(genomes)))
-        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete','--config','TO_ALIGN='+num_species]
+    cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
     print("COMMAND",cmd)
     if runtime_left == math.inf:
         print("Running without time limit")
