@@ -48,10 +48,17 @@ def comp_bs_final(bs_tree_array, final_tree_prev, iteration):
 
 # function to run snakemake with settings and add to run folder
 def run_snakemake(
-    cores, out_dir, run,  weighted, genomes, runtime_left
+    cores, out_dir, run,  weighted,runtime_left
 ):
-    cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
-    print("COMMAND",cmd)
+    if weighted:
+        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
+    else:
+        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete','--config','WEIGHTED=0']
+    for i in range(len(cmd)):
+        if i == len(cmd)-1:
+            print(cmd[i])
+        else:
+            print(cmd[i],end=" ")
     if runtime_left == math.inf:
         print("Running without time limit")
         subprocess.run(cmd)
@@ -150,7 +157,7 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_dir,weighted,genomes,runtime_left):
+def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_dir,weighted,runtime_left):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     run = "run_"
@@ -161,7 +168,7 @@ def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_d
         run += str(iteration)
     print("Starting " + run)
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, out_dir, run,  weighted, genomes, runtime_left)
+    run_snakemake(cores, out_dir, run,  weighted, runtime_left)
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run)
     t = Tree(out_dir + "/" + run + ".nwk")
@@ -269,7 +276,7 @@ if __name__ == "__main__":
         weighted = True
         if iteration == 0 and input_gt is None:
             weighted = False
-        run,num_gt = converge_run(iteration,CORES,out_dir,NUM_BOOTSTRAP,ref_exist,trees,roadies_dir,weighted,genomes,runtime_left)
+        run,num_gt = converge_run(iteration,CORES,out_dir,NUM_BOOTSTRAP,ref_exist,trees,roadies_dir,weighted,runtime_left)
         print("There are {0} gene trees after iteration {1}".format(num_gt,iteration))
         runs.append(run)
         gt_counts.append(num_gt)
