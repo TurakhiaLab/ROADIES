@@ -1,13 +1,13 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
 
-GENOMES: "/home/roadies-datasets/birds"
+GENOMES: "/home/roadies-datasets/drosophila"
 #reference tree for converge (used for ref_dist.csv)
-REFERENCE: "trees/birds_reftree_new_48.nwk"
+REFERENCE: "trees/flies_reftree_11.nwk"
 #length of genes
-LENGTH: 500
+LENGTH: 200
 #number of genes
-GENE_MULT: 4
+GENE_MULT: 5
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -32,12 +32,12 @@ INPUT_GENE_TREES: null
 INPUT_MAP: null
 #min converge runs before stopping
 MIN_ITER: 5
-#max runtime in seconds
-MAX_RUNTIME: 6000
+#max runtime in hours
+MAX_RUNTIME: 0.1
 #percentage of genes that use weighted sampling
 WEIGHTED: 0.6
 #percentage of species to align during lastz with weighted sampling
-TO_ALIGN: 24
+TO_ALIGN: 5
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
 
