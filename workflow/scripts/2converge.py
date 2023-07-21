@@ -177,10 +177,8 @@ def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_d
     if ref_exist:
         print("Rerooting to reference")
         rerootTree(ref, t)
-        print(t)
-        t.write(outfile=out_dir + "/" + run + ".tmp")
-        os.system("rm {0}/{1}".format(out_dir, run))
-        os.system("mv {0}/{1}.tmp {0}/{1}".format(out_dir, run))
+        #print(t)
+        t.write(outfile=out_dir + "/" + run + ".rerooted.nwk")
     # create bootstrapping trees
     return bootstrap(num_bootstrap, out_dir, run, gene_trees),len(gene_trees)
 
@@ -221,7 +219,7 @@ if __name__ == "__main__":
     input_gt = config["INPUT_GENE_TREES"]
     input_map = config["INPUT_MAP"]
     MIN_ITER = config["MIN_ITER"]
-    MAX_RUNTIME = config["MAX_RUNTIME"]
+    MAX_RUNTIME = config["MAX_RUNTIME"] * 3600
     roadies_dir = config["OUT_DIR"]
     species_ids = "species_ids.csv"
     gene_ids = "gene_ids.csv"
@@ -350,6 +348,7 @@ if __name__ == "__main__":
             if elapsed_time >= MAX_RUNTIME:
                 print("Current elapsed time",elapsed_time)
                 print("Max Runtime",MAX_RUNTIME)
+                print("We have surpassed the allotted runtime by {0} seconds".format(elapsed_time-MAX_RUNTIME))
                 break
             else:
                 runtime_left = MAX_RUNTIME-elapsed_time
