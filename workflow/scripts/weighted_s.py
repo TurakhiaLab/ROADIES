@@ -64,7 +64,7 @@ if NUM_SPECIES != TO_ALIGN:
         for i in range(len(lines)):
             if i % 3 == 0:
                 s = lines[i].split("\t")
-                print(s[4],s[5])
+                #print(s[4],s[5])
                 support = float(s[4])
                 teb = float(s[5])
                 if teb == 0:
