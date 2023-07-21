@@ -87,10 +87,10 @@ for j in t:
 t2 = list(iqtree.values())
 rules.insert(5, "treebuilding")
 times.insert(5, s)
-#for i in range(len(rules)):
-  #  print(i,rules[i],times[i])
+for i in range(len(rules)):
+    print(i,rules[i],times[i])
 #print(times)
-#x = rules[: len(rules) - 1]
+x = rules[: len(rules) - 1]
 runtimes = []
 with open(output, "w") as w:
     w.write(log_file + "\n")
