@@ -39,7 +39,7 @@ for i in range(len(steps)):
         print(top)
         tops.append(top)
     else:
-        tops.append(top)
+        tops.append(steps[i])
 with open(out_dir+"/step_avg.csv",'w') as w:
     for s in step_totals:
         w.write(s[0]+','+str(s[1])+','+str(s[2])+'\n')
