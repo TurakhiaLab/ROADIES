@@ -90,7 +90,7 @@ rule filtermsa:
 		m = config["FILTERFRAGMENTS"],
 		n = config["MASKSITES"],
 	conda:
-		"../envs/msa.yaml"
+		"../envs/filtermsa.yaml"
 	shell:
 		'''
 		run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}

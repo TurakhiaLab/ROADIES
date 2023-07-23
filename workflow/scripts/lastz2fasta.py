@@ -113,7 +113,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 seq_line = lines[l].split()
                 seq = seq_line[len(seq_line) - 1]
                 seq = seq.replace("-", "")
-                genome_pos = seq_line[2]
+                genome_pos = str(i)
                 if orientation == "-":
                     seq = str(Seq(seq).reverse_complement())
                 index = species + "_" + str(i)

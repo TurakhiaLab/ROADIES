@@ -7,7 +7,7 @@ REFERENCE: "trees/flies_reftree_11.nwk"
 #length of genes
 LENGTH: 200
 #number of genes
-GENE_MULT: 5
+GENE_MULT: 2
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -33,7 +33,7 @@ INPUT_MAP: null
 #min converge runs before stopping
 MIN_ITER: 5
 #max runtime in hours
-MAX_RUNTIME: 0.1
+MAX_RUNTIME: 0.5
 #percentage of genes that use weighted sampling
 WEIGHTED: 0.6
 #percentage of species to align during lastz with weighted sampling
