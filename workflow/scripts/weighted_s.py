@@ -60,7 +60,7 @@ if NUM_SPECIES != TO_ALIGN:
     # getting scores of quartet to assign weights
         lines = open("freqQuad.csv","r").readlines()
         scores = {}
-    # go through freqQuad.csv and get pp scores of t1 of each quartet
+# go through freqQuad.csv and get pp scores of t1 of each quartet
         for i in range(len(lines)):
             if i % 3 == 0:
                 s = lines[i].split("\t")
@@ -68,20 +68,29 @@ if NUM_SPECIES != TO_ALIGN:
                 support = float(s[4])
                 teb = float(s[5])
                 if teb == 0:
-                    continue
-                scores[i] = support / teb
+                    scores[i] = 0
+                else:
+                    scores[i] = support / teb
+        print(scores)
     # sort list of quartets by score
         sorted_scores = sorted(scores.items(), key=lambda x: x[1])
-    # only use quartets with a score lesser than t
-        
+    # only use quartets with a score lesser than t        
         idx = 0
     # assign weighted scheme of (1/c_i)/summation_i of (1/c_i)
         weights = []
-        scores = [1 / x[1] for x in sorted_scores]
+        for x in sorted_scores:
+            if x[1] == 0:
+                scores[x] = 0
+            else:
+                scores[x] = 1 / x[1]
         m = np.sum(scores)
-        for i in range(len(scores)):
-            weights.append(scores[i] / m)
-    # print(weights)
+        for i in range (len(scores)):
+            if m == 0:
+                weights.append(0)
+            else:
+                weights.append(scores[i]/m)
+        #weights = [(value / m) if m != 0 else 0 for value in scores.values()]
+        print(weights)
     # now we are going to get the list of species for each gene
        
         # keep on sampling from low scoring quartet branches until we sample required number of weighted genes
