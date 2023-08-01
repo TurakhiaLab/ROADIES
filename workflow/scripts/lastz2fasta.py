@@ -47,10 +47,15 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
         # make dict of genes for each species
         genes = {}
         # go through every 4th line due to maf format
-        for l in range(15, len(lines)):
-            if (l - 15) % 4 == 0:
+        for i in range(15, len(lines)):
+            if '#' in lines[i]:
+                continue
+            elif 'gene' in lines[i]:
+                l = i-1
                 # get gene id
+                print(lines[l])
                 gene_line = lines[l + 1].split()
+                print(gene_line)
                 gene = gene_line[1]
                 gene_s = gene.split("_")
                 gene_id = gene_s[1]

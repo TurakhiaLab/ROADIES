@@ -48,12 +48,20 @@ def comp_bs_final(bs_tree_array, final_tree_prev, iteration):
 
 # function to run snakemake with settings and add to run folder
 def run_snakemake(
-    cores, out_dir, run,  weighted,runtime_left
+    cores, out_dir, run,  weighted,runtime_left, iteration, sub_dir, need_to_sub
 ):
     if weighted:
         cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
     else:
         cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete','--config','WEIGHTED=0']
+    # if first iteration redo subsets
+    if need_to_sub:
+        cmd.append('--config')
+        cmd.append('SUBSET=0')
+    #use generated subset file for subsequent iterations
+    else:
+        cmd.append('--config')
+        cmd.append('SUBSET={0}/subsets.txt'.format(sub_dir))
     for i in range(len(cmd)):
         if i == len(cmd)-1:
             print(cmd[i])
@@ -134,7 +142,10 @@ def bootstrap(num_bootstrap, out_dir, run, gene_trees):
 
 
 # function to combine gene trees and mapping files from all iterations
-def combine_iter(out_dir, run):
+def combine_iter(out_dir, run, roadies_dir):
+    # if first iteration copy over subset file
+    if run == "run_00":
+        os.system("cp {0}/subsets.txt {1}/subsets/txt".format(roadies_dir,out_dir))
     print("Concatenating run's gene trees and mapping files with master versions")
     os.system(
         "cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk".format(out_dir, run)
@@ -142,7 +153,6 @@ def combine_iter(out_dir, run):
     os.system("cp {0}/master_gt.nwk {0}/{1}.gt.nwk")
     os.system("cat {0}/{1}/mapping.txt >> {0}/master_map.txt".format(out_dir, run))
     os.system("cp {0}/master_map.txt {0}/{1}.map.txt")
-
     # open both files and get lines, each line is a separate gene tree
     os.system(
         "ASTER-Linux/bin/astral-pro -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
@@ -157,7 +167,7 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_dir,weighted,runtime_left):
+def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_dir,weighted,runtime_left,subset_dir,need_to_sub):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     run = "run_"
@@ -168,9 +178,9 @@ def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_d
         run += str(iteration)
     print("Starting " + run)
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, out_dir, run,  weighted, runtime_left)
+    run_snakemake(cores, out_dir, run,  weighted, runtime_left,iteration,subset_dir,need_to_sub)
     # merging gene trees and mapping files
-    gene_trees = combine_iter(out_dir, run)
+    gene_trees = combine_iter(out_dir, run,roadies_dir)
     t = Tree(out_dir + "/" + run + ".nwk")
     # add species tree to tree list
     trees.append(t)
@@ -224,7 +234,10 @@ if __name__ == "__main__":
     species_ids = "species_ids.csv"
     gene_ids = "gene_ids.csv"
     species_lists = "species_lists.csv"
-    
+    sub_dir = config["SUBSET_DIR"]
+    need_to_sub = False
+    if sub_dir == None:
+        need_to_sub = True
     master_gt = out_dir + "/master_gt.nwk"
     master_map = out_dir + "/master_map.txt"
     os.system("mkdir -p " + out_dir)
@@ -267,6 +280,7 @@ if __name__ == "__main__":
     time_stamps.append(start_time)
     runtime_left = math.inf
     gt_counts = []
+    os.system('snakemake --unlock')
     with open(out_dir+"/time_stamps.csv",'a') as t_out:
         t_out.write("Start time: "+str(start_time_l)+"\n")
     while(True):
@@ -274,7 +288,7 @@ if __name__ == "__main__":
         weighted = True
         if iteration == 0 and input_gt is None:
             weighted = False
-        run,num_gt = converge_run(iteration,CORES,out_dir,NUM_BOOTSTRAP,ref_exist,trees,roadies_dir,weighted,runtime_left)
+        run,num_gt = converge_run(iteration,CORES,out_dir,NUM_BOOTSTRAP,ref_exist,trees,roadies_dir,weighted,runtime_left,sub_dir,need_to_sub)
         print("There are {0} gene trees after iteration {1}".format(num_gt,iteration))
         runs.append(run)
         gt_counts.append(num_gt)
