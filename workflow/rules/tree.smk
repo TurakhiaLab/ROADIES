@@ -1,3 +1,5 @@
+num = len(SAMPLES)*config["GENE_MULT"]
+IDS = list(range(1,num+1))
 
 rule mergeTrees:
 	input:

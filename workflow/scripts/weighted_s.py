@@ -40,6 +40,9 @@ TO_ALIGN = args.to_align
 GENOMES = args.genomes
 NUM_SPECIES = args.num_species
 counts = {}
+if TO_ALIGN > NUM_SPECIES:
+    print("Cannot sample more than the number of species")
+    exit(1)
 # getting list of species names
 for filename in glob.glob(os.path.join(GENOMES, "*.fa")):
     s = filename.split("/")
@@ -149,6 +152,7 @@ if NUM_SPECIES != TO_ALIGN:
         for i in range(KREG - num_sampled):
             r = random.randint(0, len(MASTER_SPECIES) - 1)
             species = MASTER_SPECIES[r]
+            #print(MASTER_SPECIES)
             rand_list = random.sample(MASTER_SPECIES, TO_ALIGN)
             # print(species,rand_list)
             # counts[species] += 1

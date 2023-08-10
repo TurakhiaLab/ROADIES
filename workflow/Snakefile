@@ -1,4 +1,5 @@
 from snakemake.utils import min_version
+
 min_version("7.12.1")
 configfile: "config/config.yaml"
 SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa").samples

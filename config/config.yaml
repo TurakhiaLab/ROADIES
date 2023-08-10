@@ -1,13 +1,13 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
 
-GENOMES: "/home/roadies-datasets/birds"
+GENOMES: "/home/roadies-datasets/primates"
 #reference tree for converge (used for ref_dist.csv)
-REFERENCE: "trees/birds_reftree_new_48.nwk"
+REFERENCE: "trees/primates.nwk"
 #length of genes
 LENGTH: 200
 #number of genes
-GENE_MULT: 2
+GENE_MULT: 1
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -25,7 +25,7 @@ MAX_DUP: 20
 #number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
 STEPS: 100
 #number of bootstrapped trees for comparison
-NUM_BOOTSTRAP: 10
+NUM_BOOTSTRAP: 3
 #input ROADIES gene trees for converge
 INPUT_GENE_TREES: null
 #input ROADIES mapping file for converge
@@ -37,9 +37,9 @@ MAX_RUNTIME: 0.5
 #percentage of genes that use weighted sampling
 WEIGHTED: 0
 #percentage of species to align during lastz with weighted sampling
-TO_ALIGN: 20
+TO_ALIGN: 7
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
 SUBSET: null
-SUBSET_DIR: "bird_subsets"
+SUBSET_DIR: null
 

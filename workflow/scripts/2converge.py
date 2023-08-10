@@ -19,7 +19,6 @@ import time
 import subprocess
 import math
 
-
 # function that finds the average distance between an array of trees and itself
 def comp_tree(t1, t2):
     d = t1.compare(t2)
@@ -51,17 +50,23 @@ def run_snakemake(
     cores, out_dir, run,  weighted,runtime_left, iteration, sub_dir, need_to_sub
 ):
     if weighted:
-        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete']
+        cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete','--config']
+        if need_to_sub:
+            cmd.append('SUBSET=0')
+    #use generated subset file for subsequent iterations
+        else:
+            cmd.append('SUBSET={0}/subsets.txt'.format(sub_dir))
+            cmd.append('SUBSET_DIR={0}'.format(sub_dir))
+
     else:
         cmd = ['snakemake','--core',str(cores),'--jobs',str(cores),'--use-conda','--rerun-incomplete','--config','WEIGHTED=0']
-    # if first iteration redo subsets
-    if need_to_sub:
-        cmd.append('--config')
-        cmd.append('SUBSET=0')
+        if need_to_sub:
+            cmd.append('SUBSET=0')
     #use generated subset file for subsequent iterations
-    else:
-        cmd.append('--config')
-        cmd.append('SUBSET={0}/subsets.txt'.format(sub_dir))
+        else:
+            cmd.append('SUBSET={0}/subsets.txt'.format(sub_dir))
+            cmd.append('SUBSET_DIR={0}'.format(sub_dir))
+    # if first iteration redo subsets
     for i in range(len(cmd)):
         if i == len(cmd)-1:
             print(cmd[i])
@@ -142,23 +147,22 @@ def bootstrap(num_bootstrap, out_dir, run, gene_trees):
 
 
 # function to combine gene trees and mapping files from all iterations
-def combine_iter(out_dir, run, roadies_dir):
+def combine_iter(out_dir, run, roadies_dir,sub_dir):
     # if first iteration copy over subset file
-    if run == "run_00":
-        os.system("cp {0}/subsets.txt {1}/subsets/txt".format(roadies_dir,out_dir))
     print("Concatenating run's gene trees and mapping files with master versions")
     os.system(
         "cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk".format(out_dir, run)
     )
-    os.system("cp {0}/master_gt.nwk {0}/{1}.gt.nwk")
+    os.system("cp {0}/master_gt.nwk {0}/{1}.gt.nwk".format(out_dir,run))
     os.system("cat {0}/{1}/mapping.txt >> {0}/master_map.txt".format(out_dir, run))
-    os.system("cp {0}/master_map.txt {0}/{1}.map.txt")
+    os.system("cp {0}/master_map.txt {0}/{1}.map.txt".format(out_dir,run))
     # open both files and get lines, each line is a separate gene tree
     os.system(
         "ASTER-Linux/bin/astral-pro -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
             out_dir, run
         )
     )
+    os.system('rm {0}/*.maf'.format(sub_dir))
     # open both master files and get gene trees and mapping
     gt = open(out_dir + "/master_gt.nwk", "r")
     gene_trees = gt.readlines()
@@ -177,10 +181,12 @@ def converge_run(iteration,cores,out_dir,num_bootstrap,ref_exist,trees,roadies_d
     else:
         run += str(iteration)
     print("Starting " + run)
+    if iteration > 0:
+        need_to_sub = False
     # run snakemake with specificed gene number and length
     run_snakemake(cores, out_dir, run,  weighted, runtime_left,iteration,subset_dir,need_to_sub)
     # merging gene trees and mapping files
-    gene_trees = combine_iter(out_dir, run,roadies_dir)
+    gene_trees = combine_iter(out_dir, run,roadies_dir,subset_dir)
     t = Tree(out_dir + "/" + run + ".nwk")
     # add species tree to tree list
     trees.append(t)
@@ -237,9 +243,14 @@ if __name__ == "__main__":
     sub_dir = config["SUBSET_DIR"]
     need_to_sub = False
     if sub_dir == None:
+        print('No subset dir provided setting it to ./subsets')
         need_to_sub = True
+        sub_dir = "subsets"
+        if os.path.isdir("subsets"):
+            os.system("rm -r subsets")
     master_gt = out_dir + "/master_gt.nwk"
     master_map = out_dir + "/master_map.txt"
+    os.system("rm -r "+out_dir)
     os.system("mkdir -p " + out_dir)
     if not os.path.isfile(species_ids):
         print("Creating species id file at {0}".format(species_ids))
@@ -271,7 +282,6 @@ if __name__ == "__main__":
     # list of roadies trees after each iteration
     trees = []
     # open files for writing distances
-    
     # starts main for loop for multiple iterations
     # for max iteration runs; start from 1 index instead of 0
     iteration = 0
@@ -288,7 +298,9 @@ if __name__ == "__main__":
         weighted = True
         if iteration == 0 and input_gt is None:
             weighted = False
+    
         run,num_gt = converge_run(iteration,CORES,out_dir,NUM_BOOTSTRAP,ref_exist,trees,roadies_dir,weighted,runtime_left,sub_dir,need_to_sub)
+        need_to_sub=False
         print("There are {0} gene trees after iteration {1}".format(num_gt,iteration))
         runs.append(run)
         gt_counts.append(num_gt)
@@ -303,6 +315,7 @@ if __name__ == "__main__":
 
         # since comparing to previous, hence starts with 1st iteration
         if iteration >= 1:
+    
             print(len(runs))
             print(runs)
             # get bootstrapped iteration distance

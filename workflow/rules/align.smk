@@ -3,31 +3,46 @@ if config["TO_ALIGN"] != num_species:
 	g = config["OUT_DIR"]+"/samples/{sample}_genes.fa"
 else:
 	g = config["OUT_DIR"]+"/samples/out.fa"
+num = len(SAMPLES)*config["GENE_MULT"]
+IDS = list(range(1,num+1))
 mapping = {}
 subset_file = config["SUBSET"]
+subset_dir = config["SUBSET_DIR"]
 #if subset file does not exist before run
 if config["SUBSET"] == None or config["SUBSET"] == "0" or config["SUBSET"] == 0:
-	print("No subset file creating one at {0}+'/subsets.txt".format(config["SUBSET_DIR"]))
-	os.system('mkdir -p {0}'.format(config["SUBSET_DIR"]))
-	os.system('touch {0}/subsets.txt'.format(config["SUBSET_DIR"]))
+	subset_file = "subsets/subsets.txt"
+	subset_dir = "subsets"
+	print("No subset file specified in config creating one at subsets/subsets.txt")
+	os.system('mkdir -p subsets')
+	os.system('touch subsets/subsets.txt')
 	map_exist = 0
-	subset_file = config["SUBSET_DIR"] +"/subsets.txt"
+
 else:
 	map_exist = 1
+	print("Reading in mapping",config["SUBSET"])
 	with open(config["SUBSET"],'r') as f:
 		lines = f.readlines()
 		for line in lines:
 			s = line.strip().split()
 			sub = s[0]
-			g = s[1]
+			s2 = s[1].strip().split('/')
+			g = s2[len(s2)-1].replace('.fa','')
+			#print(g)
 			if g in mapping:
 				mapping[g].append(sub)
 			else:
 				mapping[g] = [sub]
+	for m in mapping:
+		print(m,len(mapping[m]))
+print("subset file is ",subset_file)
+print("subset dir is ", subset_dir)
 def does_map_exist():
 	return map_exist
 def is_mapped(wildcards):
+	print("w",wildcards)
+	#file = config["GENOMES"]
 	if wildcards in mapping:	
+		print(wildcards,len(mapping[wildcards]))
 		return len(mapping[wildcards])
 	else:
 		return 0
@@ -79,7 +94,7 @@ rule lastz:
 		subset = lambda wildcards: is_mapped(wildcards.sample),
 		sf = subset_file,
 		map_e = lambda wildcards: does_map_exist(),
-		subset_dir = config["SUBSET_DIR"]
+		subset_dir = subset_dir
 	shell:
 		'''
 		#if no preexisting map
@@ -89,14 +104,15 @@ rule lastz:
 			#compute genome size
 			size=$(./faSize {input.genome} | awk '{{if (NR==1) {{print $1}}}}')
 			#if over size limit
-			if [[ $size -gt 1000000000 ]]; then 
+			if [[ $size -gt 2000000000 ]]; then 
 				echo "{input.genome} has size ${{size}} which is over the size limit subsetting"
     			echo -n "" > {output}
     			prefix=$(basename {input.genome} .fa);
 				echo "splitting fasta to {params.subset_dir}/${{prefix}}_"
-				faSplit about {input.genome} 500000000 {params.subset_dir}/${{prefix}}_ 
+				faSplit about {input.genome} 1000000000 {params.subset_dir}/${{prefix}}_ 
 				for f in $(ls {params.subset_dir}/${{prefix}}_*.fa); do
 					echo "aligning ${{f}}"
+					echo "${{f}} {input.genome}"
 					echo "${{f}} {input.genome}" >> {params.sf}
 					lastz_32 ${{f}}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output=${{f}}_out.maf --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup}
 				done
@@ -108,14 +124,17 @@ rule lastz:
 				lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup}
 			fi																																				
 		else
+			echo "{params.subset} subsets"
+			echo {params.subset_dir}
 			if [[ {params.subset} -eq 0 ]]; then
-				echo "aligning {input.genome} normally"
+				echo "mapping is 0 aligning {input.genome} normally"
 				lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup}
 			else
 				echo "using subset for {input.genome}"
 				prefix=$(basename {input.genome} .fa);
 				dir="$(dirname {input.genome})" 
 				for f in $(ls {params.subset_dir}/${{prefix}}_*.fa); do
+					echo "aligning ${{f}}"
 					lastz_32 ${{f}}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output=${{f}}_out.maf --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup}
 				done
 				for f in $(ls {params.subset_dir}/${{prefix}}_*_out.maf); do

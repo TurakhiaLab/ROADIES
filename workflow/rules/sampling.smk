@@ -56,14 +56,14 @@ rule sequence_select:
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
-        	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
+		config["OUT_DIR"]+"/samples/{sample}_temp.fa"
 	threads:1
 	shell:
-			'''
-			echo "We are starting to sample {input}"
-			echo "./sampling/build/sampling -i {input} -o {output} -l {params.LENGTH} -s {params.KFAC} -e {params.KFAC_e} -t {params.THRES}"
-			time ./sampling/build/sampling -i {input} -o {output} -l {params.LENGTH} -s {params.KFAC} -e {params.KFAC_e} -t {params.THRES}
-			'''
+		'''
+		echo "We are starting to sample {input}"
+		echo "./sampling/build/sampling -i {input} -o {output} -l {params.LENGTH} -s {params.KFAC} -e {params.KFAC_e} -t {params.THRES}"
+		time ./sampling/build/sampling -i {input} -o {output} -l {params.LENGTH} -s {params.KFAC} -e {params.KFAC_e} -t {params.THRES}
+		'''
 
 rule sequence_merge:
 	input:
@@ -74,8 +74,8 @@ rule sequence_merge:
 	conda: 
 		"../envs/plots.yaml"
 	output:
-        	config["OUT_DIR"]+"/samples/out.fa",
-			report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
+		config["OUT_DIR"]+"/samples/out.fa",
+		report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
 	shell:
 		"python3 workflow/scripts/sequence_merge.py {params.gene_dir} {output} {params.plotdir}"
 rule assign_genes:
