@@ -11,6 +11,7 @@ if num_species != config["TO_ALIGN"]:
 	subprocess.call(cmd.split(),shell=False)
 	od = {}
 	od_e = {}
+	print("opening gene id")
 	with open("gene_ids.csv",'r') as g:
 		lines = g.readlines()
 		for i in range(len(lines)):
@@ -20,10 +21,10 @@ if num_species != config["TO_ALIGN"]:
 			end = int(s[2])
 			od[species] = start
 			od_e[species] = end
-	#print(od)
-	#print(od_e)
+	print(od)
+	print(od_e)
 else:
-	print("Doing unweighted sampling")
+	print("Not sampling")
 	od = OrderedDict([(key,0) for key in SAMPLES])
 	num_genomes = len(SAMPLES)
 	for i in range(num):

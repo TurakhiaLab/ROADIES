@@ -162,7 +162,7 @@ def combine_iter(out_dir, run, roadies_dir,sub_dir):
             out_dir, run
         )
     )
-    os.system('rm {0}/*.maf'.format(sub_dir))
+    #os.system('rm {0}/*.maf'.format(sub_dir))
     # open both master files and get gene trees and mapping
     gt = open(out_dir + "/master_gt.nwk", "r")
     gene_trees = gt.readlines()
