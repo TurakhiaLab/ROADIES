@@ -77,23 +77,22 @@ if NUM_SPECIES != TO_ALIGN:
         print(scores)
     # sort list of quartets by score
         sorted_scores = sorted(scores.items(), key=lambda x: x[1])
+        print("sorted",sorted_scores)
     # only use quartets with a score lesser than t        
         idx = 0
     # assign weighted scheme of (1/c_i)/summation_i of (1/c_i)
         weights = []
+        the_scores=[x[1] for x in sorted_scores]
+        print("the scores",the_scores)
+        m = np.sum(the_scores)
+        print("sum",m)
         for x in sorted_scores:
-            if x[1] == 0:
-                scores[x] = 0
-            else:
-                scores[x] = 1 / x[1]
-        m = np.sum(scores)
-        for i in range (len(scores)):
             if m == 0:
                 weights.append(0)
             else:
-                weights.append(scores[i]/m)
+                weights.append(x[1]/m)
         #weights = [(value / m) if m != 0 else 0 for value in scores.values()]
-        print(weights)
+        print("weights",weights)
     # now we are going to get the list of species for each gene
        
         # keep on sampling from low scoring quartet branches until we sample required number of weighted genes

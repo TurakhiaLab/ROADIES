@@ -3,49 +3,13 @@ if config["TO_ALIGN"] != num_species:
 	g = config["OUT_DIR"]+"/samples/{sample}_genes.fa"
 else:
 	g = config["OUT_DIR"]+"/samples/out.fa"
-num = len(SAMPLES)*config["GENE_MULT"]
-IDS = list(range(1,num+1))
-mapping = {}
 subset_file = config["SUBSET"]
 subset_dir = config["SUBSET_DIR"]
 #if subset file does not exist before run
+print("subset",config["SUBSET"])
 if config["SUBSET"] == None or config["SUBSET"] == "0" or config["SUBSET"] == 0:
 	subset_file = "subsets/subsets.txt"
 	subset_dir = "subsets"
-	print("No subset file specified in config creating one at subsets/subsets.txt")
-	os.system('mkdir -p subsets')
-	os.system('touch subsets/subsets.txt')
-	map_exist = 0
-
-else:
-	map_exist = 1
-	print("Reading in mapping",config["SUBSET"])
-	with open(config["SUBSET"],'r') as f:
-		lines = f.readlines()
-		for line in lines:
-			s = line.strip().split()
-			sub = s[0]
-			s2 = s[1].strip().split('/')
-			g = s2[len(s2)-1].replace('.fa','')
-			#print(g)
-			if g in mapping:
-				mapping[g].append(sub)
-			else:
-				mapping[g] = [sub]
-	for m in mapping:
-		print(m,len(mapping[m]))
-print("subset file is ",subset_file)
-print("subset dir is ", subset_dir)
-def does_map_exist():
-	return map_exist
-def is_mapped(wildcards):
-	print("w",wildcards)
-	#file = config["GENOMES"]
-	if wildcards in mapping:	
-		print(wildcards,len(mapping[wildcards]))
-		return len(mapping[wildcards])
-	else:
-		return 0
 rule lastz2fasta:
 	input:
 		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   
@@ -186,4 +150,3 @@ rule filtermsa:
 		run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
 			
 		'''
-
