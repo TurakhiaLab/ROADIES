@@ -23,8 +23,8 @@ bool hasN(std::string str) {
     return false;
 }
 
-bool upperExceedsThresh(std::string str, int h) {
-    int upperCount = 0;
+bool upperExceedsThresh(std::string str, size_t h) {
+    size_t upperCount = 0;
     for (auto c: str) {
         if ((c == 'A') || 
                 (c == 'C') ||
@@ -41,7 +41,7 @@ KSEQ_INIT2(, gzFile, gzread)
 int main(int argc, char** argv) {
 
     std::string inFilename, outFilename;
-    int l, s, e;
+    size_t l, s, e;
     float t;
 
     // Parse the command line options
@@ -49,9 +49,9 @@ int main(int argc, char** argv) {
     desc.add_options()
     ("input,i", po::value<std::string>(&inFilename)->required(), "Input FASTA file name [REQUIRED].")
     ("output,o", po::value<std::string>(&outFilename)->required(), "Output FASTA file name [REQUIRED].")
-    ("len,l", po::value<int>(&l)->default_value(1000), "Length of segments.")
-    ("start,s", po::value<int>(&s)->required(), "start index.")
-    ("end,e", po::value<int>(&e)->required(), "end index.")
+    ("len,l", po::value<size_t>(&l)->default_value(1000), "Length of segments.")
+    ("start,s", po::value<size_t>(&s)->required(), "start index.")
+    ("end,e", po::value<size_t>(&e)->required(), "end index.")
     ("upper-case threshold,t", po::value<float>(&t)->required(), "Lower-case threshold.")
     ("help,h", "Print help messages");
 
@@ -89,31 +89,31 @@ int main(int argc, char** argv) {
     }
     gzclose(fp);
     
-    int num_samples = e-s+1;
+    size_t num_samples = (e > s) ? e-s+1 : 0;
     if (num_samples < 1) {
 	    fprintf(stderr, "Invalid index\n");
 	    exit(1);
     }
 
-    fprintf(stdout, "Number of regions: %d\n", num_samples);
-    fprintf(stdout, "ID START: %d, ID END: %d\n", s, e);
-    fprintf(stdout, "Region length: %d\n", l);
+    fprintf(stdout, "Number of regions: %ld\n", num_samples);
+    fprintf(stdout, "ID START: %ld, ID END: %ld\n", s, e);
+    fprintf(stdout, "Region length: %ld\n", l);
     fprintf(stdout, "Input file: %s\n", inFilename.c_str());
     fprintf(stdout, "Output file: %s\n", outFilename.c_str());
 
-    int threshold = int(t*l);
+    size_t threshold = size_t(t*l);
 
     FILE *f_wr = fopen(outFilename.c_str(), "w");
 
-    int count = 0;
+    size_t count = 0;
 
     srand(time(0));
-    for (int j=0; j<num_samples; j++) {
+    for (size_t j=0; j<num_samples; j++) {
         bool found = false;
         std::string sample;
         while (!found) {
-            int k = rand() % total_length;
-            int loc=0, last_idx=0, idx=0, start=0;
+            size_t k = rand() % total_length;
+            size_t loc=0, last_idx=0, idx=0, start=0;
             for (auto i: record_lens) {
                 idx += i;
                 if (k > idx) {
@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
                 }
                 last_idx = idx;
             }
-            if (start+l > int(record_lens[loc])) {
+            if (start+l > size_t(record_lens[loc])) {
                 count++;
                 continue;
             }
@@ -134,14 +134,14 @@ int main(int argc, char** argv) {
                 count++;
                 continue;
             }
-            fprintf(f_wr, ">gene_%d\n%s\n", s+j, frag.c_str());
+            fprintf(f_wr, ">gene_%ld\n%s\n", s+j, frag.c_str());
             found = true;
         }
     }
 
     fclose(f_wr);
     
-    fprintf(stdout, "Number of resampling: %d\n", count);
+    fprintf(stdout, "Number of resampling: %ld\n", count);
 
     return 0;
 }

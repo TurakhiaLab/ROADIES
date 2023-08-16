@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ttl074@AD.UCSD.EDU/roadies/wga-phylo/sampling/kseq.h
+ctype.h
+-
+string.h
+-
+stdlib.h
+-
+
+/home/ttl074@AD.UCSD.EDU/roadies/wga-phylo/sampling/sampling.cpp
+iostream
+-
+boost/program_options.hpp
+-
+time.h
+-
+kseq.h
+/home/ttl074@AD.UCSD.EDU/roadies/wga-phylo/sampling/kseq.h
+zlib.h
+/home/ttl074@AD.UCSD.EDU/roadies/wga-phylo/sampling/zlib.h
+
