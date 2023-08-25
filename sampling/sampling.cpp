@@ -36,12 +36,14 @@ bool upperExceedsThresh(std::string str, size_t h) {
 }
 
 // For reading in the FASTA file
-KSEQ_INIT2(, gzFile, gzread)
+//KSEQ_INIT2(0, gzFile, gzread)
+KSEQ_INIT(gzFile, gzread)
+//KSEQ_INIT(int, read)
 
 int main(int argc, char** argv) {
 
     std::string inFilename, outFilename;
-    size_t l, s, e;
+    size_t l, s, e, resampling_thresh;
     float t;
 
     // Parse the command line options
@@ -52,6 +54,7 @@ int main(int argc, char** argv) {
     ("len,l", po::value<size_t>(&l)->default_value(1000), "Length of segments.")
     ("start,s", po::value<size_t>(&s)->required(), "start index.")
     ("end,e", po::value<size_t>(&e)->required(), "end index.")
+    ("resampling_threshold,h", po::value<size_t>(&resampling_thresh)->default_value(1e6), "Resampling threshold.")
     ("upper-case threshold,t", po::value<float>(&t)->required(), "Lower-case threshold.")
     ("help,h", "Print help messages");
 
@@ -87,6 +90,7 @@ int main(int argc, char** argv) {
 	    record_lens.push_back(record->seq.l);
         total_length+=record->seq.l;
     }
+    kseq_destroy(record);
     gzclose(fp);
     
     size_t num_samples = e-s+1;
@@ -132,6 +136,11 @@ int main(int argc, char** argv) {
             std::string frag = record_seqs[loc].substr(start, l);
             if (hasN(frag) || !upperExceedsThresh(frag, threshold)) {
                 count++;
+                if (count == resampling_thresh) {
+                    fprintf(stderr, "WARNING: Resampling exceeds threshold: %ld\n", resampling_thresh);
+                    fclose(f_wr);
+                    exit(1);
+                }
                 continue;
             }
             fprintf(f_wr, ">gene_%ld\n%s\n", s+j, frag.c_str());
