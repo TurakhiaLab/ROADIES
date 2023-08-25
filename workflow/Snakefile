@@ -1,14 +1,18 @@
 from snakemake.utils import min_version
 min_version("7.12.1")
 configfile: "config/config.yaml"
-SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa").samples
+SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa.gz").samples
 num = len(SAMPLES)*config["GENE_MULT"]
 IDS = list(range(1,num+1))
 
-include: "rules/align.smk"
-include: "rules/astral.smk"
-include: "rules/sampling.smk"
-include: "rules/tree.smk"
+if (config["MSA"] == "mashtree"):
+	include: "rules/mashtree.smk"
+else:
+	include: "rules/align.smk"
+	include: "rules/astral.smk"
+	include: "rules/sampling.smk"
+	include: "rules/tree.smk"
+	
 rule all:
 	input:
 		config["OUT_DIR"]+"/roadies.nwk"

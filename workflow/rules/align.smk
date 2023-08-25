@@ -34,7 +34,7 @@ rule lastz2fasta:
 rule lastz:
 	input:
 		genes = g,
-		genome = config["GENOMES"]+"/{sample}.fa"
+		genome = config["GENOMES"]+"/{sample}.fa.gz"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
@@ -51,7 +51,11 @@ rule lastz:
 		steps = config["STEPS"]
 	shell:
 		'''
-		lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+		if [[ "{input.genome}" == *.gz ]]; then
+			lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+		else
+			lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+		fi
 		'''
 
 
@@ -75,7 +79,7 @@ rule pasta:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
-			run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
+			python /home/ubuntu/pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
 
 		fi
 		touch {output}
@@ -93,7 +97,7 @@ rule filtermsa:
 		"../envs/filtermsa.yaml"
 	shell:
 		'''
-		run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
+		python /home/ubuntu/pasta/run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
 			
 		'''
 

@@ -1,0 +1,5 @@
+name: mashtree
+channels:
+  - bioconda
+dependencies:
+  - mashtree

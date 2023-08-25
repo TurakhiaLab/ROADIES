@@ -1,11 +1,11 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
 
-GENOMES: "/home/roadies-datasets/drosophila"
+GENOMES: "/datasets/gzipped_birds_new"
 #reference tree for converge (used for ref_dist.csv)
-REFERENCE: "trees/flies_reftree_11.nwk"
+REFERENCE: "trees/birds_reftree_363_latest.nwk"
 #length of genes
-LENGTH: 200
+LENGTH: 500
 #number of genes
 GENE_MULT: 2
 #minimum % uppercase for genes
@@ -21,7 +21,7 @@ COVERAGE: 85
 #minimum continuity of alignments
 CONTINUITY: 85
 #max number of copies from a genome in an alignment
-MAX_DUP: 20
+MAX_DUP: 10
 #number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
 STEPS: 1
 #number of bootstrapped trees for comparison
@@ -33,11 +33,12 @@ INPUT_MAP: null
 #min converge runs before stopping
 MIN_ITER: 5
 #max runtime in hours
-MAX_RUNTIME: 0.5
+MAX_RUNTIME: 72
 #percentage of genes that use weighted sampling
-WEIGHTED: 0.6
+WEIGHTED: 0.3
 #percentage of species to align during lastz with weighted sampling
-TO_ALIGN: 5
+TO_ALIGN: 100
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
-
+#add modes
+MSA: "mashtree" #"fasttree", "mashtree"

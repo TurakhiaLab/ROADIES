@@ -24,11 +24,13 @@ parser.add_argument("-m", type=int, default=4)
 parser.add_argument("--plotdir", default="results/plots")
 parser.add_argument("--statdir", default="results/statistics")
 parser.add_argument("-d", type=int, default=100)
+parser.add_argument("--tool", default="iqtree")
 args = parser.parse_args()
 path = args.path
 outdir = args.outdir
 plotdir = args.plotdir
 statdir = args.statdir
+tool = args.tool
 m = args.m
 k = args.k
 d = args.d
@@ -134,6 +136,26 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 with open(outdir + "/mapping.txt", "a") as w2:
                     w2.write(index + " " + species + "\n")
                 w2.close()
+
+if tool == "mashtree":
+    for filename in glob.glob(os.path.join(outdir, "*.fa")):
+        with open(os.path.join(os.getcwd(), filename), "r") as f:
+            sequences = f.read().strip().split(">")[1:]
+            number = int(filename.split("_")[1].split(".")[0])
+
+            gene_directory = os.path.join(outdir, f"gene_{number}")
+            os.makedirs(gene_directory, exist_ok=True)
+
+            for i, sequence in enumerate(sequences):
+                header, *lines = sequence.split("\n")
+                sequence_text = "\n".join(lines)
+                # Extract the sequence name from the header
+                seq_name = header.split()[0]
+                # Generate the output filename using the sequence name
+                output_filename = os.path.join(gene_directory, f"{seq_name}.fa")
+                with open(output_filename, "w") as out:
+                    out.write(f">{header}\n{sequence_text}\n")
+
 # turn number of genes dict into list
 x = list(num_genes.keys())
 y = list(num_genes.values())

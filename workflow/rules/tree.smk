@@ -20,7 +20,8 @@ rule iqtree:
 		gene_tree = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile"
 	params:
 		m = config["MIN_ALIGN"],
-		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
+		max_len = int(100*config["LENGTH"]/config["IDENTITY"]),
+		tool = config["MSA"]
 	threads: 8
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.iqtree.txt"
@@ -30,7 +31,11 @@ rule iqtree:
 		'''
 		if [[ `grep -n '>' {input.msa} | wc -l` -gt {params.m} ]] && [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input.msa}` -lt {params.max_len} ]]
 		then
-			iqtree -s {input.msa} -m GTR+G -redo -nt 8
+			if [[ "{params.tool}" == "fasttree" ]]; then
+				FastTree -gtr -nt {input.msa} > {output}
+			else
+				iqtree -s {input.msa} -m GTR+G -redo -nt 8
+			fi
 		else
 			touch {output.gene_tree}
 		fi
