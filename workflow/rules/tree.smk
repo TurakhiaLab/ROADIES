@@ -6,8 +6,6 @@ rule mergeTrees:
 		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
 		msa_dir = config["OUT_DIR"]+"/genes",
-	conda: 
-		"../envs/tree.yaml"
 	shell:
 		'''
 		cat {params.msa_dir}/*.treefile > {output}
@@ -25,8 +23,6 @@ rule iqtree:
 	threads: 8
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.iqtree.txt"
-	conda: 
-		"../envs/tree.yaml"	
 	shell:
 		'''
 		if [[ `grep -n '>' {input.msa} | wc -l` -gt {params.m} ]] && [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input.msa}` -lt {params.max_len} ]]

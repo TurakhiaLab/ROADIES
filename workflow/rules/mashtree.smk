@@ -57,7 +57,7 @@ rule sequence_select:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
-	threads:1
+	threads:32
 	shell:
 			'''
 			echo "We are starting to sample {input}"
@@ -71,8 +71,6 @@ rule sequence_merge:
 	params:
 		gene_dir = config["OUT_DIR"]+"/samples",
 		plotdir = config["OUT_DIR"]+"/plots"
-	conda: 
-		"../envs/plots.yaml"
 	output:
         	config["OUT_DIR"]+"/samples/out.fa",
 			report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
@@ -117,8 +115,6 @@ rule lastz2fasta:
 		statdir = config["OUT_DIR"]+"/statistics",
 		tool = config["MSA"],
 		d = config["MAX_DUP"]
-	conda:
-		"../envs/plots.yaml"
 	shell:
 		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d} --tool {params.tool}" 
 
@@ -131,8 +127,7 @@ rule lastz:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
-	conda:
-		"../envs/lastz.yaml"
+	threads: 2
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],
@@ -165,8 +160,6 @@ rule mashtree:
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
 	threads: 8
-	conda: 
-		"../envs/mash.yaml"
 	shell:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
@@ -183,8 +176,6 @@ rule mergeTrees:
 		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
 		msa_dir = config["OUT_DIR"]+"/genes",
-	conda: 
-		"../envs/tree.yaml"
 	shell:
 		'''
 		cat {params.msa_dir}/*.dnd > {output}

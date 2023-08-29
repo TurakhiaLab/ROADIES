@@ -57,7 +57,7 @@ rule sequence_select:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
-	threads:1
+	threads:32
 	shell:
 			'''
 			echo "We are starting to sample {input}"
@@ -71,8 +71,6 @@ rule sequence_merge:
 	params:
 		gene_dir = config["OUT_DIR"]+"/samples",
 		plotdir = config["OUT_DIR"]+"/plots"
-	conda: 
-		"../envs/plots.yaml"
 	output:
         	config["OUT_DIR"]+"/samples/out.fa",
 			report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')

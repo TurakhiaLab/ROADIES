@@ -25,8 +25,6 @@ rule lastz2fasta:
 		plotdir = config["OUT_DIR"]+"/plots",
 		statdir = config["OUT_DIR"]+"/statistics",
 		d = config["MAX_DUP"]
-	conda:
-		"../envs/plots.yaml"
 	shell:
 		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d}" 
 		
@@ -39,8 +37,7 @@ rule lastz:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
-	conda:
-		"../envs/lastz.yaml"
+	threads: 2
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],
