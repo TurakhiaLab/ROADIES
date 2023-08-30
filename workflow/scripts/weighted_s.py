@@ -41,10 +41,10 @@ GENOMES = args.genomes
 NUM_SPECIES = args.num_species
 counts = {}
 # getting list of species names
-for filename in glob.glob(os.path.join(GENOMES, "*.fa.gz")):
+for filename in glob.glob(os.path.join(GENOMES, "*.fa")):
     s = filename.split("/")
     name = s[len(s) - 1]
-    species = name.replace(".fa.gz", "")
+    species = name.replace(".fa", "")
     counts[species] = 0
 # MASTER LIST OF SPECIES NAMES
 MASTER_SPECIES = list(counts.keys())
@@ -57,14 +57,14 @@ if NUM_SPECIES != TO_ALIGN:
     species_list = []
     if num_weighted != 0:
         print("Doing weighted sampling on {0} of {1} genes".format(num_weighted, KREG))
-    # getting scores of quartet to assign weights
-        lines = open("freqQuad.csv","r").readlines()
+        # getting scores of quartet to assign weights
+        lines = open("freqQuad.csv", "r").readlines()
         scores = {}
-# go through freqQuad.csv and get pp scores of t1 of each quartet
+        # go through freqQuad.csv and get pp scores of t1 of each quartet
         for i in range(len(lines)):
             if i % 3 == 0:
                 s = lines[i].split("\t")
-                #print(s[4],s[5])
+                # print(s[4],s[5])
                 support = float(s[4])
                 teb = float(s[5])
                 if teb == 0:
@@ -72,11 +72,11 @@ if NUM_SPECIES != TO_ALIGN:
                 else:
                     scores[i] = support / teb
         print(scores)
-    # sort list of quartets by score
+        # sort list of quartets by score
         sorted_scores = sorted(scores.items(), key=lambda x: x[1])
-    # only use quartets with a score lesser than t        
+        # only use quartets with a score lesser than t
         idx = 0
-    # assign weighted scheme of (1/c_i)/summation_i of (1/c_i)
+        # assign weighted scheme of (1/c_i)/summation_i of (1/c_i)
         weights = []
         for x in sorted_scores:
             if x[1] == 0:
@@ -84,15 +84,15 @@ if NUM_SPECIES != TO_ALIGN:
             else:
                 scores[x] = 1 / x[1]
         m = np.sum(scores)
-        for i in range (len(scores)):
+        for i in range(len(scores)):
             if m == 0:
                 weights.append(0)
             else:
-                weights.append(scores[i]/m)
-        #weights = [(value / m) if m != 0 else 0 for value in scores.values()]
+                weights.append(scores[i] / m)
+        # weights = [(value / m) if m != 0 else 0 for value in scores.values()]
         print(weights)
-    # now we are going to get the list of species for each gene
-       
+        # now we are going to get the list of species for each gene
+
         # keep on sampling from low scoring quartet branches until we sample required number of weighted genes
         while num_sampled < num_weighted:
             # list of species to align gene to
