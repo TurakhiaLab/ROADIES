@@ -47,7 +47,7 @@ def get_index_e(wildcards):
 	return od_e[wildcards]
 rule sequence_select:
 	input:
-		config["GENOMES"]+"/{sample}.fa"
+		config["GENOMES"]+"/{sample}.fa.gz"
 	params:
 		LENGTH=config["LENGTH"],
 		KFAC=lambda wildcards: get_index_s(wildcards.sample),
@@ -57,7 +57,7 @@ rule sequence_select:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
-	threads:32
+	threads:config["CORES"]
 	shell:
 			'''
 			echo "We are starting to sample {input}"
@@ -122,7 +122,7 @@ rule lastz2fasta:
 rule lastz:
 	input:
 		genes = g,
-		genome = config["GENOMES"]+"/{sample}.fa"
+		genome = config["GENOMES"]+"/{sample}.fa.gz"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:

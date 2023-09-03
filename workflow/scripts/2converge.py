@@ -212,14 +212,12 @@ if __name__ == "__main__":
         ref = Tree(config["REFERENCE"])
     genomes= config["GENOMES"]
     NUM_GENOMES = len(os.listdir(genomes))
-    gene_mult = config["GENE_MULT"]
-    NUM_GENES = gene_mult * NUM_GENOMES
+    NUM_GENES = config["GENE_COUNT"]
     LENGTH = config["LENGTH"]
     NUM_BOOTSTRAP = config["NUM_BOOTSTRAP"]
     input_gt = config["INPUT_GENE_TREES"]
     input_map = config["INPUT_MAP"]
-    MIN_ITER = config["MIN_ITER"]
-    MAX_RUNTIME = config["MAX_RUNTIME"] * 3600
+    ITERATIONS = config["ITERATIONS"]
     roadies_dir = config["OUT_DIR"]
     species_ids = "species_ids.csv"
     gene_ids = "gene_ids.csv"
@@ -261,7 +259,6 @@ if __name__ == "__main__":
     
     # starts main for loop for multiple iterations
     # for max iteration runs; start from 1 index instead of 0
-    iteration = 0
     start_time = time.time()
     start_time_l = time.asctime(time.localtime(time.time()))
     time_stamps.append(start_time)
@@ -269,7 +266,7 @@ if __name__ == "__main__":
     gt_counts = []
     with open(out_dir+"/time_stamps.csv",'a') as t_out:
         t_out.write("Start time: "+str(start_time_l)+"\n")
-    while(True):
+    for iteration in ITERATIONS:
         # returns an array of b bootstrapped trees
         weighted = True
         if iteration == 0 and input_gt is None:
@@ -344,18 +341,4 @@ if __name__ == "__main__":
         elapsed_time = curr_time - start_time
         with open(out_dir+"/time_stamps.csv",'a') as t_out:
             t_out.write(str(num_gt)+','+str(curr_time_l)+','+str(elapsed_time)+','+str(to_previous)+"\n")
-        if iteration+1 >= MIN_ITER:
-            if elapsed_time >= MAX_RUNTIME:
-                print("Current elapsed time",elapsed_time)
-                print("Max Runtime",MAX_RUNTIME)
-                print("We have surpassed the allotted runtime by {0} seconds".format(elapsed_time-MAX_RUNTIME))
-                break
-            else:
-                runtime_left = MAX_RUNTIME-elapsed_time
-                print("Current elapsed time",elapsed_time)
-                print("Max Runtime",MAX_RUNTIME)
-                print("Runtime left",runtime_left)
-        
-        iteration+=1
-
           
