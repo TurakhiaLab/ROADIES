@@ -10,6 +10,6 @@ rule astral:
 		config["OUT_DIR"]+"/benchmarks/astral.txt"
 	shell:
 		'''
-		ASTER-Linux/bin/astral-pro -i {input} -o {output} -a {params.genes}/mapping.txt
-		ASTER-Linux/bin/astral-pro -u 3 -i {input} -o {params.stats} -a {params.genes}/mapping.txt
+		../ASTER-Linux/bin/astral-pro -i {input} -o {output} -a {params.genes}/mapping.txt
+		../ASTER-Linux/bin/astral-pro -u 3 -i {input} -o {params.stats} -a {params.genes}/mapping.txt
 		'''

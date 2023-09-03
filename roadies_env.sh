@@ -34,10 +34,6 @@ cd pasta
 python setup.py develop --user
 cd ..
 
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-
-cp -r ASTER-Linux wga-phylo/
-
 # Source the updated .bashrc to activate Conda environment
 source ~/.bashrc
 
