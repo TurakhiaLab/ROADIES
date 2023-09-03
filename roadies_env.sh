@@ -25,14 +25,22 @@ make
 cd ..
 
 # Clone PASTA repository and install
-RUN git clone https://github.com/smirarab/pasta.git
+git clone https://github.com/smirarab/pasta.git
 
 # Clone Sate-Tools repository
-RUN git clone https://github.com/smirarab/sate-tools-linux.git
+git clone https://github.com/smirarab/sate-tools-linux.git
     
 cd pasta
-python setup.py develop --user
+python3 setup.py develop --user
 cd ..
+
+#build sampling code
+cd sampling
+mkdir build
+cd build
+cmake ..
+make
+cd ../..
 
 # Source the updated .bashrc to activate Conda environment
 source ~/.bashrc
