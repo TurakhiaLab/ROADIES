@@ -266,7 +266,7 @@ if __name__ == "__main__":
     gt_counts = []
     with open(out_dir+"/time_stamps.csv",'a') as t_out:
         t_out.write("Start time: "+str(start_time_l)+"\n")
-    for iteration in ITERATIONS:
+    for iteration in range(ITERATIONS):
         # returns an array of b bootstrapped trees
         weighted = True
         if iteration == 0 and input_gt is None:
