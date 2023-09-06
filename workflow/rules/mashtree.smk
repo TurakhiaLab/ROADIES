@@ -141,7 +141,7 @@ rule lastz:
 		if [[ "{input.genome}" == *.gz ]]; then
 			lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
 		else
-			lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+			/home/ubuntu/wga-phylo/lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
 		fi
 		'''
 
@@ -191,8 +191,9 @@ rule astral:
 		stats = config["OUT_DIR"]+"/roadies_stats.nwk"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/astral.txt"
+	threads: 32
 	shell:
 		'''
-		ASTER-Linux/bin/astral-pro -i {input} -o {output} -a {params.genes}/mapping.txt
-		ASTER-Linux/bin/astral-pro -u 3 -i {input} -o {params.stats} -a {params.genes}/mapping.txt
+		ASTER-Linux/bin/astral-pro -t 32 -i {input} -o {output} -a {params.genes}/mapping.txt
+		ASTER-Linux/bin/astral-pro -u 3 -t 32 -i {input} -o {params.stats} -a {params.genes}/mapping.txt
 		'''

@@ -20,7 +20,7 @@ rule iqtree:
 		m = config["MIN_ALIGN"],
 		max_len = int(100*config["LENGTH"]/config["IDENTITY"]),
 		tool = config["MSA"]
-	threads: 8
+	threads: 1
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.iqtree.txt"
 	shell:

@@ -275,6 +275,13 @@ if __name__ == "__main__":
         print("There are {0} gene trees after iteration {1}".format(num_gt,iteration))
         runs.append(run)
         gt_counts.append(num_gt)
+        curr_time = time.time()
+        curr_time_l = time.asctime(time.localtime(time.time()))
+        to_previous = curr_time - time_stamps[len(time_stamps)-1]
+        time_stamps.append(curr_time)
+        elapsed_time = curr_time - start_time
+        with open(out_dir+"/time_stamps.csv",'a') as t_out:
+            t_out.write(str(num_gt)+','+str(curr_time_l)+','+str(elapsed_time)+','+str(to_previous)+"\n")
         # if reference exists get distance between ref and roadies tree
         if ref_exist:
             ref_dist = comp_tree(ref, trees[iteration])
@@ -334,11 +341,4 @@ if __name__ == "__main__":
                 print("Distance to reference so far:")
                 for j in range(len(ref_dists)):
                     print("Run: " + str(j) + " ("+str((j+1)*NUM_GENES)+"): " + str(ref_dists[j]))
-        curr_time = time.time()
-        curr_time_l = time.asctime(time.localtime(time.time()))
-        to_previous = curr_time - time_stamps[len(time_stamps)-1]
-        time_stamps.append(curr_time)
-        elapsed_time = curr_time - start_time
-        with open(out_dir+"/time_stamps.csv",'a') as t_out:
-            t_out.write(str(num_gt)+','+str(curr_time_l)+','+str(elapsed_time)+','+str(to_previous)+"\n")
           
