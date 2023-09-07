@@ -47,7 +47,7 @@ def get_index_e(wildcards):
 	return od_e[wildcards]
 rule sequence_select:
 	input:
-		config["GENOMES"]+"/{sample}.fa.gz"
+		config["GENOMES"]+"/{sample}.fa"
 	params:
 		LENGTH=config["LENGTH"],
 		KFAC=lambda wildcards: get_index_s(wildcards.sample),
@@ -122,7 +122,7 @@ rule lastz2fasta:
 rule lastz:
 	input:
 		genes = g,
-		genome = config["GENOMES"]+"/{sample}.fa.gz"
+		genome = config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:

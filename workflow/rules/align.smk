@@ -32,7 +32,7 @@ rule lastz2fasta:
 rule lastz:
 	input:
 		genes = g,
-		genome = config["GENOMES"]+"/{sample}.fa.gz"
+		genome = config["GENOMES"]+"/{sample}.fa"
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:

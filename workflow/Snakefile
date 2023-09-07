@@ -1,7 +1,7 @@
 from snakemake.utils import min_version
 min_version("7.12.1")
 configfile: "config/config.yaml"
-SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa.gz").samples
+SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa").samples
 num = config["GENE_COUNT"]
 IDS = list(range(1,num+1))
 

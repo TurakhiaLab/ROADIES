@@ -41,10 +41,10 @@ GENOMES = args.genomes
 NUM_SPECIES = args.num_species
 counts = {}
 # getting list of species names
-for filename in glob.glob(os.path.join(GENOMES, "*.fa.gz")):
+for filename in glob.glob(os.path.join(GENOMES, "*.fa")):
     s = filename.split("/")
     name = s[len(s) - 1]
-    species = name.replace(".fa.gz", "")
+    species = name.replace(".fa", "")
     counts[species] = 0
 # MASTER LIST OF SPECIES NAMES
 MASTER_SPECIES = list(counts.keys())
