@@ -76,8 +76,27 @@ rule pasta:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
-			python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
+			input_file={input}
+			output_file={output}
+			reference=""
+			all_matched=true
 
+			while IFS= read -r line; do
+  				if [[ "$line" != ">"* ]]; then
+    				if [ -z "$reference" ]; then
+      					reference="$line"
+    				elif [ "$line" != "$reference" ]; then
+       					all_matched=false
+      					break
+    				fi
+ 	 			fi
+			done < "$input_file"
+
+			if [ "$all_matched" = true ]; then
+				cp "$input_file" "$output_file"
+			else
+				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
+			fi
 		fi
 		touch {output}
 
