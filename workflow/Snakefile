@@ -7,6 +7,11 @@ IDS = list(range(1,num+1))
 
 if (config["MSA"] == "mashtree"):
 	include: "rules/mashtree.smk"
+elif (config["MSA"] == "fasttree"):
+	include: "rules/align.smk"
+	include: "rules/astral.smk"
+	include: "rules/sampling.smk"
+	include: "rules/fasttree.smk"
 else:
 	include: "rules/align.smk"
 	include: "rules/astral.smk"
