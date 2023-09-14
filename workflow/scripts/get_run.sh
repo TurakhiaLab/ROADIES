@@ -3,7 +3,6 @@
 mkdir -p $1/$2
 latest_log=`ls -Art .snakemake/log/ | tail -n 1`
 echo "Latest log is .snakemake/log/${latest_log} adding to $1/$2/$2.log"
-python workflow/scripts/logparser.py .snakemake/log/${latest_log} $1/$2/runtime.txt
 cp .snakemake/log/${latest_log} $1/$2/$2.log
 snakemake --report report.html 
 cp report.html $1/$2
@@ -19,4 +18,3 @@ cp species_ids.csv $1/$2
 cp species_lists.csv $1/$2
 cp gene_ids.csv $1/$2
 rm -r ~/.pasta
-

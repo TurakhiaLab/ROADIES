@@ -1,33 +1,6 @@
 num_species = len(os.listdir(config["GENOMES"]))
-if config["TO_ALIGN"] != num_species:
-	g = config["OUT_DIR"]+"/samples/{sample}_genes.fa"
-else:
-	g = config["OUT_DIR"]+"/samples/out.fa"
 
-rule lastz2fasta:
-	input:
-		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   
-	output:
-		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa",id=IDS),
-		report(config["OUT_DIR"]+"/plots/num_genes.png",caption="../report/num_genes_p.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/statistics/homologues.csv",caption="../report/homologues.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/statistics/num_genes.csv",caption="../report/num_genes_t.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/statistics/num_gt.txt",caption="../report/num_gt.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/plots/gene_dup.png",caption="../report/gene_dup.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/plots/homologues.png",caption="../report/homologues_p.rst",category="Genes Report")
-
-
-	params:
-		k = num,
-		out = config["OUT_DIR"]+"/genes",
-		p = config["OUT_DIR"]+"/alignments",
-		m = config["MIN_ALIGN"],
-		plotdir = config["OUT_DIR"]+"/plots",
-		statdir = config["OUT_DIR"]+"/statistics",
-		d = config["MAX_DUP"]
-	shell:
-		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d}" 
-		
+g = config["OUT_DIR"]+"/samples/out.fa"
 		
 rule lastz:
 	input:
@@ -54,6 +27,28 @@ rule lastz:
 			lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
 		fi
 		'''
+
+rule lastz2fasta:
+	input:
+		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   
+	output:
+		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa",id=IDS),
+		report(config["OUT_DIR"]+"/plots/num_genes.png",caption="../report/num_genes_p.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/statistics/homologues.csv",caption="../report/homologues.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/statistics/num_genes.csv",caption="../report/num_genes_t.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/statistics/num_gt.txt",caption="../report/num_gt.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/plots/gene_dup.png",caption="../report/gene_dup.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/plots/homologues.png",caption="../report/homologues_p.rst",category="Genes Report")
+	params:
+		k = num,
+		out = config["OUT_DIR"]+"/genes",
+		p = config["OUT_DIR"]+"/alignments",
+		m = config["MIN_ALIGN"],
+		plotdir = config["OUT_DIR"]+"/plots",
+		statdir = config["OUT_DIR"]+"/statistics",
+		d = config["MAX_DUP"]
+	shell:
+		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d}" 
 
 
 rule pasta:
@@ -101,6 +96,7 @@ rule pasta:
 		touch {output}
 
 		'''
+		
 rule filtermsa:
 	input:
 		config["OUT_DIR"]+"/genes/gene_{id}.fa.aln"

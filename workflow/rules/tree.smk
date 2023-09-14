@@ -1,16 +1,4 @@
 
-rule mergeTrees:
-	input:
-		expand(config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile",id=IDS)
-	output:
-		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
-	params:
-		msa_dir = config["OUT_DIR"]+"/genes",
-	shell:
-		'''
-		cat {params.msa_dir}/*.treefile > {output}
-		'''
-
 rule iqtree:
 	input:
 		msa = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln"
@@ -18,8 +6,7 @@ rule iqtree:
 		gene_tree = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile"
 	params:
 		m = config["MIN_ALIGN"],
-		max_len = int(100*config["LENGTH"]/config["IDENTITY"]),
-		tool = config["MSA"]
+		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
 	threads: 8
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.iqtree.txt"
@@ -32,3 +19,16 @@ rule iqtree:
 			touch {output.gene_tree}
 		fi
 		'''
+
+rule mergeTrees:
+	input:
+		expand(config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile",id=IDS)
+	output:
+		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
+	params:
+		msa_dir = config["OUT_DIR"]+"/genes",
+	shell:
+		'''
+		cat {params.msa_dir}/*.treefile > {output}
+		'''
+
