@@ -77,12 +77,6 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 | **IDENTITY** | Set the percentage of the aligned base pairs. | 65 (Recommended) | 
 | **MAX_DUP** | | |
 | **STEPS** |||
-| **NUM_BOOTSTRAP** |||
-| **INPUT_GENE_TREES** |||
-| **INPUT_MAP** |||
-| **ITERATIONS** | Provide the number of iterations for ROADIES to run. Set high value only if you we want to run the pipeline longer to generate accurate results.||
-| **WEIGHTED**  |||
-| **TO_ALIGN** | Specify the number of species in the input dataset. ||
 | **FILTERFRAGMENTS** | Specify the percentage of the allowed gaps in a fragments. With more gaps, the fragments will be filtered. ||
 | **MASKSITES** | Specify the percentage of the allowed gaps in specific sites of PASTA alignment. If there are more gaps than the specified percentage value, the sites will be masked.||
 | **MSA** |||
