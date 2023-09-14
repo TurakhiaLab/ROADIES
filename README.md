@@ -66,21 +66,21 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 | Parameters | Description | Default value |
 | --- | --- | --- |
 | **GENOMES** | Specify the path to your input files which includes raw genome assembiles of the species. All input genome assemblies should be in fasta format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
-| **REFERENCE** | Specify path for the reference tree in Newick format. This is useful to compare ROADIES' results with a state-of-the-art approach. | |
+| **REFERENCE** (optional) | Specify path for the reference tree (state-of-the-art) in Newick format to compare ROADIES' results with a state-of-the-art approach. If you don't want to specify any reference tree, set it to `null`. | `null` |
 | **LENGTH** | Configure the lengths of each of the randomly sampled subsequence or genes. | 500 |
-| **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 100 |
-| **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 |
-| **OUT_DIR** | Specify the path for output files. | |
-| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. | 4 |
+| **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 750 |
+| **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 (Recommended) |
+| **OUT_DIR** | Specify the path for ROADIES output files. | |
+| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. | 4 (Recommended) |
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 (Recommended) |
-| **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns. | 85 (Recommended) |
-| **IDENTITY** | Set the percentage of the aligned base pairs. | 65 (Recommended) | 
+| **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 (Recommended) |
+| **IDENTITY** | Set the percentage of the aligned base pairs for LASTZ. | 65 (Recommended) | 
 | **MAX_DUP** | | |
 | **STEPS** |||
-| **FILTERFRAGMENTS** | Specify the percentage of the allowed gaps in a fragments. With more gaps, the fragments will be filtered. ||
-| **MASKSITES** | Specify the percentage of the allowed gaps in specific sites of PASTA alignment. If there are more gaps than the specified percentage value, the sites will be masked.||
-| **MSA** |||
-| **CORES** |||
+| **FILTERFRAGMENTS** | Specify the percentage of the allowed gaps in an aligned fragment for PASTA. With more gaps, the fragments will be filtered. | 0.5 (Recommended)|
+| **MASKSITES** | Specify the percentage of the allowed gaps in specific sites of PASTA alignment. If there are more gaps than the specified percentage value, the sites will be masked.| 0.05 (Recommended)|
+| **MSA** | Specify the modes of operation for ROADIES pipeline. Set it to `iqtree` if you want to run in accurate mode, `fasttree` for balanced mode and `mashtree` for fast mode of operation. | `iqtree` |
+| **CORES** | Specify the number of cores for ROADIES to run. ||
 
 ### <a name="run"></a> Step 2: Running the pipeline
 
