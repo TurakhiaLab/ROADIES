@@ -33,6 +33,12 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 #### ROADIES Pipeline Overview
 ROADIES pipeline consists of multiple stages, from raw genome assemblies to species tree estimation, with several user-configurable parameters in each stage. ROADIES randomly samples subsequences from input genomic assemblies as genes which are then aligned with all individual assemblies using [LASTZ](https://lastz.github.io/lastz/). Next, ROADIES filters the alignments, gathers all homology data per gene, and performs multiple sequence alignments for every gene using [PASTA](https://github.com/smirarab/pasta). Lastly, ROADIES estimates gene trees from MSA using [IQTREE](http://www.iqtree.org/) and eventually estimates species trees from gene trees using [ASTRAL-Pro](https://github.com/chaoszhang/A-pro). 
 
+<div align="center">
+
+<img src="drawing_github.png">
+
+</div>
+
 ## <a name="gettingstarted"></a> Environment Setup
 
 This section provides detailed instructions on how to install and set up the environment to run ROADIES in your system.
@@ -57,16 +63,15 @@ This section provides detailed instructions on how to configure, run, and analyz
 
 ROADIES provides multiple options for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters that give the best results, users can modify the values specific to their needs).
 
-
 | Parameters | Description | Default value |
 | --- | --- | --- |
-| **GENOMES** | Specify the path to your input files which includes raw genome assembiles of the species with `--GENOMES`. All genome assemblies should be in fasta format. The files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`) | |
-| **REFERENCE** | Specify path for the reference tree in Newick format using `--REFERENCE` parameter. This is used if user wants to compare ROADIES' results with a state-of-the-art approach. | |
-| **LENGTH** | Configure the lengths of each of the sampled subsequence or genes with `--LENGTH` parameter. | 500 |
-| **GENE_COUNT** | Configure the number of genes to be sampled at each iteration with `--KREG` parameter. | 100 |
-| **UPPER_CASE** | ROADIES samples the genes only if the percentage of upper cases in each gene is more than a particular value, set by `--UPPER_CASE` parameter. | 0.9 |
-| **OUT_DIR** | Specify the path where you want ROADIES to store the output files. | |
-| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files using `--MIN_ALIGN` parameter. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. | 4 |
+| **GENOMES** | Specify the path to your input files which includes raw genome assembiles of the species. All input genome assemblies should be in fasta format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
+| **REFERENCE** | Specify path for the reference tree in Newick format. This is useful to compare ROADIES' results with a state-of-the-art approach. | |
+| **LENGTH** | Configure the lengths of each of the randomly sampled subsequence or genes. | 500 |
+| **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 100 |
+| **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 |
+| **OUT_DIR** | Specify the path for output files. | |
+| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. | 4 |
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 (Recommended) |
 | **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns. | 85 (Recommended) |
 | **IDENTITY** | Set the percentage of the aligned base pairs. | 65 (Recommended) | 
@@ -75,12 +80,11 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 | **NUM_BOOTSTRAP** |||
 | **INPUT_GENE_TREES** |||
 | **INPUT_MAP** |||
-| **ITERATIONS** | Provide the maximum number of iterations for ROADIES to run with `--MAX_ITER` parameter. Set high `--MAX_ITER` if you want to run the pipeline longer to generate accurate results. Provide `--MAX_ITER` a small value if you want quicker estimate of species tree (such as guide trees for other phylogenetic tools) ||
+| **ITERATIONS** | Provide the number of iterations for ROADIES to run. Set high value only if you we want to run the pipeline longer to generate accurate results.||
 | **WEIGHTED**  |||
-| **TO_ALIGN** | ROADIES follows a weighted sampling approach to select some species out of all species every iteration where the selection of species is based on past iterations' performance. User can specify the number of species to be aligned with, using `--TO_ALIGN` parameter (default is set as half of the total number of input species). Set lower `--TO_ALIGN` if you want speedy results, set `--TO_ALIGN` with a high value if you want slower and stable results. ||
-| **PASTA parameters** |||
-| **FILTERFRAGMENTS** |||
-| **MASKSITES** |||
+| **TO_ALIGN** | Specify the number of species in the input dataset. ||
+| **FILTERFRAGMENTS** | Specify the percentage of the allowed gaps in a fragments. With more gaps, the fragments will be filtered. ||
+| **MASKSITES** | Specify the percentage of the allowed gaps in specific sites of PASTA alignment. If there are more gaps than the specified percentage value, the sites will be masked.||
 | **MSA** |||
 | **CORES** |||
 
