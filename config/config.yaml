@@ -1,13 +1,13 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
 
-GENOMES: "/home/roadies-datasets/birds"
+GENOMES: "/home/ang037@AD.UCSD.EDU/genomes_ecoli_100"
 #reference tree for converge (used for ref_dist.csv)
-REFERENCE: "trees/birds_reftree_new_48.nwk"
+REFERENCE: null
 #length of genes
 LENGTH: 500
 #number of genes
-KREG: 192
+GENE_COUNT: 100
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -21,31 +21,13 @@ COVERAGE: 85
 #minimum continuity of alignments
 CONTINUITY: 85
 #max number of copies from a genome in an alignment
-MAX_DUP: 20
+MAX_DUP: 10
 #number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
 STEPS: 1
-#maximum TreeDistance Threshold for stopping converge (set 0 to run to MAX_ITER)
-DIST_THRESHOLD: 0.0
-#number of bootstrapped trees for comparison
-NUM_BOOTSTRAP: 10
-#input ROADIES gene trees for converge
-INPUT_GENE_TREES: null
-#input ROADIES mapping file for converge
-INPUT_MAP: null
-#max converge runs before stopping
-MAX_ITER: 100
-#number of consecutive runs having to satisfy self_dist and iter_dist_bs thresholds before stopping
-STOP_ITER: 5
-#ASTRAL PRO quartet information output
-QUARTETS: "freqQuad.csv"
-#percentage of genes that use weighted sampling
-WEIGHTED: 0.3
-#file location of gene ids for weighted sampling
-GENE_IDS: "gene_id.csv"
-#file location of species lists for weighted sampling
-SPECIES_LISTS: "species_lists.csv"
-#list of gene ids assigned to each species
-SPECIES_IDS: "species_ids.csv"
-#percentage of species to align during lastz with weighted sampling
-TO_ALIGN: 24
-
+#pasta parameters
+FILTERFRAGMENTS: 0.50
+MASKSITES: 0.02
+#add modes
+MSA: "mashtree" #"fasttree", "mashtree"
+#number of cores
+CORES: 32

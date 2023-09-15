@@ -1,7 +1,32 @@
-if config["WEIGHTED"] != 0:
-	g = config["OUT_DIR"]+"/samples/{sample}_genes.fa"
-else:
-	g = config["OUT_DIR"]+"/samples/out.fa"
+num_species = len(os.listdir(config["GENOMES"]))
+
+g = config["OUT_DIR"]+"/samples/out.fa"
+		
+rule lastz:
+	input:
+		genes = g,
+		genome = config["GENOMES"]+"/{sample}.fa"
+	output:
+		config["OUT_DIR"]+"/alignments/{sample}.maf"
+	benchmark:
+		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
+	threads: 2
+	params:
+		species = "{sample}",
+		identity = config['IDENTITY'],
+		coverage = config['COVERAGE'],
+		continuity = config['CONTINUITY'],
+		align_dir = config['OUT_DIR']+ "/alignments",
+		max_dup = 2*int(config['MAX_DUP']),
+		steps = config["STEPS"]
+	shell:
+		'''
+		if [[ "{input.genome}" == *.gz ]]; then
+			lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+		else
+			lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+		fi
+		'''
 
 rule lastz2fasta:
 	input:
@@ -14,42 +39,16 @@ rule lastz2fasta:
 		report(config["OUT_DIR"]+"/statistics/num_gt.txt",caption="../report/num_gt.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/plots/gene_dup.png",caption="../report/gene_dup.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/plots/homologues.png",caption="../report/homologues_p.rst",category="Genes Report")
-
-
 	params:
-		k = config["KREG"],
+		k = num,
 		out = config["OUT_DIR"]+"/genes",
 		p = config["OUT_DIR"]+"/alignments",
 		m = config["MIN_ALIGN"],
 		plotdir = config["OUT_DIR"]+"/plots",
 		statdir = config["OUT_DIR"]+"/statistics",
 		d = config["MAX_DUP"]
-	conda:
-		"../envs/plots.yaml"
 	shell:
 		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d}" 
-		
-		
-rule lastz:
-	input:
-		genes = g,
-		genome = config["GENOMES"]+"/{sample}.fa"
-	output:
-		config["OUT_DIR"]+"/alignments/{sample}.maf"
-	conda:
-		"../envs/lastz.yaml"
-	params:
-		species = "{sample}",
-		identity = config['IDENTITY'],
-		coverage = config['COVERAGE'],
-		continuity = config['CONTINUITY'],
-		align_dir = config['OUT_DIR']+ "/alignments",
-		max_dup = 2*int(config['MAX_DUP']),
-		steps = config["STEPS"]
-	shell:
-		'''
-		lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
-		'''
 
 
 rule pasta:
@@ -63,6 +62,8 @@ rule pasta:
 		max_len=int(1.5*config["LENGTH"]),
 		prefix = "gene_{id}",
 		suffix = "fa.aln"
+	benchmark:
+		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
 	threads: 8
 	conda: 
 		"../envs/msa.yaml"
@@ -70,12 +71,32 @@ rule pasta:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
-			run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
+			input_file={input}
+			output_file={output}
+			reference=""
+			all_matched=true
 
+			while IFS= read -r line; do
+  				if [[ "$line" != ">"* ]]; then
+    				if [ -z "$reference" ]; then
+      					reference="$line"
+    				elif [ "$line" != "$reference" ]; then
+       					all_matched=false
+      					break
+    				fi
+ 	 			fi
+			done < "$input_file"
+
+			if [ "$all_matched" = true ]; then
+				cp "$input_file" "$output_file"
+			else
+				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
+			fi
 		fi
 		touch {output}
 
 		'''
+		
 rule filtermsa:
 	input:
 		config["OUT_DIR"]+"/genes/gene_{id}.fa.aln"
@@ -83,11 +104,12 @@ rule filtermsa:
 		config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln"
 	params:
 		m = config["FILTERFRAGMENTS"],
-		n = config["MASKSITES"]
+		n = config["MASKSITES"],
 	conda:
-		"../envs/msa.yaml"
+		"../envs/filtermsa.yaml"
 	shell:
 		'''
-			run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
+		python pasta/run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
+			
 		'''
 

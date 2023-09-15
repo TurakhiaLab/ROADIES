@@ -1,8 +1,0 @@
-name: treeshrink
-channels:
-  - bioconda
-  - r
-dependencies:
-  - python=3.8.0
-  - r=3.4
-  - dendropy
