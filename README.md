@@ -15,7 +15,6 @@
   - [Step1: Configuring parameters](#configuration)
   - [Step2: Running the pipeline](#run)
   - [Step3: Analyzing output files](#output)
-- [Example run](#example)
 - [Contributions and Support](#support)
 - [Citing ROADIES](#citation)
 
@@ -65,50 +64,51 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 
 | Parameters | Description | Default value |
 | --- | --- | --- |
-| **GENOMES** | Specify the path to your input files which includes raw genome assembiles of the species. All input genome assemblies should be in fasta format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly to be named as `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
-| **REFERENCE** (optional) | Specify path for the reference tree (state-of-the-art) in Newick format to compare ROADIES' results with a state-of-the-art approach. If you don't want to specify any reference tree, set it to `null`. | `null` |
-| **LENGTH** | Configure the lengths of each of the randomly sampled subsequence or genes. | 500 |
+| **GENOMES** | Specify the path to your input files, which includes raw genome assemblies of the species. All input genome assemblies should be in fasta format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
+| **REFERENCE** (optional) | Specify the path for the reference tree (state-of-the-art) in Newick format to compare ROADIES' results with a state-of-the-art approach. If you don't want to specify any reference tree, set it to `null`. | `null` |
+| **LENGTH** | Configure the lengths of each of the randomly sampled subsequences or genes. | 500 |
 | **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 750 |
 | **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 (Recommended) |
 | **OUT_DIR** | Specify the path for ROADIES output files. | |
-| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows quartet-based topology for species tree inference. | 4 (Recommended) |
+| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows a quartet-based topology for species tree inference. | 4 (Recommended) |
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 (Recommended) |
 | **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 (Recommended) |
 | **IDENTITY** | Set the percentage of the aligned base pairs for LASTZ. | 65 (Recommended) | 
-| **MAX_DUP** | | |
-| **STEPS** |||
-| **FILTERFRAGMENTS** | Specify the percentage of the allowed gaps in an aligned fragment for PASTA. With more gaps, the fragments will be filtered. | 0.5 (Recommended)|
-| **MASKSITES** | Specify the percentage of the allowed gaps in specific sites of PASTA alignment. If there are more gaps than the specified percentage value, the sites will be masked.| 0.05 (Recommended)|
-| **MSA** | Specify the modes of operation for ROADIES pipeline. Set it to `iqtree` if you want to run in accurate mode, `fasttree` for balanced mode and `mashtree` for fast mode of operation. | `iqtree` |
-| **CORES** | Specify the number of cores for ROADIES to run. ||
+| **MAX_DUP** | Specify max number of allowed gene copies from one input genome in an alignment. | 10|
+| **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 (Recommended)|
+| **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 (Recommended)|
+| **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.05 (Recommended)|
+| **MSA** | Specify the modes of operation for the ROADIES pipeline. Set it to `iqtree` if you want to run in accurate mode, `fasttree` for balanced mode, and `mashtree` for fast mode of operation. | `iqtree` |
+| **CORES** | Specify the number of cores in the system for ROADIES to run. ||
 
 ### <a name="run"></a> Step 2: Running the pipeline
 
 Once the required installations are completed, and the pipeline is configured, execute the following command:
 
 ```
-python workflow/scripts/2converge.py --cores [number of cores]
+python workflow/scripts/converge.py --cores [number of cores]
 ```
 
 ### <a name="output"></a> Step 3: Analyzing output files
 
-After the pipeline finishes running, you can analyze the output files (along with all intermediate output files for each stage of the pipeline) saved in a separate `results` folder mentioned in `--OUT_DIR` parameter containing the following subfolders:
+After the pipeline finishes running, the final species tree estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `--OUT_DIR` parameter in the `config/config.yaml` file. 
 
-- `alignments` - contains the sampled output of each species in `<species_name>.maf` format generated by the sampling step
-- `genes`- contains the fasta files of all highest scoring genes which is filtered after LASTZ step in `gene_<id>.fa` format
-- `geneTree` - contains all gene trees merged together in a single `gene_tree_merged.nwk` file 
-- `msa`- contains the MSA filtered output for all gene fasta files in `gene_aln_<id>.fa` format
-- `plots` - 
-- `samples` - 
-- `statistics`- contains the list of input species in `num_genes.csv`, number of gene trees in `num_gt.txt`, number of homologues with corresponding genes in `homologues.csv`
+Other intermediate output files for each stage of the pipeline are also saved in `--OUT_DIR`, containing the following subfolders:
 
-## <a name="example"></a> Example run
-
-To help you get started with ROADIES, we provide an example command below. By default, `--GENOMES` points to 48 Avian species datasets and `--MAX_ITER` is set to 50. To execute our pipeline with 16 cores and 16 jobs in parallel, run
-```
-python workflow/scripts/converge.py --cores 16 --jobs 16
-```
-This command will execute the converge script to iterate ROADIES 50 times and estimates phylogeny of 48 Avian species. It takes around XXX hours to complete the execution. The output files will be saved in separate `results` directory. The final inferred species tree in Newick format will be saved as `roadies.nwk` file in the same directory.
+- `alignments` - this folder contains the LASTZ alignment output of all individual input genomes aligned with randomly sampled gene sequences.
+- `benchmarks` - this folder contains the runtime value of each of the individual jobs for each of the stages in the pipeline. These files will only be used if you want to estimate and compare the stagewise runtime of various pipeline stages and will not be used in final tree estimation. 
+- `genes`- this folder contains the output files of multiple sequence alignment and tree-building stages (run by PASTA, IQTREE/FastTree) of the pipeline. 
+- `genetrees` - this folder contains a file `gene_tree_merged.nwk`, which lists all gene trees together. This is used by ASTRAL-Pro to estimate the final species tree from the list of gene trees in the `gene_tree_merged.nwk` file.
+- `plots` - this folder contains four plots
+  - `gene_dup.png` - this histogram plot represents the count of the number of gene duplicates on the Y-axis vs. the number of genes having duplication on the X-axis.
+  - `homologues.png` - this histogram plot represents the count of the number of genes on the Y-axis vs. the number of homologous species on the X-axis.
+  - `num_genes.png` - this plot represents how many genes out of `--GENE_COUNT` parameter have been aligned to each of the input genomes after the LASTZ step. The X-axis represents different genomes, and the Y-axis represents the number of genes.
+  - `sampling.png` - the plot shows how many genes have been sampled from each of the input genomes after the random sampling step. The X-axis represents different genomes, and the Y-axis represents the number of genes.
+- `samples` - this folder contains the list of randomly sampled genes from individual input genomes. `<species_name>_temp.fa` files contain genes sampled from that input genome.`out.fa` combines all sampled genes from individual genomes into one file before the LASTZ step. 
+- `statistics` - this folder contains CSV data for the plots shown in the `plots` directory mentioned above.
+- `roadies_stats.nwk`- this is the final estimated species tree (same as `roadies.nwk`, along with the support branch values in the Newick tree). 
+- `roadies.nwk`- this is the final estimated species tree in Newick format.
+- `time_stamps.csv` - this file contains the start time, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively. 
 
 ## <a name="support"></a> Contributions and Support
 
