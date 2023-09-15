@@ -24,8 +24,6 @@ CONTINUITY: 85
 MAX_DUP: 10
 #number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
 STEPS: 1
-#number of iterations
-ITERATIONS: 1
 #pasta parameters
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
