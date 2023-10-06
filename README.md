@@ -1,6 +1,4 @@
-
-
-<div align="center">
+ <div align="center">
 
 ![ROADIES_logo](https://github.com/TurakhiaLab/wga-phylo/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
 
@@ -60,7 +58,7 @@ This section provides detailed instructions on how to configure, run, and analyz
 
 ### <a name="configuration"></a> Step 1: Configuring parameters
 
-ROADIES provides multiple options for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters that give the best results, users can modify the values specific to their needs).
+ROADIES provides multiple options for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs).
 
 | Parameters | Description | Default value |
 | --- | --- | --- |
@@ -83,9 +81,9 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 
 ROADIES supports multiple modes of operation (fast, balanced, accurate) by controlling the accuracy-runtime tradeoff depending on the user requirement. 
 
--**Accurate-Mode**: This is the default mode of operation and is preferred for accuracy-critical usecases. Here, Tree building stage will be governed by IQTREE.
--**Fast-Mode**: This mode of operation is preferred for achieving faster results, for runtime-critical usecases. Here, MSA and Tree building stage is performed by MashTree.
--**Balanced-Mode**: This mode of operation is preferred where user wants an optimal runtime vs accuracy tradeoff. Here, Tree building stage is performed using FastTree. 
+- **Accurate-Mode**: This is the default mode of operation and is preferred for accuracy-critical usecases. Here, Tree building stage will be governed by IQTREE.
+- **Fast-Mode**: This mode of operation is preferred for achieving faster results, for runtime-critical usecases. Here, MSA and Tree building stage is performed by MashTree.
+- **Balanced-Mode**: This mode of operation is preferred where user wants an optimal runtime vs accuracy tradeoff. Here, Tree building stage is performed using FastTree. 
 
 In addition to the above parameters in the YAML file, these modes of operation can be optionally modified using command line arguments, mentioned in the below section.
 
