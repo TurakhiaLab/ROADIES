@@ -1,13 +1,13 @@
 #This file configures the parameters for ROADIES and converge
 #Path for input genomes
 
-GENOMES: "/home/ang037@AD.UCSD.EDU/genomes_ecoli_100"
+GENOMES: "/home/roadies-datasets/drosophila"
 #reference tree for converge (used for ref_dist.csv)
 REFERENCE: null
 #length of genes
 LENGTH: 500
 #number of genes
-GENE_COUNT: 100
+GENE_COUNT: 750
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -27,7 +27,3 @@ STEPS: 1
 #pasta parameters
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
-#add modes
-MSA: "mashtree" #"fasttree", "mashtree"
-#number of cores
-CORES: 32

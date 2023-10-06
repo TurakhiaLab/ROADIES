@@ -27,13 +27,15 @@ def comp_tree(t1, t2):
 
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores):
+def run_snakemake(cores, mode):
     cmd = [
         "snakemake",
         "--core",
         str(cores),
         "--jobs",
         str(cores),
+        "--config",
+        "mode="+str(mode),
         "--use-conda",
         "--rerun-incomplete",
     ]
@@ -49,9 +51,9 @@ def run_snakemake(cores):
 
 
 # function for convergence run
-def converge_run(cores, ref_exist, trees, roadies_dir):
+def converge_run(cores, mode, ref_exist, trees, roadies_dir):
     # run snakemake with specificed gene number and length
-    run_snakemake(cores)
+    run_snakemake(cores, mode)
     # merging gene trees and mapping files
     gt = open(roadies_dir + "/genetrees/gene_tree_merged.nwk", "r")
     gene_trees = gt.readlines()
@@ -82,10 +84,12 @@ if __name__ == "__main__":
         default="config/config.yaml",
         help="Config file containing global variables",
     )
+    parser.add_argument("--mode", default="accurate", help="select modes of operations (fast, accurate, balanced)")
     # assigning argument values to variables
     args = vars(parser.parse_args())
     config_path = args["config"]
     CORES = args["c"]
+    MODE = args["mode"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
@@ -112,7 +116,7 @@ if __name__ == "__main__":
     time_stamps.append(start_time)
     with open(roadies_dir + "/time_stamps.csv", "a") as t_out:
         t_out.write("Start time: " + str(start_time_l) + "\n")
-    num_gt = converge_run(CORES, ref_exist, trees, roadies_dir)
+    num_gt = converge_run(CORES, MODE, ref_exist, trees, roadies_dir)
     print("There are {0} gene trees".format(num_gt))
     curr_time = time.time()
     curr_time_l = time.asctime(time.localtime(time.time()))

@@ -41,7 +41,7 @@ rule sequence_select:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
-	threads:config["CORES"]
+	threads:workflow.cores
 	shell:
 			'''
 			echo "We are starting to sample {input}"
@@ -108,10 +108,10 @@ rule lastz2fasta:
 		m = config["MIN_ALIGN"],
 		plotdir = config["OUT_DIR"]+"/plots",
 		statdir = config["OUT_DIR"]+"/statistics",
-		tool = config["MSA"],
+		mode = mode,
 		d = config["MAX_DUP"]
 	shell:
-		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d} --tool {params.tool}" 
+		"python workflow/scripts/lastz2fasta.py -k {params.k} --path {params.p} --outdir {params.out} -m {params.m} --plotdir {params.plotdir} --statdir {params.statdir} -d {params.d} --tool {params.mode}" 
 
 rule mashtree:
 	input:

@@ -8,7 +8,7 @@ rule astral:
 		stats = config["OUT_DIR"]+"/roadies_stats.nwk"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/astral.txt"
-	threads: config["CORES"]
+	threads: workflow.cores
 	shell:
 		'''
 		ASTER-Linux/bin/astral-pro -t {threads} -i {input} -o {output} -a {params.genes}/mapping.txt

@@ -77,9 +77,17 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 | **MAX_DUP** | Specify max number of allowed gene copies from one input genome in an alignment. | 10|
 | **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 (Recommended)|
 | **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 (Recommended)|
-| **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.05 (Recommended)|
-| **MSA** | Specify the modes of operation for the ROADIES pipeline. Set it to `iqtree` if you want to run in accurate mode, `fasttree` for balanced mode, and `mashtree` for fast mode of operation. | `iqtree` |
-| **CORES** | Specify the number of cores in the system for ROADIES to run. ||
+| **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.02 (Recommended)|
+
+### Modes of operation
+
+ROADIES supports multiple modes of operation (fast, balanced, accurate) by controlling the accuracy-runtime tradeoff depending on the user requirement. 
+
+-**Accurate-Mode**: This is the default mode of operation and is preferred for accuracy-critical usecases. Here, Tree building stage will be governed by IQTREE.
+-**Fast-Mode**: This mode of operation is preferred for achieving faster results, for runtime-critical usecases. Here, MSA and Tree building stage is performed by MashTree.
+-**Balanced-Mode**: This mode of operation is preferred where user wants an optimal runtime vs accuracy tradeoff. Here, Tree building stage is performed using FastTree. 
+
+In addition to the above parameters in the YAML file, these modes of operation can be optionally modified using command line arguments, mentioned in the below section.
 
 ### <a name="run"></a> Step 2: Running the pipeline
 
@@ -88,6 +96,14 @@ Once the required installations are completed and the pipeline is configured, ex
 ```
 python workflow/scripts/converge.py --cores [number of cores]
 ```
+
+Here, by default, accurate mode of operation will be selected. To modify the modes of operation, set the command line arguments as follows:
+
+```
+python workflow/scripts/converge.py --cores [number of cores] --mode [`fast` OR `balanced` OR `accurate`]
+```
+
+Use `--help` to get the list of command line arguments.
 
 ### <a name="output"></a> Step 3: Analyzing output files
 

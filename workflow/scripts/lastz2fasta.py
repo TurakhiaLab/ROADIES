@@ -24,7 +24,7 @@ parser.add_argument("-m", type=int, default=4)
 parser.add_argument("--plotdir", default="results/plots")
 parser.add_argument("--statdir", default="results/statistics")
 parser.add_argument("-d", type=int, default=100)
-parser.add_argument("--tool", default="iqtree")
+parser.add_argument("--tool", default="accurate")
 args = parser.parse_args()
 path = args.path
 outdir = args.outdir
@@ -137,7 +137,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                     w2.write(index + " " + species + "\n")
                 w2.close()
 
-if tool == "mashtree":
+if tool == "fast":
     for filename in glob.glob(os.path.join(outdir, "*.fa")):
         with open(os.path.join(os.getcwd(), filename), "r") as f:
             sequences = f.read().strip().split(">")[1:]
