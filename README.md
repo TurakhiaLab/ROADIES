@@ -105,6 +105,12 @@ python workflow/scripts/converge.py --cores [number of cores] --mode [`fast` OR 
 
 Use `--help` to get the list of command line arguments.
 
+For example, to run the ROADIES pipeline with 32 cores in balanced mode of operation, use the following command:
+
+```
+python workflow/scripts/converge.py --cores 32 --mode balanced
+```
+
 ### <a name="output"></a> Step 3: Analyzing output files
 
 After the pipeline finishes running, the final species tree estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `--OUT_DIR` parameter in the `config/config.yaml` file. 
