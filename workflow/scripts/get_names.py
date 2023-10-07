@@ -10,7 +10,7 @@ n = int(sys.argv[3])
 outdir = sys.argv[2]
 s = path.split("/")
 file = s[len(s) - 1]
-filename = file.replace(".fa", "")
+filename = file.replace(".fa.gz", "").replace(".fa", "")
 print(filename)
 records = list(SeqIO.parse(path, "fasta"))
 num = len(records)

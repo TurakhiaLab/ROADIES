@@ -5,7 +5,7 @@ g = config["OUT_DIR"]+"/samples/out.fa"
 rule lastz:
 	input:
 		genes = g,
-		genome = config["GENOMES"]+"/{sample}.fa"
+		genome = config["GENOMES"] + "/{sample}." + ("fa.gz" if EXTENSION[0]=="gz" else "fa")
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:

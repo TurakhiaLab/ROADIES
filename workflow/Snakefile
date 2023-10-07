@@ -1,7 +1,16 @@
 from snakemake.utils import min_version
 min_version("7.12.1")
+import glob
 configfile: "config/config.yaml"
-SAMPLES = glob_wildcards(config["GENOMES"]+"/{samples}.fa").samples
+
+EXTENSION = glob_wildcards(config["GENOMES"] + "/{samples}.{extension}").extension
+print(EXTENSION[0])
+
+if EXTENSION[0] == "gz":
+	SAMPLES = glob_wildcards(config["GENOMES"] + "/{samples}.fa.{extension}").samples
+else:
+	SAMPLES = glob_wildcards(config["GENOMES"] + "/{samples}.{extension}").samples
+
 num = config["GENE_COUNT"]
 IDS = list(range(1,num+1))
 mode = config.get("mode","accurate")

@@ -29,7 +29,7 @@ def get_index_e(wildcards):
 
 rule sequence_select:
 	input:
-		config["GENOMES"]+"/{sample}.fa"
+		config["GENOMES"] + "/{sample}." + ("fa.gz" if EXTENSION[0]=="gz" else "fa")
 	params:
 		LENGTH=config["LENGTH"],
 		KFAC=lambda wildcards: get_index_s(wildcards.sample),
