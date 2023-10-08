@@ -10,6 +10,7 @@
 - [Introduction](#overview)
 - [Environment Setup](#gettingstarted) 
 - [Using ROADIES](#usage)
+  - [Quick Start](#start)
   - [Step1: Configuring parameters](#configuration)
   - [Step2: Running the pipeline](#run)
   - [Step3: Analyzing output files](#output)
@@ -40,7 +41,7 @@ ROADIES pipeline consists of multiple stages, from raw genome assemblies to spec
 
 This section provides detailed instructions on how to install and set up the environment to run ROADIES in your system.
 
-ROADIES is built on Snakemake (workflow parallelization tool). It also requires various tools (PASTA, LASTZ, IQTREE, ASTRAL-Pro) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide a script to automatically download all dependencies into the user system. 
+ROADIES is built on Snakemake (workflow parallelization tool). It also requires various tools (PASTA, LASTZ, IQTREE, MashTree, FastTree, ASTRAL-Pro) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide a script to automatically download all dependencies into the user system. 
 
 ### Linux user
 
@@ -54,15 +55,39 @@ This will install and build all required tools and dependencies required by the 
 
 ## <a name="usage"></a> Using ROADIES
 
-This section provides detailed instructions on how to configure, run, and analyze the output of ROADIES for species tree inference. Once the required environment setup process is complete, follow the steps below for using ROADIES.
+This section provides quick steps to use ROADIES as well as detailed instructions on how to configure the pipeline further for various user requirements. Once the required environment setup process is complete, follow the steps below.
+
+### <a name="start"></a> Quick Start
+
+To run the ROADIES pipeline with 32 cores, specify the path to your input files as GENOMES in config/config.yaml. Then, run the following command:
+
+```
+python workflow/scripts/converge.py --cores 32
+```
+The output species tree will be saved as `roadies.nwk` in a separate results folder. 
+
+ROADIES also supports multiple modes of operation (fast, balanced, accurate) by controlling the accuracy-runtime tradeoff. Try the following commands for various modes of operation (accurate mode is the default mode)
+
+
+```
+python workflow/scripts/converge.py --cores 32 --mode accurate
+```
+
+```
+python workflow/scripts/converge.py --cores 32 --mode balanced
+```
+
+```
+python workflow/scripts/converge.py --cores 32 --mode fast
+```
 
 ### <a name="configuration"></a> Step 1: Configuring parameters
 
-ROADIES provides multiple options for the user to configure the pipeline specific to their requirements before running the pipeline. Following is the list of available input configurations, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs).
+For specific user requirements, ROADIES also provides multiple parameters to be configured before running the pipeline. Following is the list of available input parameters, provided in `config/config.yaml` (Note: ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs).
 
 | Parameters | Description | Default value |
 | --- | --- | --- |
-| **GENOMES** | Specify the path to your input files, which includes raw genome assemblies of the species. All input genome assemblies should be in fasta format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
+| **GENOMES** | Specify the path to your input files, which includes raw genome assemblies of the species. All input genome assemblies should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
 | **REFERENCE** (optional) | Specify the path for the reference tree (state-of-the-art) in Newick format to compare ROADIES' results with a state-of-the-art approach. If you don't want to specify any reference tree, set it to `null`. | `null` |
 | **LENGTH** | Configure the lengths of each of the randomly sampled subsequences or genes. | 500 |
 | **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 750 |
@@ -79,17 +104,15 @@ ROADIES provides multiple options for the user to configure the pipeline specifi
 
 ### Modes of operation
 
-ROADIES supports multiple modes of operation (fast, balanced, accurate) by controlling the accuracy-runtime tradeoff depending on the user requirement. 
-
 - **Accurate-Mode**: This is the default mode of operation and is preferred for accuracy-critical usecases. Here, Tree building stage will be governed by IQTREE.
 - **Fast-Mode**: This mode of operation is preferred for achieving faster results, for runtime-critical usecases. Here, MSA and Tree building stage is performed by MashTree.
 - **Balanced-Mode**: This mode of operation is preferred where user wants an optimal runtime vs accuracy tradeoff. Here, Tree building stage is performed using FastTree. 
 
-In addition to the above parameters in the YAML file, these modes of operation can be optionally modified using command line arguments, mentioned in the below section.
+In addition to the above parameters in the YAML file, these modes of operation can be optionally modified using command line arguments, mentioned in the quick start section.
 
 ### <a name="run"></a> Step 2: Running the pipeline
 
-Once the required installations are completed and the pipeline is configured, execute the following command:
+Once the required installations are completed and the parameter is configured, execute the following command:
 
 ```
 python workflow/scripts/converge.py --cores [number of cores]
@@ -100,14 +123,12 @@ Here, by default, accurate mode of operation will be selected. To modify the mod
 ```
 python workflow/scripts/converge.py --cores [number of cores] --mode [`fast` OR `balanced` OR `accurate`]
 ```
+Additionally, user can have custom YAML files (in the same format as config.yaml provided with this repo) with their own parameterizable values. Provide the custom YAML file using --config argument as follows:
 
+```
+python workflow/scripts/converge.py --cores [number of cores] --mode [`fast` OR `balanced` OR `accurate`] --config [add own config path]
+```
 Use `--help` to get the list of command line arguments.
-
-For example, to run the ROADIES pipeline with 32 cores in balanced mode of operation, use the following command:
-
-```
-python workflow/scripts/converge.py --cores 32 --mode balanced
-```
 
 ### <a name="output"></a> Step 3: Analyzing output files
 
