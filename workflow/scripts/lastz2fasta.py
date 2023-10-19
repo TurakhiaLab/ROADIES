@@ -70,6 +70,11 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                     genes[gene_id].append((score, l, position))
         # get number of genes for that species
         num_genes[species] = len(genes)
+        aa = list(genes.keys())
+        bb = list(genes.values())
+        with open(statdir + "/gene_to_species.csv", "a") as w1:
+            for i in range(len(aa)):
+                w1.write(species + "\t" + str(aa[i]) + "," + str(bb[i]) + "\n")
         # get number of homologues for that gene (#species)
         for gene in genes:
             if gene in num_homologues:
@@ -136,6 +141,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 with open(outdir + "/mapping.txt", "a") as w2:
                     w2.write(index + " " + species + "\n")
                 w2.close()
+        w1.close()
 
 if tool == "fast":
     for filename in glob.glob(os.path.join(outdir, "*.fa")):
