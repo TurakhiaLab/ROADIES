@@ -151,7 +151,8 @@ Other intermediate output files for each stage of the pipeline are also saved in
 - `roadies_stats.nwk`- this is the final estimated species tree (same as `roadies.nwk`, along with the support branch values in the Newick tree). 
 - `roadies.nwk`- this is the final estimated species tree in Newick format.
 - `roadies_rerooted.nwk` - this is the final estimated species tree, re-rooted corresponding to the outgroup node from the reference tree (provided as `REFERENCE` in `config.yaml`).
-- `time_stamps.csv` - this file contains the start time, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively. 
+- `time_stamps.csv` - this file contains the start time, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively.
+- `ref_dist.csv` - this file provides the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`).
 
 ## <a name="support"></a> Contributions and Support
 
