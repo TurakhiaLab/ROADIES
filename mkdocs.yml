@@ -28,7 +28,6 @@ theme:
         name: Switch to light mode    
       primary: custom
       accent: lime
-  logo: ROADIES_logo.png
 
 plugins:
   - social
