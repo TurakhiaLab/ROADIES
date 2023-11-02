@@ -66,6 +66,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 # add to dict of genes
                 if gene_id not in genes:
                     genes[gene_id] = [(score, l, position)]
+                    
                 else:
                     genes[gene_id].append((score, l, position))
         # get number of genes for that species

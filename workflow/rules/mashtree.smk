@@ -132,6 +132,7 @@ rule mashtree:
 		'''
 		if [[ `grep -n '>' {input} | wc -l` -gt {params.m} ]] || [[ `awk 'BEGIN{{l=0;n=0;st=0}}{{if (substr($0,1,1) == ">") {{st=1}} else {{st=2}}; if(st==1) {{n+=1}} else if(st==2) {{l+=length($0)}}}} END{{if (n>0) {{print int((l+n-1)/n)}} else {{print 0}} }}' {input}` -gt {params.max_len} ]]
 		then
+			echo "{output}" >> output_file_list.txt
 			mashtree --mindepth 0 --numcpus 8 --kmerlength 10 {params.gene_dir}/*.fa > {output}
 		fi
 		touch {output}
@@ -141,27 +142,15 @@ rule mergeTrees:
 	input:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}.dnd",id=IDS)
 	output:
-		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
+		original_list=config["OUT_DIR"]+"/genetrees/original_list.txt",
+		merged_list=config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
 		msa_dir = config["OUT_DIR"]+"/genes",
 	shell:
 		'''
-		cat {params.msa_dir}/*.dnd > {output}
-		'''
-
-rule astral:
-	input:
-		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
-	output:
-		config["OUT_DIR"]+"/roadies.nwk"
-	params:
-		genes = config["OUT_DIR"]+"/genes",
-		stats = config["OUT_DIR"]+"/roadies_stats.nwk"
-	benchmark:
-		config["OUT_DIR"]+"/benchmarks/astral.txt"
-	threads: 32
-	shell:
-		'''
-		ASTER-Linux/bin/astral-pro -t 32 -i {input} -o {output} -a {params.genes}/mapping.txt
-		ASTER-Linux/bin/astral-pro -u 3 -t 32 -i {input} -o {params.stats} -a {params.genes}/mapping.txt
+		for file in {params.msa_dir}/*.dnd; do
+            id=$(echo $file | sed 's/.*gene_//;s/.dnd//')
+            cat $file >> {output.merged_list}
+            echo "$id, $(cat $file)" >> {output.original_list}
+        done
 		'''

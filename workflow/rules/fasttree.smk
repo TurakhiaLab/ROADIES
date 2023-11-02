@@ -24,10 +24,15 @@ rule mergeTrees:
 	input:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile",id=IDS)
 	output:
-		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
+		original_list=config["OUT_DIR"]+"/genetrees/original_list.txt",
+		merged_list=config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
 		msa_dir = config["OUT_DIR"]+"/genes",
 	shell:
 		'''
-		cat {params.msa_dir}/*.treefile > {output}
+		for file in {params.msa_dir}/*.fa.aln.treefile; do
+            id=$(echo $file | sed 's/.*gene_//;s/_filtered.fa.aln.treefile//')
+            cat $file >> {output.merged_list}
+            echo "$id, $(cat $file)" >> {output.original_list}
+        done
 		'''

@@ -19,15 +19,13 @@ if (mode == "fast"):
 	include: "rules/mashtree.smk"
 elif (mode == "balanced"):
 	include: "rules/align.smk"
-	include: "rules/astral.smk"
 	include: "rules/sampling.smk"
 	include: "rules/fasttree.smk"
 else:
 	include: "rules/align.smk"
-	include: "rules/astral.smk"
 	include: "rules/sampling.smk"
 	include: "rules/tree.smk"
 	
 rule all:
 	input:
-		config["OUT_DIR"]+"/roadies.nwk"
+		config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
