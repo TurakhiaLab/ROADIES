@@ -82,7 +82,7 @@ def combine_iter(out_dir, run):
 def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
-    run = "run_"
+    run = "iteration_"
     # allows sorting runs correctly
     if iteration < 10:
         run += "0" + str(iteration)
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         description="Script to continuously run snakemake with a small number of genes combining the gene trees after each run",
     )
 
-    parser.add_argument("-c", type=int, default=32, help="number of cores")
+    parser.add_argument("--cores", type=int, default=32, help="number of cores")
     parser.add_argument("--out_dir", default="converge", help="converge directory")
     parser.add_argument(
         "--config",
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     # assigning argument values to variables
     args = vars(parser.parse_args())
     config_path = args["config"]
-    CORES = args["c"]
+    CORES = args["cores"]
     MODE = args["mode"]
     out_dir = args["out_dir"]
     # read config.yaml for variables
@@ -152,6 +152,7 @@ if __name__ == "__main__":
         ref_exist = True
         ref = Tree(config["REFERENCE"])
     genomes = config["GENOMES"]
+    num_itrs = config["ITERATIONS"]
     NUM_GENOMES = len(os.listdir(genomes))
     NUM_GENES = config["GENE_COUNT"]
     LENGTH = config["LENGTH"]
@@ -213,5 +214,5 @@ if __name__ == "__main__":
         iteration += 1
         """
         iteration += 1
-        if iteration == 1:
+        if iteration == num_itrs:
             break

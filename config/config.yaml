@@ -6,8 +6,8 @@ GENOMES: "/home/roadies-datasets/gzipped_flies_renamed"
 REFERENCE: trees/flies_reftree_100.nwk
 #length of genes
 LENGTH: 500
-#number of genes
-GENE_COUNT: 10000
+#number of genes per iteration
+GENE_COUNT: 50
 #minimum % uppercase for genes
 UPPER_CASE: 0.90
 #ROADIES output directory
@@ -27,3 +27,5 @@ STEPS: 1
 #pasta parameters
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
+#number of iteration
+ITERATIONS: 3
