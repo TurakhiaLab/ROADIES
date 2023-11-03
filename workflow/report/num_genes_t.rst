@@ -1,1 +1,0 @@
-A csv for number of genes aligned for each species

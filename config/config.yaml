@@ -1,31 +1,31 @@
-#This file configures the parameters for ROADIES and converge
-#Path for input genomes
+#This file configures the parameters for ROADIES
 
+#Path for input genomes
 GENOMES: "/home/roadies-datasets/gzipped_flies_renamed"
-#reference tree for converge (used for ref_dist.csv)
-REFERENCE: trees/flies_reftree_100.nwk
-#length of genes
+#Reference tree (optional, default set as null)
+REFERENCE: reference_trees/flies_reftree_100.nwk
+#Length of each of the genes
 LENGTH: 500
-#number of genes per iteration
+#Number of genes per iteration
 GENE_COUNT: 50
-#minimum % uppercase for genes
+#Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
 #ROADIES output directory
 OUT_DIR: "results"
-#minimum number of species in a gene fasta (4 min for ASTRAL-PRO)
+#Minimum number of species in a gene fasta (4 min for ASTRAL-Pro)
 MIN_ALIGN: 4 
-#minimum % match in alignment
+#Minimum % match in LASTZ alignment
 IDENTITY: 65
-#minimum input sequence coverage
+#Minimum input sequence coverage in LASTZ alignment
 COVERAGE: 85
-#minimum continuity of alignments
+#Minimum continuity of LASTZ alignments
 CONTINUITY: 85
-#max number of copies from a genome in an alignment
+#Max number of gene copies from a genome in an alignment
 MAX_DUP: 10
-#number of steps in lastz sampling (increasing number speeds up alignment but decreases lastz accuracy)
+#Mumber of steps in LASTZ sampling
 STEPS: 1
-#pasta parameters
+#PASTA filtering parameters
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
-#number of iteration
+#Number of iterations (for --converge option)
 ITERATIONS: 3

@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 directory = sys.argv[1]
 output = sys.argv[2]
 plotdir = sys.argv[3]
-# stats = sys.argv[3]
 species_count = {}
 with open(output, "wb") as outfile:
     for filename in glob.glob(os.path.join(directory, "*.fa")):
@@ -26,11 +25,6 @@ with open(output, "wb") as outfile:
         species_count[name] = num
         with open(filename, "rb") as readfile:
             shutil.copyfileobj(readfile, outfile)
-print(species_count)
-# with open(stats,'w') as stat:
-#   for species in species_count:
-#      print(species,species_count[species])
-#     stat.write(species+': '+str(species_count[species])+'\n')
 x = list(species_count.keys())
 y = list(species_count.values())
 ax = sns.barplot(x=x, y=y)

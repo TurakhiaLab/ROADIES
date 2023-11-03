@@ -1,9 +1,8 @@
-# converge.py is a script that iteratively runs ROADIES, wherein after each run, the resultant gene trees are concatenated into a master file, bootstrapped, and input into ASTRAL-PRO.
-# These bootstrapped trees are then compared with the previous run (iter_dist), and also with the ref if given(ref_dist)
-# The program stops after either running converge for ‘MAX_ITER’ or satisfying the distance threshold ‘t’ for ‘STOP_ITER’ consecutive runs for iter_dists_bs
+# noconverge.py is a script that runs ROADIES once and input gene trees into ASTRAL-PRO.
 
 # REQUIREMENTS: Activated conda environment with snakemake and ete3
-# USAGE from wga-phylo directory: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
+# USAGE from wga-phylo directory: `python workflow/scripts/noconverge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
+
 import os, sys, glob
 import argparse
 import random
@@ -37,6 +36,7 @@ def run_snakemake(cores, mode):
         "--config",
         "mode=" + str(mode),
         "--use-conda",
+        "--quiet",
         "--rerun-incomplete",
     ]
     for i in range(len(cmd)):
@@ -45,8 +45,6 @@ def run_snakemake(cores, mode):
         else:
             print(cmd[i], end=" ")
     subprocess.run(cmd)
-    # get the run output in folder
-    print("Adding run to converge folder")
     os.system("./workflow/scripts/get_run_noconverge.sh")
 
 
@@ -102,7 +100,6 @@ if __name__ == "__main__":
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
     if config["REFERENCE"] != None:
-        print("Converge has read reference tree {0}".format(config["REFERENCE"]))
         ref_exist = True
         ref = Tree(config["REFERENCE"])
     genomes = config["GENOMES"]
@@ -125,7 +122,6 @@ if __name__ == "__main__":
     with open(roadies_dir + "/time_stamps.csv", "a") as t_out:
         t_out.write("Start time: " + str(start_time_l) + "\n")
     num_gt = converge_run(CORES, MODE, ref_exist, trees, roadies_dir)
-    print("There are {0} gene trees".format(num_gt))
     curr_time = time.time()
     curr_time_l = time.asctime(time.localtime(time.time()))
     to_previous = curr_time - time_stamps[len(time_stamps) - 1]
@@ -141,3 +137,4 @@ if __name__ == "__main__":
         ref_dists.append(ref_dist)
         with open(roadies_dir + "/ref_dist.csv", "a") as ref_out:
             ref_out.write(str(num_gt) + "," + str(ref_dist) + "\n")
+    print("Species tree created")

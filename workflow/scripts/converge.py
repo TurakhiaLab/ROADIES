@@ -1,9 +1,9 @@
-# converge.py is a script that iteratively runs ROADIES, wherein after each run, the resultant gene trees are concatenated into a master file, bootstrapped, and input into ASTRAL-PRO.
-# These bootstrapped trees are then compared with the previous run (iter_dist), and also with the ref if given(ref_dist)
-# The program stops after either running converge for ‘MAX_ITER’ or satisfying the distance threshold ‘t’ for ‘STOP_ITER’ consecutive runs for iter_dists_bs
+# converge.py is a script that iteratively runs ROADIES, wherein after each run, the resultant gene trees are concatenated into a master file, and input into ASTRAL-PRO.
+# The program stops after configured number of ITERATIONS
 
 # REQUIREMENTS: Activated conda environment with snakemake and ete3
 # USAGE from wga-phylo directory: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
+
 import os, sys, glob
 import argparse
 import random
@@ -52,7 +52,6 @@ def run_snakemake(cores, mode, out_dir, run):
 
 # function to combine gene trees and mapping files from all iterations
 def combine_iter(out_dir, run):
-    print("Concatenating run's gene trees and mapping files with master versions")
     os.system(
         "cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk".format(out_dir, run)
     )
@@ -148,7 +147,6 @@ if __name__ == "__main__":
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
     if config["REFERENCE"] != None:
-        print("Converge has read reference tree {0}".format(config["REFERENCE"]))
         ref_exist = True
         ref = Tree(config["REFERENCE"])
     genomes = config["GENOMES"]
@@ -207,12 +205,7 @@ if __name__ == "__main__":
                 )
 
         high_support_list.append(percent_high_support)
-        """
-        if iteration >= 1:
-            if high_support_list[iteration] > high_support_list[iteration - 1]:
-                break
-        iteration += 1
-        """
+
         iteration += 1
         if iteration == num_itrs:
             break
