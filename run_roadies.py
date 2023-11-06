@@ -1,10 +1,10 @@
 import sys
 import subprocess
+import argparse
 
-# Check for the arguments
-if len(sys.argv) < 2:
+if len(sys.argv) < 2 or "--help" in sys.argv:
     print(
-        "Usage: run_roadies.py --cores <num_cores> --mode <mode_option> --converge --cores <num_cores>"
+        "Usage: run_roadies.py --cores <num_cores> --mode <mode_option> --converge --config <path of config file>"
     )
     sys.exit(1)
 
@@ -12,15 +12,29 @@ if len(sys.argv) < 2:
 mode_option = "accurate"
 converge = False
 num_cores = 32
+config_path = "config/config.yaml"
 
-# Parse command line arguments
-for i in range(1, len(sys.argv)):
-    if sys.argv[i] == "--mode" and i + 1 < len(sys.argv):
-        mode_option = sys.argv[i + 1]
-    elif sys.argv[i] == "--converge":
-        converge = True
-    elif sys.argv[i] == "--cores" and i + 1 < len(sys.argv):
-        num_cores = int(sys.argv[i + 1])
+# Create the parser
+parser = argparse.ArgumentParser(description='Script to run ROADIES.')
+
+# Add arguments
+parser.add_argument('--mode', help='specify mode of operation - <accurate>, <balanced> OR <fast>')
+parser.add_argument('--converge', action='store_true', help='specify ROADIES to run in convergence mode')
+parser.add_argument('--cores', type=int, help='specify number of cores')
+parser.add_argument('--config', help='specify path of config file')
+
+# Parse the arguments
+args = parser.parse_args()
+
+# Set values
+if args.mode:
+    mode_option = args.mode
+if args.converge:
+    converge = True
+if args.cores:
+    num_cores = args.cores
+if args.config:
+    config_path = args.config
 
 # Define the scripts to be executed based on the arguments
 if converge:
@@ -33,6 +47,8 @@ if converge:
                 str(num_cores),
                 "--mode",
                 mode_option,
+                "--config",
+                config_path,
             ]
         )
     else:
@@ -47,6 +63,8 @@ else:
                 str(num_cores),
                 "--mode",
                 mode_option,
+                "--config",
+                config_path,
             ]
         )
     else:

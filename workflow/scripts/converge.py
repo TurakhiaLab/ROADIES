@@ -28,7 +28,7 @@ def comp_tree(t1, t2):
 
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode, out_dir, run):
+def run_snakemake(cores, mode, out_dir, run, roadies_dir):
     cmd = [
         "snakemake",
         "--core",
@@ -47,7 +47,9 @@ def run_snakemake(cores, mode, out_dir, run):
             print(cmd[i], end=" ")
     subprocess.run(cmd)
     # get the run output in folder
-    os.system("./workflow/scripts/get_run.sh {0} {1}".format(out_dir, run))
+    os.system(
+        "./workflow/scripts/get_run.sh {0} {1} {2}".format(out_dir, run, roadies_dir)
+    )
 
 
 # function to combine gene trees and mapping files from all iterations
@@ -78,7 +80,7 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir):
+def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, support_thr):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     run = "iteration_"
@@ -88,7 +90,7 @@ def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir):
     else:
         run += str(iteration)
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, mode, out_dir, run)
+    run_snakemake(cores, mode, out_dir, run, roadies_dir)
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run)
     t = Tree(out_dir + "/" + run + ".nwk")
@@ -108,7 +110,7 @@ def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir):
         for i, row in enumerate(rows):
             if (i + 1) % 3 == 1:
                 value = float(row[3])
-                if value > 0.8:
+                if value >= support_thr:
                     count += 1
                 local_pp_values.append(value)
 
@@ -126,7 +128,6 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("--cores", type=int, default=32, help="number of cores")
-    parser.add_argument("--out_dir", default="converge", help="converge directory")
     parser.add_argument(
         "--config",
         default="config/config.yaml",
@@ -142,7 +143,6 @@ if __name__ == "__main__":
     config_path = args["config"]
     CORES = args["cores"]
     MODE = args["mode"]
-    out_dir = args["out_dir"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
@@ -150,18 +150,21 @@ if __name__ == "__main__":
         ref_exist = True
         ref = Tree(config["REFERENCE"])
     genomes = config["GENOMES"]
+    out_dir = config["ALL_OUT_DIR"]
     num_itrs = config["ITERATIONS"]
     NUM_GENOMES = len(os.listdir(genomes))
     NUM_GENES = config["GENE_COUNT"]
     LENGTH = config["LENGTH"]
+    support_thr = config["SUPPORT_THRESHOLD"]
     roadies_dir = config["OUT_DIR"]
     master_gt = out_dir + "/master_gt.nwk"
     master_map = out_dir + "/master_map.txt"
+    os.system("rm -r {0}".format(out_dir))
     os.system("mkdir -p " + out_dir)
     os.system("touch {0}".format(master_gt))
     os.system("touch {0}".format(master_map))
-    os.system("mkdir -p " + out_dir + "/tmp")
     sys.setrecursionlimit(2000)
+    os.system("snakemake --unlock")
     # initialize lists for runs and distances
     time_stamps = []
     if ref_exist:
@@ -175,7 +178,7 @@ if __name__ == "__main__":
         t_out.write("Start time: " + str(start_time_l) + "\n")
     while True:
         percent_high_support, num_gt, outputtree = converge_run(
-            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir
+            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir, support_thr
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))

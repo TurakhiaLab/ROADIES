@@ -12,6 +12,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from Bio.Seq import Seq
+import re
 
 # get arguments
 parser = argparse.ArgumentParser(
@@ -66,7 +67,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 # add to dict of genes
                 if gene_id not in genes:
                     genes[gene_id] = [(score, l, position)]
-                    
+
                 else:
                     genes[gene_id].append((score, l, position))
         # get number of genes for that species
@@ -148,7 +149,11 @@ if tool == "fast":
     for filename in glob.glob(os.path.join(outdir, "*.fa")):
         with open(os.path.join(os.getcwd(), filename), "r") as f:
             sequences = f.read().strip().split(">")[1:]
-            number = int(filename.split("_")[1].split(".")[0])
+            # number = int(filename.split("_")[1].split(".")[0])
+            # Extracting the number before .fa
+            number = re.search(r"(\d+)(?=.fa)", filename)
+            if number:
+                number = int(number.group(1))
 
             gene_directory = os.path.join(outdir, f"gene_{number}")
             os.makedirs(gene_directory, exist_ok=True)

@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Install necessary tools
-sudo apt-get update
-sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
-
 # Download and install Mambaforge
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
 bash Mambaforge-Linux-x86_64.sh -b -p "${HOME}/conda"
@@ -33,12 +29,12 @@ python3 setup.py develop --user
 cd ..
 
 #build sampling code
-cd sampling
+cd workflow/scripts/sampling
 mkdir build
 cd build
 cmake ..
 make
-cd ../..
+cd ../../../..
 
 # Source the updated .bashrc to activate Conda environment
 source ~/.bashrc

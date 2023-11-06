@@ -4,7 +4,6 @@ import glob
 configfile: "config/config.yaml"
 
 EXTENSION = glob_wildcards(config["GENOMES"] + "/{samples}.{extension}").extension
-print(EXTENSION[0])
 
 if EXTENSION[0] == "gz":
 	SAMPLES = glob_wildcards(config["GENOMES"] + "/{samples}.fa.{extension}").samples
