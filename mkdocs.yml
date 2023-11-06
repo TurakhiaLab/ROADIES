@@ -1,4 +1,5 @@
 site_name: ROADIES
+
 theme:
   name: material
   features:
@@ -28,6 +29,9 @@ theme:
         name: Switch to light mode    
       primary: custom
       accent: lime
+    
+  favicon: images/ROADIES_logo.png
+  logo: images/ROADIES_logo.png
 
 plugins:
   - social

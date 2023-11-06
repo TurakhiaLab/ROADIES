@@ -1,11 +1,10 @@
  <div align="center">
 
-![ROADIES_logo](https://github.com/TurakhiaLab/wga-phylo/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
-
-
-# Reference free Orthology free Alignment free DIscordant Aware Estimation of Species Tree (ROADIES)
+<img src="images/ROADIES_logo.png" width="300" height="300"/>
 
 </div>
+
+# Reference free Orthology free Alignment free DIscordant Aware Estimation of Species Tree (ROADIES)
 
 ## Introduction
 
@@ -31,13 +30,15 @@ ROADIES pipeline consists of multiple stages, from raw genome assemblies to spec
 
 <div align="center">
 
-<img src="drawing_github.png">
+<img src="images/drawing_github.png"width="1000" height="300" />
 
 </div>
 
 ## Convergence Mechanism
 
 ROADIES incorporates a method for establishing accurate and stable species tree. It performs multiple iterations of the entire pipeline and collects the information on the percentage of highly supported nodes in the species tree for every iteration. ASTRAL-Pro provides the information of all the internal nodes (and its support values such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal or almost 0, then we say that the species tree is now converged and stop further iterations.
+
+<img src="images/converge_manuscript.png"width="1000" height="300" />
 
 ## Modes of operation
 
