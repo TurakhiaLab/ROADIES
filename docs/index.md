@@ -34,12 +34,6 @@ ROADIES pipeline consists of multiple stages, from raw genome assemblies to spec
 
 </div>
 
-## Convergence Mechanism
-
-ROADIES incorporates a method for establishing accurate and stable species tree. It performs multiple iterations of the entire pipeline and collects the information on the percentage of highly supported nodes in the species tree for every iteration. ASTRAL-Pro provides the information of all the internal nodes (and its support values such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal or almost 0, then we say that the species tree is now converged and stop further iterations.
-
-<img src="images/converge_manuscript.png"width="1000" height="300" />
-
 ## Modes of operation
 
 ROADIES supports multiple modes of operation based on various user requirements considering the tradeoff between accuracy and runtime. 
@@ -48,13 +42,16 @@ ROADIES supports multiple modes of operation based on various user requirements 
 - **Fast-Mode**: This mode of operation is preferred for achieving faster results, for runtime-critical usecases. Here, MSA and Tree building stage is performed by [MashTree](https://github.com/lskatz/mashtree).
 - **Balanced-Mode**: This mode of operation is preferred where user wants an optimal runtime vs accuracy tradeoff. Here, MSA stage is performed by [PASTA](https://github.com/smirarab/pasta) and Tree building stage is performed using [FastTree](http://www.microbesonline.org/fasttree/). 
 
-These modes of operation can be optionally modified using command line arguments, mentioned in the quick start section.
+!!! Note
+    These modes of operation can be optionally modified using command line arguments, mentioned in the [usage](usage.md) section.
 
-## <a name="support"></a> Contributions and Support
+## Convergence Mechanism
 
-We welcome contributions from the community to enhance the capabilities of ROADIES. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
+ROADIES incorporates a method for establishing accurate and stable species tree. It performs multiple iterations of the entire pipeline and collects the information on the percentage of highly supported nodes in the species tree for every iteration. 
 
-## <a name="citation"></a> Citing ROADIES
+ASTRAL-Pro provides the information of all the internal nodes in the form of quartets (and its support values such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal with given number of iterations, then we say that the species tree is now converged.
 
-If you use the ROADIES pipeline for species tree inference in your research or publications, we kindly request that you cite the following paper:
+!!! Note
+    User have option to run ROADIES with both converge and no-converge options using command line arguments mentioned in [usage](usage.md) section.
 
+<img src="images/converge_manuscript.png"width="1000" height="300" />

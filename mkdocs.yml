@@ -45,6 +45,13 @@ extra:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/TurakhiaLab
 
+nav:
+  - Home: index.md
+  - Installation: setup.md
+  - Getting Started: start.md
+  - Usage: usage.md
+  - Contributions: contributions.md
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
