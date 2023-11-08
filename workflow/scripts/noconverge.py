@@ -110,6 +110,7 @@ if __name__ == "__main__":
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     sys.setrecursionlimit(2000)
+    os.system("snakemake --unlock")
     # initialize lists for runs and distances
     time_stamps = []
     if ref_exist:

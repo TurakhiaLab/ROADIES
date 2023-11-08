@@ -1,37 +1,13 @@
 # Usage
 
-This section provides quick steps to use ROADIES as well as detailed instructions on how to configure the pipeline further for various user requirements. Once the required environment setup process is complete, follow the steps below.
+This section provides detailed instructions on how to configure the ROADIES pipeline further for various user requirements. Once the required environment setup process is complete, follow the steps below.
 
-## Quick Start
+## Configuration paramters
 
-To run the ROADIES pipeline with 32 cores, specify the path to your input files as `GENOMES` in `config/config.yaml`. Then, run the following command:
-
-```
-python workflow/scripts/converge.py --cores 32
-```
-The output species tree will be saved as `roadies.nwk` in a separate results folder. 
-
-ROADIES also supports multiple modes of operation (fast, balanced, accurate) by controlling the accuracy-runtime tradeoff. Try the following commands for various modes of operation (accurate mode is the default mode)
-
-
-```
-python workflow/scripts/converge.py --cores 32 --mode accurate
-```
-
-```
-python workflow/scripts/converge.py --cores 32 --mode balanced
-```
-
-```
-python workflow/scripts/converge.py --cores 32 --mode fast
-```
-## Detailed configuration and usage
-
-### Step 1: Configuring parameters
-
-For specific user requirements, ROADIES also provides multiple parameters to be configured before running the pipeline. Following is the list of available input parameters, provided in `config/config.yaml`
+For specific user requirements, ROADIES provides multiple parameters to be configured before running the pipeline. These input parameters are listed in `config/config.yaml`. 
  
-(Note: ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs).
+!!! Note
+    ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs.
 
 | Parameters | Description | Default value |
 | --- | --- | --- |
@@ -40,7 +16,8 @@ For specific user requirements, ROADIES also provides multiple parameters to be 
 | **LENGTH** | Configure the lengths of each of the randomly sampled subsequences or genes. | 500 |
 | **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 750 |
 | **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 (Recommended) |
-| **OUT_DIR** | Specify the path for ROADIES output files. | |
+| **OUT_DIR** | Specify the path for ROADIES output files (this saves the current iteration results in converge mode). | |
+| **ALL_OUT_DIR** | Specify the path for ROADIES output files for all iterations in converge mode. | |
 | **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows a quartet-based topology for species tree inference. | 4 (Recommended) |
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 (Recommended) |
 | **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 (Recommended) |
@@ -49,48 +26,92 @@ For specific user requirements, ROADIES also provides multiple parameters to be 
 | **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 (Recommended)|
 | **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 (Recommended)|
 | **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.02 (Recommended)|
+| **SUPPORT_THRESHOLD** | Specify the threshold so that support values with equal to or higher than this threshold is considered as highly supported node. Such highly supported nodes crossing this threshold will be counted at every iteration to check the confidence of the tree (works in --converge mode). | 0.7 (Recommended) |
+| **ITERATIONS** | Specify the number of iterations to be run in --converge mode. | | 
 
 
-### <a name="run"></a> Step 2: Running the pipeline
+## Running the pipeline
 
-Once the required installations are completed and the parameter is configured, execute the following command:
-
-```
-python workflow/scripts/converge.py --cores [number of cores]
-```
-
-Here, by default, accurate mode of operation will be selected. To modify the modes of operation, set the command line arguments as follows:
+Once the required installations are completed and the parameters are configured in `config/config.yaml` file, execute the following command:
 
 ```
-python workflow/scripts/converge.py --cores [number of cores] --mode [`fast` OR `balanced` OR `accurate`]
+python run_roadies.py --cores <number of cores>
 ```
-Additionally, user can have custom YAML files (in the same format as config.yaml provided with this repo) with their own parameterizable values. Provide the custom YAML file using `--config` argument as follows:
+
+This will let ROADIES run in accurate mode by default with specified number of cores in non converge mode. To modify the modes of operation, add the `--mode` command line argument as follows:
 
 ```
-python workflow/scripts/converge.py --cores [number of cores] --mode [`fast` OR `balanced` OR `accurate`] --config [add own config path]
+python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`>
 ```
+
+This will run ROADIES with specified mode of operation in non converge mode. To run this in converge mode, run the following command:
+
+```
+python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --converge
+```
+
+Additionally, user can have custom YAML files (in the same format as config.yaml provided with this repository) with their own parameterizable values. Provide the custom YAML file using `--config` argument as follows (by default `config/config.yaml` file will be considered):
+
+```
+python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --config <add own config path>
+```
+Same thing with converge mode, following will be the command: 
+
+```
+python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --config <add own config path> --converge
+```
+
 Use `--help` to get the list of command line arguments.
 
-### Step 3: Analyzing output files
+
+## Analyzing output files
+
+### Without convergence
 
 After the pipeline finishes running, the final species tree estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `--OUT_DIR` parameter in the `config/config.yaml` file. 
 
-Other intermediate output files for each stage of the pipeline are also saved in `--OUT_DIR`, containing the following subfolders:
+ROADIES also provides a number of intermediate output files for extensive debugging by the user. These files will be saved in `--OUT_DIR`, containing the following subfolders:
 
 - `alignments` - this folder contains the LASTZ alignment output of all individual input genomes aligned with randomly sampled gene sequences.
 - `benchmarks` - this folder contains the runtime value of each of the individual jobs for each of the stages in the pipeline. These files will only be used if you want to estimate and compare the stagewise runtime of various pipeline stages and will not be used in final tree estimation. 
-- `genes`- this folder contains the output files of multiple sequence alignment and tree-building stages (run by PASTA, IQTREE/FastTree) of the pipeline. 
-- `genetrees` - this folder contains a file `gene_tree_merged.nwk`, which lists all gene trees together. This is used by ASTRAL-Pro to estimate the final species tree from the list of gene trees in the `gene_tree_merged.nwk` file.
+- `genes`- this folder contains the output files of multiple sequence alignment and tree-building stages (run by PASTA, IQTREE/FastTree, MashTree) of the pipeline. 
+- `genetrees` - this folder contains two files as follows:
+    - `gene_tree_merged.nwk` - this file lists all gene trees together generated by IQTREE/FastTree/MashTree. It is used by ASTRAL-Pro to estimate the final species tree from this list of gene trees.
+    - `original_list.txt` - this file lists all gene trees together corresponding to their gene IDs. Some lines will have only gene IDs but no associated gene trees. This is because some genes will be filtered out from tree building and MSA step if it has less than four species. Hence this file also lists those gene IDs with missing gene trees for further debugging. 
 - `plots` - this folder contains four following plots:
     - `gene_dup.png` - this histogram plot represents the count of the number of gene duplicates on the Y-axis vs. the number of genes having duplication on the X-axis.
     - `homologues.png` - this histogram plot represents the count of the number of genes on the Y-axis vs. the number of homologous species on the X-axis.
     - `num_genes.png` - this plot represents how many genes out of `--GENE_COUNT` parameter have been aligned to each of the input genomes after the LASTZ step. The X-axis represents different genomes, and the Y-axis represents the number of genes.
     - `sampling.png` - the plot shows how many genes have been sampled from each of the input genomes after the random sampling step. The X-axis represents different genomes, and the Y-axis represents the number of genes.
-- `samples` - this folder contains the list of randomly sampled genes from individual input genomes. `<species_name>_temp.fa` files contain genes sampled from that input genome.`out.fa` combines all sampled genes from individual genomes into one file before the LASTZ step. 
+- `samples` - this folder contains the list of randomly sampled genes from individual input genomes. 
+    - `<species_name>_temp.fa` - these files contain genes sampled from the particular input genome.
+    - `out.fa` - this file contains all sampled subsequences (genes) from individual genomes combined, which is given to the the LASTZ step. 
 - `statistics` - this folder contains CSV data for the plots shown in the `plots` directory mentioned above.
-    - `gene_to_species.csv` - this is an additional CSV file (plots to be added in future) which provides the information about which genes are aligned to what species after LASTZ step (`num_genes.csv` only gives the total count of the genes per species, `gene_to_species.csv` also gives the ID number of those aligned genes). Along with each gene ID number, it also provides the [score, line number in .maf file, position] of all the homologs of that particular gene. Score, position and line number information is collected from the corresponding species' .maf file (generated by LASTZ), saved in `results/alignments` folder.
-- `roadies_stats.nwk`- this is the final estimated species tree (same as `roadies.nwk`, along with the support branch values in the Newick tree). 
+    - `gene_to_species.csv` - this is an additional CSV file (corresponding plots to be added in future) which provides the information about which genes are aligned to what species after LASTZ step (`num_genes.csv` only gives the total count of the genes per species, `gene_to_species.csv` also gives the ID number of those aligned genes). Along with each gene ID number, it also provides the [score, line number in .maf file, position] of all the homologs of that particular gene. Score, position and line number information is collected from the corresponding species' .maf file (generated by LASTZ), saved in `results/alignments` folder.
+- `roadies_stats.nwk`- this is the final estimated species tree (same as `roadies.nwk`), along with the support branch values in the Newick tree. 
 - `roadies.nwk`- this is the final estimated species tree in Newick format.
-- `roadies_rerooted.nwk` - this is the final estimated species tree, re-rooted corresponding to the outgroup node from the reference tree (provided as `REFERENCE` in `config.yaml`).
+- `roadies_rerooted.nwk` (optional) - this is the final estimated species tree, re-rooted corresponding to the outgroup node from the given reference tree (provided as `REFERENCE` in `config.yaml`).
 - `time_stamps.csv` - this file contains the start time, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively.
 - `ref_dist.csv` - this file provides the number of gene trees and the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`).
+
+### With convergence
+
+If converge option is enabled, the results of all iterations (along with the corresponding species tree in the name `iteration_<iteration_number>.nwk`) will be saved in a separate folder mentioned in the `--ALL_OUT_DIR` parameter in the `config/config.yaml` file.
+
+!!! Note
+    With `--converge` option, `--OUT_DIR` saves the results of the current ongoing iteration (if pipeline execution is finished, then the last iteration), whereas `--ALL_OUT_DIR` saves the results of all iterations executed. 
+
+For extensive debugging, other intermediate output files for each stage of the pipeline for each iterations are saved in `--ALL_OUT_DIR` as follows:
+
+- Folder with `iteration_<iteration_number>` - this folder contains results from the specific iteration corresponding to the iteration number in the folder name.
+    -  Folder with name in `--OUT_DIR` - this contains the results of all stages of the pipeline (as described above in non convergence section). 
+    - `gene_tree_merged.nwk` - this file lists all gene trees together generated by IQTREE/FastTree/MashTree in that particular iteration. It is concatenated with master list of gene trees from all past iterations before providing to ASTRAL-Pro to estimate the final converged species tree.
+    - `iteration_<iteration_number>.log` - this file contains the log information of the corresponding iteration execution. 
+    - `mapping.txt` - This file maps all gene names in the gene trees with the corresponding species name from where it originates. It is required by ASTRAL-Pro, along with the master list of gene trees from all iterations, to infer species tree. 
+- `iteration_<iteration_number>_stats.nwk` - this is the final estimated species tree for the corresponding iteration (same as `iteration_<iteration_number>.nwk`), along with the support branch values in the Newick tree. 
+- `iteration_<iteration_number>.nwk` - this is the final estimated species tree for the corresponding iteration
+- `iteration_<iteration_number>.rerooted.nwk` - (optional) - this is the final estimated species tree for the corresponding iteration, re-rooted to the outgroup node from the given reference tree (provided as `REFERENCE` in `config.yaml`).
+- `master_gt.nwk` - this is the concatenated list of all gene trees from all iterations together.
+- `master_map.txt` - this is the concatenated list of all mapping files from all iterations together. This `master_gt.nwk` and `master_map.txt` is provided to ASTRAL-Pro after every iteration to get the converged species tree. 
+- `ref_dist.csv` - this file provides the iteration number, number of gene trees and the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`), for all iterations.
+- `time_stamps.csv`- this file contains the start time in first line, iteration number, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively, for all iterations in subsequent lines.
