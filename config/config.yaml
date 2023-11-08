@@ -1,7 +1,7 @@
 #This file configures the parameters for ROADIES
 
 #Path for input genomes
-GENOMES: "/home/roadies-datasets/gzipped_flies_renamed"
+GENOMES: "/datasets/gzipped_flies_renamed"
 #Reference tree (optional, default set as null)
 REFERENCE: reference_trees/flies_reftree_100.nwk
 #Length of each of the genes
