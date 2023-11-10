@@ -23,6 +23,6 @@ jobs:
       - run: pip install "mkdocs-material[imaging]"
       - run: chmod +x roadies_env.sh
       - run: ./roadies_env.sh
-      - run: pip3 install ete3
+      - run: pip3 install ete3 numpy
       - run: python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
       - run: mkdocs gh-deploy --force
