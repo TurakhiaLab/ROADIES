@@ -24,6 +24,6 @@ jobs:
       - run: |
           chmod +x roadies_env.sh
           ./roadies_env.sh
-          pip3 install ete3 numpy
+          pip3 install ete3 numpy snakemake
           python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
       - run: mkdocs gh-deploy --force
