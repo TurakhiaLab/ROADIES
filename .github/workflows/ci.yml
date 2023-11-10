@@ -4,6 +4,7 @@ on:
     branches:
       - master 
       - main
+      - final-cleanup
 permissions:
   contents: write
 jobs:
@@ -20,4 +21,7 @@ jobs:
           path: .cache
       - run: pip install mkdocs-material
       - run: pip install "mkdocs-material[imaging]"
+      - run: chmod +x roadies_env.sh
+      - run: ./roadies_env.sh
+      - run: python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
       - run: mkdocs gh-deploy --force

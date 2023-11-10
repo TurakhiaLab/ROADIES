@@ -28,7 +28,7 @@ def comp_tree(t1, t2):
 
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode, out_dir, run, roadies_dir):
+def run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path):
     cmd = [
         "snakemake",
         "--core",
@@ -37,6 +37,7 @@ def run_snakemake(cores, mode, out_dir, run, roadies_dir):
         str(cores),
         "--config",
         "mode=" + str(mode),
+        "config_path=" + str(config_path),
         "--use-conda",
         "--rerun-incomplete",
     ]
@@ -80,7 +81,7 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, support_thr):
+def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, support_thr, config_path):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     run = "iteration_"
@@ -90,7 +91,7 @@ def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, suppor
     else:
         run += str(iteration)
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, mode, out_dir, run, roadies_dir)
+    run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path)
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run)
     t = Tree(out_dir + "/" + run + ".nwk")
@@ -178,7 +179,7 @@ if __name__ == "__main__":
         t_out.write("Start time: " + str(start_time_l) + "\n")
     while True:
         percent_high_support, num_gt, outputtree = converge_run(
-            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir, support_thr
+            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir, support_thr, config_path
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))

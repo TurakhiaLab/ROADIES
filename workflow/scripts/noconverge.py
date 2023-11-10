@@ -26,7 +26,7 @@ def comp_tree(t1, t2):
 
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode):
+def run_snakemake(cores, mode, config_path):
     cmd = [
         "snakemake",
         "--core",
@@ -35,6 +35,7 @@ def run_snakemake(cores, mode):
         str(cores),
         "--config",
         "mode=" + str(mode),
+        "config_path=" + str(config_path),
         "--use-conda",
         "--quiet",
         "--rerun-incomplete",
@@ -49,9 +50,9 @@ def run_snakemake(cores, mode):
 
 
 # function for convergence run
-def converge_run(cores, mode, ref_exist, trees, roadies_dir):
+def converge_run(cores, mode, ref_exist, trees, roadies_dir, config_path):
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, mode)
+    run_snakemake(cores, mode, config_path)
     # merging gene trees and mapping files
     os.system(
         "ASTER-Linux/bin/astral-pro -t 16 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies.nwk -a {0}/genes/mapping.txt".format(
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     time_stamps.append(start_time)
     with open(roadies_dir + "/time_stamps.csv", "a") as t_out:
         t_out.write("Start time: " + str(start_time_l) + "\n")
-    num_gt = converge_run(CORES, MODE, ref_exist, trees, roadies_dir)
+    num_gt = converge_run(CORES, MODE, ref_exist, trees, roadies_dir, config_path)
     curr_time = time.time()
     curr_time_l = time.asctime(time.localtime(time.time()))
     to_previous = curr_time - time_stamps[len(time_stamps) - 1]
