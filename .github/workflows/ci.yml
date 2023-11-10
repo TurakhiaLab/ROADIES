@@ -40,6 +40,7 @@ jobs:
       - name: Activate Conda Environment
         shell: bash -l {0}
         run: |
+          source /usr/share/miniconda3/etc/profile.d/conda.sh
           conda activate roadies_env_test
 
       - name: Run Tests
