@@ -38,6 +38,7 @@ jobs:
           environment-file: test/roadies_env_test.yaml
 
       - name: Activate Conda Environment
+        shell: bash -l {0}
         run: |
           conda activate roadies_env_test
 
