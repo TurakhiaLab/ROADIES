@@ -37,15 +37,8 @@ jobs:
           activate-environment: roadies_env_test
           environment-file: test/roadies_env_test.yaml
 
-      - name: Install dependencies
-        run: |
-          pip install mkdocs-material
-          pip install "mkdocs-material[imaging]"
-
       - name: Activate Conda Environment
         run: |
-          ${HOME}/conda/etc/profile.d/conda.sh
-          ${HOME}/conda/etc/profile.d/mamba.sh
           conda activate roadies_env_test
 
       - name: Run Tests
@@ -54,5 +47,10 @@ jobs:
           ./test/roadies_env_test.sh
           pip3 install ete3 numpy
           python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
-      
+
+      - name: Install dependencies for mkdocs
+        run: |
+          pip install mkdocs-material
+          pip install "mkdocs-material[imaging]"
+
       - run: mkdocs gh-deploy --force
