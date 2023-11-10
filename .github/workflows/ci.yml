@@ -35,7 +35,7 @@ jobs:
           miniforge-variant: Mambaforge
           channels: conda-forge, bioconda
           activate-environment: roadies_env_test
-          environment-file: test/roadies_env_test.yaml
+          environment-file: ./test/roadies_env_test.yaml
 
       - name: Install dependencies
         run: |
