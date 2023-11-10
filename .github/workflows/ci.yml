@@ -1,40 +1,58 @@
-name: ci 
+name: ci
+
 on:
   push:
     branches:
-      - master 
+      - master
       - main
       - final-cleanup
+
 permissions:
   contents: write
+
 jobs:
   deploy:
+    name: Deploy Job
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
-      - uses: actions/cache@v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
         with:
           key: ${{ github.ref }}
           path: .cache
-      - uses: conda-incubator/setup-miniconda@v2
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
           miniforge-variant: Mambaforge
           channels: conda-forge, bioconda
           activate-environment: roadies_env_test
           environment-file: test/roadies_env_test.yaml
-      - run: pip install mkdocs-material
-      - run: pip install "mkdocs-material[imaging]"
-      - shell: bash -el {0}
-      - run: |
+
+      - name: Install dependencies
+        run: |
+          pip install mkdocs-material
+          pip install "mkdocs-material[imaging]"
+
+      - name: Activate Conda Environment
+        run: |
           ${HOME}/conda/etc/profile.d/conda.sh
           ${HOME}/conda/etc/profile.d/mamba.sh
           conda activate roadies_env_test
-      - run: |
+
+      - name: Run Tests
+        run: |
           chmod +x test/roadies_env_test.sh
           ./test/roadies_env_test.sh
           pip3 install ete3 numpy
           python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
+      
       - run: mkdocs gh-deploy --force
