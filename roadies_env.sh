@@ -1,14 +1,17 @@
 #!/bin/bash
 
+sudo apt-get update
+sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
+
 # Download and install Mambaforge
 wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
 bash Mambaforge-Linux-x86_64.sh -b -p "${HOME}/conda"
 
 # Source Conda and Mamba scripts
-source ${HOME}/conda/etc/profile.d/conda.sh
-source ${HOME}/conda/etc/profile.d/mamba.sh
+source ${HOME}/conda/etc/profile.d/conda.sh >> ~/.bashrc
+source ${HOME}/conda/etc/profile.d/mamba.sh >> ~/.bashrc
 conda activate base
-mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11
+mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 ete3
 echo "conda activate roadies_env" >> ~/.bashrc
 
 # Download ASTER repository
@@ -36,9 +39,9 @@ cmake ..
 make
 cd ../../../..
 
+echo "pip3 install ete3" >> ~/.bashrc
+
 # Source the updated .bashrc to activate Conda environment
 source ~/.bashrc
-
-pip3 install ete3
 
 echo "Setup complete"

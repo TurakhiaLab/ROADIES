@@ -1,0 +1,18 @@
+name: roadies_env_test
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - snakemake
+  - alive-progress
+  - biopython
+  - iqtree=2.2.0.3
+  - numpy
+  - lastz
+  - mashtree
+  - matplotlib
+  - seaborn
+  - treeswift=1.1.28
+  - fasttree=2.1.11
+  - python=3.11
+  - ete3
