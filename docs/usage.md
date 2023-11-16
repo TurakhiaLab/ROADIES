@@ -9,9 +9,12 @@ For specific user requirements, ROADIES provides multiple parameters to be confi
 !!! Note
     ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs.
 
+!!! Note 
+    All input genome assemblies in the path mentioned in `GENOMES` should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)
+
 | Parameters | Description | Default value |
 | --- | --- | --- |
-| **GENOMES** | Specify the path to your input files, which includes raw genome assemblies of the species. All input genome assemblies should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)| |
+| **GENOMES** | Specify the path to your input files which includes raw genome assemblies of the species. | |
 | **REFERENCE** (optional) | Specify the path for the reference tree (state-of-the-art) in Newick format to compare ROADIES' results with a state-of-the-art approach. If you don't want to specify any reference tree, set it to `null`. | `null` |
 | **LENGTH** | Configure the lengths of each of the randomly sampled subsequences or genes. | 500 |
 | **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 750 |
@@ -38,24 +41,30 @@ Once the required installations are completed and the parameters are configured 
 python run_roadies.py --cores <number of cores>
 ```
 
-This will let ROADIES run in accurate mode by default with specified number of cores in non converge mode. To modify the modes of operation, add the `--mode` command line argument as follows:
+This will let ROADIES run in accurate mode by default with specified number of cores in non converge mode. 
+
+### Various command line arguments
+
+There are multiple command line arguments through which user can change the mode of operation, specify the custom config file path, etc.
+
+To modify the modes of operation, add the `--mode` command line argument as follows:
 
 ```
 python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`>
 ```
 
-This will run ROADIES with specified mode of operation in non converge mode. To run this in converge mode, run the following command:
+This will run ROADIES with specified mode of operation in non converge mode. To run this in converge mode, add the `--converge` argument as follows:
 
 ```
 python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --converge
 ```
 
-Additionally, user can have custom YAML files (in the same format as config.yaml provided with this repository) with their own parameterizable values. Provide the custom YAML file using `--config` argument as follows (by default `config/config.yaml` file will be considered):
+Additionally, user can have custom YAML files (in the same format as config.yaml provided with this repository) with their own parameterizable values. Provide the custom YAML file using `--config` argument as follows (if not given, by default `config/config.yaml` file will be considered):
 
 ```
 python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --config <add own config path>
 ```
-Same thing with converge mode, following will be the command: 
+Also, with the converge mode and the custom yaml file together, run the command as follows:
 
 ```
 python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --config <add own config path> --converge
