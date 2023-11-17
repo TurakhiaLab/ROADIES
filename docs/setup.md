@@ -31,7 +31,7 @@ docker run -it roadies_image
 ```
 
 
-## Using Installation scripts (in Linux)
+## Using Installation scripts (requires sudo access)
 
 First clone the repository
 

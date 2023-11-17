@@ -2,9 +2,9 @@
 
 This section provides quick steps to get acquainted with ROADIES. 
 
-For more details about various possible ways of installations, refer to [Installations](setup.md) tab. For more details about the usage and further configurability, refer to [Usage](usage.md) tab.
+For more details about various possible ways of installations, refer to the [Installation](setup.md) tab. For more details about the usage and further configurability, refer to the [Usage](usage.md) tab.
 
-## Quick Install (using docker)
+## Quick install (using docker)
 
 First clone the repository
 
@@ -23,15 +23,15 @@ docker run -it roadies_image
 ## Get input genomic data
 After installing the environment, we need to get input genomic sequences for creating the species tree. To start with this, we have provided few test genomes, present in the repository in `test/test_data` folder,
 
-OR, download few genomes by executing the following command:
+OR, download a few genomes by executing the following command:
 
-## Configure the config file
+## Modify the config file
 
 To run ROADIES with test data, modify the path for `GENOMES` in `config/config.yaml` as `test/test_data`.
 
 To run ROADIES with downloaded genomes using `wget` commands mentioned above, provide the path of the downloaded genomes to `GENOMES` argument.
 
-## Running the pipeline 
+## Run the pipeline 
 
 After modifying the config file, run the following command:
 
