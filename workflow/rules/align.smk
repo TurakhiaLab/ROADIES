@@ -22,9 +22,9 @@ rule lastz:
 	shell:
 		'''
 		if [[ "{input.genome}" == *.gz ]]; then
-			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
 		else
-			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
 		fi
 		'''
 
@@ -64,7 +64,7 @@ rule pasta:
 		suffix = "fa.aln"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
-	threads: 8
+	threads: 4
 	conda: 
 		"../envs/msa.yaml"
 	shell:
@@ -90,7 +90,7 @@ rule pasta:
 			if [ "$all_matched" = true ]; then
 				cp "$input_file" "$output_file"
 			else
-				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 8
+				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 4
 			fi
 		fi
 		touch {output}
