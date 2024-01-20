@@ -37,7 +37,6 @@ def run_snakemake(cores, mode, config_path):
         "mode=" + str(mode),
         "config_path=" + str(config_path),
         "--use-conda",
-        "--quiet",
         "--rerun-incomplete",
     ]
     for i in range(len(cmd)):
