@@ -7,7 +7,7 @@ REFERENCE: reference_trees/birds_reftree_363_very_latest.nwk
 #Length of each of the genes
 LENGTH: 500
 #Number of genes per iteration
-GENE_COUNT: 4000
+GENE_COUNT: 250
 #Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
 #ROADIES output directory (current iteration output in --converge option)
@@ -30,6 +30,4 @@ STEPS: 1
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
 #Threshold for high support (only used in --converge option)
-SUPPORT_THRESHOLD: 0.7
-#Number of iterations (only used in --converge option)
-ITERATIONS: 3
+SUPPORT_THRESHOLD: 0.95

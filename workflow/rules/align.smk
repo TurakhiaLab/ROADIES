@@ -10,7 +10,7 @@ rule lastz:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
-	threads: 2
+	threads: 4
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],
@@ -77,6 +77,7 @@ rule pasta:
 			all_matched=true
 
 			while IFS= read -r line; do
+				line=$(echo "$line" | tr '[:lower:]' '[:upper:]')
   				if [[ "$line" != ">"* ]]; then
     				if [ -z "$reference" ]; then
       					reference="$line"

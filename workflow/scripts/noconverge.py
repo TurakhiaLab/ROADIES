@@ -29,7 +29,7 @@ def comp_tree(t1, t2):
 def run_snakemake(cores, mode, config_path):
     cmd = [
         "snakemake",
-        "--core",
+        "--cores",
         str(cores),
         "--jobs",
         str(cores),
@@ -55,6 +55,11 @@ def converge_run(cores, mode, ref_exist, trees, roadies_dir, config_path):
     # merging gene trees and mapping files
     os.system(
         "ASTER-Linux/bin/astral-pro -t 16 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies.nwk -a {0}/genes/mapping.txt".format(
+            roadies_dir
+        )
+    )
+    os.system(
+        "ASTER-Linux/bin/astral-pro -t 16 -u 3 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies_stats.nwk -a {0}/genes/mapping.txt".format(
             roadies_dir
         )
     )

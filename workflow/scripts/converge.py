@@ -26,12 +26,29 @@ def comp_tree(t1, t2):
     d = t1.compare(t2)
     return d["norm_rf"]
 
+# Function to update the configuration file
+def update_config(config_path, iteration, base_gene_count):
+    with open(config_path) as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+    
+    # Update GENE_COUNT based on the iteration number
+    config['GENE_COUNT'] = base_gene_count * 2
+
+    # Save the updated configuration
+    with open(config_path, 'w') as file:
+        yaml.dump(config, file)
+
+# Function to read the initial GENE_COUNT from the config file
+def read_initial_gene_count(config_path):
+    with open(config_path) as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+    return config['GENE_COUNT']
 
 # function to run snakemake with settings and add to run folder
 def run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path):
     cmd = [
         "snakemake",
-        "--core",
+        "--cores",
         str(cores),
         "--jobs",
         str(cores),
@@ -91,6 +108,9 @@ def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, suppor
     else:
         run += str(iteration)
     # run snakemake with specificed gene number and length
+    if iteration >= 2:
+        base_gene_count = read_initial_gene_count(config_path)  # Read initial GENE_COUNT value
+        update_config(config_path, iteration, base_gene_count)
     run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path)
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run)
@@ -152,7 +172,6 @@ if __name__ == "__main__":
         ref = Tree(config["REFERENCE"])
     genomes = config["GENOMES"]
     out_dir = config["ALL_OUT_DIR"]
-    num_itrs = config["ITERATIONS"]
     NUM_GENOMES = len(os.listdir(genomes))
     NUM_GENES = config["GENE_COUNT"]
     LENGTH = config["LENGTH"]
@@ -185,6 +204,7 @@ if __name__ == "__main__":
         curr_time_l = time.asctime(time.localtime(time.time()))
         to_previous = curr_time - time_stamps[len(time_stamps) - 1]
         time_stamps.append(curr_time)
+        high_support_list.append(percent_high_support)
         elapsed_time = curr_time - start_time
         with open(out_dir + "/time_stamps.csv", "a") as t_out:
             t_out.write(
@@ -208,8 +228,8 @@ if __name__ == "__main__":
                     str(iteration) + "," + str(num_gt) + "," + str(ref_dist) + "\n"
                 )
 
-        high_support_list.append(percent_high_support)
-
         iteration += 1
-        if iteration == num_itrs:
+        # if iteration == num_itrs:
+        #     break
+        if ((iteration == 1) and (percent_high_support == 100)) or ((iteration >= 2) and ((percent_high_support - high_support_list[iteration-2] < 1) or (percent_high_support == 100) or (iteration == 9))):
             break

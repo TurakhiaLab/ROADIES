@@ -72,7 +72,7 @@ rule lastz:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
-	threads: 2
+	threads: 4
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],
