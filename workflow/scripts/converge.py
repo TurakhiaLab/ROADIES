@@ -45,16 +45,19 @@ def read_initial_gene_count(config_path):
     return config['GENE_COUNT']
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path):
+def run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances):
+
+    # Set threads per instance dynamically
+    num_threads = cores/fixed_parallel_instances
+
     cmd = [
         "snakemake",
         "--cores",
         str(cores),
-        "--jobs",
-        str(cores),
         "--config",
         "mode=" + str(mode),
         "config_path=" + str(config_path),
+        "num_threads=" + str(num_threads),
         "--use-conda",
         "--rerun-incomplete",
     ]
@@ -71,7 +74,7 @@ def run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path):
 
 
 # function to combine gene trees and mapping files from all iterations
-def combine_iter(out_dir, run):
+def combine_iter(out_dir, run, cores):
     os.system(
         "cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk".format(out_dir, run)
     )
@@ -81,13 +84,13 @@ def combine_iter(out_dir, run):
 
     # open both files and get lines, each line is a separate gene tree
     os.system(
-        "ASTER-Linux/bin/astral-pro -t 16 -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
-            out_dir, run
+        "ASTER-Linux/bin/astral-pro -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
+            out_dir, run, cores
         )
     )
     os.system(
-        "ASTER-Linux/bin/astral-pro -t 16 -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
-            out_dir, run
+        "ASTER-Linux/bin/astral-pro -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
+            out_dir, run, cores
         )
     )
     # open both master files and get gene trees and mapping
@@ -98,7 +101,7 @@ def combine_iter(out_dir, run):
 
 
 # function for convergence run
-def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, support_thr, config_path):
+def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, support_thr, config_path, fixed_parallel_instances):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     run = "iteration_"
@@ -111,9 +114,9 @@ def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, suppor
     if iteration >= 2:
         base_gene_count = read_initial_gene_count(config_path)  # Read initial GENE_COUNT value
         update_config(config_path, iteration, base_gene_count)
-    run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path)
+    run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances)
     # merging gene trees and mapping files
-    gene_trees = combine_iter(out_dir, run)
+    gene_trees = combine_iter(out_dir, run, cores)
     t = Tree(out_dir + "/" + run + ".nwk")
     # add species tree to tree list
     if ref_exist:
@@ -177,6 +180,7 @@ if __name__ == "__main__":
     LENGTH = config["LENGTH"]
     support_thr = config["SUPPORT_THRESHOLD"]
     roadies_dir = config["OUT_DIR"]
+    fixed_parallel_instances = config["NUM_INSTANCES"]
     master_gt = out_dir + "/master_gt.nwk"
     master_map = out_dir + "/master_map.txt"
     os.system("rm -r {0}".format(out_dir))
@@ -198,7 +202,7 @@ if __name__ == "__main__":
         t_out.write("Start time: " + str(start_time_l) + "\n")
     while True:
         percent_high_support, num_gt, outputtree = converge_run(
-            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir, support_thr, config_path
+            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir, support_thr, config_path, fixed_parallel_instances
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))

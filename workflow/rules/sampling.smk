@@ -39,7 +39,6 @@ rule sequence_select:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
-	threads:workflow.cores
 	shell:
 			'''
 			echo "We are starting to sample {input}"
