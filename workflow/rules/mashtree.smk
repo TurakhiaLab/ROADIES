@@ -39,6 +39,7 @@ rule sequence_select:
 		THRES=config["UPPER_CASE"]
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.sample.txt"
+	threads: lambda wildcards: int(config['num_threads'])
 	output:
         	config["OUT_DIR"]+"/samples/{sample}_temp.fa"
 	shell:
