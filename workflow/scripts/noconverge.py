@@ -113,6 +113,7 @@ if __name__ == "__main__":
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
+    ref = None
     if config["REFERENCE"] != None:
         ref_exist = True
         ref = Tree(config["REFERENCE"])

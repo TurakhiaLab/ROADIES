@@ -187,6 +187,7 @@ if __name__ == "__main__":
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
+    ref = None
     if config["REFERENCE"] != None:
         ref_exist = True
         ref = Tree(config["REFERENCE"])
@@ -262,7 +263,7 @@ if __name__ == "__main__":
         if ((iteration == 1) and (percent_high_support == 100)) or (
             (iteration >= 2)
             and (
-                (percent_high_support - high_support_list[iteration - 2] < 1)
+                (abs(percent_high_support - high_support_list[iteration - 2]) < 1)
                 or (percent_high_support == 100)
                 or (iteration == 9)
             )
