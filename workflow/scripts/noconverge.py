@@ -12,10 +12,7 @@ from ete3 import Tree
 from reroot import rerootTree
 import yaml
 from pathlib import Path
-import multiprocessing
-from multiprocessing import Pool
 import time
-import subprocess
 import math
 
 
@@ -26,16 +23,19 @@ def comp_tree(t1, t2):
 
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode, config_path):
+def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
+
+    # Set threads per instance dynamically
+    num_threads = cores // fixed_parallel_instances
+
     cmd = [
         "snakemake",
-        "--core",
-        str(cores),
-        "--jobs",
+        "--cores",
         str(cores),
         "--config",
         "mode=" + str(mode),
         "config_path=" + str(config_path),
+        "num_threads=" + str(num_threads),
         "--use-conda",
         "--rerun-incomplete",
     ]
@@ -49,13 +49,27 @@ def run_snakemake(cores, mode, config_path):
 
 
 # function for convergence run
-def converge_run(cores, mode, ref_exist, trees, roadies_dir, config_path):
+def converge_run(
+    cores,
+    mode,
+    ref_exist,
+    ref,
+    trees,
+    roadies_dir,
+    config_path,
+    fixed_parallel_instances,
+):
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, mode, config_path)
+    run_snakemake(cores, mode, config_path, fixed_parallel_instances)
     # merging gene trees and mapping files
     os.system(
-        "ASTER-Linux/bin/astral-pro -t 16 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies.nwk -a {0}/genes/mapping.txt".format(
-            roadies_dir
+        "ASTER-Linux/bin/astral-pro -t {1} -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies.nwk -a {0}/genes/mapping.txt".format(
+            roadies_dir, cores
+        )
+    )
+    os.system(
+        "ASTER-Linux/bin/astral-pro -t {1} -u 3 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies_stats.nwk -a {0}/genes/mapping.txt".format(
+            roadies_dir, cores
         )
     )
     gt = open(roadies_dir + "/genetrees/gene_tree_merged.nwk", "r")
@@ -107,6 +121,7 @@ if __name__ == "__main__":
     NUM_GENES = config["GENE_COUNT"]
     LENGTH = config["LENGTH"]
     roadies_dir = config["OUT_DIR"]
+    fixed_parallel_instances = config["NUM_INSTANCES"]
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     sys.setrecursionlimit(2000)
@@ -122,7 +137,16 @@ if __name__ == "__main__":
     time_stamps.append(start_time)
     with open(roadies_dir + "/time_stamps.csv", "a") as t_out:
         t_out.write("Start time: " + str(start_time_l) + "\n")
-    num_gt = converge_run(CORES, MODE, ref_exist, trees, roadies_dir, config_path)
+    num_gt = converge_run(
+        CORES,
+        MODE,
+        ref_exist,
+        ref,
+        trees,
+        roadies_dir,
+        config_path,
+        fixed_parallel_instances,
+    )
     curr_time = time.time()
     curr_time_l = time.asctime(time.localtime(time.time()))
     to_previous = curr_time - time_stamps[len(time_stamps) - 1]

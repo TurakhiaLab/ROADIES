@@ -10,7 +10,7 @@ rule lastz:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
-	threads: 2
+	threads: lambda wildcards: int(config['num_threads'])
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],
@@ -64,7 +64,7 @@ rule pasta:
 		suffix = "fa.aln"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
-	threads: 4
+	threads: lambda wildcards: int(config['num_threads'])
 	conda: 
 		"../envs/msa.yaml"
 	shell:
@@ -77,6 +77,7 @@ rule pasta:
 			all_matched=true
 
 			while IFS= read -r line; do
+				line=$(echo "$line" | tr '[:lower:]' '[:upper:]')
   				if [[ "$line" != ">"* ]]; then
     				if [ -z "$reference" ]; then
       					reference="$line"
@@ -90,7 +91,7 @@ rule pasta:
 			if [ "$all_matched" = true ]; then
 				cp "$input_file" "$output_file"
 			else
-				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus 4
+				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus {threads}
 			fi
 		fi
 		touch {output}

@@ -10,6 +10,7 @@ directory = sys.argv[1]
 output = sys.argv[2]
 plotdir = sys.argv[3]
 species_count = {}
+
 with open(output, "wb") as outfile:
     for filename in glob.glob(os.path.join(directory, "*.fa")):
         if filename == output or "temp" not in filename:
@@ -25,11 +26,14 @@ with open(output, "wb") as outfile:
         species_count[name] = num
         with open(filename, "rb") as readfile:
             shutil.copyfileobj(readfile, outfile)
+
 x = list(species_count.keys())
 y = list(species_count.values())
+
 ax = sns.barplot(x=x, y=y)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha="right")
 ax.set_title("Number of Reference Genes from Each Genome")
+
 plt.tight_layout()
 fig = ax.get_figure()
 fig.savefig(plotdir)

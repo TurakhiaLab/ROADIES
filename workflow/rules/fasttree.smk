@@ -7,7 +7,6 @@ rule fasttree:
 	params:
 		m = config["MIN_ALIGN"],
 		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
-	threads: 1
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.fasttree.txt"
 	shell:
