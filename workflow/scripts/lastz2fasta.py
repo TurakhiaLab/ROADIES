@@ -12,7 +12,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from Bio.Seq import Seq
-import re
 
 # get arguments
 parser = argparse.ArgumentParser(
@@ -230,7 +229,7 @@ for filename in glob.glob(os.path.join(outdir, "*.fa")):
         with open(filename, "w") as w:
             w.write("")
 sorted(gene_dup)
-# output duplicity as csv]
+# output duplicity as csv
 with open(statdir + "/gene_dup.csv", "w") as f:
     for i in range(len(gene_dup)):
         f.write(str(gene_dup[i][0]) + "," + str(gene_dup[i][1]) + "\n")

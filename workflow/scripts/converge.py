@@ -13,10 +13,7 @@ from ete3 import Tree
 from reroot import rerootTree
 import yaml
 from pathlib import Path
-import multiprocessing
-from multiprocessing import Pool
 import time
-import subprocess
 import math
 import csv
 
@@ -26,29 +23,34 @@ def comp_tree(t1, t2):
     d = t1.compare(t2)
     return d["norm_rf"]
 
+
 # Function to update the configuration file
-def update_config(config_path, iteration, base_gene_count):
+def update_config(config_path, base_gene_count):
     with open(config_path) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    
+
     # Update GENE_COUNT based on the iteration number
-    config['GENE_COUNT'] = base_gene_count * 2
+    config["GENE_COUNT"] = base_gene_count * 2
 
     # Save the updated configuration
-    with open(config_path, 'w') as file:
+    with open(config_path, "w") as file:
         yaml.dump(config, file)
+
 
 # Function to read the initial GENE_COUNT from the config file
 def read_initial_gene_count(config_path):
     with open(config_path) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    return config['GENE_COUNT']
+    return config["GENE_COUNT"]
+
 
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances):
+def run_snakemake(
+    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances
+):
 
     # Set threads per instance dynamically
-    num_threads = cores/fixed_parallel_instances
+    num_threads = cores // fixed_parallel_instances
 
     cmd = [
         "snakemake",
@@ -101,7 +103,18 @@ def combine_iter(out_dir, run, cores):
 
 
 # function for convergence run
-def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, support_thr, config_path, fixed_parallel_instances):
+def converge_run(
+    iteration,
+    cores,
+    mode,
+    out_dir,
+    ref_exist,
+    ref,
+    roadies_dir,
+    support_thr,
+    config_path,
+    fixed_parallel_instances,
+):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     run = "iteration_"
@@ -112,9 +125,13 @@ def converge_run(iteration, cores, mode, out_dir, ref_exist, roadies_dir, suppor
         run += str(iteration)
     # run snakemake with specificed gene number and length
     if iteration >= 2:
-        base_gene_count = read_initial_gene_count(config_path)  # Read initial GENE_COUNT value
-        update_config(config_path, iteration, base_gene_count)
-    run_snakemake(cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances)
+        base_gene_count = read_initial_gene_count(
+            config_path
+        )  # Read initial GENE_COUNT value
+        update_config(config_path, base_gene_count)
+    run_snakemake(
+        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances
+    )
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run, cores)
     t = Tree(out_dir + "/" + run + ".nwk")
@@ -202,7 +219,16 @@ if __name__ == "__main__":
         t_out.write("Start time: " + str(start_time_l) + "\n")
     while True:
         percent_high_support, num_gt, outputtree = converge_run(
-            iteration, CORES, MODE, out_dir, ref_exist, roadies_dir, support_thr, config_path, fixed_parallel_instances
+            iteration,
+            CORES,
+            MODE,
+            out_dir,
+            ref_exist,
+            ref,
+            roadies_dir,
+            support_thr,
+            config_path,
+            fixed_parallel_instances,
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))
@@ -233,7 +259,12 @@ if __name__ == "__main__":
                 )
 
         iteration += 1
-        # if iteration == num_itrs:
-        #     break
-        if ((iteration == 1) and (percent_high_support == 100)) or ((iteration >= 2) and ((percent_high_support - high_support_list[iteration-2] < 1) or (percent_high_support == 100) or (iteration == 9))):
+        if ((iteration == 1) and (percent_high_support == 100)) or (
+            (iteration >= 2)
+            and (
+                (percent_high_support - high_support_list[iteration - 2] < 1)
+                or (percent_high_support == 100)
+                or (iteration == 9)
+            )
+        ):
             break
