@@ -47,10 +47,6 @@ extra:
 
 nav:
   - Home: index.md
-  - Quick Start: start.md
-  - Installation: setup.md
-  - Usage: usage.md
-  - Contributions: contributions.md
 
 markdown_extensions:
   - pymdownx.highlight:

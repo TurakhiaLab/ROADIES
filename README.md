@@ -30,9 +30,9 @@ This section provides brief overview on how to get started with the tool. To kno
 
 ### Quick install
 
-#### Using installation script (requires sudo access)
+#### Using installation script
 
-First clone the repository, as follows:
+First clone the repository, as follows (requires `git` to be installed in the system):
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
@@ -43,8 +43,15 @@ Then, execute the bash script `roadies_env.sh` by following the commands below:
 
 ```
 chmod +x roadies_env.sh
-./roadies_env.sh
+source roadies_env.sh
 ```
+
+!!! Note
+    To run this script, user should have following things installed in the system (or have sudo access to install the following):
+    1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
+    2. cmake command：https://cmake.org/download/
+    3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make
+    (As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` )).
 
 Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. 
 
@@ -86,14 +93,14 @@ Specify the path of the input genomic dataset in `config.yaml` file (`GENOMES` p
 
 ### Configure other parameters
 
-Configure other parameters in `config.yaml` file based on your use-case requirements. The detailed information of all parameters are mentioned [here](https://turakhialab.github.io/ROADIES/usage).
+Configure other parameters in `config.yaml` file based on your use-case requirements. The detailed information of all parameters are mentioned in the `Usage` section [here](https://turakhialab.github.io/ROADIES/).
 
 ### Run the pipeline
 
 After modifying the configurations, run the following command to execute ROADIES pipeline with 16 cores:
 
 ```
-python run_roadies.py --cores 32
+python run_roadies.py --cores 16
 ```
 
 After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in a separate `output_files` folder.
@@ -103,15 +110,15 @@ After the completion of the execution, the output species tree in Newick format 
 
 
 ```
-python run_roadies.py --cores 32 --mode accurate
+python run_roadies.py --cores 16 --mode accurate
 ```
 
 ```
-python run_roadies.py --cores 32 --mode balanced
+python run_roadies.py --cores 16 --mode balanced
 ```
 
 ```
-python run_roadies.py --cores 32 --mode fast
+python run_roadies.py --cores 16 --mode fast
 ```
 
 ## <a name="support"></a> Contributions and Support
