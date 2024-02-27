@@ -9,8 +9,8 @@ For more details about various possible ways of installations, refer to the [Ins
 First clone the repository
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 
 Then build and run docker

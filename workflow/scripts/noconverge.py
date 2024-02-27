@@ -1,7 +1,7 @@
 # noconverge.py is a script that runs ROADIES once and input gene trees into ASTRAL-PRO.
 
 # REQUIREMENTS: Activated conda environment with snakemake and ete3
-# USAGE from wga-phylo directory: `python workflow/scripts/noconverge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
+# USAGE: `python workflow/scripts/noconverge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
 
 import os, sys, glob
 import argparse

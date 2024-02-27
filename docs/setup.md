@@ -19,8 +19,8 @@ Coming soon
 First clone the repository
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 
 Then build and run docker
@@ -36,8 +36,8 @@ docker run -it roadies_image
 First clone the repository
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 Then, execute bash script `roadies_env.sh` by following the commands below:
 

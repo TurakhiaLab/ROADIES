@@ -1,6 +1,6 @@
  <div align="center">
 
-![ROADIES_logo](https://github.com/TurakhiaLab/wga-phylo/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
+![ROADIES_logo](https://github.com/TurakhiaLab/ROADIES/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
 
 # Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
 
@@ -25,7 +25,7 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 
 ## <a name="usage"></a> Quick start
 
-This section provides brief overview on how to get started with the tool. To know more details about all the exisiting features and settings, please read [this documentation](https://turakhialab.github.io/wga-phylo/).
+This section provides brief overview on how to get started with the tool. To know more details about all the exisiting features and settings, please read [this documentation](https://turakhialab.github.io/ROADIES/).
 
 ### Quick install
 
@@ -34,8 +34,8 @@ This section provides brief overview on how to get started with the tool. To kno
 First clone the repository, as follows:
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 
 Then, execute the bash script `roadies_env.sh` by following the commands below:
@@ -52,8 +52,8 @@ Once setup is complete, it will print `Setup complete` in the terminal. On its c
 First clone the repository
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 
 Then build and run docker

@@ -18,10 +18,10 @@ RUN chmod 0400 /root/.ssh/id_rsa && echo "StrictHostKeyChecking no" > /root/.ssh
 RUN cat /root/.ssh/id_rsa
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
-RUN git clone -v git@github.com:TurakhiaLab/wga-phylo.git && \
+RUN git clone -v git@github.com:TurakhiaLab/ROADIES.git && \
     rm /root/.ssh/id_rsa*
 
-WORKDIR wga-phylo
+WORKDIR ROADIES
 
 # Set environment variables
 ENV HOME=/root

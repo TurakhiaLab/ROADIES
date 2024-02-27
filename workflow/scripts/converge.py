@@ -2,7 +2,7 @@
 # The program stops after configured number of ITERATIONS
 
 # REQUIREMENTS: Activated conda environment with snakemake and ete3
-# USAGE from wga-phylo directory: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
+# USAGE: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
 
 import os, sys, glob
 import argparse
