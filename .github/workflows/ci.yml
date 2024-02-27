@@ -47,7 +47,7 @@ jobs:
       - name: Run Tests
         run: |
           chmod +x test/roadies_env_test.sh
-          ./test/roadies_env_test.sh
+          source test/roadies_env_test.sh
           pip3 install ete3 six numpy
           pip install PyYAML
           python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
