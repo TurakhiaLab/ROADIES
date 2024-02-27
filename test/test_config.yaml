@@ -3,7 +3,7 @@
 #Path for input genomes
 GENOMES: "test/test_data"
 #Reference tree (optional, default set as null)
-REFERENCE: null
+REFERENCE: NULL
 #Length of each of the genes
 LENGTH: 50
 #Number of genes per iteration
@@ -30,6 +30,6 @@ STEPS: 1
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
 #Threshold for high support (only used in --converge option)
-SUPPORT_THRESHOLD: 0.7
-#Number of iterations (only used in --converge option)
-ITERATIONS: 3
+SUPPORT_THRESHOLD: 0.95
+#Number of instances to run in parallel
+NUM_INSTANCES: 4

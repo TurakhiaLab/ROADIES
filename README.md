@@ -9,6 +9,7 @@
 ## Table of Contents
 - [Introduction](#overview)
 - [Quick Start](#usage)
+- [Run ROADIES for your own dataset](#runpipeline)
 - [Contributions and Support](#support)
 - [Citing ROADIES](#citation)
 
@@ -63,25 +64,33 @@ docker build roadies_image .
 docker run -it roadies_image
 ```
 
-### Get input genomic data
+### Run ROADIES pipeline
 
-After installing the environment, we need to get input genomic sequences for creating the species tree. To start with this, we have provided few test genomes, present in the repository in `test/test_data` folder,
+Once setup is done, run the following command for 16-core machine:
 
-OR, download a few genomes by executing the following command:
+```
+python run_roadies.py --cores 16
+```
 
-OR, if you already have genomic dataset ready, then proceed with the next step. 
+This will run ROADIES for 11 Bacterial genomes, whose genomic sequences are provided in `test/test_data` folder. After the completion, the final newick tree for these 11 species will be saved as `roadies.nwk` in a separate `ROADIES/output_files` folder.
+
+## <a name="runpipeline"></a> Run ROADIES with your own datasets
+
+To run ROADIES with your own datasets,follow the steps below:
+
+### Specify input genomic dataset
+
+Specify the path of the input genomic dataset in `config.yaml` file (`GENOMES` parameter).
 
 **Note**: All input genome assemblies should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)
 
-### Modify the config file
+### Configure other parameters
 
-To run ROADIES with test data, modify the path for `GENOMES` in `config/config.yaml` as `"test/test_data"`.
+Configure other parameters in `config.yaml` file based on your use-case requirements. The detailed information of all parameters are mentioned [here](https://turakhialab.github.io/ROADIES/usage).
 
-To run ROADIES with downloaded genomes using `wget` commands mentioned above, or your own genomic dataset, provide the path to `GENOMES` argument accordingly.
+### Run the pipeline
 
-### Run the pipeline 
-
-After modifying the config file, run the following command to execute ROADIES pipeline with 32 cores:
+After modifying the configurations, run the following command to execute ROADIES pipeline with 16 cores:
 
 ```
 python run_roadies.py --cores 32
@@ -104,8 +113,6 @@ python run_roadies.py --cores 32 --mode balanced
 ```
 python run_roadies.py --cores 32 --mode fast
 ```
-
-For each modes, the output species tree will be saved as `roadies.nwk` in a separate `output_files` folder.
 
 ## <a name="support"></a> Contributions and Support
 

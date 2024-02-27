@@ -63,12 +63,12 @@ def converge_run(
     run_snakemake(cores, mode, config_path, fixed_parallel_instances)
     # merging gene trees and mapping files
     os.system(
-        "ASTER-Linux/bin/astral-pro -t {1} -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies.nwk -a {0}/genes/mapping.txt".format(
+        "ASTER-Linux/bin/astral-pro2 -t {1} -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies.nwk -a {0}/genes/mapping.txt".format(
             roadies_dir, cores
         )
     )
     os.system(
-        "ASTER-Linux/bin/astral-pro -t {1} -u 3 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies_stats.nwk -a {0}/genes/mapping.txt".format(
+        "ASTER-Linux/bin/astral-pro2 -t {1} -u 3 -i {0}/genetrees/gene_tree_merged.nwk -o {0}/roadies_stats.nwk -a {0}/genes/mapping.txt".format(
             roadies_dir, cores
         )
     )

@@ -6,6 +6,7 @@ on:
       - master
       - main
       - final-cleanup
+      - rename-repo-astral
 
 permissions:
   contents: write

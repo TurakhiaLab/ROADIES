@@ -45,6 +45,7 @@ RUN wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip && \
     unzip Linux.zip && \
     cd ASTER-Linux && \
     make && \
+    g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2 && \
     cd ..
 
 # Clone PASTA repository and install
