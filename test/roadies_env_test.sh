@@ -1,93 +1,34 @@
 #!/bin/bash
 
-# sudo apt-get update
-# sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
+sudo apt-get update
+sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
 
-# # Download ASTER repository
-# wget https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip
-# unzip Linux.zip
-# cd ASTER-Linux
-# make
-# cd ..
+source /usr/share/miniconda3/etc/profile.d/conda.sh
+source /usr/share/miniconda3/etc/profile.d/mamba.sh
+conda activate roadies_env_test
 
-# # Clone PASTA repository and install
-# git clone https://github.com/smirarab/pasta.git
+wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
+unzip -q Linux.zip
+cd ASTER-Linux
+make
+g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
+cd ..
 
-# # Clone Sate-Tools repository
-# git clone https://github.com/smirarab/sate-tools-linux.git
-    
-# cd pasta
-# python3 setup.py develop --user
-# cd ..
+git clone https://github.com/smirarab/pasta.git
 
-# #build sampling code
-# cd workflow/scripts/sampling
-# mkdir build
-# cd build
-# cmake ..
-# make
-# cd ../../../..
+git clone https://github.com/smirarab/sate-tools-linux.git
 
-# echo "Setup complete"
-
-#!/bin/bash
-
-# Required installations:
-# sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
-
-# Define installation paths and check for directory
-CONDA_PATH="${HOME}/conda"
-ROADIES_ENV_SETUP="roadies_env.sh"
-
-# Download and install Mambaforge if not already installed
-if [ ! -d "${CONDA_PATH}" ]; then
-    wget -q https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh -O Mambaforge-Linux-x86_64.sh
-    bash Mambaforge-Linux-x86_64.sh -b -p "${CONDA_PATH}"
-fi
-
-# Create and setup the Conda environment if it doesn't exist
-source "${CONDA_PATH}/etc/profile.d/conda.sh"  # Temporarily source conda for this script
-source "${CONDA_PATH}/etc/profile.d/mamba.sh"  # Temporarily source mamba for this script
-if ! conda env list | grep -q "roadies_env"; then
-    mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 raxml-ng ete3
-fi
-conda activate roadies_env
-
-# Download and setup ASTER repository if not already done
-if [ ! -d "ASTER-Linux" ]; then
-    wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
-    unzip -q Linux.zip
-    cd ASTER-Linux
-    make
-    g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
-    cd ..
-fi
-
-# Clone and setup PASTA if not already done
-if [ ! -d "pasta" ]; then
-    git clone https://github.com/smirarab/pasta.git
-    cd pasta
-    python3 setup.py develop --user
-    cd ..
-fi
-
-# Clone Sate-Tools if not already done
-if [ ! -d "sate-tools-linux" ]; then
-    git clone https://github.com/smirarab/sate-tools-linux.git
-fi
+cd pasta
+python3 setup.py develop --user
+cd ..
 
 # Build sampling code
-if [ ! -d "workflow/scripts/sampling/build" ]; then
-    cd workflow/scripts/sampling
-    mkdir build
-    cd build
-    cmake ..
-    make
-    cd ../../../..
-fi
+cd workflow/scripts/sampling
+mkdir build
+cd build
+cmake ..
+make
+cd ../../../..
 
-# Install ete3 for the user, only if it is not already installed
-python3 -m pip show ete3 &>/dev/null || python3 -m pip install --user ete3
-
-echo "Setup complete. Remember to source '${ROADIES_ENV_SETUP}' before running your projects."
+echo "Setup complete. Remember to source before running your projects."
 

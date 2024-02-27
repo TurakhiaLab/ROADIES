@@ -31,17 +31,21 @@ if [ ! -d "ASTER-Linux" ]; then
     cd ..
 fi
 
-# Clone and setup PASTA if not already done
+# Clone PASTA if not already done
 if [ ! -d "pasta" ]; then
     git clone https://github.com/smirarab/pasta.git
-    cd pasta
-    python3 setup.py develop --user
-    cd ..
 fi
 
 # Clone Sate-Tools if not already done
 if [ ! -d "sate-tools-linux" ]; then
     git clone https://github.com/smirarab/sate-tools-linux.git
+fi
+
+# Setup PASTA if not already done
+if [ ! -d "pasta" ]; then
+    cd pasta
+    python3 setup.py develop --user
+    cd ..
 fi
 
 # Build sampling code
