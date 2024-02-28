@@ -46,12 +46,11 @@ chmod +x roadies_env.sh
 source roadies_env.sh
 ```
 
-!!! Note
-    To run this script, user should have following things installed in the system (or have sudo access to install the following):
-    1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
-    2. cmake command：https://cmake.org/download/
-    3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make
-    (As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` )).
+**Note**: To run this script, user should have following things installed in the system (or have sudo access to install the following):
+    - 1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
+    - 2. cmake command：https://cmake.org/download/
+    - 3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
+    - As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
 
 Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. 
 
@@ -73,13 +72,16 @@ docker run -it roadies_image
 
 ### Run ROADIES pipeline
 
-Once setup is done, run the following command for 16-core machine:
+Once setup is done, run the following commands for 16-core machine:
+
 
 ```
+mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
+
 python run_roadies.py --cores 16
 ```
 
-This will run ROADIES for 11 Bacterial genomes, whose genomic sequences are provided in `test/test_data` folder. After the completion, the final newick tree for these 11 species will be saved as `roadies.nwk` in a separate `ROADIES/output_files` folder.
+The first line will download the 11 Drosophila genomic datasets (links are provided in `test/input_genome_links.txt`) and save it in `test/test_data` directory. Second line will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder after the completion.
 
 ## <a name="runpipeline"></a> Run ROADIES with your own datasets
 

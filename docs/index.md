@@ -86,10 +86,10 @@ This will install and build all required tools and dependencies required by the 
 
 !!! Note
     To run this script, user should have following things installed in the system (or have sudo access to install the following):
-    1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
-    2. cmake command：https://cmake.org/download/
-    3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make
-    (As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` )).
+    - 1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
+    - 2. cmake command：https://cmake.org/download/
+    - 3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
+    - As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
 
 On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. Once this is done, follow [Run ROADIES pipeline](index.md#Run-ROADIES-pipeline) section.
 
@@ -111,15 +111,18 @@ docker run -it roadies_image
 
 ### Run ROADIES pipeline
 
-Once setup is done, run the following command for 16-core machine:
+Once setup is done, run the following commands for 16-core machine:
+
 
 ```
+mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
+
 python run_roadies.py --cores 16
 ```
 
-This will run ROADIES for 11 Bacterial genomes, whose genomic sequences are provided in `test/test_data` folder. After the completion, the final newick tree for these 11 species will be saved as `roadies.nwk` in a separate `ROADIES/output_files` folder.
+The first line will download the 11 Drosophila genomic datasets (links are provided in `test/input_genome_links.txt`) and save it in `test/test_data` directory. Second line will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder after the completion.
 
-To run ROADIES in various other modes of operation (fast, balanced, accurate) (description of these modes are mentioned in [Home](index.md#modes-of-operation)), try the following commands:
+To run ROADIES in various other modes of operation (fast, balanced, accurate) (description of these modes are mentioned in [Modes of operation](index.md#modes-of-operation) section), try the following commands:
 
 ```
 python run_roadies.py --cores 16 --mode accurate
@@ -140,11 +143,12 @@ For each modes, the output species tree will be saved as `roadies.nwk` in a sepa
 
 ### Run ROADIES in converge mode
 
-To run ROADIES with converge mode (details mentioned in [Home](index.md#convergence-mechanism)), run the following command (notice the addition of `--converge` argument):
+To run ROADIES with converge mode (details mentioned in [convergence mechanism](index.md#convergence-mechanism) section), run the following command (notice the addition of `--converge` argument):
 
 ```
 python run_roadies.py --cores 16 --converge
 ```
+
 To try other modes, run as follows:
 
 ```
@@ -162,7 +166,11 @@ This section provides detailed instructions on how to configure the ROADIES pipe
 
 ### Step 1: Get input genomic data
 
-After installing the environment, you need to get input genomic sequences for creating the species tree. To start with this, we have provided few test genomes, present in the repository in `test/test_data` folder.
+After installing the environment, you need to get input genomic sequences for creating the species tree. To start with this, we have provided few test genomes, the links for which are present in `test/input_genome_links.txt`. Here is the one line command to download and save the 11 genomic sequences in `test/test_data` directory:
+
+```
+mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
+```
 
 ### Step 2: Modify the configuration parameters
 
