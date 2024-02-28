@@ -33,10 +33,10 @@ jobs:
       - name: Download and Unzip Genomes
         run: |
           mkdir -p test/test_data
-          while read link; do
-            wget -P test/test_data "$link"
-            zip_file=$(basename "$link")
-            unzip -d test/test_data "test/test_data/$zip_file"
+          while IFS= read -r link; do
+            file_path="test/test_data/$(basename "$link")"
+            wget -O "$file_path" "$link"
+            gunzip -k "$file_path"
           done < test/input_genome_links.txt
 
       - name: Set up Conda
