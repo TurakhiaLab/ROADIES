@@ -34,7 +34,8 @@ jobs:
         run: |
           mkdir -p test/test_data
           while IFS= read -r link; do
-            wget -O test/test_data "$link"
+            file_name=$(basename "$link")
+            wget -O "test/test_data/$file_name" "$link" 
           done < test/input_genome_links.txt
 
       - name: Set up Conda
