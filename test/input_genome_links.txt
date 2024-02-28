@@ -1,0 +1,11 @@
+https://hgdownload2.soe.ucsc.edu/goldenPath/droAna2/bigZips/droAna2.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droEre2/bigZips/droEre2.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droGri2/bigZips/droGri2.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droMoj3/bigZips/droMoj3.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droPer1/bigZips/droPer1.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/dp4/bigZips/dp4.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droSec1/bigZips/droSec1.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droSim1/bigZips/droSim1.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droVir3/bigZips/droVir3.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droWil1/bigZips/droWil1.fa.gz
+https://hgdownload2.soe.ucsc.edu/goldenPath/droYak2/bigZips/droYak2.fa.gz

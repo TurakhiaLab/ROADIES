@@ -5,9 +5,9 @@ GENOMES: "test/test_data"
 #Reference tree (optional, default set as null)
 REFERENCE: NULL
 #Length of each of the genes
-LENGTH: 50
+LENGTH: 200
 #Number of genes per iteration
-GENE_COUNT: 20
+GENE_COUNT: 50
 #Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
 #ROADIES output directory (current iteration output in --converge option)
