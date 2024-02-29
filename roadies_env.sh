@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Required installations:
+# Required installations: (uncomment next 2 lines if you have sudo access, otherwise make sure following tools are installed before proceeding)
+# sudo apt-get update
 # sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
 
 # Define installation paths and check for directory
@@ -42,10 +43,13 @@ if [ ! -d "sate-tools-linux" ]; then
 fi
 
 # Setup PASTA if not already done
-if [ ! -d "pasta" ]; then
-    cd pasta
-    python3 setup.py develop --user
-    cd ..
+if [ -d "pasta" ]; then
+    mafft_file="pasta/bin/mafft"
+    if [ ! -f "$mafft_file" ]; then
+        cd pasta
+        python3 setup.py develop --user
+        cd ..
+    fi
 fi
 
 # Build sampling code
