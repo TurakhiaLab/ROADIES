@@ -6,6 +6,7 @@ on:
       - master
       - main
       - final-cleanup
+      - rename-repo-astral
 
 permissions:
   contents: write
@@ -28,6 +29,14 @@ jobs:
         with:
           key: ${{ github.ref }}
           path: .cache
+      
+      - name: Download and Unzip Genomes
+        run: |
+          mkdir -p test/test_data
+          while IFS= read -r link; do
+            file_name=$(basename "$link")
+            wget -O "test/test_data/$file_name" "$link" 
+          done < test/input_genome_links.txt
 
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
@@ -37,17 +46,12 @@ jobs:
           activate-environment: roadies_env_test
           environment-file: test/roadies_env_test.yaml
 
-      - name: Activate Conda Environment
+      - name: Run Tests
         shell: bash -l {0}
         run: |
-          source /usr/share/miniconda3/etc/profile.d/conda.sh
-          conda activate roadies_env_test
-
-      - name: Run Tests
-        run: |
           chmod +x test/roadies_env_test.sh
-          ./test/roadies_env_test.sh
-          pip3 install ete3 six numpy
+          source test/roadies_env_test.sh
+          pip3 install ete3 six numpy PyYAML
           python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
 
       - name: Install dependencies for mkdocs

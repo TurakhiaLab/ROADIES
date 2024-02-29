@@ -1,13 +1,13 @@
 #This file configures the parameters for ROADIES
 
 #Path for input genomes
-GENOMES: "/datasets/gzipped_birds_new"
+GENOMES: "test/test_data"
 #Reference tree (optional, default set as null)
 REFERENCE: NULL
 #Length of each of the genes
 LENGTH: 500
 #Number of genes per iteration
-GENE_COUNT: 4000
+GENE_COUNT: 250
 #Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
 #ROADIES output directory (current iteration output in --converge option)

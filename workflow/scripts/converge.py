@@ -2,7 +2,7 @@
 # The program stops after configured number of ITERATIONS
 
 # REQUIREMENTS: Activated conda environment with snakemake and ete3
-# USAGE from wga-phylo directory: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
+# USAGE: `python workflow/scripts/converge.py -c {# of cores} --out_dir {converge output directory} --config {config file}`
 
 import os, sys, glob
 import argparse
@@ -86,12 +86,12 @@ def combine_iter(out_dir, run, cores):
 
     # open both files and get lines, each line is a separate gene tree
     os.system(
-        "ASTER-Linux/bin/astral-pro -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
+        "ASTER-Linux/bin/astral-pro2 -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
             out_dir, run, cores
         )
     )
     os.system(
-        "ASTER-Linux/bin/astral-pro -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
+        "ASTER-Linux/bin/astral-pro2 -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
             out_dir, run, cores
         )
     )

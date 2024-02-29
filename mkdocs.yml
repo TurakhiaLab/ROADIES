@@ -47,10 +47,6 @@ extra:
 
 nav:
   - Home: index.md
-  - Quick Start: start.md
-  - Installation: setup.md
-  - Usage: usage.md
-  - Contributions: contributions.md
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -69,6 +65,6 @@ markdown_extensions:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
 
-repo_url: https://github.com/TurakhiaLab/wga-phylo
+repo_url: https://github.com/TurakhiaLab/ROADIES
 
-repo_name: TurakhiaLab/wga-phylo
+repo_name: TurakhiaLab/ROADIES

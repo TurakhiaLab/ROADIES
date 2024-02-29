@@ -1,6 +1,6 @@
  <div align="center">
 
-![ROADIES_logo](https://github.com/TurakhiaLab/wga-phylo/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
+![ROADIES_logo](https://github.com/TurakhiaLab/ROADIES/assets/114828525/05cd206e-542c-4ee4-bfd6-d4c03fed5984)
 
 # Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
 
@@ -9,6 +9,7 @@
 ## Table of Contents
 - [Introduction](#overview)
 - [Quick Start](#usage)
+- [Run ROADIES for your own dataset](#runpipeline)
 - [Contributions and Support](#support)
 - [Citing ROADIES](#citation)
 
@@ -25,25 +26,31 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 
 ## <a name="usage"></a> Quick start
 
-This section provides brief overview on how to get started with the tool. To know more details about all the exisiting features and settings, please read [this documentation](https://turakhialab.github.io/wga-phylo/).
+This section provides brief overview on how to get started with the tool. To know more details about all the exisiting features and settings, please read [this documentation](https://turakhialab.github.io/ROADIES/).
 
 ### Quick install
 
-#### Using installation script (requires sudo access)
+#### Using installation script
 
-First clone the repository, as follows:
+First clone the repository, as follows (requires `git` to be installed in the system):
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 
 Then, execute the bash script `roadies_env.sh` by following the commands below:
 
 ```
 chmod +x roadies_env.sh
-./roadies_env.sh
+source roadies_env.sh
 ```
+
+**Note**: To run this script, user should have following things installed in the system (or have sudo access to install the following):
+    - 1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
+    - 2. cmake command：https://cmake.org/download/
+    - 3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
+    - As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
 
 Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. 
 
@@ -52,8 +59,8 @@ Once setup is complete, it will print `Setup complete` in the terminal. On its c
 First clone the repository
 
 ```
-git clone https://github.com/TurakhiaLab/wga-phylo.git
-cd wga-phylo
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
 ```
 
 Then build and run docker
@@ -63,28 +70,39 @@ docker build roadies_image .
 docker run -it roadies_image
 ```
 
-### Get input genomic data
+### Run ROADIES pipeline
 
-After installing the environment, we need to get input genomic sequences for creating the species tree. To start with this, we have provided few test genomes, present in the repository in `test/test_data` folder,
+Once setup is done, run the following commands for 16-core machine:
 
-OR, download a few genomes by executing the following command:
 
-OR, if you already have genomic dataset ready, then proceed with the next step. 
+```
+mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
+
+python run_roadies.py --cores 16
+```
+
+The first line will download the 11 Drosophila genomic datasets (links are provided in `test/input_genome_links.txt`) and save it in `test/test_data` directory. Second line will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder after the completion.
+
+## <a name="runpipeline"></a> Run ROADIES with your own datasets
+
+To run ROADIES with your own datasets,follow the steps below:
+
+### Specify input genomic dataset
+
+Specify the path of the input genomic dataset in `config.yaml` file (`GENOMES` parameter).
 
 **Note**: All input genome assemblies should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)
 
-### Modify the config file
+### Configure other parameters
 
-To run ROADIES with test data, modify the path for `GENOMES` in `config/config.yaml` as `"test/test_data"`.
+Configure other parameters in `config.yaml` file based on your use-case requirements. The detailed information of all parameters are mentioned in the `Usage` section [here](https://turakhialab.github.io/ROADIES/).
 
-To run ROADIES with downloaded genomes using `wget` commands mentioned above, or your own genomic dataset, provide the path to `GENOMES` argument accordingly.
+### Run the pipeline
 
-### Run the pipeline 
-
-After modifying the config file, run the following command to execute ROADIES pipeline with 32 cores:
+After modifying the configurations, run the following command to execute ROADIES pipeline with 16 cores:
 
 ```
-python run_roadies.py --cores 32
+python run_roadies.py --cores 16
 ```
 
 After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in a separate `output_files` folder.
@@ -94,18 +112,16 @@ After the completion of the execution, the output species tree in Newick format 
 
 
 ```
-python run_roadies.py --cores 32 --mode accurate
+python run_roadies.py --cores 16 --mode accurate
 ```
 
 ```
-python run_roadies.py --cores 32 --mode balanced
+python run_roadies.py --cores 16 --mode balanced
 ```
 
 ```
-python run_roadies.py --cores 32 --mode fast
+python run_roadies.py --cores 16 --mode fast
 ```
-
-For each modes, the output species tree will be saved as `roadies.nwk` in a separate `output_files` folder.
 
 ## <a name="support"></a> Contributions and Support
 
