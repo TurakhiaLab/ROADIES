@@ -39,20 +39,33 @@ git clone https://github.com/TurakhiaLab/ROADIES.git
 cd ROADIES
 ```
 
-Then, execute the bash script `roadies_env.sh` by following the commands below:
+Then, execute the bash script `roadies_env.sh` by following the commands below (**Warning:** check the dependencies below before running this script):
 
 ```
 chmod +x roadies_env.sh
 source roadies_env.sh
 ```
 
-**Note**: To run this script, user should have following things installed in the system (or have sudo access to install the following):
-    - 1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
-    - 2. cmake command：https://cmake.org/download/
-    - 3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
-    - As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
+This will install and build all tools and dependencies required by the user to get started. Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. Now you are ready to run our pipeline (follow [Run ROADIES pipeline](index.md#Run-ROADIES-pipeline) section).
 
-Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. 
+##### Required dependencies
+
+To run this script, user should have the following installations:
+- Java Runtime Environment (version 1.7 or higher)
+- Python (version 3 or higher)
+- `wget` and `unzip` commands
+- GCC (version 11.4 or higher)
+- cmake command: https://cmake.org/download/
+- Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
+
+**Note:** The current version of ROADIES is extensively tested with Linux environment only. For Ubuntu, to install above dependencies, please run the following command OR uncomment the initial lines of `roadies_env.sh` file. 
+
+```
+sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake
+```
+
+**Note:** As a non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
+
 
 #### Using docker
 

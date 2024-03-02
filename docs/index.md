@@ -72,26 +72,37 @@ git clone https://github.com/TurakhiaLab/ROADIES.git
 cd ROADIES
 ```
 
-Then, execute the bash script `roadies_env.sh` by following the commands below:
+Then, execute the bash script `roadies_env.sh` by following the commands below (**Warning:** check the dependencies below before running this script):
 
 ```
 chmod +x roadies_env.sh
 source roadies_env.sh
 ```
 
-This will install and build all required tools and dependencies required by the user to get started. 
+This will install and build all tools and dependencies required by the user to get started. Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. Now you are ready to run our pipeline (follow [Run ROADIES pipeline](index.md#Run-ROADIES-pipeline) section).
+
 
 !!! Note 
-    ROADIES is built on [Snakemake (workflow parallelization tool)](https://snakemake.readthedocs.io/en/stable/). It also requires various tools (PASTA, LASTZ, RAxML-NG, MashTree, FastTree, ASTRAL-Pro2) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide this script to automatically download all dependencies into the user system.
+    ROADIES is built on [Snakemake (workflow parallelization tool)](https://snakemake.readthedocs.io/en/stable/). It also requires various tools (PASTA, LASTZ, RAxML-NG, MashTree, FastTree, ASTRAL-Pro2) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide `roadies_env.sh` script to automatically download all dependencies into the user system.
+
+
+##### Required dependencies
+
+To run this script, user should have the following installations:
+- Java Runtime Environment (version 1.7 or higher)
+- Python (version 3 or higher)
+- `wget` and `unzip` commands
+- GCC (version 11.4 or higher)
+- cmake command: https://cmake.org/download/
+- Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
 
 !!! Note
-    To run this script, user should have following things installed in the system (or have sudo access to install the following):
-    - 1. `wget`, `unzip`, `make`, `g++`, `python3`, `python3-pip`, `python3-setuptools`, `default-jre`, `libgomp1`, `libboost-all-dev`, `cmake`
-    - 2. cmake command：https://cmake.org/download/
-    - 3. Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
-    - As non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
+    The current version of ROADIES is extensively tested with Linux environment only. For Ubuntu, to install above dependencies, please run the following command OR uncomment the initial lines of `roadies_env.sh` file: `sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake`.
+    ```
 
-On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. Once this is done, follow [Run ROADIES pipeline](index.md#Run-ROADIES-pipeline) section.
+!!! Note
+    As a non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
+
 
 ### Using docker locally
 
@@ -152,10 +163,10 @@ python run_roadies.py --cores 16 --converge
 To try other modes, run as follows:
 
 ```
-python run_roadies.py --cores 32 --mode balanced --converge
+python run_roadies.py --cores 16 --mode balanced --converge
 ```
 ```
-python run_roadies.py --cores 32 --mode fast --converge
+python run_roadies.py --cores 16 --mode fast --converge
 ```
 
 The output files for all iterations will be saved in a separate `converge_files` folder. `output_files` will save the results of the last iteration. Species tree for all iterations will be saved in `converge_files` folder with the nomenclature `iteration_<iteration_number>.nwk`.
