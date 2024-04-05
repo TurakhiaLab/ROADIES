@@ -30,10 +30,11 @@ with open(output, "wb") as outfile:
 x = list(species_count.keys())
 y = list(species_count.values())
 
+plt.figure(figsize=(40, 24))
 ax = sns.barplot(x=x, y=y)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha="right")
-ax.set_title("Number of Reference Genes from Each Genome")
-
+ax.set_title("Number of Reference Genes from Each Genome",fontsize=18)
+ax.set_ylabel("Number of Genes", fontsize=14)
 plt.tight_layout()
 fig = ax.get_figure()
-fig.savefig(plotdir)
+fig.savefig(plotdir,dpi=300)
