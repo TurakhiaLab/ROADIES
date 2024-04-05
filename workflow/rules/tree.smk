@@ -28,6 +28,8 @@ rule mergeTrees:
 		merged_list=config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk"
 	params:
 		msa_dir = config["OUT_DIR"]+"/genes",
+		plotdir = config["OUT_DIR"]+"/plots",
+		statdir = config["OUT_DIR"]+"/statistics"
 	shell:
 		'''
 		for file in {params.msa_dir}/*.fa.aln.raxml.bestTree; do
@@ -35,5 +37,7 @@ rule mergeTrees:
             cat $file >> {output.merged_list}
             echo "$id, $(cat $file)" >> {output.original_list}
         done
+
+		python tips_in_gene_trees.py {output.merged_list} {params.statdir} {params.plotdir}
 		'''
 

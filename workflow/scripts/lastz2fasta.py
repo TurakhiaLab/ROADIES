@@ -12,6 +12,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from Bio.Seq import Seq
+import matplotlib.pyplot as plt
 
 # get arguments
 parser = argparse.ArgumentParser(
@@ -175,12 +176,14 @@ with open(statdir + "/num_genes.csv", "w") as f:
     for i in range(len(x)):
         f.write(x[i] + "," + str(y[i]) + "\n")
 # make barplot of number of genes for each species
+plt.figure(figsize=(40, 24))
 ax = sns.barplot(x=x, y=y)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=60, ha="right")
-ax.set_title("Number of Genes Aligned To Each Genome")
+ax.set_title("Number of Genes Aligned To Each Genome", fontsize=18)
+ax.set_ylabel("Number of Genes", fontsize=14)
 plt.tight_layout()
 fig = ax.get_figure()
-fig.savefig(plotdir + "/num_genes.png")
+fig.savefig(plotdir + "/num_genes.png", dpi=300)
 # make ordered dict of number of homologues (ordered by gene #)
 od = OrderedDict(sorted(num_homologues.items()))
 # write to csv for homologues
@@ -190,9 +193,14 @@ with open(statdir + "/homologues.csv", "w") as f:
 # only need values (# homologues)
 x2 = od.values()
 # make histogram
-ax2 = sns.displot(x=x2, kde=True)
-# fig2 = ax2.get_figure()
-ax2.savefig(plotdir + "/homologues.png")
+plt.figure(figsize=(10, 6))
+ax2 = sns.histplot(x=x2, kde=True, discrete=True, bins=10)
+ax2.set_title("Histogram plot for number of homologous genes", fontsize=18)
+ax2.set_ylabel("Count of genes", fontsize=14)
+ax2.set_xlabel("Number of homologous genes", fontsize=14)
+plt.tight_layout()
+fig2 = ax2.get_figure()
+fig2.savefig(plotdir + "/homologues.png", dpi=300)
 count = 0
 # array for counting duplicity
 gene_dup = []
@@ -223,7 +231,7 @@ for filename in glob.glob(os.path.join(outdir, "*.fa")):
             found.append(name)
     # if number of species is > threhold count it
     if len(found) >= m:
-        print(len(found), found)
+        # print(len(found), found)
         count += 1
     else:
         with open(filename, "w") as w:
@@ -237,9 +245,15 @@ x3 = []
 for i in range(len(gene_dup)):
     x3.append(gene_dup[i][1])
 # make histogram
-ax3 = sns.displot(x=x3, kde=True)
-# fig2 = ax2.get_figure()
-ax3.savefig(plotdir + "/gene_dup.png")
+plt.figure(figsize=(10, 6))
+# ax3 = sns.displot(x=x3, kde=True)
+ax3 = sns.histplot(x=x3, kde=True, discrete=True, bins=10)
+ax3.set_title("Histogram plot for number of duplicated genes", fontsize=18)
+ax3.set_ylabel("Count of genes", fontsize=14)
+ax3.set_xlabel("Number of duplicated genes", fontsize=14)
+plt.tight_layout()
+fig2 = ax3.get_figure()
+fig2.savefig(plotdir + "/gene_dup.png", dpi=300)
 # print("Number of gene trees: ",count)
 with open(statdir + "/num_gt.txt", "w") as f:
     f.write("Number of gene trees: " + str(count) + "\n")
