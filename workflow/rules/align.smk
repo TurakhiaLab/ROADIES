@@ -18,12 +18,11 @@ rule lastz:
 		continuity = config['CONTINUITY'],
 		align_dir = config['OUT_DIR']+ "/alignments",
 		max_dup = 2*int(config['MAX_DUP']),
-		steps = config["STEPS"],
-		score_file = config['SCORE_FILE_PATH']
+		steps = config["STEPS"]
 	shell:
 		'''
 		if [[ "{input.genome}" == *.gz ]]; then
-			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --seed=match --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
+			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
 		else
 			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes}  --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
 		fi
@@ -35,11 +34,11 @@ rule lastz2fasta:
 	output:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa",id=IDS),
 		report(config["OUT_DIR"]+"/plots/num_genes.png",caption="../report/num_genes_p.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/statistics/homologues.csv",caption="../report/homologues.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/statistics/homologs.csv",caption="../report/homologs.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/num_genes.csv",caption="../report/num_genes_t.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/num_gt.txt",caption="../report/num_gt.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/plots/gene_dup.png",caption="../report/gene_dup.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/plots/homologues.png",caption="../report/homologues_p.rst",category="Genes Report")
+		report(config["OUT_DIR"]+"/plots/homologs.png",caption="../report/homologs_p.rst",category="Genes Report")
 	params:
 		k = num,
 		out = config["OUT_DIR"]+"/genes",

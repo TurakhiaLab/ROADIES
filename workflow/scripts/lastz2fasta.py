@@ -173,6 +173,7 @@ x = list(num_genes.keys())
 y = list(num_genes.values())
 # make csv
 with open(statdir + "/num_genes.csv", "w") as f:
+    f.write("Species name,number of genes aligned"+"\n")
     for i in range(len(x)):
         f.write(x[i] + "," + str(y[i]) + "\n")
 # make barplot of number of genes for each species
@@ -187,7 +188,8 @@ fig.savefig(plotdir + "/num_genes.png", dpi=300)
 # make ordered dict of number of homologues (ordered by gene #)
 od = OrderedDict(sorted(num_homologues.items()))
 # write to csv for homologues
-with open(statdir + "/homologues.csv", "w") as f:
+with open(statdir + "/homologs.csv", "w") as f:
+    f.write("Gene ID,number of homologs (#species)"+"\n")
     for key, val in od.items():
         f.write("gene_" + str(key) + "," + str(val) + "\n")
 # only need values (# homologues)
@@ -195,23 +197,23 @@ x2 = od.values()
 # make histogram
 plt.figure(figsize=(10, 6))
 ax2 = sns.histplot(x=x2, kde=True, discrete=True, bins=10)
-ax2.set_title("Histogram plot for number of homologous genes", fontsize=18)
-ax2.set_ylabel("Count of genes", fontsize=14)
-ax2.set_xlabel("Number of homologous genes", fontsize=14)
+ax2.set_title("Histogram plot for number of homologs", fontsize=18)
+ax2.set_ylabel("Count of genes with specified number of homologs", fontsize=14)
+ax2.set_xlabel("Number of homologs", fontsize=14)
 plt.tight_layout()
 fig2 = ax2.get_figure()
-fig2.savefig(plotdir + "/homologues.png", dpi=300)
+fig2.savefig(plotdir + "/homologs.png", dpi=300)
 count = 0
 # array for counting duplicity
 gene_dup = []
 # iterate through gene fastas
 for filename in glob.glob(os.path.join(outdir, "*.fa")):
-    # get gene#
+    # get gene ID
     fs = filename.split("/")
     fs2 = fs[len(fs) - 1]
     fs2 = fs2.replace("gene_", "")
     fs2 = fs2.replace(".fa", "")
-    # get the sequences
+    # get the number of sequences
     if os.stat(filename).st_size == 0:
         continue
     records = list(SeqIO.parse(filename, "fasta"))
@@ -239,6 +241,7 @@ for filename in glob.glob(os.path.join(outdir, "*.fa")):
 sorted(gene_dup)
 # output duplicity as csv
 with open(statdir + "/gene_dup.csv", "w") as f:
+    f.write("Species,number of genes aligned"+"\n")
     for i in range(len(gene_dup)):
         f.write(str(gene_dup[i][0]) + "," + str(gene_dup[i][1]) + "\n")
 x3 = []
@@ -248,9 +251,9 @@ for i in range(len(gene_dup)):
 plt.figure(figsize=(10, 6))
 # ax3 = sns.displot(x=x3, kde=True)
 ax3 = sns.histplot(x=x3, kde=True, discrete=True, bins=10)
-ax3.set_title("Histogram plot for number of duplicated genes", fontsize=18)
-ax3.set_ylabel("Count of genes", fontsize=14)
-ax3.set_xlabel("Number of duplicated genes", fontsize=14)
+ax3.set_title("Histogram plot for frequency of multi-copy genes", fontsize=18)
+ax3.set_ylabel("Count of genes with specified frequency of multi-copy genes", fontsize=14)
+ax3.set_xlabel("Frequency of multi-copy genes", fontsize=14)
 plt.tight_layout()
 fig2 = ax3.get_figure()
 fig2.savefig(plotdir + "/gene_dup.png", dpi=300)
