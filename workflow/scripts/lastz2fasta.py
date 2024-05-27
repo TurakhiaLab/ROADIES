@@ -99,7 +99,7 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
                 # if it's within 2000 bp of another higher scoring alignment skip that alignment
                 tooClose = False
                 for p in positions:
-                    if abs(p - pos) < (2 * k):
+                    if abs(p - pos) < (2 * 1000):
                         tooClose = True
                         break
                 if not tooClose:
@@ -173,7 +173,7 @@ x = list(num_genes.keys())
 y = list(num_genes.values())
 # make csv
 with open(statdir + "/num_genes.csv", "w") as f:
-    f.write("Species name,number of genes aligned"+"\n")
+    f.write("Species name,number of genes aligned" + "\n")
     for i in range(len(x)):
         f.write(x[i] + "," + str(y[i]) + "\n")
 # make barplot of number of genes for each species
@@ -189,7 +189,7 @@ fig.savefig(plotdir + "/num_genes.png", dpi=300)
 od = OrderedDict(sorted(num_homologues.items()))
 # write to csv for homologues
 with open(statdir + "/homologs.csv", "w") as f:
-    f.write("Gene ID,number of homologs (#species)"+"\n")
+    f.write("Gene ID,number of homologs (#species)" + "\n")
     for key, val in od.items():
         f.write("gene_" + str(key) + "," + str(val) + "\n")
 # only need values (# homologues)
@@ -241,7 +241,7 @@ for filename in glob.glob(os.path.join(outdir, "*.fa")):
 sorted(gene_dup)
 # output duplicity as csv
 with open(statdir + "/gene_dup.csv", "w") as f:
-    f.write("Species,number of genes aligned"+"\n")
+    f.write("Species,number of genes aligned" + "\n")
     for i in range(len(gene_dup)):
         f.write(str(gene_dup[i][0]) + "," + str(gene_dup[i][1]) + "\n")
 x3 = []
@@ -252,7 +252,9 @@ plt.figure(figsize=(10, 6))
 # ax3 = sns.displot(x=x3, kde=True)
 ax3 = sns.histplot(x=x3, kde=True, discrete=True, bins=10)
 ax3.set_title("Histogram plot for frequency of multi-copy genes", fontsize=18)
-ax3.set_ylabel("Count of genes with specified frequency of multi-copy genes", fontsize=14)
+ax3.set_ylabel(
+    "Count of genes with specified frequency of multi-copy genes", fontsize=14
+)
 ax3.set_xlabel("Frequency of multi-copy genes", fontsize=14)
 plt.tight_layout()
 fig2 = ax3.get_figure()
