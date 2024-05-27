@@ -96,11 +96,11 @@ rule lastz2fasta:
 	output:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa",id=IDS),
 		report(config["OUT_DIR"]+"/plots/num_genes.png",caption="../report/num_genes_p.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/statistics/homologues.csv",caption="../report/homologues.rst",category="Genes Report"),
+		report(config["OUT_DIR"]+"/statistics/homologs.csv",caption="../report/homologs.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/num_genes.csv",caption="../report/num_genes_t.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/num_gt.txt",caption="../report/num_gt.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/plots/gene_dup.png",caption="../report/gene_dup.rst",category="Genes Report"),
-		report(config["OUT_DIR"]+"/plots/homologues.png",caption="../report/homologues_p.rst",category="Genes Report")
+		report(config["OUT_DIR"]+"/plots/homologs.png",caption="../report/homologs_p.rst",category="Genes Report")
 	params:
 		k = num,
 		out = config["OUT_DIR"]+"/genes",
@@ -154,6 +154,4 @@ rule mergeTrees:
             cat $file >> {output.merged_list}
             echo "$id, $(cat $file)" >> {output.original_list}
         done
-
-		python tips_in_gene_trees.py {output.merged_list} {params.statdir} {params.plotdir}
 		'''

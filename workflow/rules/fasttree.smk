@@ -36,6 +36,4 @@ rule mergeTrees:
             cat $file >> {output.merged_list}
             echo "$id, $(cat $file)" >> {output.original_list}
         done
-
-		python tips_in_gene_trees.py {output.merged_list} {params.statdir} {params.plotdir}
 		'''
