@@ -22,7 +22,7 @@ Welcome to the official wiki of ROADIES, a novel pipeline designed for phylogene
 ## ROADIES Pipeline Overview
 ROADIES pipeline consists of multiple stages, from raw genome assemblies to species tree estimation, with several user-configurable parameters in each stage. 
 
-- **Stage 1: Random aampling**: ROADIES randomly samples a configured number of subsequences from input genomic assemblies. Each of the subsequences is treated as a gene.
+- **Stage 1: Random Sampling**: ROADIES randomly samples a configured number of subsequences from input genomic assemblies. Each of the subsequences is treated as a gene.
 - **Stage 2: Pairwise alignment**: All sampled subsequences are aligned with all input assemblies individually using [LASTZ](https://lastz.github.io/lastz/). 
 - **Stage 3: Filtering of alignments**: ROADIES filters the low-quality alignments to reduce further redundant computation, gathers all homology data per gene, and limits the number of homologs per gene. 
 - **Stage 4: Multiple sequence alignment**: After filtering, ROADIES gathers all genes from different species and performs multiple sequence alignments for every gene using [PASTA](https://github.com/smirarab/pasta). 

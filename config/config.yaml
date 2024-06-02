@@ -24,7 +24,7 @@ COVERAGE: 85
 CONTINUITY: 85
 #Max number of gene copies from a genome in an alignment
 MAX_DUP: 10
-#Mumber of steps in LASTZ sampling
+#Number of steps in LASTZ sampling
 STEPS: 1
 #PASTA filtering parameters
 FILTERFRAGMENTS: 0.50
