@@ -8,13 +8,14 @@
 
 ## Introduction
 
-Welcome to the official wiki of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES pipeline offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
+Welcome to the official wiki of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
 <br>
 
 ## Key Features
-- **Orthology-free**: ROADIES automates the process of species tree inference from their raw genome assemblies without requiring any intermediate gene annotations or orthologous groups, making it effortless for users to generate accurate species trees.
 - **Reference-free**: ROADIES ensures unbiased results by eliminating reference bias, enabling accurate species tree inference by randomly sampling genes from raw genome assemblies.
-- **Discordance-aware**: Instead of single-copy genes, ROADIES considers multi-copy genes while analyzing species tree and takes care of the possible gene discordances such as paralogs, horizonal gene transfer, incomplete lineage sorting. 
+- **Orthology-free**: ROADIES automates the process of species tree inference from their raw genome assemblies without requiring any intermediate gene annotations or orthologous groups. It allows multi-copy gene trees (inferred from homologous regions) and does not require the challenging and error-prone step of orthologous detection prior to gene tree inference. 
+- **Alignment-free**: ROADIES does not require any input alignment to be provided, as all alignments required for gene tree inference are constructed within the ROADIES pipeline itself.
+- **Discordance-aware**: Instead of single-copy genes, ROADIES considers multi-copy genes while analyzing species tree and takes care of the possible gene discordances such as paralogs, horizonal gene transfer, incomplete lineage sorting. It uses a state-of-the-art and statistically consistent discordance-aware method to combine gene trees into a species tree.
 - **Scalability**: ROADIES handles both small-scale and large-scale datasets efficiently, including diverse life forms such as mammals, flies, and birds. ROADIES also scales efficiently with multiple cores and produces faster results.
 - **Flexibility**: ROADIES allows users to tune the tradeoff between accuracy and runtime by configuring the parameters and tailoring the pipeline to their specific needs.
 - **Debugging options**: ROADIES provides multiple plots as output for graphical analysis, making it easier for the user to debug. 
@@ -23,11 +24,11 @@ Welcome to the official wiki of ROADIES, a novel pipeline designed for phylogene
 ROADIES pipeline consists of multiple stages, from raw genome assemblies to species tree estimation, with several user-configurable parameters in each stage. 
 
 - **Stage 1: Random Sampling**: ROADIES randomly samples a configured number of subsequences from input genomic assemblies. Each of the subsequences is treated as a gene.
-- **Stage 2: Pairwise alignment**: All sampled subsequences are aligned with all input assemblies individually using [LASTZ](https://lastz.github.io/lastz/). 
-- **Stage 3: Filtering of alignments**: ROADIES filters the low-quality alignments to reduce further redundant computation, gathers all homology data per gene, and limits the number of homologs per gene. 
-- **Stage 4: Multiple sequence alignment**: After filtering, ROADIES gathers all genes from different species and performs multiple sequence alignments for every gene using [PASTA](https://github.com/smirarab/pasta). 
-- **Stage 5: Gene tree estimation**: ROADIES estimates gene trees from multiple sequence alignments of each of the genes using [RAxML-NG](https://github.com/amkozlov/raxml-ng).
-- **Stage 6: Species tree estimation**: After gene tree estimation, ROADIES concatenates all gene trees in a single list and performs species tree estimation using [ASTRAL-Pro](https://github.com/chaoszhang/A-pro). 
+- **Stage 2: Pairwise alignment**: All sampled subsequences or genes are aligned with all input assemblies individually to find the homologous regions using the pairwise alignment tool [LASTZ](https://lastz.github.io/lastz/). 
+- **Stage 3: Filtering of alignments**: ROADIES filters the low-quality alignments to reduce further redundant computation and limits the number of repetitive alignments from small genomic regions. 
+- **Stage 4: Multiple sequence alignment**: ROADIES gathers the homologous regions for all genes across species and performs multiple sequence alignments for each of them using [PASTA](https://github.com/smirarab/pasta). 
+- **Stage 5: Gene tree estimation**: ROADIES estimates gene trees from multiple sequence alignments of each of the genes using the maximum-likelihood based tree estimation tool [RAxML-NG](https://github.com/amkozlov/raxml-ng).
+- **Stage 6: Species tree estimation**: After getting all the gene trees, ROADIES performs species tree estimation using a widely adopted discordance aware species tree estimation tool [ASTRAL-Pro](https://github.com/chaoszhang/A-pro). 
 
 <div align="center">
 
@@ -44,96 +45,113 @@ ROADIES supports multiple modes of operation based on various user requirements 
 - **Balanced-Mode**: This mode of operation is preferred where the user wants an optimal runtime vs accuracy tradeoff. Here, the multiple sequence alignment stage is performed by [PASTA](https://github.com/smirarab/pasta), and the tree building stage is performed using [FastTree](http://www.microbesonline.org/fasttree/). 
 
 !!! Note
-    These modes of operation can be modified using command line arguments, mentioned in the [Usage](index.md#other-command-line-arguments) section.
+    These modes of operation can be modified using command line argument `--mode` (details mentioned in the [Usage](index.md#other-command-line-arguments) section).
 
 ## Convergence Mechanism
 
-ROADIES incorporates a method for establishing accurate and stable species trees. It performs multiple iterations of the entire pipeline and collects information on the percentage of highly supported nodes in the species tree for every iteration. 
-
-[ASTRAL-Pro2](https://github.com/chaoszhang/A-pro) provides the information of all the internal nodes in the form of quartets (and its support values such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal with a given number of iterations, then we say that the species tree is now converged.
+The initial count of the genes is crucial to get the accurate species tree at the end. The number of genes sufficient for getting the accurate tree also varies with datasets. Hence, ROADIES incorporates an adaptive algorithm for establishing accurate trees by tracking its confident scores. It performs multiple iterations of the entire pipeline and stops if it gets the confident tree, otherwise it continues with more gene counts. The confidence of the tree is evaluated by the confidence of its branches (or local posterior probability). The tree having most of the confident branches with high posterior probability are considered to be confident and stable. 
 
 !!! Note
-    Users have the option to run ROADIES with both converge and no-converge options using command line arguments mentioned in [Usage](index.md#other-command-line-arguments) section.
+    [ASTRAL-Pro2](https://github.com/chaoszhang/A-pro) provides the information of all the internal nodes in the form of quartets (and its support values such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal with a given number of iterations, then we say that the species tree is now converged.
+
+!!! Note
+    Users have the option to run ROADIES in converge mode using `--converge` argument (details mentioned in [Usage](index.md#other-command-line-arguments) section).
 
 <img src="images/converge_manuscript.png"width="1000" height="300" />
 
-## Quick Start
+## Ways to install ROADIES
 
-This section provides quick steps to get acquainted with ROADIES. 
+### Using DockerHub
 
-For more details about the usage and further configurability, refer to the [Usage](index.md#Usage) section.
+To run ROADIES using DockerHub, follow these steps:
 
-### Using installation script
+1. Pull the ROADIES Docker image from DockerHub:
 
-First clone the repository, as follows (requires `git` to be installed in the system):
+```
+docker pull ang037/roadies:latest
+```
+2. Run the Docker container:
+
+```
+docker run -it ang037/roadies:latest
+```
+
+### Using Docker locally
+
+First, clone the repository (requires `git` to be installed in the system):
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
 cd ROADIES
 ```
 
-Then, execute the bash script `roadies_env.sh` by following the commands below (**Warning:** check the dependencies below before running this script):
+Then build and run the Docker container:
+
+```
+docker build -t roadies_image .
+docker run -it roadies_image
+```
+
+### Using installation script
+
+First clone the repository:
+
+```
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
+```
+
+Then, execute the installation script:
 
 ```
 chmod +x roadies_env.sh
 source roadies_env.sh
 ```
 
-This will install and build all tools and dependencies required by the user to get started. Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. Now you are ready to run our pipeline (follow [Run ROADIES pipeline](index.md#Run-ROADIES-pipeline) section).
-
+This will install and build all tools and dependencies. Once the setup is complete, it will print `Setup complete` in the terminal and activate the `roadies_env` environment with all Conda packages installed. 
 
 !!! Note 
     ROADIES is built on [Snakemake (workflow parallelization tool)](https://snakemake.readthedocs.io/en/stable/). It also requires various tools (PASTA, LASTZ, RAxML-NG, MashTree, FastTree, ASTRAL-Pro2) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide `roadies_env.sh` script to automatically download all dependencies into the user system.
 
+#### Required dependencies
 
-##### Required dependencies
-
-To run this script, user should have the following installations:
+To run this script, ensure the following dependencies are installed:
 - Java Runtime Environment (version 1.7 or higher)
 - Python (version 3 or higher)
 - `wget` and `unzip` commands
 - GCC (version 11.4 or higher)
-- cmake command: https://cmake.org/download/
-- Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
+- cmake (Download here: https://cmake.org/download/)
+- Boost library (Download here: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/)
+- zlib (Download here: http://www.zlib.net/)
 
-!!! Note
-    The current version of ROADIES is extensively tested with Linux environment only. For Ubuntu, to install above dependencies, please run the following command OR uncomment the initial lines of `roadies_env.sh` file: `sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake`.
-    ```
-
-!!! Note
-    As a non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
-
-
-### Using docker locally
-
-First clone the repository
+For Ubuntu, you can install these dependencies with: 
 
 ```
-git clone https://github.com/TurakhiaLab/ROADIES.git
-cd ROADIES
+sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake
 ```
 
-Then build and run docker
+!!! Warning
+    If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
-```
-docker build roadies_image .
-docker run -it roadies_image
-```
 
-### Run ROADIES pipeline
+### Quick start (with provided test dataset)
 
-Once setup is done, run the following commands for 16-core machine:
+Once setup is done, you can run the ROADIES pipeline using the provided test dataset. Follow these steps for a 16-core machine:
 
+1. Create a directory for the test data and download the test datasets:
 
 ```
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
+```
+2. Run the ROADIES pipeline:
 
+```
 python run_roadies.py --cores 16
 ```
 
-The first line will download the 11 Drosophila genomic datasets (links are provided in `test/input_genome_links.txt`) and save it in `test/test_data` directory. Second line will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder after the completion.
+The first command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The second command will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder upon completion.
 
-To run ROADIES in various other modes of operation (fast, balanced, accurate) (description of these modes are mentioned in [Modes of operation](index.md#modes-of-operation) section), try the following commands:
+**Running ROADIES with different modes of operation**: To run ROADIES in various other modes of operation (fast, balanced, accurate) (description of these modes are mentioned in [Modes of operation](index.md#modes-of-operation) section), try the following commands:
 
 ```
 python run_roadies.py --cores 16 --mode accurate
@@ -151,16 +169,13 @@ python run_roadies.py --cores 16 --mode fast
 
 For each modes, the output species tree will be saved as `roadies.nwk` in a separate `output_files` folder.
 
-
-### Run ROADIES in converge mode
-
-To run ROADIES with converge mode (details mentioned in [convergence mechanism](index.md#convergence-mechanism) section), run the following command (notice the addition of `--converge` argument):
+**Running ROADIES in converge mode**: To run ROADIES with converge mode (details mentioned in [convergence mechanism](index.md#convergence-mechanism) section), run the following command (notice the addition of `--converge` argument):
 
 ```
 python run_roadies.py --cores 16 --converge
 ```
 
-To try other modes, run as follows:
+Try following commands for other modes:
 
 ```
 python run_roadies.py --cores 16 --mode balanced --converge
@@ -175,49 +190,41 @@ The output files for all iterations will be saved in a separate `converge_files`
 
 This section provides detailed instructions on how to configure the ROADIES pipeline further for various user requirements with your own genomic dataset. Once the required environment setup process is complete, follow the steps below.
 
-### Step 1: Get input genomic data
+### Step 1: Specify input genomic dataset
 
-After installing the environment, you need to get input genomic sequences for creating the species tree. To start with this, we have provided few test genomes, the links for which are present in `test/input_genome_links.txt`. Here is the one line command to download and save the 11 genomic sequences in `test/test_data` directory:
-
-```
-mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
-```
-
-### Step 2: Modify the configuration parameters
-
-To run ROADIES with test data, modify the path for `GENOMES` in `config/config.yaml` as `test/test_data`. To run ROADIES with your own downloaded genomes, provide the path of the downloaded genomes to `GENOMES` argument.
+After installing the environment, you need to get input genomic sequences for creating the species tree. To run ROADIES with your own dataset, update the `config.yaml` file to include the path to your input datasets under the `GENOMES` parameter.
 
 !!! Note 
     All input genome assemblies in the path mentioned in `GENOMES` should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`). Moreover, the file name should not have any special characters like `.` (apart from `_`) - for example, if the file name is `Aardvark.1.fa`, rename it to `Aardvark_1.fa`.
 
-#### Other Configuration Paramters
+### Step 2: Modify Other Configuration Paramters
 
-For specific user requirements, ROADIES provides multiple parameters to be configured before running the pipeline. These input parameters are listed in `config/config.yaml`. 
+Adjust other parameters listed in `config.yaml` as per specific user requirements. Details of the parameters are mentioned below.
  
 !!! Note
-    ROADIES has default values for some of the parameters that give the best results, users can optionally modify the values specific to their needs.
+    ROADIES has default values for some of the parameters that give the best results and are recommended in general. However, users can optionally modify the values specific to their needs.
 
 | Parameters | Description | Default value |
 | --- | --- | --- |
 | **GENOMES** | Specify the path to your input files which includes raw genome assemblies of the species. | |
 | **REFERENCE** (optional) | Specify the path for the reference tree (state-of-the-art) in Newick format to compare ROADIES' results with a state-of-the-art approach. If you don't want to specify any reference tree, set it to `NULL`. | `NULL` |
 | **LENGTH** | Configure the lengths of each of the randomly sampled subsequences or genes. | 500 |
-| **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. | 250 |
+| **GENE_COUNT** | Configure the number of genes to be sampled across all input genome assemblies. In normal mode, this will be the count of the genes to be sampled. In `--converge` mode, this will be the initial count of the number of genes for the first iteration and this value will be doubled iteratively. | 250 |
 | **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 (Recommended) |
 | **OUT_DIR** | Specify the path for ROADIES output files (this saves the current iteration results in converge mode). | |
 | **ALL_OUT_DIR** | Specify the path for ROADIES output files for all iterations in converge mode. | |
-| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value more than the default value since ASTRAL-Pro follows a quartet-based topology for species tree inference. | 4 (Recommended) |
-| **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 (Recommended) |
-| **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 (Recommended) |
-| **IDENTITY** | Set the percentage of the aligned base pairs for LASTZ. | 65 (Recommended) | 
+| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value greater than or equal to 4 since ASTRAL-Pro follows a quartet-based topology for species tree inference. For larger evolutionary timescales, we recommended setting it to a much higher value. In such cases, 15 to 20 would be a good start. | 4 |
+| **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 |
+| **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 |
+| **IDENTITY** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ. For larger evolutionary timescales, consider lowering the identity values than default for more homologous hits to be encountered. | 65 | 
 | **MAX_DUP** | Specify maximum number of allowed gene copies from one input genome in an alignment. | 10|
-| **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 (Recommended)|
-| **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 (Recommended)|
-| **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.02 (Recommended)|
-| **SUPPORT_THRESHOLD** | Specify the threshold so that support values with equal to or higher than this threshold is considered as highly supported node. Such highly supported nodes crossing this threshold will be counted at every iteration to check the confidence of the tree (works in --converge mode). | 0.95 (Recommended) |
-| **NUM_INSTANCES** | Specify the number of instances for PASTA, LASTZ, MashTree and RAxML-NG to run in parallel. | 4| 
+| **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 |
+| **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 |
+| **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.02 |
+| **SUPPORT_THRESHOLD** | Specify the threshold so that support values with equal to or higher than this threshold is considered as highly supported node. Such highly supported nodes crossing this threshold will be counted at every iteration to check the confidence of the tree (works in `--converge` mode). | 0.95 |
+| **NUM_INSTANCES** | Specify the number of instances for PASTA, LASTZ, MashTree and RAxML-NG to run in parallel. It is recommended to set the number of instances equal to (`--cores`/4) for optimal runtime. | 4 | 
 
-### Step 3: Running the ROADIES pipeline
+### Step 3: Run the ROADIES pipeline
 
 Once the required installations are completed and the parameters are configured in `config/config.yaml` file, execute the following command:
 
@@ -227,35 +234,18 @@ python run_roadies.py --cores <number of cores>
 
 This will let ROADIES run in accurate mode by default with specified number of cores. After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in a separate `output_files` folder.
 
-#### Other command line arguments
+#### Command line arguments
 
 There are multiple command line arguments through which user can change the mode of operation, specify the custom config file path, etc.
 
-To modify the modes of operation, add the `--mode` command line argument as follows:
-
-```
-python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`>
-```
-
-This will run ROADIES with specified mode of operations (description of these modes are mentioned in [Home](index.md#modes-of-operation)). To run this in converge mode (details mentioned in [Home](index.md#convergence-mechanism)), add the `--converge` argument as follows:
-
-```
-python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --converge
-```
-
-Additionally, user can have custom YAML files (in the same format as `config.yaml` provided with this repository) with their own parameterizable values. Provide the custom YAML file using `--config` argument as follows (if not given, by default `config/config.yaml` file will be considered):
-
-```
-python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --config <add own config path>
-```
-Also, with the converge mode and the custom yaml file together, run the command as follows:
-
-```
-python run_roadies.py --cores <number of cores> --mode <`fast` OR `balanced` OR `accurate`> --config <add own config path> --converge
-```
+| Argument | Description |
+| --- | --- |
+| `--cores` | Specify the number of cores |
+| `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced` or `fast`).`accurate` mode is the default mode. | 
+| `--converge` | Run ROADIES in [converge](index.md#convergence-mechanism) mode if you do not know the optimal gene count to start with |
+| `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
 
 Use `--help` to get the list of command line arguments.
-
 
 ### Step 4: Analyze output files
 
@@ -311,8 +301,10 @@ For extensive debugging, other intermediate output files for each stage of the p
 
 ## Contributions
 
-We welcome contributions from the community to enhance the capabilities of ROADIES. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
+We welcome contributions from the community. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
 
 ## Citing ROADIES
 
-If you use the ROADIES pipeline for species tree inference in your research or publications, we kindly request that you cite the following paper:
+If you use ROADIES in your research or publications, please cite the following paper:
+
+Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1
