@@ -8,14 +8,21 @@
 
 ## Table of Contents
 - [Introduction](#overview)
-- [Quick Start](#usage)
-- [Run ROADIES for your own dataset](#runpipeline)
+- [Quick Install](#usage)
+    - [Using DockerHub](#dockerhub)
+    - [Using Docker locally](#docker)
+    - [Using Installation Script](#script)
+- [Quick Start](#start)
+- [Run ROADIES with your own datasets](#runpipeline)
 - [Contributions and Support](#support)
 - [Citing ROADIES](#citation)
 
 ## <a name="overview"></a> Introduction
 
-Welcome to the official repository of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES pipeline offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
+Welcome to the official repository of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
+
+For more detailed information on all the features and settings of ROADIES, please refer to our [Wiki](https://turakhialab.github.io/ROADIES/).
+
 <br>
 
 <div align="center">
@@ -24,125 +31,131 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 
 </div>
 
-## <a name="usage"></a> Quick start
+## <a name="usage"></a> Quick Install
 
-This section provides brief overview on how to get started with the tool. To know more details about all the exisiting features and settings, please read [this documentation](https://turakhialab.github.io/ROADIES/).
+### <a name="dockerhub"></a> Using DockerHub
 
-### Quick install
+To run ROADIES using DockerHub, follow these steps:
 
-#### Using installation script
+1. Pull the ROADIES Docker image from DockerHub:
 
-First clone the repository, as follows (requires `git` to be installed in the system):
+```
+docker pull ang037/roadies:latest
+```
+2. Run the Docker container:
+
+```
+docker run -it ang037/roadies:latest
+```
+
+### <a name="docker"></a> Using Docker locally
+
+First, clone the repository (requires `git` to be installed in the system):
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
 cd ROADIES
 ```
 
-Then, execute the bash script `roadies_env.sh` by following the commands below (**Warning:** check the dependencies below before running this script):
+Then build and run the Docker container:
+
+```
+docker build -t roadies_image .
+docker run -it roadies_image
+```
+
+### <a name="script"></a> Using installation script
+
+First clone the repository:
+
+```
+git clone https://github.com/TurakhiaLab/ROADIES.git
+cd ROADIES
+```
+
+Then, execute the installation script:
 
 ```
 chmod +x roadies_env.sh
 source roadies_env.sh
 ```
 
-This will install and build all tools and dependencies required by the user to get started. Once setup is complete, it will print `Setup complete` in the terminal. On its completion, a snakemake environment named `roadies_env` will be activated with all conda packages installed in it. Now you are ready to run our pipeline (follow [Run ROADIES pipeline](index.md#Run-ROADIES-pipeline) section).
+This will install and build all tools and dependencies. Once the setup is complete, it will print `Setup complete` in the terminal and activate the `roadies_env` environment with all Conda packages installed. 
 
-##### Required dependencies
+#### Required dependencies
 
-To run this script, user should have the following installations:
+To run this script, ensure the following dependencies are installed:
 - Java Runtime Environment (version 1.7 or higher)
 - Python (version 3 or higher)
 - `wget` and `unzip` commands
 - GCC (version 11.4 or higher)
-- cmake command: https://cmake.org/download/
-- Boost library: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/ and zlib http://www.zlib.net/ are required when running cmake and make.
+- cmake (Download here: https://cmake.org/download/)
+- Boost library (Download here: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/)
+- zlib (Download here: http://www.zlib.net/)
 
-**Note:** The current version of ROADIES is extensively tested with Linux environment only. For Ubuntu, to install above dependencies, please run the following command OR uncomment the initial lines of `roadies_env.sh` file. 
+For Ubuntu, you can install these dependencies with: 
 
 ```
 sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake
 ```
 
-**Note:** As a non-root user, the `make` command won't work because these libraries hasn't configured to an environment variable. You have to add your boost library path into `$CPLUS_LIBRARY_PATH` and save it into `~/.bashrc`, then gcc will be able to find `boost/program_option.hpp`. All these requirement only work in a version of gcc which greater than 7.X (or when running `make`, it will report error: `unrecognized command line option '-std=c++17‘!` ).
+**Note:** If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
+## <a name="start"></a> Quick Start
 
-#### Using docker
+Once setup is done, you can run the ROADIES pipeline using the provided test dataset. Follow these steps for a 16-core machine:
 
-First clone the repository
-
-```
-git clone https://github.com/TurakhiaLab/ROADIES.git
-cd ROADIES
-```
-
-Then build and run docker
-
-```
-docker build roadies_image .
-docker run -it roadies_image
-```
-
-### Run ROADIES pipeline
-
-Once setup is done, run the following commands for 16-core machine:
-
+1. Create a directory for the test data and download the test datasets:
 
 ```
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
+```
+2. Run the ROADIES pipeline:
 
+```
 python run_roadies.py --cores 16
 ```
 
-The first line will download the 11 Drosophila genomic datasets (links are provided in `test/input_genome_links.txt`) and save it in `test/test_data` directory. Second line will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder after the completion.
+The first command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The second command will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder upon completion.
 
 ## <a name="runpipeline"></a> Run ROADIES with your own datasets
 
-To run ROADIES with your own datasets,follow the steps below:
+To run ROADIES with your own datasets, follow these steps:
 
-### Specify input genomic dataset
+1. **Specify Input Genomic Dataset**: Update the `config.yaml` file to include the path to your input datasets under the `GENOMES` parameter. Ensure all input genomic assemblies are in `.fa` or `.fa.gz` format and named according to the species' name (e.g., `Aardvark.fa`). 
 
-Specify the path of the input genomic dataset in `config.yaml` file (`GENOMES` parameter).
+**Note**: Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (`fasplit` can be used: `faSplit byname <input_dir> <output_dir>`).
 
-**Note**: All input genome assemblies should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`)
+2. **Configure Other Parameters**: Adjust other parameters in `config.yaml` as needed. Detailed information on each parameter is available in the [`Usage` section](https://turakhialab.github.io/ROADIES/).
 
-### Configure other parameters
-
-Configure other parameters in `config.yaml` file based on your use-case requirements. The detailed information of all parameters are mentioned in the `Usage` section [here](https://turakhialab.github.io/ROADIES/).
-
-### Run the pipeline
-
-After modifying the configurations, run the following command to execute ROADIES pipeline with 16 cores:
+3. **Run the Pipeline**: Execute the pipeline with the following command (example for 16 cores):
 
 ```
 python run_roadies.py --cores 16
 ```
 
-After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in a separate `output_files` folder.
+The output species tree in Newick format will be saved as `roadies.nwk` in the `output_files` folder.
 
-
-**Modes of operation**: ROADIES also supports multiple modes of operation (`fast`, `balanced`, `accurate`) by controlling the accuracy-runtime tradeoff. Try the following commands for various modes of operation (`accurate` mode is the default mode)
+4. **Modes of operation**: ROADIES supports multiple modes of operation (`fast`, `balanced`, `accurate`) by controlling the accuracy-runtime tradeoff. Use any one of the following commands to select a mode (`accurate` mode is the default):
 
 
 ```
 python run_roadies.py --cores 16 --mode accurate
-```
 
-```
 python run_roadies.py --cores 16 --mode balanced
-```
 
-```
 python run_roadies.py --cores 16 --mode fast
 ```
 
 ## <a name="support"></a> Contributions and Support
 
-We welcome contributions from the community to enhance the capabilities of ROADIES. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
+We welcome contributions from the community. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
 
 ## <a name="citation"></a> Citing ROADIES
 
-If you use the ROADIES pipeline for species tree inference in your research or publications, we kindly request that you cite the following paper:
+If you use ROADIES in your research or publications, please cite the following paper:
+
+Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1
 
 
 
