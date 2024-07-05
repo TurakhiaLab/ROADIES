@@ -1,12 +1,18 @@
- <div align="center">
+# Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
+
+[license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg 
+[license-link]: https://github.com/TurakhiaLab/ROADIES/blob/main/LICENSE
+
+[![License][license-badge]][license-link]
+[![Build Status](https://github.com/yatisht/usher/workflows/build/badge.svg)](https://github.com/TurakhiaLab/ROADIES/actions)
+[<img src="https://img.shields.io/badge/Made with-Snakemake-brightgreen.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
+[<img src="https://img.shields.io/badge/Install with-DockerHub-informational.svg?logo=Docker">](https://hub.docker.com/r/ang037/roadies)
 
 <div align="center">
 
 <img src="docs/images/ROADIES_logo.png" style="height: 350px; width: auto;">
 
 </div>
-
-# Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
 
 </div>
 
