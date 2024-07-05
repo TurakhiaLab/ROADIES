@@ -1,3 +1,5 @@
+<div align="center">
+    
 # Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
 
 [license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg 
@@ -7,6 +9,7 @@
 [![Build Status](https://github.com/yatisht/usher/workflows/build/badge.svg)](https://github.com/TurakhiaLab/ROADIES/actions)
 [<img src="https://img.shields.io/badge/Made with-Snakemake-brightgreen.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
 [<img src="https://img.shields.io/badge/Install with-DockerHub-informational.svg?logo=Docker">](https://hub.docker.com/r/ang037/roadies)
+[<img src="https://img.shields.io/badge/Submitted to-bioRxiv-critical.svg?logo=LOGO">](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1)
 
 <div align="center">
 
@@ -31,7 +34,7 @@
 
 Welcome to the official repository of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
 
-For more detailed information on all the features and settings of ROADIES, please refer to our [Wiki](https://turakhialab.github.io/ROADIES/).
+**For more detailed information on all the features and settings of ROADIES, please refer to our [Wiki](https://turakhialab.github.io/ROADIES/).**
 
 <br>
 
