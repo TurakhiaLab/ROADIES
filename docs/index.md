@@ -6,6 +6,10 @@
 
 # Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
 
+## ROADIES Video Tutorial
+
+<iframe width="1000" height="600" src="https://youtu.be/1sR741TvZnM" frameborder="0" allowfullscreen></iframe>
+
 ## Introduction
 
 Welcome to the official wiki of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
