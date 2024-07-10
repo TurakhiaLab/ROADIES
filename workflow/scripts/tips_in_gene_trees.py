@@ -8,7 +8,7 @@ def count_unique_tips(tree_line):
 
 def process_trees(input_file, output_file, save_path):
     values = []
-    with open(input_file, 'r') as infile, open(output_file + "/num_species_gt.txt",, 'w') as outfile:
+    with open(input_file, 'r') as infile, open(output_file + "/num_species_gt.txt", 'w') as outfile:
         for line in infile:
             count = count_unique_tips(line)
             values.append(count)
