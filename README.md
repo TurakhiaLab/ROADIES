@@ -6,7 +6,7 @@
 [license-link]: https://github.com/TurakhiaLab/ROADIES/blob/main/LICENSE
 
 [![License][license-badge]][license-link]
-[![Build Status](https://github.com/yatisht/usher/workflows/build/badge.svg)](https://github.com/TurakhiaLab/ROADIES/actions)
+[![Build Status](https://github.com/TurakhiaLab/ROADIES/actions/workflows/ci.yml/badge.svg)](https://github.com/TurakhiaLab/ROADIES/actions)
 [<img src="https://img.shields.io/badge/Made with-Snakemake-brightgreen.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
 [<img src="https://img.shields.io/badge/Install with-DockerHub-informational.svg?logo=Docker">](https://hub.docker.com/r/ang037/roadies)
 [<img src="https://img.shields.io/badge/Submitted to-bioRxiv-critical.svg?logo=LOGO">](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1)
