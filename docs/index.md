@@ -96,7 +96,7 @@ docker build -t roadies_image .
 docker run -it roadies_image
 ```
 
-### Using installation script
+### Using installation script (requires sudo access)
 
 First clone the repository:
 
@@ -138,22 +138,28 @@ sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptoo
     If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
 
-### Quick start (with provided test dataset)
+## Quick start (with provided test dataset)
 
 Once setup is done, you can run the ROADIES pipeline using the provided test dataset. Follow these steps for a 16-core machine:
 
-1. Create a directory for the test data and download the test datasets:
+1. Go to ROADIES repository directory if not there:
+
+```
+cd ROADIES
+```
+
+2. Create a directory for the test data and download the test datasets (using the following one line command):
 
 ```
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
 ```
-2. Run the ROADIES pipeline:
+3. Run the pipeline with the following command (from ROADIES directory):
 
 ```
 python run_roadies.py --cores 16
 ```
 
-The first command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The second command will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder upon completion.
+The second command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The third command will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `output_files` folder upon completion.
 
 **Running ROADIES with different modes of operation**: To run ROADIES in various other modes of operation (fast, balanced, accurate) (description of these modes are mentioned in [Modes of operation](index.md#modes-of-operation) section), try the following commands:
 
@@ -190,13 +196,13 @@ python run_roadies.py --cores 16 --mode fast --converge
 
 The output files for all iterations will be saved in a separate `converge_files` folder. `output_files` will save the results of the last iteration. Species tree for all iterations will be saved in `converge_files` folder with the nomenclature `iteration_<iteration_number>.nwk`.
 
-## Usage
+## Detailed Usage
 
 This section provides detailed instructions on how to configure the ROADIES pipeline further for various user requirements with your own genomic dataset. Once the required environment setup process is complete, follow the steps below.
 
 ### Step 1: Specify input genomic dataset
 
-After installing the environment, you need to get input genomic sequences for creating the species tree. To run ROADIES with your own dataset, update the `config.yaml` file to include the path to your input datasets under the `GENOMES` parameter.
+After installing the environment, you need to get input genomic sequences for creating the species tree. To run ROADIES with your own dataset, update the `config.yaml` file (found in the ROADIES directory - `config` folder) to include the path to your input datasets under the `GENOMES` parameter.
 
 !!! Note 
     All input genome assemblies in the path mentioned in `GENOMES` should be in `.fa` or `.fa.gz` format. The genome assembly files should be named according to the species' names (for example, Aardvark's genome assembly is to be named `Aardvark.fa`). Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (fasplit can be used for this: `faSplit byname <input_dir> <output_dir>`). Moreover, the file name should not have any special characters like `.` (apart from `_`) - for example, if the file name is `Aardvark.1.fa`, rename it to `Aardvark_1.fa`.
@@ -230,7 +236,7 @@ Adjust other parameters listed in `config.yaml` as per specific user requirement
 
 ### Step 3: Run the ROADIES pipeline
 
-Once the required installations are completed and the parameters are configured in `config/config.yaml` file, execute the following command:
+Once the required installations are completed and the parameters are configured in `config.yaml` file, execute the following command (from ROADIES repo home directory):
 
 ```
 python run_roadies.py --cores <number of cores>
@@ -238,7 +244,7 @@ python run_roadies.py --cores <number of cores>
 
 This will let ROADIES run in accurate mode by default with specified number of cores. After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in a separate `output_files` folder.
 
-#### Command line arguments
+### Command line arguments
 
 There are multiple command line arguments through which user can change the mode of operation, specify the custom config file path, etc.
 
@@ -248,6 +254,12 @@ There are multiple command line arguments through which user can change the mode
 | `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced` or `fast`).`accurate` mode is the default mode. | 
 | `--converge` | Run ROADIES in [converge](index.md#convergence-mechanism) mode if you do not know the optimal gene count to start with |
 | `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
+
+For example:
+
+```
+python run_roadies.py --cores 16 --mode balanced --converge --config config/config.yaml
+```
 
 Use `--help` to get the list of command line arguments.
 
@@ -307,8 +319,18 @@ For extensive debugging, other intermediate output files for each stage of the p
 
 We welcome contributions from the community. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
 
+Anshu Gupta - ang037 [at] ucsd [dot] edu
+
+Yatish Turakhia - yturakhia [at] ucsd [dot] edu
+
 ## Citing ROADIES
 
 If you use ROADIES in your research or publications, please cite the following paper:
 
-Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1
+Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. [https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1).
+
+### Accessing ROADIES output files
+
+The output files with the gene trees and species trees generated by ROADIES in the manuscript are deposited to [Dryad](https://datadryad.org/stash). To access it, please refer to the following:
+
+Gupta, Anshu; Mirarab, Siavash; Turakhia, Yatish (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES [Dataset]. Dryad. [https://doi.org/10.5061/dryad.tht76hf73](https://doi.org/10.5061/dryad.tht76hf73).

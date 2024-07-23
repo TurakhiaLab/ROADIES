@@ -10,6 +10,8 @@
 [<img src="https://img.shields.io/badge/Made with-Snakemake-brightgreen.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
 [<img src="https://img.shields.io/badge/Install with-DockerHub-informational.svg?logo=Docker">](https://hub.docker.com/r/ang037/roadies)
 [<img src="https://img.shields.io/badge/Submitted to-bioRxiv-critical.svg?logo=LOGO">](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1)
+[<img src="https://img.shields.io/badge/DOI-10.5061/dryad.tht76hf73-brightgreen.svg?logo=LOGO">](https://doi.org/10.5061/dryad.tht76hf73)
+[<img src="https://img.shields.io/badge/Watch it on-Youtube-FF0000.svg?logo=YouTube">](https://youtu.be/1sR741TvZnM?si=vVNAnonvzNEzrLKq)
 
 <div align="center">
 
@@ -27,8 +29,9 @@
     - [Using Installation Script](#script)
 - [Quick Start](#start)
 - [Run ROADIES with your own datasets](#runpipeline)
-- [Contributions and Support](#support)
 - [Citing ROADIES](#citation)
+
+<br>
 
 ## <a name="overview"></a> Introduction
 
@@ -47,7 +50,7 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 
 </div>
 
-
+<br>
 
 ## <a name="usage"></a> Quick Install
 
@@ -82,7 +85,7 @@ docker build -t roadies_image .
 docker run -it roadies_image
 ```
 
-### <a name="script"></a> Using installation script
+### <a name="script"></a> Using installation script (requires sudo access)
 
 First clone the repository:
 
@@ -119,28 +122,38 @@ sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptoo
 
 **Note:** If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
+<br>
+
 ## <a name="start"></a> Quick Start
 
 Once setup is done, you can run the ROADIES pipeline using the provided test dataset. Follow these steps for a 16-core machine:
 
-1. Create a directory for the test data and download the test datasets:
+1. Go to ROADIES repository directory if not there:
+
+```
+cd ROADIES
+```
+
+2. Create a directory for the test data and download the test datasets (using the following one line command):
 
 ```
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
 ```
-2. Run the ROADIES pipeline:
+3. Run the pipeline with the following command (from ROADIES directory):
 
 ```
 python run_roadies.py --cores 16
 ```
 
-The first command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The second command will run ROADIES for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `ROADIES/output_files` folder upon completion.
+The second command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The third command will run ROADIES pipeline for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `output_files` folder upon completion.
+
+<br>
 
 ## <a name="runpipeline"></a> Run ROADIES with your own datasets
 
 To run ROADIES with your own datasets, follow these steps:
 
-1. **Specify Input Genomic Dataset**: Update the `config.yaml` file to include the path to your input datasets under the `GENOMES` parameter. Ensure all input genomic assemblies are in `.fa` or `.fa.gz` format and named according to the species' name (e.g., `Aardvark.fa`). 
+1. **Specify Input Genomic Dataset**: Update the `config.yaml` file (found in the ROADIES directory - `config` folder) to include the path to your input datasets under the `GENOMES` parameter. Ensure all input genomic assemblies are in `.fa` or `.fa.gz` format and named according to the species' name (e.g., `Aardvark.fa`). 
 
 **Note**: Each file should contain the genome assembly of one unique species. If a file contains multiple species, split it into individual genome files (`fasplit` can be used: `faSplit byname <input_dir> <output_dir>`).
 
@@ -165,18 +178,18 @@ python run_roadies.py --cores 16 --mode balanced
 python run_roadies.py --cores 16 --mode fast
 ```
 
-## <a name="support"></a> Contributions and Support
-
-We welcome contributions from the community. If you encounter any issues or have suggestions for improvement, please open an issue on GitHub. For general inquiries and support, reach out to our team.
+<br>
 
 ## <a name="citation"></a> Citing ROADIES
 
 If you use ROADIES in your research or publications, please cite the following paper:
 
-Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1
+Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. [https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1).
 
 ### Accessing ROADIES output files
 
-The output files with the gene trees and species trees generated by ROADIES are deposited to [Dryad](https://datadryad.org/stash). To access it, please refer to [this](https://datadryad.org/stash/share/Pbbmp5I6AEmJmOHRvNld7FBT2ext-DEemyajkqUQfX0) link (Note: the dataset submission is undergoing review and a permanent link will be posted once available).
+The output files with the gene trees and species trees generated by ROADIES in the manuscript are deposited to [Dryad](https://datadryad.org/stash). To access it, please refer to the following:
+
+Gupta, Anshu; Mirarab, Siavash; Turakhia, Yatish (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES [Dataset]. Dryad. [https://doi.org/10.5061/dryad.tht76hf73](https://doi.org/10.5061/dryad.tht76hf73).
 
 
