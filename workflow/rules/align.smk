@@ -102,7 +102,7 @@ rule pasta:
 			if [ "$all_matched" = true ]; then
 				cp "$input_file" "$output_file"
 			else
-				python pasta/run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus {threads}
+				run_pasta.py -i {input} -j {params.prefix} --alignment-suffix={params.suffix} --num-cpus {threads}
 			fi
 		fi
 		touch {output}
@@ -121,7 +121,7 @@ rule filtermsa:
 		"../envs/filtermsa.yaml"
 	shell:
 		'''
-		python pasta/run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
+		run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
 			
 		'''
 
