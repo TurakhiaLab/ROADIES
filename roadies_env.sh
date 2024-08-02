@@ -18,7 +18,7 @@ fi
 source "${CONDA_PATH}/etc/profile.d/conda.sh"  # Temporarily source conda for this script
 source "${CONDA_PATH}/etc/profile.d/mamba.sh"  # Temporarily source mamba for this script
 if ! conda env list | grep -q "roadies_env"; then
-    mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 raxml-ng ete3
+    mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.9 raxml-ng ete3
 fi
 conda activate roadies_env
 
@@ -27,7 +27,6 @@ if [ ! -d "ASTER-Linux" ]; then
     wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
     unzip -q Linux.zip
     cd ASTER-Linux
-    make
     g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
     cd ..
 fi
