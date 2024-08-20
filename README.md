@@ -24,6 +24,7 @@
 ## Table of Contents
 - [Introduction](#overview)
 - [Quick Install](#usage)
+    - [Using ROADIES Bioconda package](#conda)
     - [Using DockerHub](#dockerhub)
     - [Using Docker locally](#docker)
     - [Using Installation Script](#script)
@@ -53,6 +54,42 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 <br>
 
 ## <a name="usage"></a> Quick Install
+
+### <a name="conda"></a> Using ROADIES Bioconda package (recommended)
+
+To run ROADIES using Bioconda package, follow these steps:
+
+**Note:** You need to have conda installed in your system. To install and use conda in Ubuntu machine, execute the set of commands below:
+
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+chmod +x Miniconda3-latest-Linux-x86_64.sh
+./Miniconda3-latest-Linux-x86_64.sh
+
+export PATH="$HOME/miniconda3/bin:$PATH"
+source ~/.bashrc
+
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
+
+After this, try running `conda` in your terminal to check if conda is properly installed. Once it is installed, follow the steps below:
+
+1. Create and activate custom conda environment with Python version 3.9
+
+```
+conda create -n myenv python=3.9
+conda activate myenv
+```
+
+2. Install ROADIES bioconda package
+
+```
+conda install roadies
+```
+
+All files of ROADIES along with dependencies will be found in `<conda_install_path>/miniconda3/envs/new_env/ROADIES`.
 
 ### <a name="dockerhub"></a> Using DockerHub
 
@@ -107,7 +144,7 @@ This will install and build all tools and dependencies. Once the setup is comple
 
 To run this script, ensure the following dependencies are installed:
 - Java Runtime Environment (version 1.7 or higher)
-- Python (version 3 or higher)
+- Python (version 3.9 or higher)
 - `wget` and `unzip` commands
 - GCC (version 11.4 or higher)
 - cmake (Download here: https://cmake.org/download/)

@@ -65,6 +65,42 @@ The initial count of the genes is crucial to get the accurate species tree at th
 
 ## Ways to install ROADIES
 
+### Using ROADIES Bioconda package
+
+To run ROADIES using Bioconda package, follow these steps:
+
+**Note:** You need to have conda installed in your system. To install and use conda in Ubuntu machine, execute the set of commands below:
+
+```
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+chmod +x Miniconda3-latest-Linux-x86_64.sh
+./Miniconda3-latest-Linux-x86_64.sh
+
+export PATH="$HOME/miniconda3/bin:$PATH"
+source ~/.bashrc
+
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
+
+After this, try running `conda` in your terminal to check if conda is properly installed. Once it is installed, follow the steps below:
+
+1. Create and activate custom conda environment with Python version 3.9
+
+```
+conda create -n myenv python=3.9
+conda activate myenv
+```
+
+2. Install ROADIES bioconda package
+
+```
+conda install roadies
+```
+
+All files of ROADIES along with dependencies will be found in `<conda_install_path>/miniconda3/envs/new_env/ROADIES`.
+
 ### Using DockerHub
 
 To run ROADIES using DockerHub, follow these steps:
