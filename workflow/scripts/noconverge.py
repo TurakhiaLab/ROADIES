@@ -28,7 +28,7 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
     # Set threads per instance dynamically
     num_threads = cores // fixed_parallel_instances
 
-   cmd = [
+    cmd = [
         "sbatch",  # Submit the job using SLURM
         "--export=ALL",  # Export all environment variables to the job
         "--job-name=ROADIES",  # Name the job
