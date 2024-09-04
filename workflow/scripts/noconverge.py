@@ -29,18 +29,15 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
     num_threads = cores // fixed_parallel_instances
 
     cmd = [
-        "sbatch",  # Submit the job using SLURM
-        "--export=ALL",  # Export all environment variables to the job
-        "--job-name=ROADIES",  # Name the job
-        "--nodes=5",  # Use 5 nodes as specified
-        "--ntasks-per-node=1",  # Number of tasks per node
-        "--cpus-per-task=" + str(num_threads),  # Number of CPUs per task
-        "--wrap",  # Wrap the command to be executed
-        "snakemake --cores " + str(cores) +
-        " --config mode=" + str(mode) +
-        " config_path=" + str(config_path) +
-        " num_threads=" + str(num_threads) +
-        " --use-conda --rerun-incomplete"
+        "snakemake",
+        "--cores",
+        str(cores),
+        "--config",
+        "mode=" + str(mode),
+        "config_path=" + str(config_path),
+        "num_threads=" + str(num_threads),
+        "--use-conda",
+        "--rerun-incomplete",
     ]
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
