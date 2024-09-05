@@ -28,7 +28,7 @@ if [ ! -d "ASTER-Linux" ]; then
     unzip -q Linux.zip
     cd ASTER-Linux
     make
-    g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
+    g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
     cd ..
 fi
 
