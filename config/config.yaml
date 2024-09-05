@@ -15,7 +15,7 @@ OUT_DIR: "output_files"
 #ROADIES output directory for all iterations (only used in --converge option)
 ALL_OUT_DIR: "converge_files"
 #Minimum number of species in a gene fasta (4 min for ASTRAL-Pro)
-MIN_ALIGN: 4
+MIN_ALIGN: 50
 #Minimum % match in LASTZ alignment
 IDENTITY: 40
 #Minimum input sequence coverage in LASTZ alignment
