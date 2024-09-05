@@ -18,13 +18,14 @@ rule lastz:
 		continuity = config['CONTINUITY'],
 		align_dir = config['OUT_DIR']+ "/alignments",
 		max_dup = 2*int(config['MAX_DUP']),
-		steps = config["STEPS"]
+		steps = config["STEPS"],
+		scores = config['SCORES']
 	shell:
 		'''
 		if [[ "{input.genome}" == *.gz ]]; then
-			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
+			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} --scores={params.scores}
 		else
-			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes}  --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 
+			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes}  --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} --scores={params.scores}
 		fi
 		'''
 
