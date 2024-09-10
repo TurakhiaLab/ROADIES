@@ -30,23 +30,13 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
 
     cmd = [
         "snakemake",
-        "--cores",
-        str(cores),
-        "--config",
-        "mode=" + str(mode),
-        "config_path=" + str(config_path),
-        "num_threads=" + str(num_threads),
+        "--cores", str(cores),
+        "--config", "mode=" + str(mode), "config_path=" + str(config_path), "num_threads=" + str(num_threads),
         "--use-conda",
         "--rerun-incomplete",
-        "--cluster-config",
-        "cluster.yaml",
-        "--jobs",
-        str(cores),  # Maximum jobs to submit at once
+        "--jobs", str(cores),  # Maximum jobs to submit at once
         "--keep-going",
-        "--latency-wait",
-        "60",
-        "--cluster",
-        "sbatch -A your-account -p queue-1 --nodes=1 --ntasks={threads} --time=24:00:00",
+        "--latency-wait", "60"
     ]
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
