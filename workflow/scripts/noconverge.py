@@ -36,8 +36,10 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
         "--rerun-incomplete",
         "--jobs", str(cores),  # Maximum jobs to submit at once
         "--keep-going",
-        "--latency-wait", "60"
+        "--latency-wait", "60",
+        "--nodes", str(5),  # This ensures the jobs are distributed over 5 nodes
     ]
+
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
             print(cmd[i])
