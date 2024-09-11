@@ -32,4 +32,4 @@ MASKSITES: 0.02
 #Threshold for high support (only used in --converge option)
 SUPPORT_THRESHOLD: 0.95
 #Number of instances to run in parallel
-NUM_INSTANCES: 4
+NUM_INSTANCES: 5
