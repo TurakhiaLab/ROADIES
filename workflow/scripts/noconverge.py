@@ -31,7 +31,9 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
    cmd = [
         "snakemake",
         "--cores", str(cores),
-        "--config", "mode=" + str(mode), "config_path=" + str(config_path), "num_threads=" + str(num_threads),
+        "--config", "mode=" + str(mode), 
+        "config_path=" + str(config_path), 
+        "num_threads=" + str(num_threads),
         "--use-conda",
         "--rerun-incomplete",
         "--jobs", "5",  # Parallel jobs across 5 nodes
