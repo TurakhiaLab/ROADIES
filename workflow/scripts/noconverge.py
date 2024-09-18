@@ -30,22 +30,22 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
 
     cmd = [
         "snakemake",
-        "--executor", "slurm",
-        "--cores", str(cores),
-        "--config", 
-        "mode=" + str(mode), 
-        "config_path=" + str(config_path), 
+        "--snakefile", "Snakefile",
+        "--jobs", str(fixed_parallel_instances),  # Use fixed parallel instances for jobs
+        "--config",
+        "mode=" + str(mode),
+        "config_path=" + str(config_path),
         "num_threads=" + str(num_threads),
-        "--use-conda",
-        "--rerun-incomplete",
-        "--jobs", str(cores),  # Maximum jobs to submit at once
+        "--cluster-config", "cluster.yaml",
+        "--cluster", (
+            "sbatch --nodes={cluster.nodes} --ntasks={cluster.ntasks-per-node} "
+            "--cpus-per-task={cluster.cpus-per-task} --mem={cluster.mem} --time={cluster.time}"
+        ),
         "--keep-going",
-        "--latency-wait", "60",
-        "--default-resources", 
-        "slurm_partition=queue-1",  # Replace with the partition defined in your SLURM queue
+        "--latency-wait", "20",
+        "--use-conda",
+        "--rerun-incomplete"
     ]
-
-
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
             print(cmd[i])
