@@ -28,7 +28,7 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
     # Set threads per instance dynamically
     num_threads = cores // fixed_parallel_instances
 
-   cmd = [
+    cmd = [
         "snakemake",
         "--cores", str(cores),
         "--config", "mode=" + str(mode), 
