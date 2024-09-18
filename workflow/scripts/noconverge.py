@@ -28,23 +28,19 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
     # Set threads per instance dynamically
     num_threads = cores // fixed_parallel_instances
 
-    cmd = [
+   cmd = [
         "snakemake",
-        "--snakefile", "Snakefile",
-        "--jobs", str(fixed_parallel_instances),  # Use fixed parallel instances for jobs
-        "--config",
-        "mode=" + str(mode),
-        "config_path=" + str(config_path),
-        "num_threads=" + str(num_threads),
-        "--cluster-config", "cluster.yaml",
-        "--cluster", (
-            "sbatch --nodes={cluster.nodes} --ntasks={cluster.ntasks-per-node} "
-            "--cpus-per-task={cluster.cpus-per-task} --mem={cluster.mem} --time={cluster.time}"
-        ),
+        "--cores", str(cores),
+        "--config", "mode=" + str(mode), "config_path=" + str(config_path), "num_threads=" + str(num_threads),
+        "--use-conda",
+        "--rerun-incomplete",
+        "--jobs", str(fixed_parallel_instances),  # Run on 5 parallel instances (nodes)
         "--keep-going",
         "--latency-wait", "20",
-        "--use-conda",
-        "--rerun-incomplete"
+        "--cluster", (
+            "sbatch --nodes=1 --ntasks=1 "
+            "--cpus-per-task=" + str(num_threads) + " --mem=4G --time=00:10:00"
+        )  # Tailored for parallelization over 5 nodes
     ]
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
