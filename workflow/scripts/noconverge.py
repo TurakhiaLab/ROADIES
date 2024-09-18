@@ -34,13 +34,9 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
         "--config", "mode=" + str(mode), "config_path=" + str(config_path), "num_threads=" + str(num_threads),
         "--use-conda",
         "--rerun-incomplete",
-        "--jobs", str(fixed_parallel_instances),  # Run on 5 parallel instances (nodes)
+        "--jobs", "5",  # Parallel jobs across 5 nodes
         "--keep-going",
-        "--latency-wait", "20",
-        "--cluster", (
-            "sbatch --nodes=1 --ntasks=1 "
-            "--cpus-per-task=" + str(num_threads) + " --mem=4G --time=00:10:00"
-        )  # Tailored for parallelization over 5 nodes
+        "--latency-wait", "60"
     ]
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
