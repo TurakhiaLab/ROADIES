@@ -47,6 +47,12 @@ extra:
 
 nav:
   - Home: index.md
+  - Install: install.md
+  - Quick Start: quickstart.md
+  - User Guide: usage.md
+  - Contribution: contribution.md
+  - Troubleshooting: troubleshooting.md
+  - Cite ROADIES: cite.md
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -61,6 +67,9 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.mark
   - attr_list
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
@@ -68,3 +77,6 @@ markdown_extensions:
 repo_url: https://github.com/TurakhiaLab/ROADIES
 
 repo_name: TurakhiaLab/ROADIES
+
+copyright: |
+  &copy; 2024 <a href="https://github.com/TurakhiaLab"  target="_blank" rel="noopener">Turakhia Lab</a>

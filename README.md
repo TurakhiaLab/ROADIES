@@ -7,10 +7,11 @@
 
 [![License][license-badge]][license-link]
 [![Build Status](https://github.com/TurakhiaLab/ROADIES/actions/workflows/ci.yml/badge.svg)](https://github.com/TurakhiaLab/ROADIES/actions)
-[<img src="https://img.shields.io/badge/Made with-Snakemake-brightgreen.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
+[<img src="https://img.shields.io/badge/Made with-Snakemake-green.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
+[<img src="https://img.shields.io/badge/Install with-Biooconda-brightgreen.svg?logo=conda">](http://bioconda.github.io/recipes/roadies/README.html)
 [<img src="https://img.shields.io/badge/Install with-DockerHub-informational.svg?logo=Docker">](https://hub.docker.com/r/ang037/roadies)
 [<img src="https://img.shields.io/badge/Submitted to-bioRxiv-critical.svg?logo=LOGO">](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1)
-[<img src="https://img.shields.io/badge/DOI-10.5061/dryad.tht76hf73-brightgreen.svg?logo=LOGO">](https://doi.org/10.5061/dryad.tht76hf73)
+[<img src="https://img.shields.io/badge/DOI-10.5061/dryad.tht76hf73-yellowgreen.svg?logo=LOGO">](https://doi.org/10.5061/dryad.tht76hf73)
 [<img src="https://img.shields.io/badge/Watch it on-Youtube-FF0000.svg?logo=YouTube">](https://youtu.be/1sR741TvZnM?si=vVNAnonvzNEzrLKq)
 
 <div align="center">
@@ -59,7 +60,9 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 
 To run ROADIES using Bioconda package, follow these steps:
 
-**Note:** You need to have conda installed in your system. To install and use conda in Ubuntu machine, execute the set of commands below:
+**Note:** You need to have conda installed in your system. Also make sure you have updated version of glibc in your system (`GLIBC >= 2.29`).
+
+To install and use conda in Ubuntu machine, execute the set of commands below:
 
 ```
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -89,7 +92,7 @@ conda activate myenv
 conda install roadies
 ```
 
-All files of ROADIES along with dependencies will be found in `<conda_install_path>/miniconda3/envs/new_env/ROADIES`.
+All files of ROADIES along with dependencies will be found in `<conda_install_path>/miniconda3/envs/myenv/ROADIES`.
 
 ### <a name="dockerhub"></a> Using DockerHub
 
@@ -143,13 +146,14 @@ This will install and build all tools and dependencies. Once the setup is comple
 #### Required dependencies
 
 To run this script, ensure the following dependencies are installed:
-- Java Runtime Environment (version 1.7 or higher)
-- Python (version 3.9 or higher)
+- Java Runtime Environment (Version 1.7 or higher)
+- Python (Version 3.9 or higher)
 - `wget` and `unzip` commands
-- GCC (version 11.4 or higher)
+- GCC (Version 11.4 or higher)
 - cmake (Download here: https://cmake.org/download/)
 - Boost library (Download here: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/)
 - zlib (Download here: http://www.zlib.net/)
+- GLIBC (Version 2.29 or higher)
 
 For Ubuntu, you can install these dependencies with: 
 
@@ -214,6 +218,10 @@ python run_roadies.py --cores 16 --mode balanced
 
 python run_roadies.py --cores 16 --mode fast
 ```
+
+<br>
+
+### For troubleshooting and contribution details, refer to [Wiki](https://turakhialab.github.io/ROADIES/)
 
 <br>
 
