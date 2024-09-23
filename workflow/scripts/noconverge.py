@@ -30,15 +30,15 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances):
 
     cmd = [
         "snakemake",
-        "--cores",
-        str(cores),
-        "--config",
-        "mode=" + str(mode),
-        "config_path=" + str(config_path),
-        "num_threads=" + str(num_threads),
+        "--config", "mode=" + str(mode), "config_path=" + str(config_path), "num_threads=" + str(num_threads),
         "--use-conda",
         "--rerun-incomplete",
+        "--jobs", "5",  # Assuming you're running 5 parallel jobs across nodes
+        "--keep-going",
+        "--latency-wait", "60",
+        "--profile", "profiles/aws-parallelcluster-slurm"  # Add the SLURM profile
     ]
+
     for i in range(len(cmd)):
         if i == len(cmd) - 1:
             print(cmd[i])
