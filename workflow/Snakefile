@@ -20,12 +20,12 @@ mode = config.get("mode","accurate")
 if (mode == "fast"):
 	include: "rules/mashtree.smk"
 elif (mode == "balanced"):
-	include: "rules/align.smk"
 	include: "rules/sampling.smk"
+	include: "rules/align.smk"
 	include: "rules/fasttree.smk"
 else:
-	include: "rules/align.smk"
 	include: "rules/sampling.smk"
+	include: "rules/align.smk"
 	include: "rules/tree.smk"
 	
 rule all:

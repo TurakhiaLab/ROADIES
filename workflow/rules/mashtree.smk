@@ -51,44 +51,43 @@ rule sequence_select:
 
 rule sequence_merge:
 	input:
-		expand(config["OUT_DIR"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
+		expand(config["OUT_DIR"]+"/samples/{sample}_temp.fa", sample=SAMPLES)
 	params:
 		gene_dir = config["OUT_DIR"]+"/samples",
-		plotdir = config["OUT_DIR"]+"/plots"
+		plotdir = config["OUT_DIR"]+"/plots",
+		statdir = config["OUT_DIR"]+"/statistics"
 	output:
-        	config["OUT_DIR"]+"/samples/out.fa",
-			report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
+        	config["OUT_DIR"]+"/samples/out.fa"
 	shell:
-		"python3 workflow/scripts/sequence_merge.py {params.gene_dir} {output} {params.plotdir}"
+		"python3 workflow/scripts/sequence_merge.py {params.gene_dir} {output} {params.plotdir} {params.statdir}"
 
 
 g = config["OUT_DIR"]+"/samples/out.fa"
 
 rule lastz:
 	input:
-		genes = g,
+		gene = g,
 		genome = config["GENOMES"] + "/{sample}." + ("fa.gz" if EXTENSION[0]=="gz" else "fa")
 	output:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
-	benchmark:
-		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
 	threads: lambda wildcards: int(config['num_threads'])
 	params:
-		species = "{sample}",
-		identity = config['IDENTITY'],
-		coverage = config['COVERAGE'],
-		continuity = config['CONTINUITY'],
+		identity_low = config['IDENTITY_LOW'],
+		identity_high = config['IDENTITY_HIGH'],
+		coverage_low = config['COVERAGE_LOW'],
+		coverage_high = config['COVERAGE_HIGH'],
+		continuity_low = config['CONTINUITY_LOW'],
+		continuity_high = config['CONTINUITY_HIGH'],
 		align_dir = config['OUT_DIR']+ "/alignments",
+		id_dir = config['OUT_DIR']+ "/statistics/sampling_ids.csv",
 		max_dup = 2*int(config['MAX_DUP']),
-		steps = config["STEPS"]
+		steps = config["STEPS"],
+		mash_dir = config["OUT_DIR"] + "/mash_distances.txt",
+		instances = config['NUM_INSTANCES'],
+		score_file = config["SCORES"]
 	shell:
-		'''
-		if [[ "{input.genome}" == *.gz ]]; then
-			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
-		else
-			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
-		fi
-		'''
+		"python workflow/scripts/custom_lastz_fast.py {params.id_dir} {params.mash_dir} {input.gene} {input.genome} {output} --steps {params.steps} --max_dup {params.max_dup} --identity_low {params.identity_low} --coverage_low {params.coverage_low} --continuity_low {params.continuity_low} --identity_high {params.identity_high} --coverage_high {params.coverage_high} --continuity_high {params.continuity_high} --num_cpus {threads} --num_instances {params.instances} --score_file {params.score_file} --align_dir {params.align_dir}"
+
 
 rule lastz2fasta:
 	input:

@@ -49,13 +49,13 @@ rule sequence_select:
 
 rule sequence_merge:
 	input:
-		expand(config["OUT_DIR"]+"/samples/{sample}_temp.fa", sample=SAMPLES),
+		expand(config["OUT_DIR"]+"/samples/{sample}_temp.fa", sample=SAMPLES)
 	params:
 		gene_dir = config["OUT_DIR"]+"/samples",
 		plotdir = config["OUT_DIR"]+"/plots",
 		statdir = config["OUT_DIR"]+"/statistics"
 	output:
-        	config["OUT_DIR"]+"/samples/out.fa",
-			report(config["OUT_DIR"]+"/plots/sampling.png",caption="../report/sampling.rst",category='Sampling Report')
+        	config["OUT_DIR"]+"/samples/out.fa"
 	shell:
 		"python3 workflow/scripts/sequence_merge.py {params.gene_dir} {output} {params.plotdir} {params.statdir}"
+
