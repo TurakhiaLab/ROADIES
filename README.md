@@ -1,6 +1,6 @@
 <div align="center">
     
-# Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES)
+# Reference-free Orthology-free Annotation-free DIscordance aware Estimation of Species tree (ROADIES)
 
 [license-badge]: https://img.shields.io/badge/License-MIT-yellow.svg 
 [license-link]: https://github.com/TurakhiaLab/ROADIES/blob/main/LICENSE
@@ -37,7 +37,7 @@
 
 ## <a name="overview"></a> Introduction
 
-Welcome to the official repository of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
+Welcome to the official repository of ROADIES, a novel pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. 
 
 **For more detailed information on all the features and settings of ROADIES, please refer to our [Wiki](https://turakhialab.github.io/ROADIES/).**
 
