@@ -80,13 +80,23 @@ rule lastz:
 		continuity = config['CONTINUITY'],
 		align_dir = config['OUT_DIR']+ "/alignments",
 		max_dup = 2*int(config['MAX_DUP']),
-		steps = config["STEPS"]
+		steps = config["STEPS"],
+		deep_mode = str(deep_mode),
+		scores = config['SCORES']
 	shell:
 		'''
 		if [[ "{input.genome}" == *.gz ]]; then
-			workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+			if [[ "{params.deep_mode}" == "True" ]]; then
+				workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity_deep} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} --scores={params.scores}
+			else
+				workflow/scripts/lastz_32 <(gunzip -dc {input.genome})[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup}
+			fi
 		else
-			workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes} --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+			if [[ "{params.deep_mode}" == "True" ]]; then
+				workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes}  --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity_deep} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} --scores={params.scores}
+			else
+				workflow/scripts/lastz_32 {input.genome}[multiple] {input.genes}  --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --format=maf --output={output} --ambiguous=iupac --step={params.steps} --notransition --queryhspbest={params.max_dup} 
+			fi
 		fi
 		'''
 
@@ -105,7 +115,7 @@ rule lastz2fasta:
 		k = num,
 		out = config["OUT_DIR"]+"/genes",
 		p = config["OUT_DIR"]+"/alignments",
-		m = config["MIN_ALIGN"],
+		m = MIN_ALIGN,
 		plotdir = config["OUT_DIR"]+"/plots",
 		statdir = config["OUT_DIR"]+"/statistics",
 		mode = mode,
@@ -119,7 +129,7 @@ rule mashtree:
 	output:
 		config["OUT_DIR"]+"/genes/gene_{id}.dnd"
 	params:
-		m=config["MIN_ALIGN"],
+		m=MIN_ALIGN,
 		n=config["OUT_DIR"],
 		max_len=int(1.5*config["LENGTH"]),
 		prefix = "gene_{id}",

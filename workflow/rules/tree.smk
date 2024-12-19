@@ -5,7 +5,7 @@ rule raxmlng:
 	output:
 		gene_tree = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.raxml.bestTree"
 	params:
-		m = config["MIN_ALIGN"],
+		m = MIN_ALIGN,
 		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
 	threads: lambda wildcards: int(config['num_threads'])
 	benchmark:

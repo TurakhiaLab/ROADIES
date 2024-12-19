@@ -46,7 +46,7 @@ def read_initial_gene_count(config_path):
 
 # function to run snakemake with settings and add to run folder
 def run_snakemake(
-    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances
+    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN
 ):
 
     # Set threads per instance dynamically
@@ -60,6 +60,8 @@ def run_snakemake(
         "mode=" + str(mode),
         "config_path=" + str(config_path),
         "num_threads=" + str(num_threads),
+        "deep_mode=" + str(deep_mode),
+        "MIN_ALIGN=" + str(MIN_ALIGN),
         "--use-conda",
         "--rerun-incomplete",
     ]
@@ -86,12 +88,12 @@ def combine_iter(out_dir, run, cores):
 
     # open both files and get lines, each line is a separate gene tree
     os.system(
-        "ASTER-Linux/bin/astral-pro2 -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
+        "ASTER-Linux/bin/astral-pro3 -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
             out_dir, run, cores
         )
     )
     os.system(
-        "ASTER-Linux/bin/astral-pro2 -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
+        "ASTER-Linux/bin/astral-pro3 -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
             out_dir, run, cores
         )
     )
@@ -114,6 +116,8 @@ def converge_run(
     support_thr,
     config_path,
     fixed_parallel_instances,
+    deep_mode,
+    MIN_ALIGN,
 ):
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
@@ -130,7 +134,7 @@ def converge_run(
         )  # Read initial GENE_COUNT value
         update_config(config_path, base_gene_count)
     run_snakemake(
-        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances
+        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN
     )
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, run, cores)
@@ -179,11 +183,17 @@ if __name__ == "__main__":
         default="accurate",
         help="select modes of operations (fast, accurate, balanced)",
     )
+    parser.add_argument(
+        "--deep",
+        default="False",
+        help="specify if ROADIES will run in deep mode - to capture deeper phylogenetic timescales",
+    )
     # assigning argument values to variables
     args = vars(parser.parse_args())
     config_path = args["config"]
     CORES = args["cores"]
     MODE = args["mode"]
+    deep_mode = args["deep"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
@@ -196,6 +206,7 @@ if __name__ == "__main__":
     NUM_GENOMES = len(os.listdir(genomes))
     NUM_GENES = config["GENE_COUNT"]
     LENGTH = config["LENGTH"]
+    MIN_ALIGN = max(4, math.ceil(0.1 * NUM_GENOMES))
     support_thr = config["SUPPORT_THRESHOLD"]
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
@@ -230,6 +241,8 @@ if __name__ == "__main__":
             support_thr,
             config_path,
             fixed_parallel_instances,
+            deep_mode,
+            MIN_ALIGN,
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))
