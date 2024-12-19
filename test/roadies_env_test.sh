@@ -11,7 +11,7 @@ wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linu
 unzip -q Linux.zip
 cd ASTER-Linux
 make
-g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro2
+g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
 cd ..
 
 git clone https://github.com/smirarab/pasta.git
