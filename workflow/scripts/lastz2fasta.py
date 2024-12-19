@@ -37,6 +37,8 @@ k = args.k
 d = args.d
 num_genes = {}
 num_homologues = {}
+print("value of m")
+print(m)
 for i in range(1, k + 1):
     os.system("touch {0}/gene_{1}.fa".format(outdir, i))
 # open all lastz alignment outputs

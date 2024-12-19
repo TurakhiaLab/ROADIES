@@ -5,7 +5,7 @@ rule fasttree:
 	output:
 		gene_tree = config["OUT_DIR"]+"/genes/gene_{id}_filtered.fa.aln.treefile"
 	params:
-		m = config["MIN_ALIGN"],
+		m = MIN_ALIGN,
 		max_len = int(100*config["LENGTH"]/config["IDENTITY"])
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.fasttree.txt"

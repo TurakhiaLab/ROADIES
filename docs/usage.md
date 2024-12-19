@@ -25,7 +25,7 @@ Adjust other parameters listed in `config.yaml` as per specific user requirement
 | **UPPER_CASE** | Configure the lower limit threshold of upper cases for valid sampling. ROADIES samples the genes only if the percentage of upper cases in each gene is more than this value. | 0.9 (Recommended) |
 | **OUT_DIR** | Specify the path for ROADIES output files (this saves the current iteration results in converge mode). | |
 | **ALL_OUT_DIR** | Specify the path for ROADIES output files for all iterations in converge mode. | |
-| **MIN_ALIGN** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value greater than or equal to 4 since ASTRAL-Pro follows a quartet-based topology for species tree inference. For larger evolutionary timescales, we recommended setting it to a much higher value. In such cases, 15 to 20 would be a good start. | 4 |
+| **MIN_ALIGN (deprecated)** | Specify the minimum number of allowed species to exist in gene fasta files after LASTZ. This parameter is used for filtering gene fasta files which has very less species representation. It is recommended to set the value greater than or equal to 4 since ASTRAL-Pro follows a quartet-based topology for species tree inference. For larger evolutionary timescales, we recommended setting it to a much higher value. In such cases, 15 to 20 would be a good start. | 4 |
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 |
 | **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 |
 | **IDENTITY** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ. For larger evolutionary timescales, consider lowering the identity values than default for more homologous hits to be encountered. | 65 | 
@@ -56,11 +56,12 @@ There are multiple command line arguments through which user can change the mode
 | `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced` or `fast`).`accurate` mode is the default mode. | 
 | `--converge` | Run ROADIES in [converge](index.md#convergence-mechanism) mode if you do not know the optimal gene count to start with |
 | `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
+| `--deep` | Specify if ROADIES will evaluate deeper phylogeny. Set it to `True` or `False`. By default, its set to `False`. |
 
 For example:
 
 ```
-python run_roadies.py --cores 16 --mode balanced --converge --config config/config.yaml
+python run_roadies.py --cores 16 --mode balanced --converge --config config/config.yaml --deep True
 ```
 
 Use `--help` to get the list of command line arguments.
