@@ -18,6 +18,8 @@ ALL_OUT_DIR: "converge_files"
 MIN_ALIGN: 4 
 #Minimum % match in LASTZ alignment
 IDENTITY: 65
+#Minimum % match in LASTZ alignment in deep mode - to capture deeper phylogeny
+IDENTITY_DEEP: 40
 #Minimum input sequence coverage in LASTZ alignment
 COVERAGE: 85
 #Minimum continuity of LASTZ alignments
@@ -33,3 +35,5 @@ MASKSITES: 0.02
 SUPPORT_THRESHOLD: 0.95
 #Number of instances to run in parallel
 NUM_INSTANCES: 4
+#Scoring matrix (used in deep mode)
+SCORES: "HOXD55.q"
