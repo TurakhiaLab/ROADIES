@@ -76,6 +76,7 @@ rule lastz:
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],
+		identity_deep = config['IDENTITY_DEEP'],
 		coverage = config['COVERAGE'],
 		continuity = config['CONTINUITY'],
 		align_dir = config['OUT_DIR']+ "/alignments",
