@@ -31,6 +31,7 @@
     - [Using Installation Script](#script)
 - [Quick Start](#start)
 - [Run ROADIES with your own datasets](#runpipeline)
+- [Run ROADIES in a multi-node cluster](#runpipelinenode)
 - [Citing ROADIES](#citation)
 
 <br>
@@ -79,10 +80,10 @@ conda config --add channels conda-forge
 
 After this, try running `conda` in your terminal to check if conda is properly installed. Once it is installed, follow the steps below:
 
-1. Create and activate custom conda environment with Python version 3.9
+1. Create and activate custom conda environment with Python version 3.9, ETE3 and Seaborn.
 
 ```
-conda create -n myenv python=3.9
+conda create -n myenv python=3.9 ete3 seaborn
 conda activate myenv
 ```
 
@@ -220,6 +221,30 @@ python run_roadies.py --cores 16 --mode fast
 ```
 
 <br>
+
+## <a name="runpipelinenode"></a> Run ROADIES in a multi-node cluster (using SLURM)
+
+To run ROADIES in a multi-node cluster, save the following lines of code as `roadies.slurm` and run `sbatch roadies.slurm`. The following code snippet runs the ROADIES pipeline using 2 nodes with 32 cores each. 
+```
+#!/bin/bash
+#SBATCH --partition=compute
+#SBATCH --job-name=single_node_pipeline
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=40G
+#SBATCH -t 00:30:00
+#SBATCH --account=csd927
+#SBATCH -J job.8
+#SBATCH -o job.8.%j.%N.out
+#SBATCH -e job.8.%j.%N.err
+#SBATCH --export=ALL
+
+source <path_to_miniconda3>/etc/profile.d/conda.sh
+conda activate my_env
+cd <path_to_miniconda3>/envs/my_env/ROADIES
+srun --nodes=1 python run_roadies.py --cores 64 --mode <mode_of_operation>
+```
 
 ### For troubleshooting and contribution details, refer to [Wiki](https://turakhialab.github.io/ROADIES/)
 
