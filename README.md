@@ -183,11 +183,18 @@ mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c '
 ```
 3. Run the pipeline with the following command (from ROADIES directory):
 
+#### NOTE: --converge is the recommended option to get an accurate species tree. Don't use --converge if you want to only test the pipeline (since --converge makes ROADIES run multiple iterations to get you the most accurate tree). 
+
 ```
-python run_roadies.py --cores 16
+python run_roadies.py --cores 16 --converge (# for actual run)
+```
+```
+python run_roadies.py --cores 16 (# for test run)
 ```
 
-The second command will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. The third command will run ROADIES pipeline for those 11 Drosophila genomes and save the final newick tree as `roadies.nwk` in a separate `output_files` folder upon completion.
+These commands will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. Then it will run ROADIES pipeline for those 11 Drosophila genomes and save the final **UNROOTED** newick tree as `roadies.nwk` in a separate `output_files` folder upon completion.
+
+#### NOTE: The final newick tree is unrooted by default. User needs to reroot the tree appropriately on their own. We provide a script saved in `ROADIES/workflow/scripts/reroot.py` which lets you reroot the tree given a reference rooted species tree as input. 
 
 <br>
 
@@ -204,20 +211,20 @@ To run ROADIES with your own datasets, follow these steps:
 3. **Run the Pipeline**: Execute the pipeline with the following command (example for 16 cores):
 
 ```
-python run_roadies.py --cores 16
+python run_roadies.py --cores 16 --converge
 ```
 
-The output species tree in Newick format will be saved as `roadies.nwk` in the `output_files` folder.
+The output species tree (unrooted) in Newick format will be saved as `roadies.nwk` in the `output_files` folder.
 
 4. **Modes of operation**: ROADIES supports multiple modes of operation (`fast`, `balanced`, `accurate`) by controlling the accuracy-runtime tradeoff. Use any one of the following commands to select a mode (`accurate` mode is the default):
 
 
 ```
-python run_roadies.py --cores 16 --mode accurate
+python run_roadies.py --cores 16 --mode accurate --converge
 
-python run_roadies.py --cores 16 --mode balanced
+python run_roadies.py --cores 16 --mode balanced --converge
 
-python run_roadies.py --cores 16 --mode fast
+python run_roadies.py --cores 16 --mode fast --converge
 ```
 
 <br>
@@ -243,7 +250,7 @@ To run ROADIES in a multi-node cluster, save the following lines of code as `roa
 source <path_to_miniconda3>/etc/profile.d/conda.sh
 conda activate my_env
 cd <path_to_miniconda3>/envs/my_env/ROADIES
-srun --nodes=1 python run_roadies.py --cores 64 --mode <mode_of_operation>
+srun --nodes=1 python run_roadies.py --cores 64 --mode <mode_of_operation> --converge
 ```
 
 ### For troubleshooting and contribution details, refer to [Wiki](https://turakhialab.github.io/ROADIES/)
