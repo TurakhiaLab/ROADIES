@@ -32,12 +32,12 @@ cd ../../../..
 
 # Build LASTZ
 cd workflow/scripts
-wget https://github.com/lastz/lastz/archive/refs/heads/master.zip
-unzip master.zip
-cd lastz-master/src/
-make lastz_32 flagsFor32="-Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304"
-make install_32
-cp lastz_32 ../../
+wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
+unzip 1.04.45.zip 
+cd lastz-1.04.45/src/
+make lastz_40
+make install_40
+cp lastz_40 ../../
 cd ../../../../
 
 echo "Setup complete. Remember to source before running your projects."
