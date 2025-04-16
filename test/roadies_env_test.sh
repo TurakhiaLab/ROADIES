@@ -8,16 +8,8 @@ bash Miniforge3.sh -b -p "${HOME}/conda"
 
 source "${HOME}/conda/etc/profile.d/conda.sh"
 source "${HOME}/conda/etc/profile.d/mamba.sh"
+mamba create -y -c conda-forge -c bioconda --name roadies_env_test snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 raxml-ng ete3 lastz=1.04.52 aster=1.19 pyyaml seaborn
 conda activate roadies_env_test
-
-wget -q https://github.com/chaoszhang/ASTER/archive/refs/tags/v1.19.zip -O Linux.zip
-unzip -q Linux.zip
-mv ASTER-1.19 ASTER-Linux
-cd ASTER-Linux
-make
-g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
-cd ..
-mv ASTER-Linux/bin/astral-pro3 /usr/local/bin/
 
 git clone https://github.com/smirarab/pasta.git
 
@@ -34,16 +26,6 @@ cd build
 cmake ..
 make
 cd ../../../..
-
-# Build LASTZ
-cd workflow/scripts
-wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
-unzip 1.04.45.zip 
-cd lastz-1.04.45/src/
-make lastz_40
-make install_40
-cp lastz_40 ../../../../
-cd ../../../../
 
 echo "Setup complete. Remember to source before running your projects."
 
