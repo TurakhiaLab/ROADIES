@@ -37,14 +37,6 @@ jobs:
             wget -O "test/test_data/$file_name" "$link" 
           done < test/input_genome_links.txt
 
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          miniforge-variant: Miniforge
-          channels: conda-forge, bioconda
-          activate-environment: roadies_env_test
-          environment-file: test/roadies_env_test.yaml
-
       - name: Run Tests
         shell: bash -l {0}
         run: |

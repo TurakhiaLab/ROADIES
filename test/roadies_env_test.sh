@@ -3,7 +3,7 @@
 sudo apt-get update
 sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
 
-wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
+wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/download/24.11.3-2/Miniforge3-24.11.3-2-Linux-x86_64.sh"
 bash Miniforge3.sh -b -p "${HOME}/conda"
 
 source "${HOME}/conda/etc/profile.d/conda.sh"

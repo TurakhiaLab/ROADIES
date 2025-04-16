@@ -10,7 +10,7 @@ ROADIES_ENV_SETUP="roadies_env.sh"
 
 # Download and install Mambaforge if not already installed
 if [ ! -d "${CONDA_PATH}" ]; then
-    wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
+    wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/download/24.11.3-2/Miniforge3-24.11.3-2-Linux-x86_64.sh"
     bash Miniforge3.sh -b -p "${CONDA_PATH}"
 fi
 
