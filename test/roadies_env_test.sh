@@ -17,7 +17,7 @@ cd ASTER-Linux
 make
 g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
 cd ..
-cp ASTER-Linux/bin/astral-pro3 .
+mv ASTER-Linux/bin/astral-pro3 /usr/local/bin/
 
 git clone https://github.com/smirarab/pasta.git
 

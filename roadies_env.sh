@@ -31,7 +31,7 @@ if [ ! -d "ASTER-Linux" ]; then
     make
     g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
     cd ..
-    mv ASTER-Linux/bin/astral-pro3 .
+    mv ASTER-Linux/bin/astral-pro3 /usr/local/bin/
 fi
 
 # Clone PASTA if not already done
