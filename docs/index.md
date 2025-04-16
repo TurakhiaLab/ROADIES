@@ -51,15 +51,18 @@ ROADIES supports multiple modes of operation based on various user requirements 
 !!! Note
     These modes of operation can be modified using command line argument `--mode` (details mentioned in the [Usage](index.md#other-command-line-arguments) section).
 
+!!! Note
+    ROADIES also supports another mode of operation for datasets from deeper evolutionary timescales. If your datasets are from distant timescales, we recommend to switch on this mode (by adding extra argument `--deep True`; details mentioned in the [Usage](index.md#other-command-line-arguments) section).
+
 ## Convergence Mechanism
 
 The initial count of the genes is crucial to get the accurate species tree at the end. The number of genes sufficient for getting the accurate tree also varies with datasets. Hence, ROADIES incorporates an adaptive algorithm for establishing accurate trees by tracking its confident scores. It performs multiple iterations of the entire pipeline and stops if it gets the confident tree, otherwise it continues with more gene counts. The confidence of the tree is evaluated by the confidence of its branches (or local posterior probability). The tree having most of the confident branches with high posterior probability are considered to be confident and stable. 
 
 !!! Note
-    [ASTRAL-Pro2](https://github.com/chaoszhang/A-pro) provides the information of all the internal nodes in the form of quartets (and its support values, such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal with a given number of iterations, then we say that the species tree is now converged.
+    [ASTRAL-Pro3](https://github.com/chaoszhang/A-pro) provides the information of all the internal nodes in the form of quartets (and its support values, such as local posterior probability) for every species tree per iteration. ROADIES gathers this information and keeps track of all the nodes with high support values. If the percentage change in the number of highly supported nodes gets minimal with a given number of iterations, then we say that the species tree is now converged.
 
 !!! Note
-    Users have the option to run ROADIES in converge mode using `--converge` argument (details mentioned in [Usage](index.md#other-command-line-arguments) section).
+    Users have the option to run ROADIES in non converge mode (for only one iteration) using `--noconverge` argument (details mentioned in [Usage](index.md#other-command-line-arguments) section).
 
 <img src="images/converge_manuscript.png"width="1000" height="300" />
 

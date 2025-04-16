@@ -11,7 +11,7 @@ parser.add_argument(
     help="specify mode of operation - <accurate>, <balanced> OR <fast>",
 )
 parser.add_argument(
-    "--converge", action="store_true", help="specify ROADIES to run in convergence mode"
+    "--noconverge", action="store_true", help="specify ROADIES to run in non convergence mode"
 )
 parser.add_argument("--cores", type=int, default=32, help="specify number of cores")
 parser.add_argument(
@@ -23,7 +23,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-script = "converge.py" if args.converge else "noconverge.py"
+script = "noconverge.py" if args.noconverge else "converge.py"
 
 command = [
     "python",

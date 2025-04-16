@@ -31,7 +31,6 @@
     - [Using Installation Script](#script)
 - [Quick Start](#start)
 - [Run ROADIES with your own datasets](#runpipeline)
-- [Run ROADIES in a multi-node cluster](#runpipelinenode)
 - [Citing ROADIES](#citation)
 
 <br>
@@ -60,8 +59,6 @@ Welcome to the official repository of ROADIES, a novel pipeline designed for phy
 ### <a name="conda"></a> Using ROADIES Bioconda package (recommended)
 
 To run ROADIES using Bioconda package, follow these steps:
-
-**Note:** You need to have conda installed in your system. Also make sure you have updated version of glibc in your system (`GLIBC >= 2.29`).
 
 To install and use conda in Ubuntu machine, execute the set of commands below:
 
@@ -183,16 +180,17 @@ mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c '
 ```
 3. Run the pipeline with the following command (from ROADIES directory):
 
-#### NOTE: --converge is the recommended option to get an accurate species tree. Don't use --converge if you want to only test the pipeline (since --converge makes ROADIES run multiple iterations to get you the most accurate tree). 
+#### NOTE: By default, ROADIES run multiple iterations to get you the most accurate tree. --noconverge is the recommended option if you want to only test the pipeline or if you know optimal gene count to get the accurate tree. 
 
 ```
-python run_roadies.py --cores 16 --converge (# for actual run)
+python run_roadies.py --cores 16 (# for actual run)
 ```
 ```
-python run_roadies.py --cores 16 (# for test run)
+python run_roadies.py --cores 16 --noconverge (# for test run)
 ```
 
-These commands will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. Then it will run ROADIES pipeline for those 11 Drosophila genomes and save the final **UNROOTED** newick tree as `roadies.nwk` in a separate `output_files` folder upon completion.
+These commands will download the 11 Drosophila genomic datasets (links provided in `test/input_genome_links.txt`) and save them in the `test/test_data` directory. Then it will run ROADIES pipeline for those 11 Drosophila genomes and save the final **UNROOTED** newick tree as `roadies.nwk` in a separate `output_files` folder upon completion. If `--noconverge` flag is not set, ROADIES saves the output of all other iterations in a separate `converge_files` folder. 
+
 
 #### NOTE: The final newick tree is unrooted by default. User needs to reroot the tree appropriately on their own. We provide a script saved in `ROADIES/workflow/scripts/reroot.py` which lets you reroot the tree given a reference rooted species tree as input. 
 
@@ -211,7 +209,7 @@ To run ROADIES with your own datasets, follow these steps:
 3. **Run the Pipeline**: Execute the pipeline with the following command (example for 16 cores):
 
 ```
-python run_roadies.py --cores 16 --converge
+python run_roadies.py --cores 16
 ```
 
 The output species tree (unrooted) in Newick format will be saved as `roadies.nwk` in the `output_files` folder.
@@ -220,40 +218,14 @@ The output species tree (unrooted) in Newick format will be saved as `roadies.nw
 
 
 ```
-python run_roadies.py --cores 16 --mode accurate --converge
+python run_roadies.py --cores 16 --mode accurate
 
-python run_roadies.py --cores 16 --mode balanced --converge
+python run_roadies.py --cores 16 --mode balanced
 
-python run_roadies.py --cores 16 --mode fast --converge
+python run_roadies.py --cores 16 --mode fast
 ```
 
-<br>
-
-## <a name="runpipelinenode"></a> Run ROADIES in a multi-node cluster (using SLURM)
-
-To run ROADIES in a multi-node cluster, save the following lines of code as `roadies.slurm` and run `sbatch roadies.slurm`. The following code snippet runs the ROADIES pipeline using 2 nodes with 32 cores each. 
-```
-#!/bin/bash
-#SBATCH --partition=compute
-#SBATCH --job-name=single_node_pipeline
-#SBATCH --nodes=2
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=32
-#SBATCH --mem=40G
-#SBATCH -t 00:30:00
-#SBATCH --account=csd927
-#SBATCH -J job.8
-#SBATCH -o job.8.%j.%N.out
-#SBATCH -e job.8.%j.%N.err
-#SBATCH --export=ALL
-
-source <path_to_miniconda3>/etc/profile.d/conda.sh
-conda activate my_env
-cd <path_to_miniconda3>/envs/my_env/ROADIES
-srun --nodes=1 python run_roadies.py --cores 64 --mode <mode_of_operation> --converge
-```
-
-### For troubleshooting and contribution details, refer to [Wiki](https://turakhialab.github.io/ROADIES/)
+### For troubleshooting and contribution details (also to know the steps of running ROADIES in a multi-node SLURM based cluster), refer to [Wiki](https://turakhialab.github.io/ROADIES/)
 
 <br>
 
