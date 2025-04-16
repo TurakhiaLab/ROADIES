@@ -87,12 +87,12 @@ def combine_iter(out_dir, run, cores):
 
     # open both files and get lines, each line is a separate gene tree
     os.system(
-        "ASTER-Linux/bin/astral-pro3 -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
+        "astral-pro3 -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
             out_dir, run, cores
         )
     )
     os.system(
-        "ASTER-Linux/bin/astral-pro3 -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
+        "astral-pro3 -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
             out_dir, run, cores
         )
     )
