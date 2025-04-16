@@ -3,16 +3,21 @@
 sudo apt-get update
 sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git vim screen default-jre libgomp1 libboost-all-dev cmake
 
-source /usr/share/miniconda3/etc/profile.d/conda.sh
-source /usr/share/miniconda3/etc/profile.d/mamba.sh
+wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
+bash Miniforge3.sh -b -p "${HOME}/conda"
+
+source "${HOME}/conda/etc/profile.d/conda.sh"
+source "${HOME}/conda/etc/profile.d/mamba.sh"
 conda activate roadies_env_test
 
-wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
+wget -q https://github.com/chaoszhang/ASTER/archive/refs/tags/v1.19.zip -O Linux.zip
 unzip -q Linux.zip
+mv ASTER-1.19 ASTER-Linux
 cd ASTER-Linux
 make
 g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
 cd ..
+cp ASTER-Linux/bin/astral-pro3 .
 
 git clone https://github.com/smirarab/pasta.git
 
@@ -32,12 +37,12 @@ cd ../../../..
 
 # Build LASTZ
 cd workflow/scripts
-wget https://github.com/lastz/lastz/archive/refs/heads/master.zip
-unzip master.zip
-cd lastz-master/src/
-make lastz_32 flagsFor32="-Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304"
-make install_32
-cp lastz_32 ../../
+wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
+unzip 1.04.45.zip 
+cd lastz-1.04.45/src/
+make lastz_40
+make install_40
+cp lastz_40 ../../../../
 cd ../../../../
 
 echo "Setup complete. Remember to source before running your projects."

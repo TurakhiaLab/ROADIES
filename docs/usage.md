@@ -29,12 +29,14 @@ Adjust other parameters listed in `config.yaml` as per specific user requirement
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 |
 | **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 |
 | **IDENTITY** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ. For larger evolutionary timescales, consider lowering the identity values than default for more homologous hits to be encountered. | 65 | 
-| **MAX_DUP** | Specify maximum number of allowed gene copies from one input genome in an alignment. | 10|
+| **IDENTITY_DEEP** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ, for larger evolutionary timescales (needed when `--deep True` - details below). | 40 | 
+| **MAX_DUP** | Specify maximum number of allowed gene copies from one input genome in an alignment. | 10 |
 | **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 |
 | **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 |
 | **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.02 |
 | **SUPPORT_THRESHOLD** | Specify the threshold so that support values with equal to or higher than this threshold is considered as highly supported node. Such highly supported nodes crossing this threshold will be counted at every iteration to check the confidence of the tree (works in `--converge` mode). | 0.95 |
 | **NUM_INSTANCES** | Specify the number of instances for PASTA, LASTZ, MashTree and RAxML-NG to run in parallel. It is recommended to set the number of instances equal to (`--cores`/4) for optimal runtime. | 4 | 
+| **SCORES** | Set the alignment scores for LASTZ (needed when `--deep True` - details below). | `HOXD55.q` - file is provided along with the ROADIES package |
 
 ## Step 3: Run the ROADIES pipeline
 
@@ -54,25 +56,25 @@ There are multiple command line arguments through which user can change the mode
 | --- | --- |
 | `--cores` | Specify the number of cores |
 | `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced` or `fast`).`accurate` mode is the default mode. | 
-| `--converge` | Run ROADIES in [converge](index.md#convergence-mechanism) mode if you do not know the optimal gene count to start with |
+| `--noconverge` | Run ROADIES in non converge mode (for single iteration) if you know the optimal gene count to start with |
 | `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
 | `--deep` | Specify if ROADIES will evaluate deeper phylogeny. Set it to `True` or `False`. By default, its set to `False`. |
 
 For example:
 
 ```
-python run_roadies.py --cores 16 --mode balanced --converge --config config/config.yaml --deep True
+python run_roadies.py --cores 16 --mode balanced --noconverge --config config/config.yaml --deep True
 ```
 
 Use `--help` to get the list of command line arguments.
 
 ## Step 4: Analyze output files
 
-### Without convergence
+### Output from current iteration
 
-After the pipeline finishes running, the final species tree estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `--OUT_DIR` parameter in the `config/config.yaml` file. 
+After the pipeline finishes running, the final species tree of current iteration estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `--OUT_DIR` parameter in the `config/config.yaml` file. 
 
-ROADIES also provides a number of intermediate output files for extensive debugging by the user. These files will be saved in `--OUT_DIR`, containing the following subfolders:
+ROADIES also provides a number of intermediate output files for extensive debugging by the user, described below:
 
 1. `alignments` - this folder contains the LASTZ alignment output of all individual input genomes aligned with randomly sampled gene sequences.
 2. `benchmarks` - this folder contains the runtime value of each of the individual jobs for each of the stages in the pipeline. These files will only be used if you want to estimate and compare the stagewise runtime of various pipeline stages and will not be used in final tree estimation. 
@@ -96,12 +98,12 @@ ROADIES also provides a number of intermediate output files for extensive debugg
 11. `time_stamps.csv` - this file contains the start time, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively.
 12. `ref_dist.csv` - this file provides the number of gene trees and the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`).
 
-### With convergence
+### Extra output files from all iterations (these are not generated if --noconverge is used)
 
-If converge option is enabled, the results of all iterations (along with the corresponding species tree in the name `iteration_<iteration_number>.nwk`) will be saved in a separate folder mentioned in the `--ALL_OUT_DIR` parameter in the `config/config.yaml` file.
+By default, results of all iterations (along with the corresponding species tree in the name `iteration_<iteration_number>.nwk`) will be saved in a separate folder mentioned in the `--ALL_OUT_DIR` parameter in the `config/config.yaml` file.
 
 !!! Note
-    With `--converge` option, `--OUT_DIR` saves the results of the current ongoing iteration (if pipeline execution is finished, then the last iteration), whereas `--ALL_OUT_DIR` saves the results of all iterations executed. 
+    With `--noconverge` option, ROADIES only saves the results of the current ongoing iteration in the folder specified by `--OUT_DIR` and the files below won't be generated.
 
 For extensive debugging, other intermediate output files for each stage of the pipeline for each iterations are saved in `--ALL_OUT_DIR` as follows:
 
@@ -117,3 +119,91 @@ For extensive debugging, other intermediate output files for each stage of the p
 6. `master_map.txt` - this is the concatenated list of all mapping files from all iterations together. This `master_gt.nwk` and `master_map.txt` is provided to ASTRAL-Pro after every iteration to get the converged species tree. 
 7. `ref_dist.csv` - this file provides the iteration number, number of gene trees and the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`), for all iterations.
 8. `time_stamps.csv`- this file contains the start time in first line, iteration number, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively, for all iterations in subsequent lines.
+
+# Run ROADIES in a multi-node cluster (using SLURM)
+
+To run ROADIES in a multi-node cluster, make the following changes in the file `workflow/scripts/converge.py` (for `--noconverge` mode - make changes in `workflow/scripts/noconverge.py`)
+
+Replace below lines:
+
+```
+    cmd = [
+        "snakemake",
+         "--cores",
+         str(cores),
+         "--config",
+         "mode=" + str(mode),
+         "config_path=" + str(config_path),
+         "num_threads=" + str(num_threads),
+         "deep_mode=" + str(deep_mode),
+         "MIN_ALIGN=" + str(MIN_ALIGN),
+         "--use-conda",
+         "--rerun-incomplete",
+    ]
+```
+
+With below lines (you can change the value of `--jobs` based on your cluster configuration):
+
+```
+    cmd = [
+    "snakemake",
+    "--jobs",
+    "4",
+    "--groups",
+    "lastz=group0",
+    "--group-components",
+    "group0=8",
+    "--config",
+    "mode=" + str(mode),
+    "config_path=" + str(config_path),
+    "num_threads=" + str(num_threads),
+    "--use-conda",
+    "--rerun-incomplete",
+    "--cluster",
+    (
+        "sbatch "
+        "--job-name=ROADIES_run "
+        "--partition=vgl_a "
+        "--account=jarv_condo_bank "
+        "--nodes=1 "
+        "--ntasks-per-node=4 "
+        "--cpus-per-task=8 "
+        "--time=8-0 "
+        "--mem-per-cpu=11G "
+        "--output=%x_%j.out "
+        "--error=%x_%j.err "
+        "--mail-user=agupta02@rockefeller.edu "
+        "--mail-type=ALL"
+    )
+]
+```
+
+After the above changes, save the following lines of code as separate file called `roadies.slurm` and run `sbatch roadies.slurm`.
+```
+#! /bin/bash
+#SBATCH -J ROADIES_XXX
+#SBATCH -p vgl_a
+#SBATCH --account=XXX
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=32
+#SBATCH --time=8-0
+#SBATCH --mem-per-cpu=11G
+#SBATCH -o %x_%j.out 
+#SBATCH -e %x_%j.err
+#SBATCH --mail-user=XXX
+#SBATCH --mail-type=ALL
+
+echo Starting at `date`
+echo This is job $SLURM_JOB_ID
+echo Running on `hostname`
+
+source /<PATH>/miniconda3/etc/profile.d/conda.sh
+conda activate myenv
+cd /<PATH>/miniconda3/envs/myenv/ROADIES
+srun --nodes=1 python run_roadies.py --cores 128
+
+echo Exiting at `date`
+srun sleep 30
+```
+

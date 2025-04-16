@@ -1,10 +1,10 @@
 # Installation Methods
 
-## Using ROADIES Bioconda package
+## Using ROADIES Bioconda package (Recommended)
 
 To run ROADIES using Bioconda package, follow these steps:
 
-**Note:** You need to have conda installed in your system. Also make sure you have updated version of glibc in your system (`GLIBC >= 2.29`).
+**Note:** You need to have conda installed in your system. 
 
 To install and use conda in Ubuntu machine, execute the set of commands below:
 
@@ -36,7 +36,7 @@ conda activate myenv
 conda install roadies
 ```
 
-All files of ROADIES along with dependencies will be found in `<conda_install_path>/miniconda3/envs/new_env/ROADIES`.
+All files of ROADIES along with dependencies will be found in `<conda_install_path>/miniconda3/envs/myenv/ROADIES`.
 
 ## Using DockerHub
 
@@ -88,7 +88,7 @@ source roadies_env.sh
 This will install and build all tools and dependencies. Once the setup is complete, it will print `Setup complete` in the terminal and activate the `roadies_env` environment with all Conda packages installed. 
 
 !!! Note 
-    ROADIES is built on [Snakemake (workflow parallelization tool)](https://snakemake.readthedocs.io/en/stable/). It also requires various tools (PASTA, LASTZ, RAxML-NG, MashTree, FastTree, ASTRAL-Pro2) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide `roadies_env.sh` script to automatically download all dependencies into the user system.
+    ROADIES is built on [Snakemake (workflow parallelization tool)](https://snakemake.readthedocs.io/en/stable/). It also requires various tools (PASTA, LASTZ, RAxML-NG, MashTree, FastTree, ASTRAL-Pro3) to be installed before performing the analysis. To ease the process, instead of individually installing the tools, we provide `roadies_env.sh` script to automatically download all dependencies into the user system.
 
 ### Required dependencies
 

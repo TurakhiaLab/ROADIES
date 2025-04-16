@@ -10,9 +10,9 @@ LENGTH: 200
 GENE_COUNT: 50
 #Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
-#ROADIES output directory (current iteration output in --converge option)
+#ROADIES output directory 
 OUT_DIR: "output_files"
-#ROADIES output directory for all iterations (only used in --converge option)
+#ROADIES output directory for all iterations 
 ALL_OUT_DIR: "converge_files"
 #Minimum number of species in a gene fasta (4 min for ASTRAL-Pro)
 MIN_ALIGN: 4 
@@ -31,7 +31,7 @@ STEPS: 1
 #PASTA filtering parameters
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
-#Threshold for high support (only used in --converge option)
+#Threshold for high support 
 SUPPORT_THRESHOLD: 0.95
 #Number of instances to run in parallel
 NUM_INSTANCES: 4

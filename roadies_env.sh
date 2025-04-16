@@ -10,13 +10,14 @@ ROADIES_ENV_SETUP="roadies_env.sh"
 
 # Download and install Mambaforge if not already installed
 if [ ! -d "${CONDA_PATH}" ]; then
-    wget -q https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh -O Mambaforge-Linux-x86_64.sh
-    bash Mambaforge-Linux-x86_64.sh -b -p "${CONDA_PATH}"
+    wget -O Miniforge3.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh"
+    bash Miniforge3.sh -b -p "${CONDA_PATH}"
 fi
 
 # Create and setup the Conda environment if it doesn't exist
 source "${CONDA_PATH}/etc/profile.d/conda.sh"  # Temporarily source conda for this script
 source "${CONDA_PATH}/etc/profile.d/mamba.sh"  # Temporarily source mamba for this script
+
 if ! conda env list | grep -q "roadies_env"; then
     mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 raxml-ng ete3
 fi
@@ -24,12 +25,13 @@ conda activate roadies_env
 
 # Download and setup ASTER repository if not already done
 if [ ! -d "ASTER-Linux" ]; then
-    wget -q https://github.com/chaoszhang/ASTER/archive/refs/heads/Linux.zip -O Linux.zip
+    wget -q https://github.com/chaoszhang/ASTER/archive/refs/tags/v1.19.zip -O Linux.zip
     unzip -q Linux.zip
-    cd ASTER-Linux
+    mv ASTER-1.19 ASTER-Linux
     make
     g++ -D CASTLES -std=gnu++11 -march=native -Ofast -pthread src/astral-pro.cpp -o bin/astral-pro3
     cd ..
+    mv ASTER-Linux/bin/astral-pro3 .
 fi
 
 # Clone PASTA if not already done
@@ -63,14 +65,14 @@ if [ ! -d "workflow/scripts/sampling/build" ]; then
 fi
 
 # Download and setup LASTZ if not already done
-if [ ! -d "workflow/scripts/lastz_32" ]; then
+if [ ! -d "workflow/scripts/lastz_40" ]; then
     cd workflow/scripts
-    wget https://github.com/lastz/lastz/archive/refs/heads/master.zip
-    unzip master.zip
-    cd lastz-master/src/
-    make lastz_32 flagsFor32="-Dmax_sequence_index=63 -Dmax_malloc_index=40 -Ddiag_hash_size=4194304"
-    make install_32
-    cp lastz_32 ../../
+    wget https://github.com/lastz/lastz/archive/refs/tags/1.04.45.zip
+    unzip 1.04.45.zip 
+    cd lastz-1.04.45/src/
+    make lastz_40
+    make install_40
+    cp lastz_40 ../../../../
     cd ../../../../
 fi
 

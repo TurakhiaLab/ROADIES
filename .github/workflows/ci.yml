@@ -5,9 +5,7 @@ on:
     branches:
       - master
       - main
-      - final-cleanup
-      - rename-repo-astral
-      - video_embed
+      - package_updates
 
 permissions:
   contents: write
@@ -42,7 +40,7 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniforge-variant: Mambaforge
+          miniforge-variant: Miniforge
           channels: conda-forge, bioconda
           activate-environment: roadies_env_test
           environment-file: test/roadies_env_test.yaml
@@ -53,7 +51,7 @@ jobs:
           chmod +x test/roadies_env_test.sh
           source test/roadies_env_test.sh
           pip3 install ete3 six numpy PyYAML
-          python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate
+          python run_roadies.py --cores 32 --config test/test_config.yaml --mode accurate --noconverge
 
       - name: Install dependencies for mkdocs
         run: |
