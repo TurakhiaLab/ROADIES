@@ -15,6 +15,7 @@ else:
 
 num = config["GENE_COUNT"]
 IDS = list(range(1,num+1))
+CHUNK_IDS = list(range(1,(num//50)+1))
 mode = config.get("mode","accurate")
 deep_mode = config.get("deep_mode","False")
 MIN_ALIGN = config.get("MIN_ALIGN",4)

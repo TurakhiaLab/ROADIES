@@ -124,4 +124,3 @@ rule filtermsa:
 		python pasta/run_seqtools.py -masksitesp {params.n} -filterfragmentsp {params.m} -infile {input} -outfile {output}
 			
 		'''
-

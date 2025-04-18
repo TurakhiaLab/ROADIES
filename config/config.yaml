@@ -35,3 +35,4 @@ SUPPORT_THRESHOLD: 0.95
 NUM_INSTANCES: 4
 #Scoring matrix (used in deep mode)
 SCORES: "HOXD55.q"
+GROUP_CSV: "group_file.csv"

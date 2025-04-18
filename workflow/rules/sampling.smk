@@ -3,18 +3,54 @@ from collections import OrderedDict
 import random,os
 from pathlib import Path
 import subprocess
+import csv
+from collections import defaultdict
 
-num_species = len(os.listdir(config["GENOMES"]))
-od = OrderedDict([(key,0) for key in SAMPLES])
-num_genomes = len(SAMPLES)
-for i in range(num):
-	index = random.randint(0,num_genomes-1)
-	od[SAMPLES[index]] = od[SAMPLES[index]]+1
+group_map = {}
+grouped_species = defaultdict(list)
+ungrouped_species = []
+
+with open(config["GROUP_CSV"], newline="") as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        species = row["species"]
+        group = row["group"].strip()
+        group = group if group else None
+        group_map[species] = group
+        if group:
+            grouped_species[group].append(species)
+        else:
+            ungrouped_species.append(species)
+
+SAMPLES = list(group_map.keys())
+n = len(SAMPLES)
+c = len(grouped_species)
+m = sum(len(splist) for splist in grouped_species.values())
+
+prob_dict = {}
+for species in SAMPLES:
+    group = group_map[species]
+    if group:
+        m_i = len(grouped_species[group])
+        prob = (m / n) * (1 / c) * (1 / m_i)
+    else:
+        prob = 1 / n
+    prob_dict[species] = prob
+
+total = sum(prob_dict.values())
+for s in prob_dict:
+    prob_dict[s] /= total
+
+od = OrderedDict([(s, 0) for s in SAMPLES])
+sampled_species = random.choices(SAMPLES, weights=[prob_dict[s] for s in SAMPLES], k=num)
+for s in sampled_species:
+    od[s] += 1
+
 temInt=1
 
 od_e = OrderedDict([(key,0) for key in SAMPLES])
 
-for i in range(num_genomes):
+for i in range(n):
 	od_e[SAMPLES[i]]=od[SAMPLES[i]]+temInt
 	od[SAMPLES[i]]=temInt
 	temInt=od_e[SAMPLES[i]]
