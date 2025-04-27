@@ -142,7 +142,7 @@ Replace below lines:
     ]
 ```
 
-With below lines (you can change the value of `--jobs` based on your cluster configuration):
+With below lines (you can change the value of `--jobs` and other account details based on your cluster configuration):
 
 ```
     cmd = [
@@ -162,9 +162,9 @@ With below lines (you can change the value of `--jobs` based on your cluster con
     "--cluster",
     (
         "sbatch "
-        "--job-name=ROADIES_run "
-        "--partition=vgl_a "
-        "--account=jarv_condo_bank "
+        "--job-name=XXX "
+        "--partition=XXX "
+        "--account=XXX "
         "--nodes=1 "
         "--ntasks-per-node=4 "
         "--cpus-per-task=8 "
@@ -172,7 +172,7 @@ With below lines (you can change the value of `--jobs` based on your cluster con
         "--mem-per-cpu=11G "
         "--output=%x_%j.out "
         "--error=%x_%j.err "
-        "--mail-user=agupta02@rockefeller.edu "
+        "--mail-user=XXX "
         "--mail-type=ALL"
     )
 ]
@@ -182,7 +182,7 @@ After the above changes, save the following lines of code as separate file calle
 ```
 #! /bin/bash
 #SBATCH -J ROADIES_XXX
-#SBATCH -p vgl_a
+#SBATCH -p XXX
 #SBATCH --account=XXX
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
