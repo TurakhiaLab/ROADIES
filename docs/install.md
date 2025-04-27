@@ -116,4 +116,5 @@ source roadies_env.sh
 
 After successful setup (Setup complete message), your environment roadies_env will be activated. Proceed to Quick Start.
 
-**Note:** If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
+!!! Note
+    If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
