@@ -2,7 +2,7 @@
 
 If you use ROADIES in your research or publications, please cite the following paper:
 
-Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. [https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1).
+A. Gupta, S. Mirarab, & Y. Turakhia, Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES, Proc. Natl. Acad. Sci. U.S.A. 122 (19) e2500553122, [https://doi.org/10.1073/pnas.2500553122](https://doi.org/10.1073/pnas.2500553122) (2025).
 
 ## Accessing ROADIES output files
 

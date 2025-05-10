@@ -10,7 +10,7 @@
 [<img src="https://img.shields.io/badge/Made with-Snakemake-green.svg?logo=snakemake">](https://snakemake.readthedocs.io/en/v7.19.1/index.html)
 [<img src="https://img.shields.io/badge/Install with-Biooconda-brightgreen.svg?logo=conda">](http://bioconda.github.io/recipes/roadies/README.html)
 [<img src="https://img.shields.io/badge/Install with-DockerHub-informational.svg?logo=Docker">](https://hub.docker.com/r/ang037/roadies)
-[<img src="https://img.shields.io/badge/Submitted to-bioRxiv-critical.svg?logo=LOGO">](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1)
+[<img src="https://img.shields.io/badge/Published in-PNAS-informational.svg?logo=LOGO">](https://doi.org/10.1073/pnas.2500553122)
 [<img src="https://img.shields.io/badge/DOI-10.5061/dryad.tht76hf73-yellowgreen.svg?logo=LOGO">](https://doi.org/10.5061/dryad.tht76hf73)
 [<img src="https://img.shields.io/badge/Watch it on-Youtube-FF0000.svg?logo=YouTube">](https://youtu.be/1sR741TvZnM?si=vVNAnonvzNEzrLKq)
 
@@ -97,7 +97,7 @@ conda install roadies
 5. Locate the installed files:
 
 ``` 
-cd $HOME/miniconda3/envs/roadies_env/ROADIES
+cd $CONDA_PREFIX/envs/roadies_env/ROADIES
 
 ```
 
@@ -256,7 +256,7 @@ The output species tree (unrooted) in Newick format will be saved as `roadies.nw
 
 If you use ROADIES in your research or publications, please cite the following paper:
 
-Gupta A, Mirarab S, Turakhia Y, (2024). Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES. _bioRxiv_. [https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1](https://www.biorxiv.org/content/10.1101/2024.05.27.596098v1).
+A. Gupta, S. Mirarab, & Y. Turakhia, Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES, Proc. Natl. Acad. Sci. U.S.A. 122 (19) e2500553122, [https://doi.org/10.1073/pnas.2500553122](https://doi.org/10.1073/pnas.2500553122) (2025).
 
 ### Accessing ROADIES output files
 
