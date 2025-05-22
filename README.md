@@ -75,7 +75,11 @@ source ~/.bashrc
 
 ```
 conda config --add channels defaults
+```
+```
 conda config --add channels bioconda
+```
+```
 conda config --add channels conda-forge
 ```
 
@@ -85,23 +89,23 @@ Verify the installation by running `conda` in your terminal
 
 ```
 conda create -n roadies_env python=3.9 ete3 seaborn
+```
+```
 conda activate roadies_env
 ```
 
 4. Install ROADIES:
 
 ```
-conda install roadies
+conda install roadies=0.1.10
 ```
 
 5. Locate the installed files:
 
 ``` 
-cd $CONDA_PREFIX/envs/roadies_env/ROADIES
-
+cd $CONDA_PREFIX/ROADIES
 ```
-
-Now you are ready to follow the [Quick Start](#start) section to run the pipeline. 
+You will be able to find the contents of the repository within this ROADIES folder. Now you are ready to follow the [Quick Start](#start) section to run the pipeline. 
 
 ### <a name="dockerhub"></a> Option 2: Install via DockerHub
 
@@ -118,7 +122,7 @@ docker pull ang037/roadies:latest
 docker run -it ang037/roadies:latest
 ```
 
-Once you are able to access the ROADIES repository, refer to the [Quick Start](#start) to run the pipeline. 
+These commands will launch the Docker container in interactive mode, with the roadies_env environment activated and the working directory set to the ROADIES repository containing all necessary files. Once you are able to access the ROADIES repository, refer to the [Quick Start](#start) to run the pipeline. 
 
 ### <a name="docker"></a> Option 3: Install via Local Docker Build
 
@@ -126,6 +130,8 @@ Once you are able to access the ROADIES repository, refer to the [Quick Start](#
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
+```
+```
 cd ROADIES
 ```
 
@@ -133,6 +139,8 @@ cd ROADIES
 
 ```
 docker build -t roadies_image .
+```
+```
 docker run -it roadies_image
 ```
 
@@ -160,6 +168,8 @@ sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptoo
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
+```
+```
 cd ROADIES
 ```
 
@@ -167,10 +177,12 @@ cd ROADIES
 
 ```
 chmod +x roadies_env.sh
+```
+```
 source roadies_env.sh
 ```
 
-After successful setup (Setup complete message), your environment roadies_env will be activated. Proceed to [Quick Start](#start).
+After successful setup (Setup complete message), your environment `roadies_env` will be activated. Proceed to [Quick Start](#start).
 
 **Note:** If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
@@ -192,11 +204,15 @@ This will save the datasets on a separate `test/test_data` folder within the rep
 
 #### IMPORTANT: ROADIES by default runs multiple iterations for generating highly accurate trees. For quick testing, use `--noconverge` to run a single iteration.
 
+**Full run (multiple iterations)**
 ```
-python run_roadies.py --cores 16 # Full run (multiple iterations)
+python run_roadies.py --cores 16 
 ```
+**OR**
+
+**Quick test run (one iteration)**
 ```
-python run_roadies.py --cores 16 --noconverge # Quick test run (one iteration)
+python run_roadies.py --cores 16 --noconverge 
 ```
 
 3. Output:
@@ -240,9 +256,11 @@ python run_roadies.py --cores 16
 
 ```
 python run_roadies.py --cores 16 --mode accurate
-
+```
+```
 python run_roadies.py --cores 16 --mode balanced
-
+```
+```
 python run_roadies.py --cores 16 --mode fast
 ```
 

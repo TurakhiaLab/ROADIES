@@ -15,11 +15,15 @@ This will save the datasets on a separate `test/test_data` folder within the rep
 !!! Note
     ROADIES by default runs multiple iterations for generating highly accurate trees. For quick testing, use `--noconverge` to run a single iteration.
 
+**Full run (multiple iterations)**
 ```bash
-python run_roadies.py --cores 16 # Full run (multiple iterations)
+python run_roadies.py --cores 16
 ```
+**OR**
+
+**Quick test run (one iteration)**
 ```bash
-python run_roadies.py --cores 16 --noconverge # Quick test run (one iteration)
+python run_roadies.py --cores 16 --noconverge 
 ```
 
 ## Step 3: Analyze Output:

@@ -19,7 +19,11 @@ source ~/.bashrc
 
 ```bash
 conda config --add channels defaults
+```
+```bash
 conda config --add channels bioconda
+```
+```bash
 conda config --add channels conda-forge
 ```
 
@@ -29,23 +33,24 @@ Verify the installation by running `conda` in your terminal
 
 ```bash
 conda create -n roadies_env python=3.9 ete3 seaborn
+```
+```bash
 conda activate roadies_env
 ```
 
 4. Install ROADIES:
 
 ```bash
-conda install roadies
+conda install roadies=0.1.10
 ```
 
 5. Locate the installed files:
 
 ```bash
-cd $HOME/miniconda3/envs/roadies_env/ROADIES
-
+cd $CONDA_PREFIX/ROADIES
 ```
 
-Now you are ready to follow the Quick Start section to run the pipeline. 
+You will be able to find the contents of the repository within this ROADIES folder. Now you are ready to follow the Quick Start section to run the pipeline. 
 
 ## Option 2: Install via DockerHub
 
@@ -62,7 +67,7 @@ docker pull ang037/roadies:latest
 docker run -it ang037/roadies:latest
 ```
 
-Once you are able to access the ROADIES repository, refer to the Quick Start section to run the pipeline. 
+These commands will launch the Docker container in interactive mode, with the roadies_env environment activated and the working directory set to the ROADIES repository containing all necessary files. Once you are able to access the ROADIES repository, refer to the Quick Start section to run the pipeline. 
 
 ## Option 3: Install via Local Docker Build
 
@@ -70,6 +75,8 @@ Once you are able to access the ROADIES repository, refer to the Quick Start sec
 
 ```bash
 git clone https://github.com/TurakhiaLab/ROADIES.git
+```
+```bash
 cd ROADIES
 ```
 
@@ -77,6 +84,8 @@ cd ROADIES
 
 ```bash
 docker build -t roadies_image .
+```
+```bash
 docker run -it roadies_image
 ```
 
@@ -104,6 +113,8 @@ sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptoo
 
 ```bash
 git clone https://github.com/TurakhiaLab/ROADIES.git
+```
+```bash
 cd ROADIES
 ```
 
@@ -111,10 +122,12 @@ cd ROADIES
 
 ```bash
 chmod +x roadies_env.sh
+```
+```bash
 source roadies_env.sh
 ```
 
-After successful setup (Setup complete message), your environment roadies_env will be activated. Proceed to Quick Start.
+After successful setup (Setup complete message), your environment `roadies_env` will be activated. Proceed to Quick Start.
 
 !!! Note
     If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
