@@ -120,7 +120,7 @@ For extensive debugging, other intermediate output files for each stage of the p
 7. `ref_dist.csv` - this file provides the iteration number, number of gene trees and the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`), for all iterations.
 8. `time_stamps.csv`- this file contains the start time in first line, iteration number, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively, for all iterations in subsequent lines.
 
-# Run ROADIES in a multi-node cluster (using SLURM)
+# Run ROADIES in a multi-node cluster (using SLURM) (currently being tested)
 
 To run ROADIES in a multi-node cluster, make the following changes in the file `workflow/scripts/converge.py` (for `--noconverge` mode - make changes in `workflow/scripts/noconverge.py`)
 
