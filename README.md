@@ -39,8 +39,9 @@
 
 Welcome to the official repository of ROADIES, a novel pipeline for inferring phylogenetic species trees directly from raw genomic assemblies. ROADIES offers a fully automated, scalable, and easy-to-use solution, eliminating manual steps and allowing flexible control over the trade-off between accuracy and runtime.
 
-**For a detailed overview of ROADIES' features and configuration options, please visit our [Wiki](https://turakhialab.github.io/ROADIES/).**
+### 🟡 For a detailed overview of ROADIES' features and configuration options, please visit our [Wiki](https://turakhialab.github.io/ROADIES/).
 
+### 🟡 If you encounter issues while running the pipeline, please refer to [this page](https://turakhialab.github.io/ROADIES/troubleshooting/) for common errors and troubleshooting tips.
 <br>
 
 <div align="center">
@@ -60,7 +61,7 @@ Please follow any of the options below to install ROADIES in your system.
 
 ### <a name="conda"></a> Option 1: Install via Bioconda (Recommended)
 
-1. Install Conda (if not installed):
+**Step 1:** Install Conda (if not installed):
 
 ```
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -71,7 +72,7 @@ export PATH="$HOME/miniconda3/bin:$PATH"
 source ~/.bashrc
 ```
 
-2. Configure Conda channels:
+**Step 2:** Configure Conda channels:
 
 ```
 conda config --add channels defaults
@@ -85,7 +86,7 @@ conda config --add channels conda-forge
 
 Verify the installation by running `conda` in your terminal
 
-3. Create and activate a custom environment:
+**Step 3:** Create and activate a custom environment:
 
 ```
 conda create -n roadies_env python=3.9 ete3 seaborn
@@ -94,13 +95,13 @@ conda create -n roadies_env python=3.9 ete3 seaborn
 conda activate roadies_env
 ```
 
-4. Install ROADIES:
+**Step 4:** Install ROADIES:
 
 ```
 conda install roadies=0.1.10
 ```
 
-5. Locate the installed files:
+**Step 5:** Locate the installed files:
 
 ``` 
 cd $CONDA_PREFIX/ROADIES
@@ -111,22 +112,22 @@ You will be able to find the contents of the repository within this ROADIES fold
 
 If you would like to install ROADIES using DockerHub, follow these steps:
 
-1. Pull the ROADIES image from DockerHub:
+**Step 1:** Pull the ROADIES image from DockerHub:
 
 ```
 docker pull ang037/roadies:latest
 ```
-2. Launch a container:
+**Step 2:** Launch a container:
 
 ```
 docker run -it ang037/roadies:latest
 ```
 
-These commands will launch the Docker container in interactive mode, with the roadies_env environment activated and the working directory set to the ROADIES repository containing all necessary files. Once you are able to access the ROADIES repository, refer to the [Quick Start](#start) to run the pipeline. 
+These commands will launch the Docker container in interactive mode, with the `roadies_env` environment activated and the working directory set to the ROADIES repository containing all necessary files. Once you are able to access the ROADIES repository, refer to the [Quick Start](#start) to run the pipeline. 
 
 ### <a name="docker"></a> Option 3: Install via Local Docker Build
 
-1. Clone the ROADIES repository:
+**Step 1:** Clone the ROADIES repository:
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
@@ -135,7 +136,7 @@ git clone https://github.com/TurakhiaLab/ROADIES.git
 cd ROADIES
 ```
 
-2. Build and run the Docker container:
+**Step 2:** Build and run the Docker container:
 
 ```
 docker build -t roadies_image .
@@ -148,7 +149,7 @@ Once you are able to access the ROADIES repository, refer to [Quick Start](#star
 
 ### <a name="script"></a> Option 4: Install via Source Script
 
-1. Install the following dependencies (**requires sudo access**):
+**Step 1:** Install the following dependencies (**requires sudo access**):
 
 - Java Runtime Environment (Version 1.7 or higher)
 - Python (Version 3.9 or higher)
@@ -164,7 +165,7 @@ For Ubuntu, you can install these dependencies with:
 sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake
 ```
 
-2. Clone the repository:
+**Step 2:** Clone the repository:
 
 ```
 git clone https://github.com/TurakhiaLab/ROADIES.git
@@ -173,7 +174,7 @@ git clone https://github.com/TurakhiaLab/ROADIES.git
 cd ROADIES
 ```
 
-3. Run the installation script:
+**Step 3:** Run the installation script:
 
 ```
 chmod +x roadies_env.sh
@@ -192,7 +193,7 @@ After successful setup (Setup complete message), your environment `roadies_env` 
 
 After installing using one of the options mentioned in [Quick Install](#usage), you're ready to run ROADIES! To get started:
 
-1. Download the test dataset (11 Drosophila genomes):
+**Step 1:** Download the test dataset (11 Drosophila genomes):
 
 ```
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
@@ -200,11 +201,11 @@ mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c '
 
 This will save the datasets on a separate `test/test_data` folder within the repository
 
-2. Run the pipeline
+**Step 2:** Run the ROADIES pipeline
 
 #### IMPORTANT: ROADIES by default runs multiple iterations for generating highly accurate trees. For quick testing, use `--noconverge` to run a single iteration.
 
-**Full run (multiple iterations)**
+**Full run (multiple iterations) - Default**
 ```
 python run_roadies.py --cores 16 
 ```
@@ -215,11 +216,13 @@ python run_roadies.py --cores 16
 python run_roadies.py --cores 16 --noconverge 
 ```
 
-3. Output:
+**Step 3:** Access final species tree
 
- - Final **UNROOTED** newick tree saved as `roadies.nwk` in a separate `output_files` folder. 
- - Intermediate files (if `--noconverge` not used) saved in a separate `converge_files` folder. 
+**Default mode:**
+Final species tree (in Newick format) for individual iterations (latest one will be the most confident and accurate tree) will be saved in separate `converge_files/iteration_<iteration_number>` folders.
 
+**If `--noconverge` is used:**
+Final species tree (in Newick format) will be saved as `roadies.nwk` in a separate `output_files` folder. 
 
 #### NOTE: ROADIES outputs unrooted trees by default. You can reroot trees on your own or use the provided `reroot.py` script in `workflow/scripts/` (given a reference rooted species tree as input). 
 
@@ -229,7 +232,7 @@ python run_roadies.py --cores 16 --noconverge
 
 If you want to run ROADIES with your own datasets, follow these steps:
 
-1. Specify Input Dataset:
+**Step 1:** Specify Input Dataset:
 
 - Edit `config.yaml` file (found in the ROADIES directory - `config` folder).
 - Update the `GENOMES` field with paths to your `.fa` or `.fa.gz` genome assemblies. Ensure all input genomic assemblies are in `.fa` or `.fa.gz` format and named according to the species' name (e.g., `Aardvark.fa`). 
@@ -240,12 +243,12 @@ If you want to run ROADIES with your own datasets, follow these steps:
 faSplit byname <input_dir> <output_dir>
 ```
 
-2. Configure Other Parameters: 
+**Step 2:** Configure Other Parameters: 
 
 - Modify other parameters in `config.yaml` as needed.
 - Refer to detailed settings on the [Wiki](https://turakhialab.github.io/ROADIES/).
 
-3. Run the Pipeline: 
+**Step 3:** Run the Pipeline: 
 
 ```
 python run_roadies.py --cores 16
@@ -264,9 +267,9 @@ python run_roadies.py --cores 16 --mode balanced
 python run_roadies.py --cores 16 --mode fast
 ```
 
-The output species tree (unrooted) in Newick format will be saved as `roadies.nwk` in the `output_files` folder.
+Final unrooted species tree (in Newick format) for individual iterations (latest one will be the most confident and accurate tree) will be saved in separate `ALL_OUT_DIR/iteration_<iteration_number>` folders (`ALL_OUT_DIR` is configured in `config/config.yaml`). 
 
-### For troubleshooting, contributing, or SLURM cluster usage, refer to [Wiki](https://turakhialab.github.io/ROADIES/)
+### For contributing to the code, or SLURM cluster usage, refer to [Wiki](https://turakhialab.github.io/ROADIES/contribution)
 
 <br>
 
