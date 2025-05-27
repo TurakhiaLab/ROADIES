@@ -63,7 +63,7 @@ Please follow any of the options below to install ROADIES in your system.
 
 **Step 1:** Install Conda (if not installed):
 
-```
+```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 chmod +x Miniconda3-latest-Linux-x86_64.sh
 ./Miniconda3-latest-Linux-x86_64.sh
@@ -74,13 +74,13 @@ source ~/.bashrc
 
 **Step 2:** Configure Conda channels:
 
-```
+```bash
 conda config --add channels defaults
 ```
-```
+```bash
 conda config --add channels bioconda
 ```
-```
+```bash
 conda config --add channels conda-forge
 ```
 
@@ -88,25 +88,45 @@ Verify the installation by running `conda` in your terminal
 
 **Step 3:** Create and activate a custom environment:
 
-```
+```bash
 conda create -n roadies_env python=3.9 ete3 seaborn
 ```
-```
+```bash
 conda activate roadies_env
 ```
 
 **Step 4:** Install ROADIES:
 
-```
+```bash
 conda install roadies=0.1.10
 ```
 
 **Step 5:** Locate the installed files:
 
-``` 
+```bash
 cd $CONDA_PREFIX/ROADIES
 ```
-You will be able to find the contents of the repository within this ROADIES folder. Now you are ready to follow the [Quick Start](#start) section to run the pipeline. 
+Now, you will be able to find the contents of the repository within this ROADIES folder.
+
+**Step 6:** Run the following commands:
+
+```bash
+git clone https://github.com/smirarab/pasta.git
+git clone https://github.com/smirarab/sate-tools-linux.git
+cd pasta
+python3 setup.py develop --user
+```
+
+Also, in the `align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
+
+- `pasta.py` with `python pasta/run_pasta.py`
+- `run_seqtools.py` with `python pasta/run_seqtools.py`
+
+After following all these steps, now you are ready to follow the [Quick Start](#start) section to run the pipeline. Make sure to go back to the main directory to follow the next steps:
+
+```bash
+cd ROADIES
+```
 
 ### <a name="dockerhub"></a> Option 2: Install via DockerHub
 
@@ -114,12 +134,12 @@ If you would like to install ROADIES using DockerHub, follow these steps:
 
 **Step 1:** Pull the ROADIES image from DockerHub:
 
-```
+```bash
 docker pull ang037/roadies:latest
 ```
 **Step 2:** Launch a container:
 
-```
+```bash
 docker run -it ang037/roadies:latest
 ```
 
@@ -129,19 +149,19 @@ These commands will launch the Docker container in interactive mode, with the `r
 
 **Step 1:** Clone the ROADIES repository:
 
-```
+```bash
 git clone https://github.com/TurakhiaLab/ROADIES.git
 ```
-```
+```bash
 cd ROADIES
 ```
 
 **Step 2:** Build and run the Docker container:
 
-```
+```bash
 docker build -t roadies_image .
 ```
-```
+```bash
 docker run -it roadies_image
 ```
 
@@ -161,25 +181,25 @@ Once you are able to access the ROADIES repository, refer to [Quick Start](#star
 
 For Ubuntu, you can install these dependencies with: 
 
-```
+```bash
 sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake
 ```
 
 **Step 2:** Clone the repository:
 
-```
+```bash
 git clone https://github.com/TurakhiaLab/ROADIES.git
 ```
-```
+```bash
 cd ROADIES
 ```
 
 **Step 3:** Run the installation script:
 
-```
+```bash
 chmod +x roadies_env.sh
 ```
-```
+```bash
 source roadies_env.sh
 ```
 
@@ -193,9 +213,9 @@ After successful setup (Setup complete message), your environment `roadies_env` 
 
 After installing using one of the options mentioned in [Quick Install](#usage), you're ready to run ROADIES! To get started:
 
-**Step 1:** Download the test dataset (11 Drosophila genomes):
+**Step 1:** Download the test dataset (11 Drosophila genomes) (make sure to perform this step from the main repository directory):
 
-```
+```bash
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
 ```
 
@@ -206,13 +226,13 @@ This will save the datasets on a separate `test/test_data` folder within the rep
 #### IMPORTANT: ROADIES by default runs multiple iterations for generating highly accurate trees. For quick testing, use `--noconverge` to run a single iteration.
 
 **Full run (multiple iterations) - Default**
-```
+```bash
 python run_roadies.py --cores 16 
 ```
 **OR**
 
 **Quick test run (one iteration)**
-```
+```bash
 python run_roadies.py --cores 16 --noconverge 
 ```
 
@@ -239,7 +259,7 @@ If you want to run ROADIES with your own datasets, follow these steps:
 
 **IMPORTANT**: Each file must contain only one species. If needed, split multi-species files with:
 
-```
+```bash
 faSplit byname <input_dir> <output_dir>
 ```
 
@@ -250,20 +270,20 @@ faSplit byname <input_dir> <output_dir>
 
 **Step 3:** Run the Pipeline: 
 
-```
+```bash
 python run_roadies.py --cores 16
 ```
 
 **Modes of operation**: ROADIES supports multiple modes of operation (`fast`, `balanced`, `accurate`) by controlling the accuracy-runtime tradeoff. Use any one of the following commands to select a mode (`accurate` mode is the default):
 
 
-```
+```bash
 python run_roadies.py --cores 16 --mode accurate
 ```
-```
+```bash
 python run_roadies.py --cores 16 --mode balanced
 ```
-```
+```bash
 python run_roadies.py --cores 16 --mode fast
 ```
 
