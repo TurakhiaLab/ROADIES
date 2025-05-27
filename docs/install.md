@@ -50,7 +50,27 @@ conda install roadies=0.1.10
 cd $CONDA_PREFIX/ROADIES
 ```
 
-You will be able to find the contents of the repository within this ROADIES folder. Now you are ready to follow the Quick Start section to run the pipeline. 
+Now, you will be able to find the contents of the repository within this ROADIES folder.
+
+6. Run the following commands:
+
+```bash
+git clone https://github.com/smirarab/pasta.git
+git clone https://github.com/smirarab/sate-tools-linux.git
+cd pasta
+python3 setup.py develop --user
+```
+
+Also, in the `align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
+
+- `pasta.py` with `python pasta/run_pasta.py`
+- `run_seqtools.py` with `python pasta/run_seqtools.py`
+
+After following all these steps, now you are ready to follow the Quick Start section to run the pipeline. Make sure to go back to the main directory to follow the next steps:
+
+```bash
+cd ROADIES
+```
 
 ## Option 2: Install via DockerHub
 

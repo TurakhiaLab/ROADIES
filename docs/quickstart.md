@@ -4,6 +4,8 @@ After installing using one of the options mentioned in Quick Install, you're rea
 
 ## Step 1: Download the test dataset (11 Drosophila genomes):**
 
+Make sure to run this step from the main ROADIES repository directory. 
+
 ```bash
 mkdir -p test/test_data && cat test/input_genome_links.txt | xargs -I {} sh -c 'wget -O test/test_data/$(basename {}) {}'
 ```
