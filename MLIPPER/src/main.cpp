@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
@@ -10,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include <CLI/CLI.hpp>
+#include <boost/program_options.hpp>
 #include <cuda_runtime.h>
 
 #include "io/input_validation.hpp"
@@ -25,6 +26,13 @@
 #include "io/parse_file.hpp"
 #include "msa_preprocess.hpp"
 #include "util/mlipper_util.h"
+
+namespace po = boost::program_options;
+namespace mlenv = mlipper::env;
+namespace mlinput = mlipper::input;
+namespace mljplace = mlipper::jplaceio;
+namespace mlmodel = mlipper::model;
+namespace mltreeio = mlipper::treeio;
 
 namespace {
 
@@ -71,13 +79,82 @@ void accumulate_commit_timing(CommitTimingStats& dst, const CommitTimingStats& s
     dst.insertion_updates += src.insertion_updates;
 }
 
-} // namespace
+std::string cli_program_name(const char* argv0) {
+    if (argv0 == nullptr || *argv0 == '\0') {
+        return "MLIPPER";
+    }
+    const std::filesystem::path argv_path(argv0);
+    const std::filesystem::path filename = argv_path.filename();
+    return filename.empty() ? "MLIPPER" : filename.string();
+}
 
-namespace mlenv = mlipper::env;
-namespace mlinput = mlipper::input;
-namespace mljplace = mlipper::jplaceio;
-namespace mlmodel = mlipper::model;
-namespace mltreeio = mlipper::treeio;
+po::typed_value<bool>* cli_flag(bool* target) {
+    return po::value<bool>(target)->zero_tokens()->implicit_value(true);
+}
+
+std::string trim_ascii_copy(std::string value) {
+    const auto is_space = [](unsigned char ch) {
+        return std::isspace(ch) != 0;
+    };
+    value.erase(
+        value.begin(),
+        std::find_if_not(
+            value.begin(),
+            value.end(),
+            is_space));
+    value.erase(
+        std::find_if_not(
+            value.rbegin(),
+            value.rend(),
+            is_space).base(),
+        value.end());
+    return value;
+}
+
+std::vector<double> parse_cli_double_list(
+    const std::vector<std::string>& raw_tokens,
+    const std::string& option_name) {
+    std::vector<double> values;
+    for (const std::string& token : raw_tokens) {
+        std::stringstream token_stream(token);
+        std::string piece;
+        while (std::getline(token_stream, piece, ',')) {
+            const std::string trimmed = trim_ascii_copy(piece);
+            if (trimmed.empty()) {
+                throw mlinput::ValidationError(option_name, "contains an empty list element");
+            }
+
+            size_t parsed_chars = 0;
+            double value = 0.0;
+            try {
+                value = std::stod(trimmed, &parsed_chars);
+            } catch (const std::exception&) {
+                throw mlinput::ValidationError(
+                    option_name,
+                    "invalid numeric value '" + trimmed + "'");
+            }
+            if (parsed_chars != trimmed.size()) {
+                throw mlinput::ValidationError(
+                    option_name,
+                    "invalid numeric value '" + trimmed + "'");
+            }
+            values.push_back(value);
+        }
+    }
+
+    if (values.empty()) {
+        throw mlinput::ValidationError(option_name, "requires at least one value");
+    }
+    return values;
+}
+
+int exit_with_cli_error(const std::string& program_name, const std::string& message) {
+    std::cerr << program_name << ": error: " << message << "\n";
+    std::cerr << "Run '" << program_name << " --help' for usage.\n";
+    return 1;
+}
+
+} // namespace
 
 int main(int argc, char** argv) {
     auto start_gpu = std::chrono::steady_clock::time_point{};
@@ -88,10 +165,9 @@ int main(int argc, char** argv) {
     BuildToGpuResult res{};
     PlacementOpBuffer placement_ops{};
 
-    CLI::App app{"MLIPPER"};
-    app.get_formatter()->column_width(40);
+    const std::string program_name = cli_program_name(argc > 0 ? argv[0] : nullptr);
 
-    // Single config object filled directly by CLI11 options.
+    // Single config object filled directly by CLI options.
     parse::RunConfig config;
 
     // ---- Input (files/tree) ----
@@ -101,27 +177,6 @@ int main(int argc, char** argv) {
     // Internal-only output/control knobs, not exposed via CLI.
     double commit_collapse_internal_epsilon = 1e-6;
     bool commit_to_tree = false;
-
-    auto* opt_tree_alignment = app.add_option("--tree-alignment", config.files.tree_alignment, "Reference alignment (tree MSA)")
-                                  ->group("Input")
-                                  ->check(CLI::ExistingFile);
-    auto* opt_query_alignment = app.add_option("--query-alignment", config.files.query_alignment,
-                                               "Query alignment for placement (optional; defaults to --tree-alignment)")
-                                   ->group("Input")
-                                   ->check(CLI::ExistingFile);
-    auto* opt_tree_file = app.add_option("--tree", config.files.tree, "Reference tree topology (Newick file)")
-                              ->group("Input")
-                              ->check(CLI::ExistingFile);
-    auto* opt_tree_newick = app.add_option("--tree-newick", tree_newick, "Reference tree topology (Newick string)")
-                                ->group("Input");
-    auto* opt_jplace_out =
-        app.add_option("--jplace-out", jplace_out, "Optional output path for a top-k placement jplace file")
-            ->group("Output");
-    app.add_option("--commit-to-tree", commit_tree_out,
-                   "Commit query placements to reference tree and write the final tree in Newick (.nwk) format to this path")
-        ->group("Output");
-    opt_tree_file->excludes(opt_tree_newick);
-    opt_tree_newick->excludes(opt_tree_file);
 
     // ---- Model ----
     // Defaults match the previous `config.yaml` defaults (pre-CLI refactor).
@@ -133,151 +188,207 @@ int main(int argc, char** argv) {
     config.model.rates = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
     config.model.per_rate_scaling = true;
     std::string best_model_file;
+    std::vector<std::string> freqs_tokens;
+    std::vector<std::string> rate_tokens;
+    std::vector<std::string> rate_weight_tokens;
     bool no_per_rate_scaling = false;
     bool empirical_freqs = false;
-    int full_opt_passes = -1;
-    int refine_global_passes = -1;
-    int refine_extra_passes = -1;
-    int refine_detect_topk = -1;
-    int refine_topk = -1;
-    double refine_gap_top2 = -1.0;
-    double refine_gap_top5 = -1.0;
-    double refine_converged_loglk_eps = -1.0;
-    double refine_converged_length_eps = -1.0;
     bool placement_fast = false;
     bool local_spr = false;
     bool local_spr_fast = false;
     bool fast_mode = false;
+    int gpu_id = 0;
+    bool gpu_auto = false;
     // Internal-only local SPR tuning knobs not exposed via CLI.
     int batch_insert_size = 0;
-    int local_spr_radius = 2;
+    int local_spr_radius = 4;
     int local_spr_cluster_threshold = 3;
     int local_spr_topk_per_unit = 8;
     bool local_spr_dynamic_validation_conflicts = false;
     int local_spr_rounds = 1;
+    po::options_description general_options("General");
+    general_options.add_options()
+        ("help,h", "Show help message");
 
-    app.add_option("--states", config.model.states, "Number of states")->group("Model");
-    app.add_option("--subst-model", config.model.subst_model, "Substitution model")->group("Model");
-    app.add_option("--ncat", config.model.ncat, "Number of rate categories")->group("Model");
-    app.add_option("--alpha", config.model.alpha, "Gamma shape alpha")->group("Model");
-    app.add_option("--pinv", config.model.pinv, "Proportion of invariant sites")->group("Model");
-    app.add_option(
-           "--best-model",
-           best_model_file,
-           "Read a bestModel file and overwrite the corresponding model flags")
-        ->group("Model")
-        ->check(CLI::ExistingFile);
-    auto* opt_freqs = app.add_option("--freqs", config.model.freqs, "Equilibrium freqs (list)")
-                          ->group("Model")
-                          ->delimiter(',');
-    auto* opt_empirical_freqs = app.add_flag(
-        "--empirical-freqs",
-        empirical_freqs,
-        "Estimate equilibrium freqs from --tree-alignment (distributes ambiguous DNA symbols across represented states)")
-                                    ->group("Model");
-    opt_freqs->excludes(opt_empirical_freqs);
-    opt_empirical_freqs->excludes(opt_freqs);
-    app.add_option("--rates", config.model.rates, "GTR rates rAC,rAG,rAT,rCG,rCT,rGT (list)")->group("Model")->delimiter(',');
-    app.add_option("--rate-weights", config.model.rate_weights, "Rate category weights (list)")->group("Model")->delimiter(',');
-    app.add_flag("--no-per-rate-scaling", no_per_rate_scaling, "Disable per-rate scaling")->group("Model");
+    po::options_description input_options("Input");
+    input_options.add_options()
+        ("tree-alignment", po::value<std::string>(&config.files.tree_alignment),
+         "Reference alignment (tree MSA)")
+        ("query-alignment", po::value<std::string>(&config.files.query_alignment),
+         "Query alignment for placement (optional; defaults to --tree-alignment)")
+        ("tree", po::value<std::string>(&config.files.tree),
+         "Reference tree topology (Newick file)")
+        ("tree-newick", po::value<std::string>(&tree_newick),
+         "Reference tree topology (Newick string)");
 
-    app.add_flag("--placement-fast", placement_fast,
-                 "Use fast placement scoring (1 full optimization pass instead of baseline 4)")
-        ->group("Placement");
-    auto* opt_local_spr =
-        app.add_flag("--local-spr", local_spr,
-                     "Enable local subtree SPR after each batch insert")
-            ->group("Placement");
-    auto* opt_local_spr_fast =
-        app.add_flag("--local-spr-fast", local_spr_fast,
-                     "Use fast local SPR scoring (1 full optimization pass instead of baseline 4)")
-            ->group("Placement");
-    auto* opt_fast =
-        app.add_flag("--fast", fast_mode,
-                     "Enable both --placement-fast and --local-spr-fast")
-            ->group("Placement");
-    auto* opt_batch_insert_size =
-        app.add_option("--batch-insert-size", batch_insert_size,
-                       "Insert+commit query batches of size N (0 = all at once)")
-            ->group("Placement");
-    auto* opt_local_spr_radius =
-        app.add_option("--local-spr-radius", local_spr_radius,
-                       "Local SPR radius (filters candidate edges and defines subtree neighborhood)")
-            ->group("Placement");
-    auto* opt_local_spr_cluster_threshold =
-        app.add_option("--local-spr-cluster-threshold", local_spr_cluster_threshold,
-                       "Anchor-distance threshold for grouping inserted queries into local SPR repair units")
-            ->group("Placement");
-    auto* opt_local_spr_rounds =
-        app.add_option("--local-spr-rounds", local_spr_rounds,
-                       "Run up to N rounds of local SPR, rebuilding between accepted rounds")
-            ->group("Placement");
-    auto* opt_local_spr_dynamic_validation_conflicts =
-        app.add_flag(
-               "--local-spr-dynamic-validation-conflicts",
-               local_spr_dynamic_validation_conflicts,
-               "Validate local SPR candidates with dynamic conflict resolution instead of one-per-unit filtering")
-            ->group("Placement");
+    po::options_description output_options("Output");
+    output_options.add_options()
+        ("jplace-out", po::value<std::string>(&jplace_out),
+         "Optional output path for a top-k placement jplace file")
+        ("commit-to-tree", po::value<std::string>(&commit_tree_out),
+         "Commit query placements to reference tree and write the final tree in Newick (.nwk) format to this path");
+
+    po::options_description model_options("Model");
+    model_options.add_options()
+        ("states", po::value<int>(&config.model.states), "Number of states")
+        ("subst-model", po::value<std::string>(&config.model.subst_model), "Substitution model")
+        ("ncat", po::value<int>(&config.model.ncat), "Number of rate categories")
+        ("alpha", po::value<double>(&config.model.alpha), "Gamma shape alpha")
+        ("pinv", po::value<double>(&config.model.pinv), "Proportion of invariant sites")
+        ("best-model", po::value<std::string>(&best_model_file),
+         "Read a bestModel file and overwrite the corresponding model flags")
+        ("freqs", po::value<std::vector<std::string>>(&freqs_tokens)->multitoken(),
+         "Equilibrium freqs (comma-separated list)")
+        ("empirical-freqs", cli_flag(&empirical_freqs),
+         "Estimate equilibrium freqs from --tree-alignment (distributes ambiguous DNA symbols across represented states)")
+        ("rates", po::value<std::vector<std::string>>(&rate_tokens)->multitoken(),
+         "GTR rates rAC,rAG,rAT,rCG,rCT,rGT (comma-separated list)")
+        ("rate-weights", po::value<std::vector<std::string>>(&rate_weight_tokens)->multitoken(),
+         "Rate category weights (comma-separated list)")
+        ("no-per-rate-scaling", cli_flag(&no_per_rate_scaling),
+         "Disable per-rate scaling");
+
+    po::options_description placement_options("Placement");
+    placement_options.add_options()
+        ("placement-fast", cli_flag(&placement_fast),
+         "Use fast placement scoring (1 full optimization pass instead of baseline 4)")
+        ("local-spr", cli_flag(&local_spr),
+         "Enable local subtree SPR after each batch insert")
+        ("local-spr-fast", cli_flag(&local_spr_fast),
+         "Use fast local SPR scoring (1 full optimization pass instead of baseline 4)")
+        ("fast", cli_flag(&fast_mode),
+         "Enable both --placement-fast and --local-spr-fast")
+        ("batch-insert-size", po::value<int>(&batch_insert_size),
+         "Insert+commit query batches of size N (0 = all at once)")
+        ("local-spr-radius", po::value<int>(&local_spr_radius),
+         "Local SPR radius (filters candidate edges and defines subtree neighborhood)")
+        ("local-spr-cluster-threshold", po::value<int>(&local_spr_cluster_threshold),
+         "Anchor-distance threshold for grouping inserted queries into local SPR repair units")
+        ("local-spr-rounds", po::value<int>(&local_spr_rounds),
+         "Run up to N rounds of local SPR, rebuilding between accepted rounds")
+        ("local-spr-dynamic-validation-conflicts", cli_flag(&local_spr_dynamic_validation_conflicts),
+         "Validate local SPR candidates with dynamic conflict resolution instead of one-per-unit filtering");
+
+    po::options_description runtime_options("Runtime");
+    runtime_options.add_options()
+        ("gpu-id", po::value<int>(&gpu_id),
+         "CUDA device ordinal within the currently visible GPU set")
+        ("gpu-auto", cli_flag(&gpu_auto),
+         "Auto-select a visible CUDA device by acquiring an MLIPPER reservation lock");
+
+    po::options_description all_options("MLIPPER");
+    all_options.add(general_options)
+        .add(input_options)
+        .add(output_options)
+        .add(model_options)
+        .add(placement_options)
+        .add(runtime_options);
+
+    po::variables_map vm;
     try {
-        app.parse(argc, argv);
-    } catch (const CLI::ParseError& e) {
-        return app.exit(e);
+        po::store(
+            po::command_line_parser(argc, argv)
+                .options(all_options)
+                .run(),
+            vm);
+        po::notify(vm);
+    } catch (const po::error& e) {
+        return exit_with_cli_error(program_name, e.what());
     }
-    if (batch_insert_size < 0) {
-        return app.exit(CLI::ValidationError("--batch-insert-size", "must be >= 0"));
+    if (vm.count("help") > 0) {
+        std::cout << all_options << "\n";
+        return 0;
     }
-    if (local_spr_radius < 0) {
-        return app.exit(CLI::ValidationError("--local-spr-radius", "must be >= 0"));
-    }
-    if (local_spr_cluster_threshold < 0) {
-        return app.exit(CLI::ValidationError("--local-spr-cluster-threshold", "must be >= 0"));
-    }
-    if (local_spr_rounds <= 0) {
-        return app.exit(CLI::ValidationError("--local-spr-rounds", "must be >= 1"));
-    }
-    if (fast_mode) {
-        placement_fast = true;
-        local_spr_fast = true;
-    }
-    if (local_spr) {
-        if (batch_insert_size <= 0) {
-            batch_insert_size = 5;
-        }
-    }
-    commit_to_tree = !commit_tree_out.empty();
 
+    const bool tree_file_specified = vm.count("tree") > 0;
+    const bool tree_newick_specified = vm.count("tree-newick") > 0;
+    const bool freqs_specified = vm.count("freqs") > 0;
+    const bool empirical_freqs_specified = vm.count("empirical-freqs") > 0;
+    const bool batch_insert_size_specified = vm.count("batch-insert-size") > 0;
+    const bool gpu_id_specified = vm.count("gpu-id") > 0;
+    const bool jplace_out_specified = vm.count("jplace-out") > 0;
     const bool local_spr_tuning_requested =
-        opt_local_spr_radius->count() > 0 ||
-        opt_local_spr_cluster_threshold->count() > 0 ||
-        opt_local_spr_rounds->count() > 0 ||
-        opt_local_spr_fast->count() > 0;
-    if (local_spr_tuning_requested && !local_spr) {
-        return app.exit(CLI::ValidationError(
-            "--local-spr",
-            "local SPR tuning flags require --local-spr"));
-    }
-    if (local_spr && !commit_to_tree) {
-        return app.exit(CLI::ValidationError(
-            "--local-spr",
-            "--local-spr requires --commit-to-tree"));
-    }
-    if (opt_batch_insert_size->count() > 0 && batch_insert_size > 0 && !commit_to_tree) {
-        return app.exit(CLI::ValidationError(
-            "--batch-insert-size",
-            "batch insert mode requires --commit-to-tree"));
-    }
-    if (batch_insert_size > 0 && commit_to_tree && opt_jplace_out->count() > 0) {
-        return app.exit(CLI::ValidationError(
-            "--jplace-out",
-            "batch insert mode does not support --jplace-out"));
-    }
-    (void)opt_local_spr;
-    (void)opt_fast;
+        vm.count("local-spr-radius") > 0 ||
+        vm.count("local-spr-cluster-threshold") > 0 ||
+        vm.count("local-spr-rounds") > 0 ||
+        vm.count("local-spr-fast") > 0;
 
     const std::filesystem::path config_base = std::filesystem::current_path();
 
     parse::RunInputs inputs;
     try {
+        if (tree_file_specified && tree_newick_specified) {
+            throw mlinput::ValidationError(
+                "--tree-newick",
+                "cannot be used together with --tree");
+        }
+        if (freqs_specified && empirical_freqs_specified) {
+            throw mlinput::ValidationError(
+                "--empirical-freqs",
+                "cannot be used together with --freqs");
+        }
+
+        if (freqs_specified) {
+            config.model.freqs = parse_cli_double_list(freqs_tokens, "--freqs");
+        }
+        if (vm.count("rates") > 0) {
+            config.model.rates = parse_cli_double_list(rate_tokens, "--rates");
+        }
+        if (vm.count("rate-weights") > 0) {
+            config.model.rate_weights = parse_cli_double_list(rate_weight_tokens, "--rate-weights");
+        }
+
+        if (batch_insert_size < 0) {
+            throw mlinput::ValidationError("--batch-insert-size", "must be >= 0");
+        }
+        if (local_spr_radius < 0) {
+            throw mlinput::ValidationError("--local-spr-radius", "must be >= 0");
+        }
+        if (local_spr_cluster_threshold < 0) {
+            throw mlinput::ValidationError("--local-spr-cluster-threshold", "must be >= 0");
+        }
+        if (local_spr_rounds <= 0) {
+            throw mlinput::ValidationError("--local-spr-rounds", "must be >= 1");
+        }
+        if (gpu_id < 0) {
+            throw mlinput::ValidationError("--gpu-id", "must be >= 0");
+        }
+        if (gpu_auto && gpu_id_specified) {
+            throw mlinput::ValidationError(
+                "--gpu-auto",
+                "cannot be used together with --gpu-id");
+        }
+
+        if (fast_mode) {
+            placement_fast = true;
+            local_spr_fast = true;
+        }
+        if (local_spr && batch_insert_size <= 0) {
+            batch_insert_size = 5;
+        }
+        commit_to_tree = !commit_tree_out.empty();
+
+        if (local_spr_tuning_requested && !local_spr) {
+            throw mlinput::ValidationError(
+                "--local-spr",
+                "local SPR tuning flags require --local-spr");
+        }
+        if (local_spr && !commit_to_tree) {
+            throw mlinput::ValidationError(
+                "--local-spr",
+                "--local-spr requires --commit-to-tree");
+        }
+        if (batch_insert_size_specified && batch_insert_size > 0 && !commit_to_tree) {
+            throw mlinput::ValidationError(
+                "--batch-insert-size",
+                "batch insert mode requires --commit-to-tree");
+        }
+        if (batch_insert_size > 0 && commit_to_tree && jplace_out_specified) {
+            throw mlinput::ValidationError(
+                "--jplace-out",
+                "batch insert mode does not support --jplace-out");
+        }
+
         if (!best_model_file.empty()) {
             try {
                 const auto best_model = mlmodel::parse_best_model_file(
@@ -291,15 +402,21 @@ int main(int argc, char** argv) {
                 config.model.rates = best_model.model.rates;
                 empirical_freqs = best_model.empirical_freqs;
             } catch (const std::exception& e) {
-                throw CLI::ValidationError("--best-model", e.what());
+                throw mlinput::ValidationError("--best-model", e.what());
             }
         }
-        if (no_per_rate_scaling) config.model.per_rate_scaling = false;
-        if (config.files.tree_alignment.empty()) throw CLI::RequiredError("--tree-alignment");
+        if (no_per_rate_scaling) {
+            config.model.per_rate_scaling = false;
+        }
+        if (config.files.tree_alignment.empty()) {
+            throw mlinput::RequiredError("--tree-alignment");
+        }
         if (config.files.query_alignment.empty()) {
             config.files.query_alignment = config.files.tree_alignment;
         }
-        if (tree_newick.empty() && config.files.tree.empty()) throw CLI::RequiredError("one of [--tree, --tree-newick]");
+        if (tree_newick.empty() && config.files.tree.empty()) {
+            throw mlinput::RequiredError("one of [--tree, --tree-newick]");
+        }
 
         if (!commit_tree_out.empty()) {
             mlinput::validate_output_path(config_base, "--commit-to-tree", commit_tree_out);
@@ -313,7 +430,7 @@ int main(int argc, char** argv) {
             const std::filesystem::path jplace_path =
                 mlinput::normalize_cli_path(config_base, jplace_out);
             if (commit_path == jplace_path) {
-                throw CLI::ValidationError(
+                throw mlinput::ValidationError(
                     "--jplace-out",
                     "must not be the same path as --commit-to-tree");
             }
@@ -326,7 +443,7 @@ int main(int argc, char** argv) {
             tree_alignment = parse::read_alignment_file(
                 mlinput::resolve_path(config_base, config.files.tree_alignment));
         } catch (const std::exception& e) {
-            throw CLI::ValidationError("--tree-alignment", e.what());
+            throw mlinput::ValidationError("--tree-alignment", e.what());
         }
 
         parse::Alignment query_alignment;
@@ -334,7 +451,7 @@ int main(int argc, char** argv) {
             query_alignment = parse::read_alignment_file(
                 mlinput::resolve_path(config_base, config.files.query_alignment));
         } catch (const std::exception& e) {
-            throw CLI::ValidationError("--query-alignment", e.what());
+            throw mlinput::ValidationError("--query-alignment", e.what());
         }
 
         std::string tree_text;
@@ -343,7 +460,7 @@ int main(int argc, char** argv) {
                 tree_text = mlinput::read_file_to_string(
                     mlinput::resolve_path(config_base, config.files.tree));
             } catch (const std::exception& e) {
-                throw CLI::ValidationError("--tree", e.what());
+                throw mlinput::ValidationError("--tree", e.what());
             }
         } else {
             tree_text = tree_newick;
@@ -359,20 +476,25 @@ int main(int argc, char** argv) {
             std::move(query_alignment),
             std::move(tree_text)};
 
-        if (inputs.tree_alignment.names.empty())
-            throw CLI::ValidationError("--tree-alignment", "contains no sequences");
-        if (inputs.tree_alignment.sites == 0)
-            throw CLI::ValidationError("--tree-alignment", "contains zero sites");
+        if (inputs.tree_alignment.names.empty()) {
+            throw mlinput::ValidationError("--tree-alignment", "contains no sequences");
+        }
+        if (inputs.tree_alignment.sites == 0) {
+            throw mlinput::ValidationError("--tree-alignment", "contains zero sites");
+        }
 
-        if (inputs.query_alignment.names.empty())
-            throw CLI::ValidationError("--query-alignment", "contains no sequences");
-        if (inputs.query_alignment.sites == 0)
-            throw CLI::ValidationError("--query-alignment", "contains zero sites");
+        if (inputs.query_alignment.names.empty()) {
+            throw mlinput::ValidationError("--query-alignment", "contains no sequences");
+        }
+        if (inputs.query_alignment.sites == 0) {
+            throw mlinput::ValidationError("--query-alignment", "contains zero sites");
+        }
         if (inputs.query_alignment.sites != inputs.tree_alignment.sites) {
-            throw CLI::ValidationError("--query-alignment",
-                                       "sites mismatch with --tree-alignment (" +
-                                           std::to_string(inputs.query_alignment.sites) + " vs " +
-                                           std::to_string(inputs.tree_alignment.sites) + ")");
+            throw mlinput::ValidationError(
+                "--query-alignment",
+                "sites mismatch with --tree-alignment (" +
+                    std::to_string(inputs.query_alignment.sites) + " vs " +
+                    std::to_string(inputs.tree_alignment.sites) + ")");
         }
 
         mlinput::validate_alignment_names(inputs.tree_alignment, "--tree-alignment");
@@ -391,11 +513,59 @@ int main(int argc, char** argv) {
                 inputs.query_alignment,
                 "--query-alignment");
         }
-    } catch (const CLI::Error& e) {
-        return app.exit(e);
+    } catch (const mlinput::CliError& e) {
+        return exit_with_cli_error(program_name, e.what());
     }
 
+    mlipper::gpu::DeviceReservation gpu_reservation{};
     try {
+    const int visible_gpu_count = mlipper::gpu::visible_device_count();
+    if (visible_gpu_count <= 0) {
+        throw std::runtime_error(
+            "No CUDA devices are visible to MLIPPER. "
+            "Check your driver/runtime setup or CUDA_VISIBLE_DEVICES.");
+    }
+    int requested_gpu_id = gpu_id;
+    if (gpu_auto) {
+        gpu_reservation =
+            mlipper::gpu::reserve_any_visible_device_or_wait_or_throw();
+        requested_gpu_id = gpu_reservation.device;
+    } else if (gpu_id_specified) {
+        gpu_reservation =
+            mlipper::gpu::reserve_specific_device_or_throw(gpu_id);
+        requested_gpu_id = gpu_reservation.device;
+    } else if (gpu_id >= visible_gpu_count) {
+        std::ostringstream oss;
+        oss << "--gpu-id " << gpu_id
+            << " is out of range for the current process; "
+            << visible_gpu_count << " CUDA device"
+            << (visible_gpu_count == 1 ? " is" : "s are")
+            << " visible.";
+        throw std::runtime_error(oss.str());
+    }
+
+    mlipper::gpu::set_device_or_throw(requested_gpu_id);
+    const int active_gpu_id = mlipper::gpu::current_device_or_throw();
+    const cudaDeviceProp active_gpu_props =
+        mlipper::gpu::current_device_properties_or_throw();
+    if (gpu_auto) {
+        std::cout << "Auto-reserved CUDA device " << active_gpu_id
+                  << " (" << active_gpu_props.name
+                  << ", PCI " << gpu_reservation.bus_id << ")"
+                  << " from " << visible_gpu_count << " visible GPU"
+                  << (visible_gpu_count == 1 ? "" : "s") << "\n";
+    } else if (gpu_id_specified) {
+        std::cout << "Using reserved CUDA device " << active_gpu_id
+                  << " (" << active_gpu_props.name
+                  << ", PCI " << gpu_reservation.bus_id << ")"
+                  << " from " << visible_gpu_count << " visible GPU"
+                  << (visible_gpu_count == 1 ? "" : "s") << "\n";
+    } else {
+        std::cout << "Using CUDA device " << active_gpu_id
+                  << " (" << active_gpu_props.name << ")"
+                  << " from " << visible_gpu_count << " visible GPU"
+                  << (visible_gpu_count == 1 ? "" : "s") << "\n";
+    }
     start_gpu = std::chrono::steady_clock::now();
     CUDA_CHECK(cudaEventCreate(&start));
     CUDA_CHECK(cudaEventCreate(&stop));
@@ -442,39 +612,11 @@ int main(int argc, char** argv) {
     const std::vector<unsigned>& pattern_weights_arg =
         disable_pattern_weights ? no_pattern_weights : pattern_weights;
 
-    mlenv::set_int_env_if_specified("MLIPPER_FULL_OPT_PASSES", full_opt_passes);
-    mlenv::set_int_env_if_specified("MLIPPER_REFINE_GLOBAL_PASSES", refine_global_passes);
-    mlenv::set_int_env_if_specified("MLIPPER_REFINE_EXTRA_PASSES", refine_extra_passes);
-    mlenv::set_int_env_if_specified("MLIPPER_REFINE_DETECT_TOPK", refine_detect_topk);
-    mlenv::set_int_env_if_specified("MLIPPER_REFINE_TOPK", refine_topk);
-    mlenv::set_double_env_if_specified("MLIPPER_REFINE_GAP_TOP2", refine_gap_top2);
-    mlenv::set_double_env_if_specified("MLIPPER_REFINE_GAP_TOP5", refine_gap_top5);
-    mlenv::set_double_env_if_specified(
-        "MLIPPER_REFINE_CONVERGED_LOGLK_EPS",
-        refine_converged_loglk_eps);
-    mlenv::set_double_env_if_specified(
-        "MLIPPER_REFINE_CONVERGED_LENGTH_EPS",
-        refine_converged_length_eps);
     if (placement_fast) {
-        if (full_opt_passes < 0) {
-            setenv("MLIPPER_FULL_OPT_PASSES", "1", 1);
-        }
-        if (refine_global_passes < 0) {
-            setenv("MLIPPER_REFINE_GLOBAL_PASSES", "0", 1);
-        }
-        if (refine_extra_passes < 0) {
-            setenv("MLIPPER_REFINE_EXTRA_PASSES", "0", 1);
-        }
-        if (refine_detect_topk < 0) {
-            setenv("MLIPPER_REFINE_DETECT_TOPK", "0", 1);
-        }
-        if (refine_topk < 0) {
-            setenv("MLIPPER_REFINE_TOPK", "0", 1);
-        }
+        setenv("MLIPPER_FULL_OPT_PASSES", "1", 1);
     }
 
     printf("Precision mode: %s\n", FP_MODE_NAME);
-    // const auto start_gpu = std::chrono::steady_clock::now();
     std::vector<PlacementResult> placement_results;
     std::vector<std::string> committed_query_names(placement_queries.size());
 
@@ -854,6 +996,7 @@ int main(int argc, char** argv) {
     cudaStreamDestroy(stream);
 
     free_device_tree(res.dev);
+    mlipper::gpu::release_device_reservation(&gpu_reservation);
 
     return 0;
     } catch (const std::exception& e) {
@@ -861,6 +1004,7 @@ int main(int argc, char** argv) {
         if (start) cudaEventDestroy(start);
         if (stop) cudaEventDestroy(stop);
         if (stream) cudaStreamDestroy(stream);
+        mlipper::gpu::release_device_reservation(&gpu_reservation);
         std::cout.flush();
         std::cerr << "Error: " << e.what() << "\n";
         return 1;

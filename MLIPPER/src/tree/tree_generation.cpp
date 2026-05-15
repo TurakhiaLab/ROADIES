@@ -1,5 +1,3 @@
-#include <cstdio>
-#include <cstdlib>
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
@@ -20,54 +18,8 @@
 #include "likelihood/partial_likelihood.cuh"
 #include "io/parse_file.hpp"
 
-namespace mlenv = mlipper::env;
-
 static void throw_if(bool cond, const char* msg) {
     if (cond) throw std::runtime_error(msg);
-}
-
-static void dump_tree_topology_once(const TreeBuildResult& tree) {
-    if (!mlenv::env_flag_enabled("MLIPPER_DEBUG_TREE_TOPOLOGY")) return;
-    static bool dumped = false;
-    if (dumped) return;
-    dumped = true;
-
-    std::fprintf(stderr,
-                 "[MLIPPER-TREE] root=%d nodes=%zu\n",
-                 tree.root_id,
-                 tree.nodes.size());
-    for (const TreeNode& node : tree.nodes) {
-        std::fprintf(stderr,
-                     "[MLIPPER-TREE] node=%d parent=%d left=%d right=%d is_tip=%d blen=%.12e name=%s\n",
-                     node.id,
-                     node.parent,
-                     node.left,
-                     node.right,
-                     node.is_tip ? 1 : 0,
-                     static_cast<double>(node.branch_length_to_parent),
-                     node.name.empty() ? "<inner>" : node.name.c_str());
-    }
-}
-
-static void dump_vector_line(const char* tag, const char* name,
-                             const std::vector<double>& values, int count) {
-    std::fprintf(stderr, "[%s] %s=(", tag, name);
-    for (int idx = 0; idx < count; ++idx) {
-        std::fprintf(stderr, "%s%.15e", idx ? "," : "", values[idx]);
-    }
-    std::fprintf(stderr, ")\n");
-}
-
-static void dump_matrix_rows(const char* tag, const char* name,
-                             const std::vector<double>& values, int states) {
-    for (int row = 0; row < states; ++row) {
-        std::fprintf(stderr, "[%s] %s_row%d=(", tag, name, row);
-        for (int col = 0; col < states; ++col) {
-            const double value = values[(size_t)row * (size_t)states + (size_t)col];
-            std::fprintf(stderr, "%s%.15e", col ? "," : "", value);
-        }
-        std::fprintf(stderr, ")\n");
-    }
 }
 
 static std::string preview_names(std::vector<std::string> names, size_t limit = 5) {
@@ -82,23 +34,6 @@ static std::string preview_names(std::vector<std::string> names, size_t limit = 
         oss << " ... (" << names.size() << " total)";
     }
     return oss.str();
-}
-
-static void dump_eigendecomp_once(const std::vector<double>& q_rowmajor,
-                                  const std::vector<double>& pi,
-                                  const EigResult& eigen,
-                                  int states) {
-    if (!mlenv::env_flag_enabled("MLIPPER_DEBUG_EIGEN")) return;
-    static bool dumped = false;
-    if (dumped) return;
-    dumped = true;
-
-    std::fprintf(stderr, "[MLIPPER-EIGEN] states=%d\n", states);
-    dump_vector_line("MLIPPER-EIGEN", "pi", pi, states);
-    dump_vector_line("MLIPPER-EIGEN", "evals", eigen.lambdas, states);
-    dump_matrix_rows("MLIPPER-EIGEN", "Q", q_rowmajor, states);
-    dump_matrix_rows("MLIPPER-EIGEN", "V", eigen.V, states);
-    dump_matrix_rows("MLIPPER-EIGEN", "Vinv", eigen.Vinv, states);
 }
 
 constexpr double kGammaAlphaMin = 0.02;
@@ -664,8 +599,6 @@ static BuildToGpuResult BuildAllToGPUFromTree(
     if (pi.size() != (size_t)states)
         throw std::runtime_error("pi size mismatch.");
 
-    dump_tree_topology_once(T);
-
     HostPacking H = pack_host_arrays_from_tree_and_msa(
         T, msa_tip_names, msa_rows, sites, states);
     if (!pattern_weights.empty() && pattern_weights.size() != sites) {
@@ -674,8 +607,6 @@ static BuildToGpuResult BuildAllToGPUFromTree(
     H.pattern_weights = pattern_weights;
 
     EigResult Eigen = gtr_eigendecomp_cpu(Q_rowmajor.data(), pi.data(), states);
-    dump_eigendecomp_once(Q_rowmajor, pi, Eigen, states);
-
     fill_pmats_in_host_packing(T, H, Eigen, rate_multipliers, states, rate_cats);
 
     PlacementQueryBatch Q = make_query_batch(

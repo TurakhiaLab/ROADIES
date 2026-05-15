@@ -5,7 +5,10 @@ CUDA_HOME ?= /usr/local/cuda-12
 NVCC      := $(CUDA_HOME)/bin/nvcc
 CUDA_INC  := -I$(CUDA_HOME)/include
 CUDA_LIB  := -L$(CUDA_HOME)/lib64
-NVCC_ARCH ?= -gencode arch=compute_86,code=sm_86 \
+# Default fatbin covers common Turing/Ampere targets and keeps PTX for newer GPUs.
+NVCC_ARCH ?= -gencode arch=compute_75,code=sm_75 \
+        -gencode arch=compute_80,code=sm_80 \
+        -gencode arch=compute_86,code=sm_86 \
         -gencode arch=compute_86,code=compute_86
 
 # ==========================================
@@ -19,6 +22,7 @@ REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 # Usage: make DEBUG=1
 # ==========================================
 DEBUG ?= 0
+# Default released builds use single precision.
 USE_DOUBLE ?= 1
 LINEINFO ?= 0
 BUILD_DIR ?= build
@@ -31,27 +35,24 @@ PLL_LINK_FLAGS := -L$(PLL_LIB_DIR) -lpll
 
 # ==========================================
 # System LAPACK / BLAS
-# Static-link so the binary carries no runtime liblapack/libblas dependency,
-# avoiding the ATL_dGetNB symbol error when conda shadows system ATLAS blas.
 # ==========================================
-GFORTRAN_A  := $(shell gfortran -print-file-name=libgfortran.a)
-QUADMATH_A  := $(shell gfortran -print-file-name=libquadmath.a)
-LAPACK_LIBS := /usr/lib/x86_64-linux-gnu/liblapack.a \
-               /usr/lib/x86_64-linux-gnu/libblas.a \
-               $(GFORTRAN_A) $(QUADMATH_A) -lm
+LAPACK_LIBS := -L/usr/lib/x86_64-linux-gnu \
+               -llapack -lblas -lm
 
 # ==========================================
 # Include paths
 # ==========================================
-CLI11_INC_DIR ?= lib/CLI11/include
-
 INCLUDES := -I. \
             -Isrc \
             -Isrc/pmatrix \
-            -I$(CLI11_INC_DIR) \
             -I$(PLL_INC_DIR) \
             -I$(CUDA_HOME)/include \
             -I$(CONDA_PREFIX)/include
+
+BOOST_LINK_FLAGS := -lboost_program_options
+ifdef CONDA_PREFIX
+BOOST_LINK_FLAGS := -L$(CONDA_PREFIX)/lib $(BOOST_LINK_FLAGS)
+endif
 
 # ==========================================
 # Flags
@@ -118,7 +119,7 @@ FORCE:
 
 $(BUILD_CONFIG): FORCE
 	@mkdir -p $(dir $(BUILD_CONFIG))
-	@printf "DEBUG=%s\nUSE_DOUBLE=%s\nLINEINFO=%s\nCUDA_HOME=%s\nPLL_INC_DIR=%s\nPLL_LIB_DIR=%s\n" "$(DEBUG)" "$(USE_DOUBLE)" "$(LINEINFO)" "$(CUDA_HOME)" "$(PLL_INC_DIR)" "$(PLL_LIB_DIR)" > $(BUILD_CONFIG).tmp
+	@printf "DEBUG=%s\nUSE_DOUBLE=%s\nLINEINFO=%s\nCUDA_HOME=%s\nPLL_INC_DIR=%s\nPLL_LIB_DIR=%s\nNVCC_ARCH=%s\n" "$(DEBUG)" "$(USE_DOUBLE)" "$(LINEINFO)" "$(CUDA_HOME)" "$(PLL_INC_DIR)" "$(PLL_LIB_DIR)" "$(NVCC_ARCH)" > $(BUILD_CONFIG).tmp
 	@cmp -s $(BUILD_CONFIG).tmp $(BUILD_CONFIG) 2>/dev/null || mv $(BUILD_CONFIG).tmp $(BUILD_CONFIG)
 	@rm -f $(BUILD_CONFIG).tmp
 
@@ -136,6 +137,7 @@ $(BUILD_DIR)/%.o: %.cu
 $(TARGET): $(OBJS)
 	@mkdir -p $(dir $@)
 	$(NVCC) -ccbin $(CXX) $(NVCC_ARCH) -o $@ $^ \
+		$(BOOST_LINK_FLAGS) \
 		$(PLL_LINK_FLAGS) \
 		$(CUDA_LIB) -lcudart -lcuda \
 		-ltbb \

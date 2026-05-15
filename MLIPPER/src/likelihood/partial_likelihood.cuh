@@ -35,6 +35,16 @@ __device__ void compute_midpoint_inner_inner_ratecat(
     fp_t* shared_target_mat = nullptr,
     fp_t* shared_parent_mat = nullptr);
 
+__device__ void compute_midpoint_inner_inner_states4_generic(
+    const DeviceTree& D,
+    const NodeOpInfo& op,
+    unsigned int site,
+    bool proximal_mode = false,
+    int op_pmat_idx = 0,
+    bool active_thread = true,
+    fp_t* shared_target_mat = nullptr,
+    fp_t* shared_parent_mat = nullptr);
+
 // Generic downward helpers.
 __device__ void compute_downward_inner_inner_generic(const DeviceTree& D, const NodeOpInfo& op, unsigned int site);
 __device__ void compute_downward_inner_tip_generic(const DeviceTree& D, const NodeOpInfo& op, unsigned int site);
@@ -45,8 +55,15 @@ __global__ void Rtree_Likelihood_Site_Parallel_Upward_Kernel(
     const NodeOpInfo* ops,
     int num_ops);
 
+__global__ void InitializeTipClvUpKernel(const DeviceTree D);
+
 // Downward (preorder) site-parallel kernel.
 __global__ void Rtree_Likelihood_Site_Parallel_Downward_Kernel(
+    const DeviceTree D,
+    const NodeOpInfo* ops,
+    int num_ops);
+
+__global__ void Rtree_Likelihood_Site_Parallel_Downward_Level_Kernel(
     const DeviceTree D,
     const NodeOpInfo* ops,
     int num_ops);
