@@ -60,95 +60,24 @@ std::vector<double> parse_slash_floats(const std::string& text, const char* labe
 }
 
 bool add_empirical_dna4_counts(char c, std::vector<double>& counts) {
-    switch (c) {
-        case 'A':
-        case 'a':
-            counts[0] += 1.0;
-            return true;
-        case 'C':
-        case 'c':
-            counts[1] += 1.0;
-            return true;
-        case 'G':
-        case 'g':
-            counts[2] += 1.0;
-            return true;
-        case 'T':
-        case 't':
-        case 'U':
-        case 'u':
-            counts[3] += 1.0;
-            return true;
-        case 'R':
-        case 'r':
-            counts[0] += 0.5;
-            counts[2] += 0.5;
-            return true;
-        case 'Y':
-        case 'y':
-            counts[1] += 0.5;
-            counts[3] += 0.5;
-            return true;
-        case 'S':
-        case 's':
-            counts[1] += 0.5;
-            counts[2] += 0.5;
-            return true;
-        case 'W':
-        case 'w':
-            counts[0] += 0.5;
-            counts[3] += 0.5;
-            return true;
-        case 'K':
-        case 'k':
-            counts[2] += 0.5;
-            counts[3] += 0.5;
-            return true;
-        case 'M':
-        case 'm':
-            counts[0] += 0.5;
-            counts[1] += 0.5;
-            return true;
-        case 'B':
-        case 'b': {
-            const double share = 1.0 / 3.0;
-            counts[1] += share;
-            counts[2] += share;
-            counts[3] += share;
-            return true;
+    const uint8_t mask = encode_state_DNA4_mask(c);
+    int bit_count = 0;
+    for (int state = 0; state < 4; ++state) {
+        if (mask & (1u << state)) {
+            ++bit_count;
         }
-        case 'D':
-        case 'd': {
-            const double share = 1.0 / 3.0;
-            counts[0] += share;
-            counts[2] += share;
-            counts[3] += share;
-            return true;
-        }
-        case 'H':
-        case 'h': {
-            const double share = 1.0 / 3.0;
-            counts[0] += share;
-            counts[1] += share;
-            counts[3] += share;
-            return true;
-        }
-        case 'V':
-        case 'v': {
-            const double share = 1.0 / 3.0;
-            counts[0] += share;
-            counts[1] += share;
-            counts[2] += share;
-            return true;
-        }
-        case 'N':
-        case 'n':
-        case '-':
-        case '.':
-        case '?':
-        default:
-            return false;
     }
+    if (bit_count == 0) {
+        return false;
+    }
+
+    const double share = 1.0 / static_cast<double>(bit_count);
+    for (int state = 0; state < 4; ++state) {
+        if (mask & (1u << state)) {
+            counts[static_cast<size_t>(state)] += share;
+        }
+    }
+    return true;
 }
 
 } // namespace

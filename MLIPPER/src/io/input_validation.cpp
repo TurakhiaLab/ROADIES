@@ -13,7 +13,6 @@
 #include <vector>
 #include <unistd.h>
 
-#include <CLI/CLI.hpp>
 #include <libpll/pll.h>
 
 namespace {
@@ -72,12 +71,16 @@ void validate_positive_vector(
     double sum = 0.0;
     for (double value : values) {
         if (!std::isfinite(value) || value <= 0.0) {
-            throw CLI::ValidationError(option_name, std::string(what) + " must be finite and > 0");
+            throw mlipper::input::ValidationError(
+                option_name,
+                std::string(what) + " must be finite and > 0");
         }
         sum += value;
     }
     if (!(sum > 0.0) || !std::isfinite(sum)) {
-        throw CLI::ValidationError(option_name, std::string(what) + " must sum to a positive finite value");
+        throw mlipper::input::ValidationError(
+            option_name,
+            std::string(what) + " must sum to a positive finite value");
     }
 }
 
@@ -98,7 +101,7 @@ void validate_newick_with_pll(
     const std::string& tree_text,
     const std::string& option_name) {
     if (tree_text.empty()) {
-        throw CLI::ValidationError(option_name, "tree is empty");
+        throw ValidationError(option_name, "tree is empty");
     }
 
     std::filesystem::path tree_path_template =
@@ -111,14 +114,14 @@ void validate_newick_with_pll(
 
     const int tree_fd = mkstemps(tree_path_buffer.data(), 4);
     if (tree_fd < 0) {
-        throw CLI::ValidationError(option_name, "failed to create temporary file for tree validation");
+        throw ValidationError(option_name, "failed to create temporary file for tree validation");
     }
     close(tree_fd);
 
     try {
         std::ofstream ofs(tree_path_buffer.data(), std::ios::trunc);
         if (!ofs) {
-            throw CLI::ValidationError(option_name, "failed to open temporary file for tree validation");
+            throw ValidationError(option_name, "failed to open temporary file for tree validation");
         }
         ofs << tree_text;
         ofs.close();
@@ -126,7 +129,7 @@ void validate_newick_with_pll(
         pll_rtree_t* rtree = pll_rtree_parse_newick(tree_path_buffer.data());
         std::remove(tree_path_buffer.data());
         if (!rtree) {
-            throw CLI::ValidationError(option_name, "invalid Newick syntax");
+            throw ValidationError(option_name, "invalid Newick syntax");
         }
         pll_rtree_destroy(rtree, nullptr);
     } catch (...) {
@@ -159,19 +162,19 @@ void validate_output_path(
     const std::string& raw_path) {
     const std::filesystem::path path = normalize_cli_path(base, raw_path);
     if (path.empty() || path.filename().empty()) {
-        throw CLI::ValidationError(option_name, "output path must name a file");
+        throw ValidationError(option_name, "output path must name a file");
     }
 
     std::error_code ec;
     if (std::filesystem::exists(path, ec)) {
         if (ec) {
-            throw CLI::ValidationError(option_name, "failed to inspect output path");
+            throw ValidationError(option_name, "failed to inspect output path");
         }
         if (std::filesystem::is_directory(path, ec)) {
-            throw CLI::ValidationError(option_name, "output path points to a directory");
+            throw ValidationError(option_name, "output path points to a directory");
         }
         if (ec) {
-            throw CLI::ValidationError(option_name, "failed to inspect output path");
+            throw ValidationError(option_name, "failed to inspect output path");
         }
     }
 
@@ -179,11 +182,11 @@ void validate_output_path(
     while (!ancestor.empty()) {
         const bool exists = std::filesystem::exists(ancestor, ec);
         if (ec) {
-            throw CLI::ValidationError(option_name, "failed to inspect output parent path");
+            throw ValidationError(option_name, "failed to inspect output parent path");
         }
         if (exists) {
             if (!std::filesystem::is_directory(ancestor, ec) || ec) {
-                throw CLI::ValidationError(
+                throw ValidationError(
                     option_name,
                     "output parent path is not a directory: " + ancestor.string());
             }
@@ -197,7 +200,7 @@ void validate_alignment_names(
     const parse::Alignment& alignment,
     const std::string& option_name) {
     if (alignment.names.size() != alignment.sequences.size()) {
-        throw CLI::ValidationError(option_name, "name/sequence count mismatch");
+        throw ValidationError(option_name, "name/sequence count mismatch");
     }
 
     std::unordered_set<std::string> seen;
@@ -205,7 +208,7 @@ void validate_alignment_names(
     seen.reserve(alignment.names.size() * 2);
     for (const std::string& name : alignment.names) {
         if (name.empty()) {
-            throw CLI::ValidationError(option_name, "contains an empty sequence name");
+            throw ValidationError(option_name, "contains an empty sequence name");
         }
         if (!seen.insert(name).second) {
             duplicates.push_back(name);
@@ -214,7 +217,7 @@ void validate_alignment_names(
     if (!duplicates.empty()) {
         std::sort(duplicates.begin(), duplicates.end());
         duplicates.erase(std::unique(duplicates.begin(), duplicates.end()), duplicates.end());
-        throw CLI::ValidationError(
+        throw ValidationError(
             option_name,
             "contains duplicate sequence names: " + preview_name_list(duplicates));
     }
@@ -235,7 +238,7 @@ void validate_alignment_symbols(
             std::ostringstream oss;
             oss << "sequence '" << name << "' has unsupported DNA symbol '"
                 << c << "' at site " << (site_idx + 1);
-            throw CLI::ValidationError(option_name, oss.str());
+            throw ValidationError(option_name, oss.str());
         }
     }
 }
@@ -243,37 +246,37 @@ void validate_alignment_symbols(
 void validate_model_inputs(const parse::ModelConfig& model) {
     constexpr int kMaxRateCats = 8;
     if (model.states != 4) {
-        throw CLI::ValidationError("--states", "currently only 4-state DNA input is supported");
+        throw ValidationError("--states", "currently only 4-state DNA input is supported");
     }
     if (model.ncat <= 0 || model.ncat > kMaxRateCats) {
-        throw CLI::ValidationError(
+        throw ValidationError(
             "--ncat",
             "must be between 1 and " + std::to_string(kMaxRateCats));
     }
     if (uppercase_ascii(model.subst_model) != "GTR") {
-        throw CLI::ValidationError("--subst-model", "currently only GTR is supported");
+        throw ValidationError("--subst-model", "currently only GTR is supported");
     }
     if (!std::isfinite(model.alpha) || model.alpha <= 0.0) {
-        throw CLI::ValidationError("--alpha", "must be finite and > 0");
+        throw ValidationError("--alpha", "must be finite and > 0");
     }
     if (!std::isfinite(model.pinv) || model.pinv < 0.0 || model.pinv > 1.0) {
-        throw CLI::ValidationError("--pinv", "must be finite and between 0 and 1");
+        throw ValidationError("--pinv", "must be finite and between 0 and 1");
     }
     if (!model.freqs.empty()) {
         if (static_cast<int>(model.freqs.size()) != model.states) {
-            throw CLI::ValidationError(
+            throw ValidationError(
                 "--freqs",
                 "must have exactly " + std::to_string(model.states) + " values (states)");
         }
         validate_positive_vector(model.freqs, "--freqs", "equilibrium frequencies");
     }
     if (model.rates.size() != 6) {
-        throw CLI::ValidationError("--rates", "must have exactly 6 values for 4-state GTR");
+        throw ValidationError("--rates", "must have exactly 6 values for 4-state GTR");
     }
     validate_positive_vector(model.rates, "--rates", "GTR rates");
     if (!model.rate_weights.empty()) {
         if (static_cast<int>(model.rate_weights.size()) != model.ncat) {
-            throw CLI::ValidationError(
+            throw ValidationError(
                 "--rate-weights",
                 "must have exactly " + std::to_string(model.ncat) + " values (ncat)");
         }
@@ -300,7 +303,7 @@ void validate_query_reference_name_overlap(
     if (!overlaps.empty()) {
         std::sort(overlaps.begin(), overlaps.end());
         overlaps.erase(std::unique(overlaps.begin(), overlaps.end()), overlaps.end());
-        throw CLI::ValidationError(
+        throw ValidationError(
             option_name,
             "query names overlap reference tip names, which would cause ambiguous committed tips: " +
                 preview_name_list(overlaps));

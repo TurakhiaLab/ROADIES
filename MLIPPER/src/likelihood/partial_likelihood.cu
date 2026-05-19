@@ -63,6 +63,228 @@ __device__ __forceinline__ void add_scaler_shift(
     scaler[scaler_slot(D, rate_idx)] += shift;
 }
 
+__device__ __forceinline__ fp4_t tip_clv_states4(unsigned int mask)
+{
+    return make_fp4(
+        (mask & 1u) ? fp_t(1) : fp_t(0),
+        (mask & 2u) ? fp_t(1) : fp_t(0),
+        (mask & 4u) ? fp_t(1) : fp_t(0),
+        (mask & 8u) ? fp_t(1) : fp_t(0));
+}
+
+__device__ __forceinline__ void store_fp4(fp_t* dst, const fp4_t& value)
+{
+    dst[0] = value.x;
+    dst[1] = value.y;
+    dst[2] = value.z;
+    dst[3] = value.w;
+}
+
+__device__ __forceinline__ fp_t masked_tip_sum_states4(
+    const fp_t* row,
+    unsigned int mask)
+{
+    fp_t sum = fp_t(0);
+    if (mask & 1u) sum += row[0];
+    if (mask & 2u) sum += row[1];
+    if (mask & 4u) sum += row[2];
+    if (mask & 8u) sum += row[3];
+    return sum;
+}
+
+__device__ __forceinline__ void write_downward_inherited_scalers_states4(
+    const DeviceTree& D,
+    unsigned int* parent_scaler,
+    unsigned int* sibling_scaler,
+    unsigned int* target_up_scaler,
+    unsigned int* down_scaler,
+    unsigned int* mid_scaler,
+    unsigned int* mid_base_scaler,
+    unsigned int rate_idx,
+    bool write_mid_base)
+{
+    const unsigned int down_inherited =
+        read_scaler_shift(D, parent_scaler, rate_idx) +
+        read_scaler_shift(D, sibling_scaler, rate_idx);
+    const unsigned int mid_inherited =
+        down_inherited + read_scaler_shift(D, target_up_scaler, rate_idx);
+    write_scaler_shift(D, down_scaler, rate_idx, down_inherited);
+    write_scaler_shift(D, mid_scaler, rate_idx, mid_inherited);
+    if (write_mid_base) {
+        write_scaler_shift(D, mid_base_scaler, rate_idx, down_inherited);
+    }
+}
+
+__device__ __forceinline__ void build_midpoint_states4(
+    const fp_t* half_mat,
+    fp_t p0, fp_t p1, fp_t p2, fp_t p3,
+    const fp4_t& target_up,
+    fp_t* out_mid)
+{
+    const fp4_t parent_vec = make_fp4(p0, p1, p2, p3);
+    out_mid[0] = fp_dot4(make_fp4(half_mat[0], half_mat[4], half_mat[8],  half_mat[12]), parent_vec) *
+                 fp_dot4(make_fp4(half_mat[0], half_mat[4], half_mat[8],  half_mat[12]), target_up);
+    out_mid[1] = fp_dot4(make_fp4(half_mat[1], half_mat[5], half_mat[9],  half_mat[13]), parent_vec) *
+                 fp_dot4(make_fp4(half_mat[1], half_mat[5], half_mat[9],  half_mat[13]), target_up);
+    out_mid[2] = fp_dot4(make_fp4(half_mat[2], half_mat[6], half_mat[10], half_mat[14]), parent_vec) *
+                 fp_dot4(make_fp4(half_mat[2], half_mat[6], half_mat[10], half_mat[14]), target_up);
+    out_mid[3] = fp_dot4(make_fp4(half_mat[3], half_mat[7], half_mat[11], half_mat[15]), parent_vec) *
+                 fp_dot4(make_fp4(half_mat[3], half_mat[7], half_mat[11], half_mat[15]), target_up);
+}
+
+__device__ __forceinline__ void scale_states4_clv_if_needed(
+    const DeviceTree& D,
+    unsigned int* scaler,
+    unsigned int rate_idx,
+    fp_t* values)
+{
+    const fp_t max_val = fp_hmax4(values[0], values[1], values[2], values[3]);
+    const unsigned int shift = threshold_scale_shift(max_val);
+    if (!shift) return;
+    add_scaler_shift(D, scaler, rate_idx, shift);
+    #pragma unroll
+    for (int j = 0; j < 4; ++j) {
+        scale_clv_pow2(values[j], shift);
+    }
+}
+
+__device__ __forceinline__ void scale_states4_clv_if_needed(
+    const DeviceTree& D,
+    unsigned int* scaler,
+    unsigned int rate_idx,
+    fp_t* values,
+    fp_t max_val)
+{
+    const unsigned int shift = threshold_scale_shift(max_val);
+    if (!shift) return;
+    add_scaler_shift(D, scaler, rate_idx, shift);
+    #pragma unroll
+    for (int j = 0; j < 4; ++j) {
+        scale_clv_pow2(values[j], shift);
+    }
+}
+
+__device__ __forceinline__ fp_t compute_tip_tip_states4_rate(
+    const fp_t* left_mat,
+    const fp_t* right_mat,
+    unsigned int left_mask,
+    unsigned int right_mask,
+    fp_t* out)
+{
+    fp_t max_val = fp_t(0);
+    const fp_t* left_row = left_mat;
+    const fp_t* right_row = right_mat;
+    #pragma unroll
+    for (int i = 0; i < 4; ++i) {
+        const fp_t left_term = masked_tip_sum_states4(left_row, left_mask);
+        const fp_t right_term = masked_tip_sum_states4(right_row, right_mask);
+        const fp_t value = left_term * right_term;
+        out[i] = value;
+        if (value > max_val) max_val = value;
+        left_row += 4;
+        right_row += 4;
+    }
+    return max_val;
+}
+
+__device__ __forceinline__ fp_t compute_tip_inner_states4_rate(
+    const fp_t* tip_mat,
+    const fp_t* inner_mat,
+    const fp_t* inner_clv,
+    unsigned int tip_mask,
+    fp_t* out)
+{
+    const fp4_t inner = make_fp4(inner_clv[0], inner_clv[1], inner_clv[2], inner_clv[3]);
+    fp_t max_val = fp_t(0);
+    const fp_t* tip_row = tip_mat;
+    const fp_t* inner_row = inner_mat;
+    #pragma unroll
+    for (int i = 0; i < 4; ++i) {
+        const fp_t left_term = masked_tip_sum_states4(tip_row, tip_mask);
+        const fp_t right_term = fp_dot4(
+            make_fp4(inner_row[0], inner_row[1], inner_row[2], inner_row[3]),
+            inner);
+        const fp_t value = left_term * right_term;
+        out[i] = value;
+        if (value > max_val) max_val = value;
+        tip_row += 4;
+        inner_row += 4;
+    }
+    return max_val;
+}
+
+__device__ __forceinline__ fp_t compute_inner_inner_states4_rate(
+    const fp_t* left_mat,
+    const fp_t* right_mat,
+    const fp_t* left_clv,
+    const fp_t* right_clv,
+    fp_t* out)
+{
+    const fp4_t left = make_fp4(left_clv[0], left_clv[1], left_clv[2], left_clv[3]);
+    const fp4_t right = make_fp4(right_clv[0], right_clv[1], right_clv[2], right_clv[3]);
+    fp_t max_val = fp_t(0);
+    const fp_t* left_row = left_mat;
+    const fp_t* right_row = right_mat;
+    #pragma unroll
+    for (int i = 0; i < 4; ++i) {
+        const fp_t left_term = fp_dot4(
+            make_fp4(left_row[0], left_row[1], left_row[2], left_row[3]),
+            left);
+        const fp_t right_term = fp_dot4(
+            make_fp4(right_row[0], right_row[1], right_row[2], right_row[3]),
+            right);
+        const fp_t value = left_term * right_term;
+        out[i] = value;
+        if (value > max_val) max_val = value;
+        left_row += 4;
+        right_row += 4;
+    }
+    return max_val;
+}
+
+__global__ void InitializeTipClvUpKernel(const DeviceTree D)
+{
+    if (!D.d_tipchars || !D.d_tip_node_ids || !D.d_clv_up) return;
+
+    const size_t tip_site_idx =
+        static_cast<size_t>(blockIdx.x) * static_cast<size_t>(blockDim.x) +
+        static_cast<size_t>(threadIdx.x);
+    const size_t total_tip_sites = static_cast<size_t>(D.tips) * D.sites;
+    if (tip_site_idx >= total_tip_sites) return;
+
+    const size_t tip_idx = tip_site_idx / D.sites;
+    const size_t site = tip_site_idx % D.sites;
+    const int node_id = D.d_tip_node_ids[tip_idx];
+    if (node_id < 0 || node_id >= D.capacity_N) return;
+
+    const unsigned int mask = D.d_tipmap[D.d_tipchars[tip_site_idx]];
+    const size_t per_node = per_node_span(D);
+    const size_t site_off = site * static_cast<size_t>(D.rate_cats) * static_cast<size_t>(D.states);
+    fp_t* tip_up = D.d_clv_up + static_cast<size_t>(node_id) * per_node + site_off;
+    unsigned int* tip_scaler = up_scaler_ptr(D, node_id, site);
+
+    if (D.states == 4) {
+        const fp4_t tip = tip_clv_states4(mask);
+        for (int r = 0; r < D.rate_cats; ++r) {
+            if (tip_scaler) {
+                write_scaler_shift(D, tip_scaler, r, 0u);
+            }
+            store_fp4(tip_up + static_cast<size_t>(r) * 4, tip);
+        }
+        return;
+    }
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        if (tip_scaler) {
+            write_scaler_shift(D, tip_scaler, r, 0u);
+        }
+        fp_t* out = tip_up + static_cast<size_t>(r) * static_cast<size_t>(D.states);
+        for (int s = 0; s < D.states; ++s) {
+            out[s] = (mask & (1u << s)) ? fp_t(1) : fp_t(0);
+        }
+    }
+}
+
 // ---- Downward per-case helpers (states arbitrary) ----
 __device__ __forceinline__ void compute_downward_inner_inner_generic(
     const DeviceTree& D,
@@ -611,14 +833,16 @@ __device__ __forceinline__ void compute_downward_inner_inner_ratecat(
 
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
-        const unsigned int parent_shift = read_scaler_shift(D, parent_scaler, r);
-        const unsigned int sibling_shift = read_scaler_shift(D, sibling_scaler, r);
-        const unsigned int target_up_shift = read_scaler_shift(D, target_up_scaler, r);
-        const unsigned int down_inherited = parent_shift + sibling_shift;
-        const unsigned int mid_inherited = down_inherited + target_up_shift;
-        write_scaler_shift(D, down_scaler, r, down_inherited);
-        write_scaler_shift(D, mid_scaler, r, mid_inherited);
-        if (mid_base) write_scaler_shift(D, mid_base_scaler, r, down_inherited);
+        write_downward_inherited_scalers_states4(
+            D,
+            parent_scaler,
+            sibling_scaler,
+            target_up_scaler,
+            down_scaler,
+            mid_scaler,
+            mid_base_scaler,
+            (unsigned int)r,
+            mid_base != nullptr);
 
         const fp_t* Tmat = target_mat  + (size_t)r * 16;
         const fp_t* Thalf= target_mat_half + (size_t)r * 16;
@@ -653,54 +877,23 @@ __device__ __forceinline__ void compute_downward_inner_inner_ratecat(
 
         if (target_mid) {
             fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t par0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), make_fp4(p0, p1, p2, p3));
-            const fp_t par1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), make_fp4(p0, p1, p2, p3));
-            const fp_t par2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), make_fp4(p0, p1, p2, p3));
-            const fp_t par3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), make_fp4(p0, p1, p2, p3));
-
-            const fp_t tgt0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), Pup);
-            const fp_t tgt1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), Pup);
-            const fp_t tgt2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), Pup);
-            const fp_t tgt3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), Pup);
-
-            Pmid[0] = par0 * tgt0;
-            Pmid[1] = par1 * tgt1;
-            Pmid[2] = par2 * tgt2;
-            Pmid[3] = par3 * tgt3;
+            build_midpoint_states4(Thalf, p0, p1, p2, p3, Pup, Pmid);
         }
 
-        const fp_t down_max_val = fp_hmax4(Pout[0], Pout[1], Pout[2], Pout[3]);
-        const unsigned int down_shift_local = threshold_scale_shift(down_max_val);
-        if (down_shift_local) {
-            add_scaler_shift(D, down_scaler, r, down_shift_local);
-            #pragma unroll
-            for (int j = 0; j < 4; ++j) {
-                scale_clv_pow2(Pout[j], down_shift_local);
-            }
-        }
+        scale_states4_clv_if_needed(D, down_scaler, (unsigned int)r, Pout);
         if (mid_base) {
-            fp_t* Pbase = mid_base + (size_t)r * 4;
-            const fp_t base_max_val = fp_hmax4(Pbase[0], Pbase[1], Pbase[2], Pbase[3]);
-            const unsigned int base_shift_local = threshold_scale_shift(base_max_val);
-            if (base_shift_local) {
-                add_scaler_shift(D, mid_base_scaler, r, base_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pbase[j], base_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_base_scaler,
+                (unsigned int)r,
+                mid_base + (size_t)r * 4);
         }
         if (target_mid) {
-            fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t mid_max_val = fp_hmax4(Pmid[0], Pmid[1], Pmid[2], Pmid[3]);
-            const unsigned int mid_shift_local = threshold_scale_shift(mid_max_val);
-            if (mid_shift_local) {
-                add_scaler_shift(D, mid_scaler, r, mid_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pmid[j], mid_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_scaler,
+                (unsigned int)r,
+                target_mid + (size_t)r * 4);
         }
     }
 }
@@ -743,14 +936,16 @@ __device__ __forceinline__ void compute_downward_inner_tip_ratecat(
 
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
-        const unsigned int parent_shift = read_scaler_shift(D, parent_scaler, r);
-        const unsigned int sibling_shift = read_scaler_shift(D, sibling_scaler, r);
-        const unsigned int target_up_shift = read_scaler_shift(D, target_up_scaler, r);
-        const unsigned int down_inherited = parent_shift + sibling_shift;
-        const unsigned int mid_inherited = down_inherited + target_up_shift;
-        write_scaler_shift(D, down_scaler, r, down_inherited);
-        write_scaler_shift(D, mid_scaler, r, mid_inherited);
-        if (mid_base) write_scaler_shift(D, mid_base_scaler, r, down_inherited);
+        write_downward_inherited_scalers_states4(
+            D,
+            parent_scaler,
+            sibling_scaler,
+            target_up_scaler,
+            down_scaler,
+            mid_scaler,
+            mid_base_scaler,
+            (unsigned int)r,
+            mid_base != nullptr);
 
         const unsigned int mask = D.d_tipmap[tipchars[site]];
         const fp_t* Tmat = target_mat  + (size_t)r * 16;
@@ -784,54 +979,23 @@ __device__ __forceinline__ void compute_downward_inner_tip_ratecat(
 
         if (target_mid) {
             fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t par0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), make_fp4(p0, p1, p2, p3));
-            const fp_t par1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), make_fp4(p0, p1, p2, p3));
-            const fp_t par2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), make_fp4(p0, p1, p2, p3));
-            const fp_t par3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), make_fp4(p0, p1, p2, p3));
-
-            const fp_t tgt0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), Pup);
-            const fp_t tgt1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), Pup);
-            const fp_t tgt2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), Pup);
-            const fp_t tgt3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), Pup);
-
-            Pmid[0] = par0 * tgt0;
-            Pmid[1] = par1 * tgt1;
-            Pmid[2] = par2 * tgt2;
-            Pmid[3] = par3 * tgt3;
+            build_midpoint_states4(Thalf, p0, p1, p2, p3, Pup, Pmid);
         }
 
-        const fp_t down_max_val = fp_hmax4(Pout[0], Pout[1], Pout[2], Pout[3]);
-        const unsigned int down_shift_local = threshold_scale_shift(down_max_val);
-        if (down_shift_local) {
-            add_scaler_shift(D, down_scaler, r, down_shift_local);
-            #pragma unroll
-            for (int j = 0; j < 4; ++j) {
-                scale_clv_pow2(Pout[j], down_shift_local);
-            }
-        }
+        scale_states4_clv_if_needed(D, down_scaler, (unsigned int)r, Pout);
         if (mid_base) {
-            fp_t* Pbase = mid_base + (size_t)r * 4;
-            const fp_t base_max_val = fp_hmax4(Pbase[0], Pbase[1], Pbase[2], Pbase[3]);
-            const unsigned int base_shift_local = threshold_scale_shift(base_max_val);
-            if (base_shift_local) {
-                add_scaler_shift(D, mid_base_scaler, r, base_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pbase[j], base_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_base_scaler,
+                (unsigned int)r,
+                mid_base + (size_t)r * 4);
         }
         if (target_mid) {
-            fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t mid_max_val = fp_hmax4(Pmid[0], Pmid[1], Pmid[2], Pmid[3]);
-            const unsigned int mid_shift_local = threshold_scale_shift(mid_max_val);
-            if (mid_shift_local) {
-                add_scaler_shift(D, mid_scaler, r, mid_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pmid[j], mid_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_scaler,
+                (unsigned int)r,
+                target_mid + (size_t)r * 4);
         }
     }
 }
@@ -877,14 +1041,16 @@ __device__ __forceinline__ void compute_downward_tip_inner_ratecat(
 
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
-        const unsigned int parent_shift = read_scaler_shift(D, parent_scaler, r);
-        const unsigned int sibling_shift = read_scaler_shift(D, sibling_scaler, r);
-        const unsigned int target_up_shift = read_scaler_shift(D, target_up_scaler, r);
-        const unsigned int down_inherited = parent_shift + sibling_shift;
-        const unsigned int mid_inherited = down_inherited + target_up_shift;
-        write_scaler_shift(D, down_scaler, r, down_inherited);
-        write_scaler_shift(D, mid_scaler, r, mid_inherited);
-        if (mid_base) write_scaler_shift(D, mid_base_scaler, r, down_inherited);
+        write_downward_inherited_scalers_states4(
+            D,
+            parent_scaler,
+            sibling_scaler,
+            target_up_scaler,
+            down_scaler,
+            mid_scaler,
+            mid_base_scaler,
+            (unsigned int)r,
+            mid_base != nullptr);
 
         const fp_t* Tmat  = target_mat  + (size_t)r * 16;
         const fp_t* Thalf = target_mat_half + (size_t)r * 16;
@@ -924,58 +1090,27 @@ __device__ __forceinline__ void compute_downward_tip_inner_ratecat(
 
         if (target_mid) {
             fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t par0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), make_fp4(p0, p1, p2, p3));
-            const fp_t par1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), make_fp4(p0, p1, p2, p3));
-            const fp_t par2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), make_fp4(p0, p1, p2, p3));
-            const fp_t par3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), make_fp4(p0, p1, p2, p3));
-
-            const fp_t tgt0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), Pup);
-            const fp_t tgt1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), Pup);
-            const fp_t tgt2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), Pup);
-            const fp_t tgt3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), Pup);
-
-            Pmid[0] = par0 * tgt0;
-            Pmid[1] = par1 * tgt1;
-            Pmid[2] = par2 * tgt2;
-            Pmid[3] = par3 * tgt3;
+            build_midpoint_states4(Thalf, p0, p1, p2, p3, Pup, Pmid);
             if (!(tmask & 1u)) Pmid[0] = 0.0;
             if (!(tmask & 2u)) Pmid[1] = 0.0;
             if (!(tmask & 4u)) Pmid[2] = 0.0;
             if (!(tmask & 8u)) Pmid[3] = 0.0;
         }
 
-        const fp_t down_max_val = fp_hmax4(Pout[0], Pout[1], Pout[2], Pout[3]);
-        const unsigned int down_shift_local = threshold_scale_shift(down_max_val);
-        if (down_shift_local) {
-            add_scaler_shift(D, down_scaler, r, down_shift_local);
-            #pragma unroll
-            for (int j = 0; j < 4; ++j) {
-                scale_clv_pow2(Pout[j], down_shift_local);
-            }
-        }
+        scale_states4_clv_if_needed(D, down_scaler, (unsigned int)r, Pout);
         if (mid_base) {
-            fp_t* Pbase = mid_base + (size_t)r * 4;
-            const fp_t base_max_val = fp_hmax4(Pbase[0], Pbase[1], Pbase[2], Pbase[3]);
-            const unsigned int base_shift_local = threshold_scale_shift(base_max_val);
-            if (base_shift_local) {
-                add_scaler_shift(D, mid_base_scaler, r, base_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pbase[j], base_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_base_scaler,
+                (unsigned int)r,
+                mid_base + (size_t)r * 4);
         }
         if (target_mid) {
-            fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t mid_max_val = fp_hmax4(Pmid[0], Pmid[1], Pmid[2], Pmid[3]);
-            const unsigned int mid_shift_local = threshold_scale_shift(mid_max_val);
-            if (mid_shift_local) {
-                add_scaler_shift(D, mid_scaler, r, mid_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pmid[j], mid_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_scaler,
+                (unsigned int)r,
+                target_mid + (size_t)r * 4);
         }
     }
 }
@@ -1020,14 +1155,16 @@ __device__ __forceinline__ void compute_downward_tip_tip_ratecat(
 
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
-        const unsigned int down_inherited =
-            read_scaler_shift(D, parent_scaler, r) +
-            read_scaler_shift(D, sibling_scaler, r);
-        const unsigned int mid_inherited =
-            down_inherited + read_scaler_shift(D, target_up_scaler, r);
-        write_scaler_shift(D, down_scaler, r, down_inherited);
-        write_scaler_shift(D, mid_scaler, r, mid_inherited);
-        if (mid_base) write_scaler_shift(D, mid_base_scaler, r, down_inherited);
+        write_downward_inherited_scalers_states4(
+            D,
+            parent_scaler,
+            sibling_scaler,
+            target_up_scaler,
+            down_scaler,
+            mid_scaler,
+            mid_base_scaler,
+            (unsigned int)r,
+            mid_base != nullptr);
 
         const unsigned int mask = D.d_tipmap[tipchars[site]];
         const fp_t* Tmat  = target_mat  + (size_t)r * 16;
@@ -1062,54 +1199,23 @@ __device__ __forceinline__ void compute_downward_tip_tip_ratecat(
 
         if (target_mid) {
             fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t par0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), make_fp4(p0, p1, p2, p3));
-            const fp_t par1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), make_fp4(p0, p1, p2, p3));
-            const fp_t par2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), make_fp4(p0, p1, p2, p3));
-            const fp_t par3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), make_fp4(p0, p1, p2, p3));
-
-            const fp_t tgt0 = fp_dot4(make_fp4(Thalf[0], Thalf[4], Thalf[8], Thalf[12]), Pup);
-            const fp_t tgt1 = fp_dot4(make_fp4(Thalf[1], Thalf[5], Thalf[9], Thalf[13]), Pup);
-            const fp_t tgt2 = fp_dot4(make_fp4(Thalf[2], Thalf[6], Thalf[10], Thalf[14]), Pup);
-            const fp_t tgt3 = fp_dot4(make_fp4(Thalf[3], Thalf[7], Thalf[11], Thalf[15]), Pup);
-
-            Pmid[0] = par0 * tgt0;
-            Pmid[1] = par1 * tgt1;
-            Pmid[2] = par2 * tgt2;
-            Pmid[3] = par3 * tgt3;
+            build_midpoint_states4(Thalf, p0, p1, p2, p3, Pup, Pmid);
         }
 
-        const fp_t down_max_val = fp_hmax4(Pout[0], Pout[1], Pout[2], Pout[3]);
-        const unsigned int down_shift_local = threshold_scale_shift(down_max_val);
-        if (down_shift_local) {
-            add_scaler_shift(D, down_scaler, r, down_shift_local);
-            #pragma unroll
-            for (int j = 0; j < 4; ++j) {
-                scale_clv_pow2(Pout[j], down_shift_local);
-            }
-        }
+        scale_states4_clv_if_needed(D, down_scaler, (unsigned int)r, Pout);
         if (mid_base) {
-            fp_t* Pbase = mid_base + (size_t)r * 4;
-            const fp_t base_max_val = fp_hmax4(Pbase[0], Pbase[1], Pbase[2], Pbase[3]);
-            const unsigned int base_shift_local = threshold_scale_shift(base_max_val);
-            if (base_shift_local) {
-                add_scaler_shift(D, mid_base_scaler, r, base_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pbase[j], base_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_base_scaler,
+                (unsigned int)r,
+                mid_base + (size_t)r * 4);
         }
         if (target_mid) {
-            fp_t* Pmid = target_mid + (size_t)r * 4;
-            const fp_t mid_max_val = fp_hmax4(Pmid[0], Pmid[1], Pmid[2], Pmid[3]);
-            const unsigned int mid_shift_local = threshold_scale_shift(mid_max_val);
-            if (mid_shift_local) {
-                add_scaler_shift(D, mid_scaler, r, mid_shift_local);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pmid[j], mid_shift_local);
-                }
-            }
+            scale_states4_clv_if_needed(
+                D,
+                mid_scaler,
+                (unsigned int)r,
+                target_mid + (size_t)r * 4);
         }
     }
 }
@@ -1117,103 +1223,6 @@ __device__ __forceinline__ void compute_downward_tip_tip_ratecat(
 // ===== Per-site computations =====
 template<int RATE_CATS>
 __device__ __forceinline__ void compute_tip_tip_site_ratecat(
-    const DeviceTree& D,
-    const NodeOpInfo& op,
-    unsigned int site)
-{
-    // Compute parent CLV from two tips directly (no lookup).
-    const size_t span     = (size_t)4 * RATE_CATS;
-    const size_t per_node = per_node_span(D);
-
-    const unsigned char* left_tip  = D.d_tipchars + (size_t)op.left_tip_index  * D.sites;
-    const unsigned char* right_tip = D.d_tipchars + (size_t)op.right_tip_index * D.sites;
-
-    const unsigned int lmask = D.d_tipmap[left_tip[site]];
-    const unsigned int rmask = D.d_tipmap[right_tip[site]];
-
-    // Ensure tip nodes have CLV-up initialized for downstream use.
-    const size_t site_off = (size_t)site * span;
-    if (op.left_id >= 0 && D.d_clv_up) {
-        fp_t* lclv = D.d_clv_up + (size_t)op.left_id * per_node;
-        unsigned int* lscaler = up_scaler_ptr(D, op.left_id, site);
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            write_scaler_shift(D, lscaler, r, 0u);
-            fp_t* out = lclv + site_off + (size_t)r * 4;
-            out[0] = (lmask & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (lmask & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (lmask & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (lmask & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
-    if (op.right_id >= 0 && D.d_clv_up) {
-        fp_t* rclv = D.d_clv_up + (size_t)op.right_id * per_node;
-        unsigned int* rscaler = up_scaler_ptr(D, op.right_id, site);
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            write_scaler_shift(D, rscaler, r, 0u);
-            fp_t* out = rclv + site_off + (size_t)r * 4;
-            out[0] = (rmask & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (rmask & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (rmask & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (rmask & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
-
-    const size_t parent_off = (size_t)op.parent_id * per_node + (size_t)site * span;
-    const fp_t* Lbase = D.d_pmat + (size_t)op.left_id  * RATE_CATS * 4 * 4;
-    const fp_t* Rbase = D.d_pmat + (size_t)op.right_id * RATE_CATS * 4 * 4;
-    fp_t* parent_pool = clv_write_pool_base<fp_t>(D, op);
-    if (!parent_pool) return; // placeholder until preorder input logic is defined
-
-    unsigned int* site_scaler_ptr =
-        site_scaler_ptr_base(D, op, site, RATE_CATS);
-
-    #pragma unroll
-    for (int r = 0; r < RATE_CATS; ++r) {
-        write_scaler_shift(D, site_scaler_ptr, r, 0u);
-        const fp_t* Lmat = Lbase + (size_t)r * 16;
-        const fp_t* Rmat = Rbase + (size_t)r * 16;
-        fp_t* pout = parent_pool + parent_off + (size_t)r * 4;
-
-        fp_t maxv = fp_t(0);
-        // parent state j
-        for (int j = 0; j < 4; ++j) {
-            fp_t left_term = fp_t(0);
-            fp_t right_term = fp_t(0);
-            // sum over allowed tip states
-            if (lmask & 1u) left_term  += Lmat[j * 4 + 0];
-            if (lmask & 2u) left_term  += Lmat[j * 4 + 1];
-            if (lmask & 4u) left_term  += Lmat[j * 4 + 2];
-            if (lmask & 8u) left_term  += Lmat[j * 4 + 3];
-
-            if (rmask & 1u) right_term += Rmat[j * 4 + 0];
-            if (rmask & 2u) right_term += Rmat[j * 4 + 1];
-            if (rmask & 4u) right_term += Rmat[j * 4 + 2];
-            if (rmask & 8u) right_term += Rmat[j * 4 + 3];
-
-            fp_t v = left_term * right_term;
-            pout[j] = v;
-            if (v > maxv) maxv = v;
-        }
-
-        if (site_scaler_ptr) {
-            unsigned int shift = threshold_scale_shift(maxv);
-            if (shift) {
-                add_scaler_shift(D, site_scaler_ptr, r, shift);
-
-                #pragma unroll
-                for (int s = 0; s < 4; ++s) {
-                    scale_clv_pow2(pout[s], shift);
-                }
-            }
-        }
-
-    }
-}
-
-template<int RATE_CATS>
-__device__ __forceinline__ void compute_tip_tip_site_ratecat_nolookup(
     const DeviceTree& D,
     const NodeOpInfo& op,
     unsigned int site)
@@ -1236,40 +1245,9 @@ __device__ __forceinline__ void compute_tip_tip_site_ratecat_nolookup(
     const fp_t* __restrict__ kmat_base =
         D.d_pmat + (size_t)op.right_id * RATE_CATS * 4 * 4;
 
-    // Ensure tip nodes have CLV-up initialized for downstream use.
-    const size_t site_off = (size_t)site * span;
-    if (op.left_id >= 0 && D.d_clv_up) {
-        fp_t* lclv = D.d_clv_up + (size_t)op.left_id * per_node;
-        unsigned int* lscaler = up_scaler_ptr(D, op.left_id, site);
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            write_scaler_shift(D, lscaler, r, 0u);
-            fp_t* out = lclv + site_off + (size_t)r * 4;
-            unsigned int m = jmask_base;
-            out[0] = (m & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (m & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (m & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (m & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
-    if (op.right_id >= 0 && D.d_clv_up) {
-        fp_t* rclv = D.d_clv_up + (size_t)op.right_id * per_node;
-        unsigned int* rscaler = up_scaler_ptr(D, op.right_id, site);
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            write_scaler_shift(D, rscaler, r, 0u);
-            fp_t* out = rclv + site_off + (size_t)r * 4;
-            unsigned int m = kmask_base;
-            out[0] = (m & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (m & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (m & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (m & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
-
     const size_t parent_off = (size_t)op.parent_id * per_node + (size_t)site * span;
     fp_t* parent_pool = clv_write_pool_base<fp_t>(D, op);
-    if (!parent_pool) return; // placeholder until preorder input logic is defined
+    if (!parent_pool) return;
     fp_t* __restrict__ dst = parent_pool + parent_off;
 
     unsigned int* site_scaler_ptr =
@@ -1281,46 +1259,9 @@ __device__ __forceinline__ void compute_tip_tip_site_ratecat_nolookup(
         const fp_t* __restrict__ jmat = jmat_base + (size_t)r * 4 * 4;
         const fp_t* __restrict__ kmat = kmat_base + (size_t)r * 4 * 4;
         fp_t* __restrict__ Pout = dst + (size_t)r * 4;
-
-        fp_t col_scale_max_val = fp_t(0);
-
-        const fp_t* Lrow = jmat;
-        const fp_t* Rrow = kmat;
-        #pragma unroll
-        for (int i = 0; i < 4; ++i) {
-            fp_t termj = fp_t(0);
-            fp_t termk = fp_t(0);
-            unsigned int jmask = jmask_base;
-            unsigned int kmask = kmask_base;
-
-            #pragma unroll
-            for (int m = 0; m < 4; ++m) {
-                if (jmask & 1u) termj += Lrow[m];
-                if (kmask & 1u) termk += Rrow[m];
-                jmask >>= 1;
-                kmask >>= 1;
-            }
-
-            Pout[i] = termj * termk;
-            if (Pout[i] > col_scale_max_val) col_scale_max_val = Pout[i];
-
-            Lrow += 4;
-            Rrow += 4;
-        }
-
-        if (site_scaler_ptr) {
-            fp_t* pout = Pout;
-            fp_t maxv = fp_hmax4(pout[0], pout[1], pout[2], pout[3]);
-            unsigned int shift = threshold_scale_shift(maxv);
-            if (shift) {
-                add_scaler_shift(D, site_scaler_ptr, r, shift);
-
-                #pragma unroll
-                for (int s = 0; s < 4; ++s)
-                    scale_clv_pow2(pout[s], shift);
-            }
-        }
-
+        const fp_t max_val =
+            compute_tip_tip_states4_rate(jmat, kmat, jmask_base, kmask_base, Pout);
+        scale_states4_clv_if_needed(D, site_scaler_ptr, (unsigned int)r, Pout, max_val);
     }
 }
 
@@ -1346,38 +1287,9 @@ __device__ __forceinline__ void compute_tip_tip_site_4_generic(
     const fp_t* __restrict__ kmat_base =
         D.d_pmat + (size_t)op.right_id * D.rate_cats * 4 * 4;
 
-    // Ensure tip nodes have CLV-up initialized for downstream use.
-    const size_t site_off = (size_t)site * span;
-    if (op.left_id >= 0 && D.d_clv_up) {
-        fp_t* lclv = D.d_clv_up + (size_t)op.left_id * per_node;
-        unsigned int* lscaler = up_scaler_ptr(D, op.left_id, site);
-        for (int r = 0; r < D.rate_cats; ++r) {
-            write_scaler_shift(D, lscaler, r, 0u);
-            fp_t* out = lclv + site_off + (size_t)r * 4;
-            unsigned int m = jmask_base;
-            out[0] = (m & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (m & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (m & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (m & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
-    if (op.right_id >= 0 && D.d_clv_up) {
-        fp_t* rclv = D.d_clv_up + (size_t)op.right_id * per_node;
-        unsigned int* rscaler = up_scaler_ptr(D, op.right_id, site);
-        for (int r = 0; r < D.rate_cats; ++r) {
-            write_scaler_shift(D, rscaler, r, 0u);
-            fp_t* out = rclv + site_off + (size_t)r * 4;
-            unsigned int m = kmask_base;
-            out[0] = (m & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (m & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (m & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (m & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
-
     const size_t parent_off = (size_t)op.parent_id * per_node + (size_t)site * span;
     fp_t* parent_pool = clv_write_pool_base<fp_t>(D, op);
-    if (!parent_pool) return; // placeholder until preorder input logic is defined
+    if (!parent_pool) return;
     fp_t* __restrict__ dst = parent_pool + parent_off;
 
     unsigned int* site_scaler_ptr =
@@ -1388,42 +1300,9 @@ __device__ __forceinline__ void compute_tip_tip_site_4_generic(
         const fp_t* __restrict__ jmat = jmat_base + (size_t)r * 4 * 4;
         const fp_t* __restrict__ kmat = kmat_base + (size_t)r * 4 * 4;
         fp_t* __restrict__ Pout = dst + (size_t)r * 4;
-
-        fp_t col_scale_max_val = fp_t(0);
-
-        const fp_t* Lrow = jmat;
-        const fp_t* Rrow = kmat;
-        for (int i = 0; i < 4; ++i) {
-            fp_t termj = fp_t(0);
-            fp_t termk = fp_t(0);
-            unsigned int jmask = jmask_base;
-            unsigned int kmask = kmask_base;
-
-            for (int m = 0; m < 4; ++m) {
-                if (jmask & 1u) termj += Lrow[m];
-                if (kmask & 1u) termk += Rrow[m];
-                jmask >>= 1;
-                kmask >>= 1;
-            }
-
-            Pout[i] = termj * termk;
-            if (Pout[i] > col_scale_max_val) col_scale_max_val = Pout[i];
-
-            Lrow += 4;
-            Rrow += 4;
-        }
-
-        if (site_scaler_ptr) {
-            fp_t maxv = fp_hmax4(Pout[0], Pout[1], Pout[2], Pout[3]);
-            unsigned int shift = threshold_scale_shift(maxv);
-            if (shift) {
-                site_scaler_ptr[r] += shift;
-                for (int s = 0; s < 4; ++s) {
-                    scale_clv_pow2(Pout[s], shift);
-                }
-            }
-        }
-
+        const fp_t max_val =
+            compute_tip_tip_states4_rate(jmat, kmat, jmask_base, kmask_base, Pout);
+        scale_states4_clv_if_needed(D, site_scaler_ptr, (unsigned int)r, Pout, max_val);
     }
 }
 
@@ -1443,37 +1322,12 @@ __device__ __forceinline__ void compute_tip_tip_site_generic(
     const unsigned int lmask = D.d_tipmap[left_tip[site]];
     const unsigned int rmask = D.d_tipmap[right_tip[site]];
 
-    // Ensure tip nodes have CLV-up initialized for downstream use.
-    const size_t site_off = (size_t)site * span;
-    if (op.left_id >= 0 && D.d_clv_up) {
-        fp_t* lclv = D.d_clv_up + (size_t)op.left_id * per_node;
-        unsigned int* lscaler = up_scaler_ptr(D, op.left_id, site);
-        for (unsigned int r = 0; r < rate_cats; ++r) {
-            write_scaler_shift(D, lscaler, r, 0u);
-            fp_t* out = lclv + site_off + (size_t)r * states;
-            for (unsigned int s = 0; s < states; ++s) {
-                out[s] = (lmask & (1u << s)) ? fp_t(1) : fp_t(0);
-            }
-        }
-    }
-    if (op.right_id >= 0 && D.d_clv_up) {
-        fp_t* rclv = D.d_clv_up + (size_t)op.right_id * per_node;
-        unsigned int* rscaler = up_scaler_ptr(D, op.right_id, site);
-        for (unsigned int r = 0; r < rate_cats; ++r) {
-            write_scaler_shift(D, rscaler, r, 0u);
-            fp_t* out = rclv + site_off + (size_t)r * states;
-            for (unsigned int s = 0; s < states; ++s) {
-                out[s] = (rmask & (1u << s)) ? fp_t(1) : fp_t(0);
-            }
-        }
-    }
-
     const fp_t* Lbase = D.d_pmat + (size_t)op.left_id  * rate_cats * states * states;
     const fp_t* Rbase = D.d_pmat + (size_t)op.right_id * rate_cats * states * states;
 
     const size_t dst_off = (size_t)op.parent_id * per_node + (size_t)site * span;
     fp_t* parent_pool = clv_write_pool_base<fp_t>(D, op);
-    if (!parent_pool) return; // placeholder until preorder input logic is defined
+    if (!parent_pool) return;
     fp_t* Pout = parent_pool + dst_off;
 
     unsigned int* site_scaler_ptr =
@@ -1500,7 +1354,7 @@ __device__ __forceinline__ void compute_tip_tip_site_generic(
         if (site_scaler_ptr) {
             unsigned int shift = threshold_scale_shift(maxv);
             if (shift) {
-                site_scaler_ptr[r] += shift;
+                add_scaler_shift(D, site_scaler_ptr, r, shift);
                 for (unsigned int s = 0; s < states; ++s) {
                     scale_clv_pow2(out_r[s], shift);
                 }
@@ -1526,28 +1380,13 @@ __device__ __forceinline__ void compute_tip_inner_site_ratecat(
     const unsigned char* d_left_tip = D.d_tipchars + (size_t)tip_index * D.sites;
     const fp_t* d_right_clv = clv_read_ptr_for_node<const fp_t>(D, op, inner_id);
     fp_t* parent_clv = clv_write_ptr_for_node<fp_t>(D, op, op.parent_id);
-    if (!d_right_clv || !parent_clv) return; // placeholder until preorder input logic is defined
+    if (!d_right_clv || !parent_clv) return;
 
     const fp_t* d_Lmat = D.d_pmat + (size_t)tip_node_id * RATE_CATS * 4 * 4;
     const fp_t* d_Rmat = D.d_pmat + (size_t)inner_id * RATE_CATS * 4 * 4;
 
     const size_t site_off = (size_t)site * span;
     const unsigned int tmask = D.d_tipmap[d_left_tip[site]];
-
-    // Write tip CLV into UP pool for downstream use.
-    if (D.d_clv_up && tip_node_id >= 0) {
-        fp_t* tip_up = D.d_clv_up + (size_t)tip_node_id * per_node;
-        unsigned int* tip_scaler = up_scaler_ptr(D, tip_node_id, site);
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            write_scaler_shift(D, tip_scaler, r, 0u);
-            fp_t* out = tip_up + site_off + (size_t)r * 4;
-            out[0] = (tmask & 1u) ? fp_t(1) : fp_t(0);
-            out[1] = (tmask & 2u) ? fp_t(1) : fp_t(0);
-            out[2] = (tmask & 4u) ? fp_t(1) : fp_t(0);
-            out[3] = (tmask & 8u) ? fp_t(1) : fp_t(0);
-        }
-    }
 
     unsigned int* site_scaler_ptr =
         site_scaler_ptr_base(D, op, site, RATE_CATS);
@@ -1560,41 +1399,48 @@ __device__ __forceinline__ void compute_tip_inner_site_ratecat(
         const fp_t* Rmat = d_Rmat + (size_t)r * 4 * 4;
         const fp_t* Rclv = d_right_clv + site_off + (size_t)r * 4;
         fp_t* Pout = parent_clv + site_off + (size_t)r * 4;
-        fp_t col_scale_max_val = fp_t(0);
+        const fp_t max_val = compute_tip_inner_states4_rate(Lmat, Rmat, Rclv, tmask, Pout);
+        scale_states4_clv_if_needed(D, site_scaler_ptr, (unsigned int)r, Pout, max_val);
+    }
+}
 
-        const fp_t r0 = Rclv[0];
-        const fp_t r1 = Rclv[1];
-        const fp_t r2 = Rclv[2];
-        const fp_t r3 = Rclv[3];
+__device__ __forceinline__ void compute_tip_inner_site_4_generic(
+    const DeviceTree& D,
+    const NodeOpInfo& op,
+    unsigned int site)
+{
+    const size_t span     = (size_t)4 * (size_t)D.rate_cats;
+    const size_t per_node = per_node_span(D);
 
-        const fp_t* Lrow = Lmat;
-        const fp_t* Rrow = Rmat;
-        for (int i = 0; i < 4; ++i) {
-            fp_t lefterm = fp_t(0);
-            unsigned int lstate = tmask;
-            if (lstate & 1u) lefterm += Lrow[0];
-            if (lstate & 2u) lefterm += Lrow[1];
-            if (lstate & 4u) lefterm += Lrow[2];
-            if (lstate & 8u) lefterm += Lrow[3];
+    const bool tip_on_left = op.left_tip_index >= 0;
+    const int tip_index    = tip_on_left ? op.left_tip_index : op.right_tip_index;
+    const int inner_id     = tip_on_left ? op.right_id : op.left_id;
+    const int tip_node_id  = tip_on_left ? op.left_id : op.right_id;
 
-            fp_t righterm = fp_dot4(make_fp4(Rrow[0], Rrow[1], Rrow[2], Rrow[3]), make_fp4(r0, r1, r2, r3));
-            Pout[i] = lefterm * righterm;
-            if (Pout[i] > col_scale_max_val) col_scale_max_val = Pout[i];
-            Lrow += 4;
-            Rrow += 4;
-        }
+    const unsigned char* tip_chars = D.d_tipchars + (size_t)tip_index * D.sites;
+    const fp_t* inner_clv = clv_read_ptr_for_node<const fp_t>(D, op, inner_id);
+    fp_t* parent_clv = clv_write_ptr_for_node<fp_t>(D, op, op.parent_id);
+    if (!inner_clv || !parent_clv) return;
 
-        if (site_scaler_ptr) {
-            unsigned int shift = threshold_scale_shift(col_scale_max_val);
-            if (shift) {
-                add_scaler_shift(D, site_scaler_ptr, r, shift);
-                #pragma unroll
-                for (int i = 0; i < 4; ++i) {
-                    scale_clv_pow2(Pout[i], shift);
-                }
-            }
-        }
+    const fp_t* tip_mat_base = D.d_pmat + (size_t)tip_node_id * D.rate_cats * 4 * 4;
+    const fp_t* inner_mat_base = D.d_pmat + (size_t)inner_id * D.rate_cats * 4 * 4;
+    const size_t site_off = (size_t)site * span;
+    const unsigned int tip_mask = D.d_tipmap[tip_chars[site]];
 
+    unsigned int* site_scaler_ptr =
+        site_scaler_ptr_base(D, op, site, (unsigned int)D.rate_cats);
+    unsigned int* inner_scaler =
+        scaler_ptr_for_pool(D, op.clv_pool, inner_id, site);
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        write_scaler_shift(D, site_scaler_ptr, r, read_scaler_shift(D, inner_scaler, r));
+        const fp_t* tip_mat = tip_mat_base + (size_t)r * 4 * 4;
+        const fp_t* inner_mat = inner_mat_base + (size_t)r * 4 * 4;
+        const fp_t* right_clv = inner_clv + site_off + (size_t)r * 4;
+        fp_t* out = parent_clv + site_off + (size_t)r * 4;
+        const fp_t max_val =
+            compute_tip_inner_states4_rate(tip_mat, inner_mat, right_clv, tip_mask, out);
+        scale_states4_clv_if_needed(D, site_scaler_ptr, (unsigned int)r, out, max_val);
     }
 }
 
@@ -1616,26 +1462,13 @@ __device__ __forceinline__ void compute_tip_inner_site_generic(
     const unsigned char* d_left_tip = D.d_tipchars + (size_t)tip_index * D.sites;
     const fp_t* d_right_clv = clv_read_ptr_for_node<const fp_t>(D, op, inner_id);
     fp_t* parent_clv = clv_write_ptr_for_node<fp_t>(D, op, op.parent_id);
-    if (!d_right_clv || !parent_clv) return; // placeholder until preorder input logic is defined
+    if (!d_right_clv || !parent_clv) return;
 
     const fp_t* d_Lmat = D.d_pmat + (size_t)tip_node_id * D.rate_cats * states * states;
     const fp_t* d_Rmat = D.d_pmat + (size_t)inner_id * D.rate_cats * states * states;
 
     const size_t site_off = (size_t)site * span;
     const unsigned int tmask = D.d_tipmap[d_left_tip[site]];
-
-    // Write tip CLV into UP pool for downstream use.
-    if (D.d_clv_up && tip_node_id >= 0) {
-        fp_t* tip_up = D.d_clv_up + (size_t)tip_node_id * per_node;
-        unsigned int* tip_scaler = up_scaler_ptr(D, tip_node_id, site);
-        for (unsigned int r = 0; r < rate_cats; ++r) {
-            write_scaler_shift(D, tip_scaler, r, 0u);
-            fp_t* out = tip_up + site_off + (size_t)r * states;
-            for (unsigned int s = 0; s < states; ++s) {
-                out[s] = (tmask & (1u << s)) ? fp_t(1) : fp_t(0);
-            }
-        }
-    }
 
     unsigned int* site_scaler_ptr =
         site_scaler_ptr_base(D, op, site, rate_cats);
@@ -1668,7 +1501,7 @@ __device__ __forceinline__ void compute_tip_inner_site_generic(
         if (site_scaler_ptr) {
             unsigned int shift = threshold_scale_shift(col_scale_max_val);
             if (shift) {
-                site_scaler_ptr[r] += shift;
+                add_scaler_shift(D, site_scaler_ptr, r, shift);
                 for (unsigned int i = 0; i < states; ++i) {
                     scale_clv_pow2(Pout[i], shift);
                 }
@@ -1684,14 +1517,13 @@ __device__ __forceinline__ void compute_inner_inner_site_ratecat(
     unsigned int site)
 {
     const size_t span     = (size_t)RATE_CATS * 4;
-    const size_t per_node = per_node_span(D);
     const size_t site_off = (size_t)site * span;
 
     const fp_t* d_left_clv  = clv_read_ptr_for_node<const fp_t>(D, op, op.left_id);
     const fp_t* d_right_clv = clv_read_ptr_for_node<const fp_t>(D, op, op.right_id);
 
     fp_t* parent_clv = clv_write_ptr_for_node<fp_t>(D, op, op.parent_id);
-    if (!d_left_clv || !d_right_clv || !parent_clv) return; // placeholder until preorder input logic is defined
+    if (!d_left_clv || !d_right_clv || !parent_clv) return;
     const fp_t* d_left_mat  = D.d_pmat + (size_t)op.left_id  * RATE_CATS * 4 * 4;
     const fp_t* d_right_mat = D.d_pmat + (size_t)op.right_id * RATE_CATS * 4 * 4;
 
@@ -1711,54 +1543,53 @@ __device__ __forceinline__ void compute_inner_inner_site_ratecat(
             read_scaler_shift(D, right_scaler, r));
         const fp_t* Lclv = d_left_clv  + site_off + (size_t)r * 4;
         const fp_t* Rclv = d_right_clv + site_off + (size_t)r * 4;
-
-        
-
         const fp_t* Lmat = d_left_mat  + (size_t)r * 4 * 4;
         const fp_t* Rmat = d_right_mat + (size_t)r * 4 * 4;
-
         fp_t* Pout = parent_clv + site_off + (size_t)r * 4;
-        fp_t col_scale_max_val = fp_t(0);
-
-        const fp_t l0 = Lclv[0];
-        const fp_t l1 = Lclv[1];
-        const fp_t l2 = Lclv[2];
-        const fp_t l3 = Lclv[3];
-        const fp_t r0 = Rclv[0];
-        const fp_t r1 = Rclv[1];
-        const fp_t r2 = Rclv[2];
-        const fp_t r3 = Rclv[3];
-
-        const fp_t lt0 = fp_dot4(make_fp4(Lmat[0], Lmat[1], Lmat[2], Lmat[3]), make_fp4(l0, l1, l2, l3));
-        const fp_t lt1 = fp_dot4(make_fp4(Lmat[4], Lmat[5], Lmat[6], Lmat[7]), make_fp4(l0, l1, l2, l3));
-        const fp_t lt2 = fp_dot4(make_fp4(Lmat[8], Lmat[9], Lmat[10], Lmat[11]), make_fp4(l0, l1, l2, l3));
-        const fp_t lt3 = fp_dot4(make_fp4(Lmat[12], Lmat[13], Lmat[14], Lmat[15]), make_fp4(l0, l1, l2, l3));
-
-        const fp_t rt0 = fp_dot4(make_fp4(Rmat[0], Rmat[1], Rmat[2], Rmat[3]), make_fp4(r0, r1, r2, r3));
-        const fp_t rt1 = fp_dot4(make_fp4(Rmat[4], Rmat[5], Rmat[6], Rmat[7]), make_fp4(r0, r1, r2, r3));
-        const fp_t rt2 = fp_dot4(make_fp4(Rmat[8], Rmat[9], Rmat[10], Rmat[11]), make_fp4(r0, r1, r2, r3));
-        const fp_t rt3 = fp_dot4(make_fp4(Rmat[12], Rmat[13], Rmat[14], Rmat[15]), make_fp4(r0, r1, r2, r3));
-
-        Pout[0] = lt0 * rt0;
-        Pout[1] = lt1 * rt1;
-        Pout[2] = lt2 * rt2;
-        Pout[3] = lt3 * rt3;
-
-        col_scale_max_val = fp_hmax4(Pout[0], Pout[1], Pout[2], Pout[3]);
-
-        if (site_scaler_ptr) {
-            unsigned int shift = threshold_scale_shift(col_scale_max_val);
-            if (shift) {
-                add_scaler_shift(D, site_scaler_ptr, r, shift);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j) {
-                    scale_clv_pow2(Pout[j], shift);
-                }
-            }
-        }
-
+        const fp_t max_val = compute_inner_inner_states4_rate(Lmat, Rmat, Lclv, Rclv, Pout);
+        scale_states4_clv_if_needed(D, site_scaler_ptr, (unsigned int)r, Pout, max_val);
     }
-    
+}
+
+__device__ __forceinline__ void compute_inner_inner_site_4_generic(
+    const DeviceTree& D,
+    const NodeOpInfo& op,
+    unsigned int site)
+{
+    const size_t span = (size_t)4 * (size_t)D.rate_cats;
+    const size_t per_node = per_node_span(D);
+    const size_t site_off = (size_t)site * span;
+
+    const fp_t* left_clv = clv_read_ptr_for_node<const fp_t>(D, op, op.left_id);
+    const fp_t* right_clv = clv_read_ptr_for_node<const fp_t>(D, op, op.right_id);
+    fp_t* parent_clv = clv_write_ptr_for_node<fp_t>(D, op, op.parent_id);
+    if (!left_clv || !right_clv || !parent_clv) return;
+
+    const fp_t* left_mat_base = D.d_pmat + (size_t)op.left_id * (size_t)D.rate_cats * 4 * 4;
+    const fp_t* right_mat_base = D.d_pmat + (size_t)op.right_id * (size_t)D.rate_cats * 4 * 4;
+    unsigned int* site_scaler_ptr =
+        site_scaler_ptr_base(D, op, site, (unsigned int)D.rate_cats);
+    unsigned int* left_scaler =
+        scaler_ptr_for_pool(D, op.clv_pool, op.left_id, site);
+    unsigned int* right_scaler =
+        scaler_ptr_for_pool(D, op.clv_pool, op.right_id, site);
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        write_scaler_shift(
+            D,
+            site_scaler_ptr,
+            r,
+            read_scaler_shift(D, left_scaler, r) +
+            read_scaler_shift(D, right_scaler, r));
+        const fp_t* left_clv_r = left_clv + site_off + (size_t)r * 4;
+        const fp_t* right_clv_r = right_clv + site_off + (size_t)r * 4;
+        const fp_t* left_mat = left_mat_base + (size_t)r * 4 * 4;
+        const fp_t* right_mat = right_mat_base + (size_t)r * 4 * 4;
+        fp_t* out = parent_clv + site_off + (size_t)r * 4;
+        const fp_t max_val =
+            compute_inner_inner_states4_rate(left_mat, right_mat, left_clv_r, right_clv_r, out);
+        scale_states4_clv_if_needed(D, site_scaler_ptr, (unsigned int)r, out, max_val);
+    }
 }
 
 template<int RATE_CATS>
@@ -1769,6 +1600,21 @@ __device__ __forceinline__ void load_midpoint_pmat_pair_ratecat(
     const fp_t* parent_mat)
 {
     const int total_mat_elems = RATE_CATS * 16;
+    for (int idx = threadIdx.x; idx < total_mat_elems; idx += blockDim.x) {
+        shared_target_mat[idx] = target_mat[idx];
+        shared_parent_mat[idx] = parent_mat[idx];
+    }
+    __syncthreads();
+}
+
+__device__ __forceinline__ void load_midpoint_pmat_pair_states4_generic(
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat,
+    const fp_t* target_mat,
+    const fp_t* parent_mat,
+    int rate_cats)
+{
+    const int total_mat_elems = rate_cats * 16;
     for (int idx = threadIdx.x; idx < total_mat_elems; idx += blockDim.x) {
         shared_target_mat[idx] = target_mat[idx];
         shared_parent_mat[idx] = parent_mat[idx];
@@ -1868,18 +1714,95 @@ __device__ void compute_midpoint_inner_inner_ratecat(
         Pmid[2] = p2;
         Pmid[3] = p3;
         
-        fp_t col_scale_max_val = fp_hmax4(Pmid[0], Pmid[1], Pmid[2], Pmid[3]);
-        {
-            unsigned int shift = threshold_scale_shift(col_scale_max_val);
-            if (shift) {
-            add_scaler_shift(D, mid_scaler, r, shift);
-            Pmid[0] = fp_ldexp(Pmid[0], shift);
-            Pmid[1] = fp_ldexp(Pmid[1], shift);
-            Pmid[2] = fp_ldexp(Pmid[2], shift);
-            Pmid[3] = fp_ldexp(Pmid[3], shift);
-            }
-        }
+        scale_states4_clv_if_needed(D, mid_scaler, (unsigned int)r, Pmid);
 
+    }
+}
+
+__device__ void compute_midpoint_inner_inner_states4_generic(
+    const DeviceTree& D,
+    const NodeOpInfo& op,
+    unsigned int site,
+    bool proximal_mode,
+    int op_pmat_idx,
+    bool active_thread,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat)
+{
+    if (!D.d_clv_mid || D.states != 4) return;
+    if (D.rate_cats <= 0 || D.rate_cats > 8) return;
+    if (op.clv_pool != static_cast<uint8_t>(CLV_POOL_DOWN)) return;
+
+    const bool target_is_left = (op.dir_tag == static_cast<uint8_t>(CLV_DIR_DOWN_LEFT));
+    const int target_id = target_is_left ? op.left_id : op.right_id;
+    if (op.parent_id < 0 || target_id < 0) return;
+
+    const size_t rate_count = static_cast<size_t>(D.rate_cats);
+    const fp_t* target_mat = nullptr;
+    if (proximal_mode && D.d_query_pmat) {
+        target_mat = D.d_query_pmat + static_cast<size_t>(op_pmat_idx) * rate_count * 16;
+    } else if (D.d_pmat_mid_prox) {
+        target_mat = D.d_pmat_mid_prox + static_cast<size_t>(target_id) * rate_count * 16;
+    } else if (D.d_pmat_mid) {
+        target_mat = D.d_pmat_mid + static_cast<size_t>(target_id) * rate_count * 16;
+    } else {
+        target_mat = D.d_pmat_mid ? (D.d_pmat_mid + static_cast<size_t>(target_id) * rate_count * 16) : nullptr;
+    }
+
+    const fp_t* parent_mat = nullptr;
+    if (D.d_pmat_mid_dist) {
+        parent_mat = D.d_pmat_mid_dist + static_cast<size_t>(target_id) * rate_count * 16;
+    } else if (D.d_pmat_mid) {
+        parent_mat = D.d_pmat_mid + static_cast<size_t>(target_id) * rate_count * 16;
+    }
+    if (!target_mat || !parent_mat) return;
+
+    load_midpoint_pmat_pair_states4_generic(
+        shared_target_mat,
+        shared_parent_mat,
+        target_mat,
+        parent_mat,
+        D.rate_cats);
+    if (!active_thread) return;
+
+    const size_t per_node = per_node_span(D);
+    const size_t site_off = static_cast<size_t>(site) * rate_count * 4;
+    fp_t* target_mid = D.d_clv_mid + static_cast<size_t>(target_id) * per_node + site_off;
+    const fp_t* mid_base = D.d_clv_mid_base
+        ? D.d_clv_mid_base + static_cast<size_t>(target_id) * per_node + site_off
+        : nullptr;
+    const fp_t* target_up = proximal_mode
+        ? (D.d_query_clv ? (D.d_query_clv + site_off) : nullptr)
+        : (D.d_clv_up ? (D.d_clv_up + static_cast<size_t>(target_id) * per_node + site_off) : nullptr);
+    if (!target_mid || !mid_base || !target_up) return;
+
+    unsigned int* mid_scaler = mid_scaler_ptr(D, target_id, site);
+    unsigned int* mid_base_scaler = mid_base_scaler_ptr(D, target_id, site);
+    unsigned int* target_up_scaler = proximal_mode ? nullptr : up_scaler_ptr(D, target_id, site);
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        unsigned int inherited_shift = read_scaler_shift(D, mid_base_scaler, r);
+        if (target_up_scaler) {
+            inherited_shift += read_scaler_shift(D, target_up_scaler, r);
+        }
+        write_scaler_shift(D, mid_scaler, r, inherited_shift);
+
+        const fp_t* Mtarget = shared_target_mat + static_cast<size_t>(r) * 16;
+        const fp_t* Mparent = shared_parent_mat + static_cast<size_t>(r) * 16;
+        const fp4_t Pup = reinterpret_cast<const fp4_t*>(target_up + static_cast<size_t>(r) * 4)[0];
+        const fp4_t Pbase = reinterpret_cast<const fp4_t*>(mid_base + static_cast<size_t>(r) * 4)[0];
+        fp_t* Pmid = target_mid + static_cast<size_t>(r) * 4;
+
+        Pmid[0] = fp_dot4(make_fp4(Mparent[0], Mparent[1], Mparent[2], Mparent[3]), Pbase) *
+                  fp_dot4(make_fp4(Mtarget[0], Mtarget[1], Mtarget[2], Mtarget[3]), Pup);
+        Pmid[1] = fp_dot4(make_fp4(Mparent[4], Mparent[5], Mparent[6], Mparent[7]), Pbase) *
+                  fp_dot4(make_fp4(Mtarget[4], Mtarget[5], Mtarget[6], Mtarget[7]), Pup);
+        Pmid[2] = fp_dot4(make_fp4(Mparent[8], Mparent[9], Mparent[10], Mparent[11]), Pbase) *
+                  fp_dot4(make_fp4(Mtarget[8], Mtarget[9], Mtarget[10], Mtarget[11]), Pup);
+        Pmid[3] = fp_dot4(make_fp4(Mparent[12], Mparent[13], Mparent[14], Mparent[15]), Pbase) *
+                  fp_dot4(make_fp4(Mtarget[12], Mtarget[13], Mtarget[14], Mtarget[15]), Pup);
+
+        scale_states4_clv_if_needed(D, mid_scaler, static_cast<unsigned int>(r), Pmid);
     }
 }
 
@@ -1926,7 +1849,7 @@ __device__ __forceinline__ void compute_inner_inner_site_generic(
     const fp_t* d_left_clv  = clv_read_ptr_for_node<const fp_t>(D, op, op.left_id);
     const fp_t* d_right_clv = clv_read_ptr_for_node<const fp_t>(D, op, op.right_id);
     fp_t* parent_clv = clv_write_ptr_for_node<fp_t>(D, op, op.parent_id);
-    if (!d_left_clv || !d_right_clv || !parent_clv) return; // placeholder until preorder input logic is defined
+    if (!d_left_clv || !d_right_clv || !parent_clv) return;
     const fp_t* d_left_mat  = D.d_pmat + (size_t)op.left_id  * D.rate_cats * states * states;
     const fp_t* d_right_mat = D.d_pmat + (size_t)op.right_id * D.rate_cats * states * states;
 
@@ -1971,7 +1894,7 @@ __device__ __forceinline__ void compute_inner_inner_site_generic(
         if (site_scaler_ptr) {
             unsigned int shift = threshold_scale_shift(col_scale_max_val);
             if (shift) {
-                site_scaler_ptr[r] += shift;
+                add_scaler_shift(D, site_scaler_ptr, r, shift);
                 for (unsigned int j = 0; j < states; ++j) {
                     scale_clv_pow2(Pout[j], shift);
                 }
@@ -1994,15 +1917,15 @@ __global__ void Rtree_Likelihood_Site_Parallel_Upward_Kernel(
             switch (op.op_type) {
                 case OP_TIP_TIP:
                     if (D.states == 4) {
-                        switch (D.rate_cats) {
+                            switch (D.rate_cats) {
                             case 1:
-                                compute_tip_tip_site_ratecat_nolookup<1>(D, op, site);
+                                compute_tip_tip_site_ratecat<1>(D, op, site);
                                 break;
                             case 4:
-                                compute_tip_tip_site_ratecat_nolookup<4>(D, op, site);
+                                compute_tip_tip_site_ratecat<4>(D, op, site);
                                 break;
                             case 8:
-                                compute_tip_tip_site_ratecat_nolookup<8>(D, op, site);
+                                compute_tip_tip_site_ratecat<8>(D, op, site);
                                 break;
                             default:
                                 compute_tip_tip_site_4_generic(D, op, site);
@@ -2025,7 +1948,7 @@ __global__ void Rtree_Likelihood_Site_Parallel_Upward_Kernel(
                                 compute_tip_inner_site_ratecat<8>(D, op, site);
                                 break;
                             default:
-                                compute_tip_inner_site_generic(D, op, site);
+                                compute_tip_inner_site_4_generic(D, op, site);
                                 break;
                         }
                     } else {
@@ -2045,7 +1968,7 @@ __global__ void Rtree_Likelihood_Site_Parallel_Upward_Kernel(
                                 compute_inner_inner_site_ratecat<8>(D, op, site);
                                 break;
                             default:
-                                compute_inner_inner_site_generic(D, op, site);
+                                compute_inner_inner_site_4_generic(D, op, site);
                                 break;
                         }
                     } else {
@@ -2060,103 +1983,127 @@ __global__ void Rtree_Likelihood_Site_Parallel_Upward_Kernel(
     }
 }
 }
+__device__ __forceinline__ void execute_downward_op_for_site(
+    const DeviceTree& D,
+    const NodeOpInfo& op,
+    unsigned int site)
+{
+    switch (op.op_type) {
+        case OP_DOWN_INNER_INNER:
+            if (D.states == 4) {
+                switch (D.rate_cats) {
+                    case 1:
+                        compute_downward_inner_inner_ratecat<1>(D, op, site);
+                        break;
+                    case 4:
+                        compute_downward_inner_inner_ratecat<4>(D, op, site);
+                        break;
+                    case 8:
+                        compute_downward_inner_inner_ratecat<8>(D, op, site);
+                        break;
+                    default:
+                        compute_downward_inner_inner_generic(D, op, site);
+                        break;
+                }
+            } else {
+                compute_downward_inner_inner_generic(D, op, site);
+            }
+            break;
+        case OP_DOWN_INNER_TIP:
+            if (D.states == 4) {
+                switch (D.rate_cats) {
+                    case 1:
+                        compute_downward_inner_tip_ratecat<1>(D, op, site);
+                        break;
+                    case 4:
+                        compute_downward_inner_tip_ratecat<4>(D, op, site);
+                        break;
+                    case 8:
+                        compute_downward_inner_tip_ratecat<8>(D, op, site);
+                        break;
+                    default:
+                        compute_downward_inner_tip_generic(D, op, site);
+                        break;
+                }
+            } else {
+                compute_downward_inner_tip_generic(D, op, site);
+            }
+            break;
+        case OP_DOWN_TIP_INNER:
+            if (D.states == 4) {
+                switch (D.rate_cats) {
+                    case 1:
+                        compute_downward_tip_inner_ratecat<1>(D, op, site);
+                        break;
+                    case 4:
+                        compute_downward_tip_inner_ratecat<4>(D, op, site);
+                        break;
+                    case 8:
+                        compute_downward_tip_inner_ratecat<8>(D, op, site);
+                        break;
+                    default:
+                        compute_downward_tip_inner_generic(D, op, site);
+                        break;
+                }
+            } else {
+                compute_downward_tip_inner_generic(D, op, site);
+            }
+            break;
+        case OP_DOWN_TIP_TIP:
+            if (D.states == 4) {
+                switch (D.rate_cats) {
+                    case 1:
+                        compute_downward_tip_tip_ratecat<1>(D, op, site);
+                        break;
+                    case 4:
+                        compute_downward_tip_tip_ratecat<4>(D, op, site);
+                        break;
+                    case 8:
+                        compute_downward_tip_tip_ratecat<8>(D, op, site);
+                        break;
+                    default:
+                        compute_downward_tip_tip_generic(D, op, site);
+                        break;
+                }
+            } else {
+                compute_downward_tip_tip_generic(D, op, site);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 // Downward child kernel: compute target child clv_down from parent.down + sibling.up.
 __global__ void Rtree_Likelihood_Site_Parallel_Downward_Kernel(
     const DeviceTree D,
     const NodeOpInfo* ops,
     int num_ops)
 {
-
     unsigned int tid  = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int step = blockDim.x * gridDim.x;
 
     for (unsigned int site = tid; site < D.sites; site += step) {
         for (int i = 0; i < num_ops; ++i) {
-            const NodeOpInfo& op = ops[i];
-            switch (op.op_type) {
-                case OP_DOWN_INNER_INNER:
-                    if (D.states == 4) {
-                        switch (D.rate_cats) {
-                            case 1:
-                                compute_downward_inner_inner_ratecat<1>(D, op, site);
-                                break;
-                            case 4:
-                                compute_downward_inner_inner_ratecat<4>(D, op, site);
-                                break;
-                            case 8:
-                                compute_downward_inner_inner_ratecat<8>(D, op, site);
-                                break;
-                            default:
-                                compute_downward_inner_inner_generic(D, op, site);
-                                break;
-                        }
-                    } else {
-                        compute_downward_inner_inner_generic(D, op, site);
-                    }
-                    break;
-                case OP_DOWN_INNER_TIP:
-                    if (D.states == 4) {
-                        switch (D.rate_cats) {
-                            case 1:
-                                compute_downward_inner_tip_ratecat<1>(D, op, site);
-                                break;
-                            case 4:
-                                compute_downward_inner_tip_ratecat<4>(D, op, site);
-                                break;
-                            case 8:
-                                compute_downward_inner_tip_ratecat<8>(D, op, site);
-                                break;
-                            default:
-                                compute_downward_inner_tip_generic(D, op, site);
-                                break;
-                        }
-                    } else {
-                        compute_downward_inner_tip_generic(D, op, site);
-                    }
-                    break;
-                case OP_DOWN_TIP_INNER:
-                    if (D.states == 4) {
-                        switch (D.rate_cats) {
-                            case 1:
-                                compute_downward_tip_inner_ratecat<1>(D, op, site);
-                                break;
-                            case 4:
-                                compute_downward_tip_inner_ratecat<4>(D, op, site);
-                                break;
-                            case 8:
-                                compute_downward_tip_inner_ratecat<8>(D, op, site);
-                                break;
-                            default:
-                                compute_downward_tip_inner_generic(D, op, site);
-                                break;
-                        }
-                    } else {
-                        compute_downward_tip_inner_generic(D, op, site);
-                    }
-                    break;
-                case OP_DOWN_TIP_TIP:
-                    if (D.states == 4) {
-                        switch (D.rate_cats) {
-                            case 1:
-                                compute_downward_tip_tip_ratecat<1>(D, op, site);
-                                break;
-                            case 4:
-                                compute_downward_tip_tip_ratecat<4>(D, op, site);
-                                break;
-                            case 8:
-                                compute_downward_tip_tip_ratecat<8>(D, op, site);
-                                break;
-                            default:
-                                compute_downward_tip_tip_generic(D, op, site);
-                                break;
-                        }
-                    } else {
-                        compute_downward_tip_tip_generic(D, op, site);
-                    }
-                    break;
-                default:
-                    break;
-            }
+            execute_downward_op_for_site(D, ops[i], site);
         }
+    }
+}
+
+__global__ void Rtree_Likelihood_Site_Parallel_Downward_Level_Kernel(
+    const DeviceTree D,
+    const NodeOpInfo* ops,
+    int num_ops)
+{
+    if (blockIdx.y >= static_cast<unsigned int>(num_ops)) {
+        return;
+    }
+
+    const NodeOpInfo op = ops[blockIdx.y];
+    unsigned int tid  = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int step = blockDim.x * gridDim.x;
+
+    for (unsigned int site = tid; site < D.sites; site += step) {
+        execute_downward_op_for_site(D, op, site);
     }
 }

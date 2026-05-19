@@ -4,10 +4,8 @@
 #include <unordered_map>
 #include <utility>
 #include <stdexcept>
-#include <iostream>
 #include <cstdint>
 #include <cstdlib>
-#include <cstdio>
 #include <cstring>
 #include <algorithm>
 #include <cmath>
@@ -61,8 +59,7 @@ static inline int down_op_type_for_target(bool target_is_tip, bool sibling_is_ti
     return static_cast<int>(OP_DOWN_INNER_INNER);
 }
 
-static inline void append_downward_op(
-    std::vector<NodeOpInfo>& ops,
+static inline NodeOpInfo make_downward_op(
     int parent_id,
     int left_id,
     int right_id,
@@ -84,7 +81,7 @@ static inline void append_downward_op(
     const bool target_is_tip  = target_is_left ? left_is_tip : right_is_tip;
     const bool sibling_is_tip = target_is_left ? right_is_tip : left_is_tip;
     op.op_type = down_op_type_for_target(target_is_tip, sibling_is_tip);
-    ops.push_back(op);
+    return op;
 }
 
 } // namespace
@@ -234,13 +231,14 @@ void fill_pmats_in_host_packing(
 DeviceTree make_query_view(const DeviceTree& D, int query_idx) {
     DeviceTree view = D;
     if (query_idx < 0 || query_idx >= D.placement_queries) return view;
-    const size_t clv_span = (size_t)D.sites * (size_t)D.rate_cats * (size_t)D.states;
+    const size_t clv_span =
+        D.sites * static_cast<size_t>(D.rate_cats) * static_cast<size_t>(D.states);
     if (D.d_query_pmat) {
         // Shared query PMAT buffer across queries; rebuilt per-query.
         view.d_query_pmat = D.d_query_pmat;
     }
     if (D.d_query_clv) {
-        view.d_query_clv = D.d_query_clv + (size_t)query_idx * clv_span;
+        view.d_query_clv = D.d_query_clv + static_cast<size_t>(query_idx) * clv_span;
     }
     return view;
 }
@@ -250,14 +248,16 @@ __global__ void BuildQueryClvKernel(
     const uint8_t* query_chars,
     int query_idx)
 {
-    const unsigned site = blockIdx.x * blockDim.x + threadIdx.x;
+    const size_t site =
+        static_cast<size_t>(blockIdx.x) * static_cast<size_t>(blockDim.x) +
+        static_cast<size_t>(threadIdx.x);
     if (site >= D.sites) return;
-    const size_t base_char = (size_t)query_idx * D.sites + site;
+    const size_t base_char = static_cast<size_t>(query_idx) * D.sites + site;
     const uint8_t enc = query_chars ? query_chars[base_char] : (D.states == 4 ? 15 : 4);
 
-    const size_t per_site = (size_t)D.rate_cats * (size_t)D.states;
-    const size_t clv_span = (size_t)D.sites * per_site;
-    fp_t* out = D.d_query_clv + (size_t)query_idx * clv_span + (size_t)site * per_site;
+    const size_t per_site = static_cast<size_t>(D.rate_cats) * static_cast<size_t>(D.states);
+    const size_t clv_span = D.sites * per_site;
+    fp_t* out = D.d_query_clv + static_cast<size_t>(query_idx) * clv_span + site * per_site;
     if (D.states == 4) {
         // Keep query decoding on the exact same contract as reference tips:
         // query_chars stores a DNA4 bitmask, and d_tipmap is identity in the
@@ -267,14 +267,14 @@ __global__ void BuildQueryClvKernel(
             ? D.d_tipmap[static_cast<unsigned int>(enc)]
             : static_cast<unsigned int>(enc);
         for (int rc = 0; rc < D.rate_cats; ++rc) {
-            fp_t* row = out + (size_t)rc * D.states;
+            fp_t* row = out + static_cast<size_t>(rc) * static_cast<size_t>(D.states);
             for (int s = 0; s < D.states; ++s) {
                 row[s] = (mask & (1u << s)) ? fp_t(1) : fp_t(0);
             }
         }
     } else {
         for (int rc = 0; rc < D.rate_cats; ++rc) {
-            fp_t* row = out + (size_t)rc * D.states;
+            fp_t* row = out + static_cast<size_t>(rc) * static_cast<size_t>(D.states);
             for (int s = 0; s < D.states; ++s) {
                 row[s] = (enc < D.states) ? (s == enc ? fp_t(1) : fp_t(0)) : fp_t(1);
             }
@@ -290,7 +290,7 @@ void build_query_clv(
     if (!D.d_query_clv || !D.d_query_chars) return;
     if (query_idx < 0 || query_idx >= D.placement_queries) return;
     dim3 block(256);
-    dim3 grid((unsigned)((D.sites + block.x - 1) / block.x));
+    dim3 grid(static_cast<unsigned int>((D.sites + block.x - 1) / block.x));
     BuildQueryClvKernel<<<grid, block, 0, stream>>>(D, D.d_query_chars, query_idx);
     CUDA_CHECK(cudaGetLastError());
 }
@@ -312,17 +312,19 @@ __global__ void CopyUnscaledUpClvToQuerySlotKernel(
     DeviceTree dst,
     int dst_query_idx)
 {
-    const unsigned site = blockIdx.x * blockDim.x + threadIdx.x;
+    const size_t site =
+        static_cast<size_t>(blockIdx.x) * static_cast<size_t>(blockDim.x) +
+        static_cast<size_t>(threadIdx.x);
     if (site >= src.sites) return;
     if (!src.d_clv_up || !dst.d_query_clv) return;
 
     const size_t per_site = static_cast<size_t>(src.rate_cats) * static_cast<size_t>(src.states);
-    const size_t src_clv_span = static_cast<size_t>(src.sites) * per_site;
-    const size_t dst_clv_span = static_cast<size_t>(dst.sites) * per_site;
+    const size_t src_clv_span = src.sites * per_site;
+    const size_t dst_clv_span = dst.sites * per_site;
     const size_t src_site_base =
-        static_cast<size_t>(src_node_id) * src_clv_span + static_cast<size_t>(site) * per_site;
+        static_cast<size_t>(src_node_id) * src_clv_span + site * per_site;
     const size_t dst_site_base =
-        static_cast<size_t>(dst_query_idx) * dst_clv_span + static_cast<size_t>(site) * per_site;
+        static_cast<size_t>(dst_query_idx) * dst_clv_span + site * per_site;
 
     const unsigned* scaler_base = nullptr;
     if (src.d_site_scaler_up) {
@@ -336,7 +338,7 @@ __global__ void CopyUnscaledUpClvToQuerySlotKernel(
         unsigned shift = 0u;
         if (scaler_base) {
             shift = src.per_rate_scaling
-                ? scaler_base[static_cast<size_t>(site) * static_cast<size_t>(src.rate_cats) + static_cast<size_t>(rc)]
+                ? scaler_base[site * static_cast<size_t>(src.rate_cats) + static_cast<size_t>(rc)]
                 : scaler_base[site];
         }
         for (int state = 0; state < src.states; ++state) {
@@ -495,28 +497,6 @@ HostPacking pack_host_arrays_from_tree_and_msa(
     } else {
         throw std::runtime_error("Unsupported states for tip encoding; expected 4 or 5.");
     }
-    // else if (states == 20) {
-    //     auto encAA = [](char c)->uint8_t {
-    //         // TODO: fill in your protein mapping; temporarily treat unknown as 19
-    //         switch (c) {
-    //             case 'A': case 'a': return 0;
-    //             // ... remaining 18
-    //             default: return 19;
-    //         }
-    //     };
-    //     for (int t = 0; t < tips; ++t) {
-    //         const int node_id = tip_node_ids_host[t];
-    //         const auto& name  = T.nodes[node_id].name;
-    //         auto it = name2row.find(name);
-    //         if (it == name2row.end())
-    //             throw std::runtime_error("Tip not found in MSA: " + name);
-    //         const std::string& row = msa_rows[it->second];
-    //         for (size_t s = 0; s < sites; ++s)
-    //             H.tipchars[(size_t)t * sites + s] = encAA(row[s]);
-    //     }
-    // } else {
-    //     throw std::runtime_error("Unsupported states; expect 4/5/20.");
-    // }
 
     return H;
 }
@@ -619,6 +599,8 @@ DeviceTree upload_to_gpu(
     const size_t live_node_bytes = sizeof(fp_t) * static_cast<size_t>(D.N);
     const size_t tipchar_capacity_bytes = sizeof(uint8_t) * static_cast<size_t>(D.capacity_tips) * site_count;
     const size_t tipchar_live_bytes = sizeof(uint8_t) * static_cast<size_t>(D.tips) * site_count;
+    const size_t tip_node_ids_capacity_bytes = sizeof(int) * static_cast<size_t>(D.capacity_tips);
+    const size_t tip_node_ids_live_bytes = sizeof(int) * static_cast<size_t>(D.tips);
 
     CUDA_CHECK(cudaMalloc(&D.d_blen, capacity_node_bytes));
     CUDA_CHECK(cudaMalloc(&D.d_new_pendant_length, capacity_node_bytes));
@@ -634,6 +616,8 @@ DeviceTree upload_to_gpu(
 
     CUDA_CHECK(cudaMalloc(&D.d_tipchars, tipchar_capacity_bytes));
     CUDA_CHECK(cudaMemcpy(D.d_tipchars, H.tipchars.data(), tipchar_live_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMalloc(&D.d_tip_node_ids, tip_node_ids_capacity_bytes));
+    CUDA_CHECK(cudaMemcpy(D.d_tip_node_ids, H.tip_node_ids.data(), tip_node_ids_live_bytes, cudaMemcpyHostToDevice));
 
     // --- CLV and derivative workspaces ---
     const size_t per_node = site_count * rate_count * state_count;
@@ -836,6 +820,7 @@ void reload_device_tree_live_data_impl(
     const size_t capacity_node_bytes = sizeof(fp_t) * static_cast<size_t>(D.capacity_N);
     const size_t live_node_bytes = sizeof(fp_t) * static_cast<size_t>(D.N);
     const size_t live_tipchar_bytes = sizeof(uint8_t) * static_cast<size_t>(D.tips) * D.sites;
+    const size_t live_tip_node_ids_bytes = sizeof(int) * static_cast<size_t>(D.tips);
     const size_t clv_capacity_bytes = sizeof(fp_t) * static_cast<size_t>(D.capacity_N) * per_node;
     const size_t pmat_live_bytes = sizeof(fp_t) * static_cast<size_t>(D.N) * matrix_per_node;
 
@@ -863,6 +848,14 @@ void reload_device_tree_live_data_impl(
             live_tipchar_bytes,
             cudaMemcpyHostToDevice,
             stream));
+        if (D.d_tip_node_ids) {
+            CUDA_CHECK(cudaMemcpyAsync(
+                D.d_tip_node_ids,
+                H.tip_node_ids.data(),
+                live_tip_node_ids_bytes,
+                cudaMemcpyHostToDevice,
+                stream));
+        }
     }
 
     if ((debug_skip_flags & RELOAD_SKIP_ZERO_UP_DOWN_CLV) == 0u) {
@@ -1031,6 +1024,7 @@ void free_device_tree(DeviceTree& D) {
     F(D.d_new_pendant_length); F(D.d_new_proximal_length);
     F(D.d_prev_pendant_length); F(D.d_prev_proximal_length);
     F(D.d_tipchars);
+    F(D.d_tip_node_ids);
     // d_clv_down is an offset into d_clv_up; free only the base allocation.
     F(D.d_clv_up);
     F(D.d_clv_mid);
@@ -1145,43 +1139,87 @@ static void build_upward_ops_host_for_path(
     }
 }
 
-static void build_downward_ops_host(
+static void build_downward_ops_host_levelized(
     const TreeBuildResult& tree,
     const std::vector<int>& node_to_tip,
-    std::vector<NodeOpInfo>& downward_ops_host)
+    std::vector<NodeOpInfo>& downward_ops_host,
+    std::vector<int>& level_offsets)
 {
+    // Downward dependencies only flow from a parent to the next child depth, so
+    // children at the same depth can be launched together as one wavefront.
     const int node_count = static_cast<int>(tree.nodes.size());
     downward_ops_host.clear();
-    downward_ops_host.reserve(static_cast<size_t>(node_count) * 2);
+    level_offsets.clear();
+    if (node_count <= 0 || tree.root_id < 0 || tree.root_id >= node_count) {
+        return;
+    }
+
+    std::vector<int> node_depth(static_cast<size_t>(node_count), -1);
+    std::vector<int> level_counts(1, 0);
+    node_depth[static_cast<size_t>(tree.root_id)] = 0;
 
     for (int parent_id : tree.preorder) {
-        const TreeNode& node = tree.nodes[parent_id];
+        if (parent_id < 0 || parent_id >= node_count) continue;
+        const int parent_depth = node_depth[static_cast<size_t>(parent_id)];
+        if (parent_depth < 0) continue;
+
+        const TreeNode& node = tree.nodes[static_cast<size_t>(parent_id)];
         if (node.is_tip) continue;
 
         const int left_id = node.left;
         const int right_id = node.right;
-        const bool left_is_tip = (left_id >= 0 && tree.nodes[left_id].is_tip);
-        const bool right_is_tip = (right_id >= 0 && tree.nodes[right_id].is_tip);
+        if (left_id < 0 || right_id < 0) continue;
 
-        append_downward_op(
-            downward_ops_host,
-            parent_id,
-            left_id,
-            right_id,
-            left_is_tip,
-            right_is_tip,
-            node_to_tip,
-            static_cast<uint8_t>(CLV_DIR_DOWN_LEFT));
+        const int child_depth = parent_depth + 1;
+        if (static_cast<size_t>(child_depth) >= level_counts.size()) {
+            level_counts.resize(static_cast<size_t>(child_depth) + 1, 0);
+        }
+        level_counts[static_cast<size_t>(child_depth)] += 2;
+        node_depth[static_cast<size_t>(left_id)] = child_depth;
+        node_depth[static_cast<size_t>(right_id)] = child_depth;
+    }
 
-        append_downward_op(
-            downward_ops_host,
-            parent_id,
-            left_id,
-            right_id,
-            left_is_tip,
-            right_is_tip,
-            node_to_tip,
-            static_cast<uint8_t>(CLV_DIR_DOWN_RIGHT));
+    level_offsets.assign(level_counts.size() + 1, 0);
+    for (size_t depth = 0; depth < level_counts.size(); ++depth) {
+        level_offsets[depth + 1] = level_offsets[depth] + level_counts[depth];
+    }
+
+    downward_ops_host.resize(static_cast<size_t>(level_offsets.back()));
+    std::vector<int> write_offsets(level_offsets.begin(), level_offsets.end() - 1);
+
+    for (int parent_id : tree.preorder) {
+        if (parent_id < 0 || parent_id >= node_count) continue;
+        const TreeNode& node = tree.nodes[static_cast<size_t>(parent_id)];
+        if (node.is_tip) continue;
+
+        const int left_id = node.left;
+        const int right_id = node.right;
+        if (left_id < 0 || right_id < 0) continue;
+
+        const int child_depth = node_depth[static_cast<size_t>(left_id)];
+        if (child_depth <= 0 || static_cast<size_t>(child_depth) >= write_offsets.size()) continue;
+
+        const bool left_is_tip = tree.nodes[static_cast<size_t>(left_id)].is_tip;
+        const bool right_is_tip = tree.nodes[static_cast<size_t>(right_id)].is_tip;
+
+        downward_ops_host[static_cast<size_t>(write_offsets[static_cast<size_t>(child_depth)]++)] =
+            make_downward_op(
+                parent_id,
+                left_id,
+                right_id,
+                left_is_tip,
+                right_is_tip,
+                node_to_tip,
+                static_cast<uint8_t>(CLV_DIR_DOWN_LEFT));
+        downward_ops_host[static_cast<size_t>(write_offsets[static_cast<size_t>(child_depth)]++)] =
+            make_downward_op(
+                parent_id,
+                left_id,
+                right_id,
+                left_is_tip,
+                right_is_tip,
+                node_to_tip,
+                static_cast<uint8_t>(CLV_DIR_DOWN_RIGHT));
     }
 }
 
@@ -1195,6 +1233,7 @@ static void launch_upward_clv_update(
     if (num_ops <= 0 || !d_ops) {
         throw std::runtime_error("No upward ops to update");
     }
+    launch_init_tip_clv(D, stream);
 
     struct LaunchConfig {
         int block = 256;
@@ -1268,12 +1307,72 @@ static void launch_downward_clv_update(
     CHECK_CUDA_LAST();
 }
 
+static void launch_downward_clv_update_levelized(
+    const DeviceTree& D,
+    NodeOpInfo* d_ops,
+    const std::vector<int>& level_offsets,
+    int num_sms,
+    cudaStream_t stream)
+{
+    if (!d_ops || D.sites == 0 || level_offsets.size() < 2) return;
+
+    struct LaunchConfig {
+        int block = 256;
+        int max_blocks_per_sm = 4;
+        bool initialized = false;
+    };
+    static LaunchConfig cfg;
+    if (!cfg.initialized) {
+        cudaFuncAttributes attr{};
+        CUDA_CHECK(cudaFuncGetAttributes(&attr, Rtree_Likelihood_Site_Parallel_Downward_Level_Kernel));
+        if (attr.maxThreadsPerBlock > 0 && cfg.block > attr.maxThreadsPerBlock) {
+            cfg.block = attr.maxThreadsPerBlock;
+        }
+        CUDA_CHECK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+            &cfg.max_blocks_per_sm,
+            Rtree_Likelihood_Site_Parallel_Downward_Level_Kernel,
+            cfg.block,
+            0));
+        cfg.initialized = true;
+    }
+
+    int max_blocks = num_sms * cfg.max_blocks_per_sm;
+    unsigned int grid_x = static_cast<unsigned int>(
+        (D.sites + static_cast<size_t>(cfg.block) - 1) / static_cast<size_t>(cfg.block));
+    if (max_blocks > 0 && static_cast<int>(grid_x) > max_blocks) {
+        grid_x = static_cast<unsigned int>(max_blocks);
+    }
+    if (grid_x == 0) {
+        grid_x = 1;
+    }
+
+    constexpr int kMaxGridY = 65535;
+    for (size_t level = 1; level + 1 < level_offsets.size(); ++level) {
+        const int level_start = level_offsets[level];
+        const int level_count = level_offsets[level + 1] - level_start;
+        if (level_count <= 0) continue;
+
+        for (int batch_start = 0; batch_start < level_count; batch_start += kMaxGridY) {
+            const int batch_ops = std::min(level_count - batch_start, kMaxGridY);
+            dim3 grid(grid_x, static_cast<unsigned int>(batch_ops));
+            Rtree_Likelihood_Site_Parallel_Downward_Level_Kernel<<<grid, cfg.block, 0, stream>>>(
+                D,
+                d_ops + level_start + batch_start,
+                batch_ops);
+            CUDA_CHECK(cudaGetLastError());
+        }
+    }
+}
+
 static int get_device_sm_count()
 {
+    static int cached_device = -1;
     static int sm_count = 0;
-    if (sm_count <= 0) {
-        cudaDeviceProp device_props{};
-        CUDA_CHECK(cudaGetDeviceProperties(&device_props, 0));
+    const int current_device = mlipper::gpu::current_device_or_throw();
+    if (sm_count <= 0 || cached_device != current_device) {
+        const cudaDeviceProp device_props =
+            mlipper::gpu::current_device_properties_or_throw();
+        cached_device = current_device;
         sm_count = device_props.multiProcessorCount;
     }
     return sm_count;
@@ -1320,12 +1419,114 @@ static void upload_ops_to_device(
     placement_ops.num_ops = num_ops;
 }
 
+template <typename LaunchFn>
+static void run_clv_stage(
+    PlacementOpBuffer& placement_ops,
+    const std::vector<NodeOpInfo>& host_ops,
+    cudaStream_t stream,
+    double* stage_ms,
+    LaunchFn&& launch_fn)
+{
+    const auto stage = [&]() {
+        upload_ops_to_device(placement_ops, host_ops, stream);
+        launch_fn();
+    };
+    if (stage_ms) {
+        *stage_ms += time_stream_stage_ms(stream, stage);
+    } else {
+        stage();
+    }
+}
+
+static void run_upward_clv_stage(
+    const DeviceTree& D,
+    PlacementOpBuffer& placement_ops,
+    const std::vector<NodeOpInfo>& host_ops,
+    int num_sms,
+    cudaStream_t stream,
+    double* stage_ms = nullptr)
+{
+    run_clv_stage(
+        placement_ops,
+        host_ops,
+        stream,
+        stage_ms,
+        [&]() {
+            launch_upward_clv_update(
+                D,
+                placement_ops.d_ops,
+                placement_ops.num_ops,
+                num_sms,
+                stream);
+        });
+}
+
+static void run_downward_clv_stage(
+    const DeviceTree& D,
+    PlacementOpBuffer& placement_ops,
+    const std::vector<NodeOpInfo>& host_ops,
+    int num_sms,
+    cudaStream_t stream,
+    double* stage_ms = nullptr)
+{
+    run_clv_stage(
+        placement_ops,
+        host_ops,
+        stream,
+        stage_ms,
+        [&]() {
+            launch_downward_clv_update(
+                D,
+                placement_ops.d_ops,
+                placement_ops.num_ops,
+                num_sms,
+                stream);
+        });
+}
+
+static void run_downward_clv_stage_levelized(
+    const DeviceTree& D,
+    PlacementOpBuffer& placement_ops,
+    const std::vector<NodeOpInfo>& host_ops,
+    const std::vector<int>& level_offsets,
+    int num_sms,
+    cudaStream_t stream,
+    double* stage_ms = nullptr)
+{
+    run_clv_stage(
+        placement_ops,
+        host_ops,
+        stream,
+        stage_ms,
+        [&]() {
+            launch_downward_clv_update_levelized(
+                D,
+                placement_ops.d_ops,
+                level_offsets,
+                num_sms,
+                stream);
+        });
+}
+
 void UploadPlacementOps(
     PlacementOpBuffer& placement_ops,
     const std::vector<NodeOpInfo>& host_ops,
     cudaStream_t stream)
 {
     upload_ops_to_device(placement_ops, host_ops, stream);
+}
+
+void launch_init_tip_clv(const DeviceTree& D, cudaStream_t stream)
+{
+    if (D.tips <= 0 || D.sites == 0 || !D.d_tipchars || !D.d_tip_node_ids || !D.d_clv_up) {
+        return;
+    }
+
+    const size_t total_tip_sites = static_cast<size_t>(D.tips) * D.sites;
+    dim3 block(256);
+    dim3 grid(static_cast<unsigned>((total_tip_sites + block.x - 1) / block.x));
+    InitializeTipClvUpKernel<<<grid, block, 0, stream>>>(D);
+    CUDA_CHECK(cudaGetLastError());
 }
 
 void free_placement_op_buffer(
@@ -1384,6 +1585,7 @@ void DownloadClvDump(
 
 // ----- Tree CLV update pipeline -----
 
+// Full-tree CLV rebuild used after the initial topology/device upload.
 void UpdateTreeClvs(
     DeviceTree& D,
     TreeBuildResult& T,
@@ -1404,17 +1606,28 @@ void UpdateTreeClvs(
     }
 
     if (profile) {
-        placement_ops.timing.initial_upward_stage_ms += time_stream_stage_ms(stream, [&]() {
-            upload_ops_to_device(placement_ops, placement_ops.upward_ops_host, stream);
-            launch_upward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
-        });
+        run_upward_clv_stage(
+            D,
+            placement_ops,
+            placement_ops.upward_ops_host,
+            sm_count,
+            stream,
+            &placement_ops.timing.initial_upward_stage_ms);
     } else {
-        upload_ops_to_device(placement_ops, placement_ops.upward_ops_host, stream);
-        launch_upward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
+        run_upward_clv_stage(
+            D,
+            placement_ops,
+            placement_ops.upward_ops_host,
+            sm_count,
+            stream);
     }
 
     const auto downward_host_start = SteadyClock::now();
-    build_downward_ops_host(T, placement_ops.node_to_tip, placement_ops.downward_ops_host);
+    build_downward_ops_host_levelized(
+        T,
+        placement_ops.node_to_tip,
+        placement_ops.downward_ops_host,
+        placement_ops.downward_level_offsets_host);
     const auto downward_host_end = SteadyClock::now();
     if (profile) {
         placement_ops.timing.initial_downward_host_ms += elapsed_ms(downward_host_start, downward_host_end);
@@ -1422,24 +1635,36 @@ void UpdateTreeClvs(
     }
 
     if (profile) {
-        placement_ops.timing.initial_downward_stage_ms += time_stream_stage_ms(stream, [&]() {
-            upload_ops_to_device(placement_ops, placement_ops.downward_ops_host, stream);
-            launch_downward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
-        });
+        run_downward_clv_stage_levelized(
+            D,
+            placement_ops,
+            placement_ops.downward_ops_host,
+            placement_ops.downward_level_offsets_host,
+            sm_count,
+            stream,
+            &placement_ops.timing.initial_downward_stage_ms);
         placement_ops.timing.initial_updates += 1;
     } else {
-        upload_ops_to_device(placement_ops, placement_ops.downward_ops_host, stream);
-        launch_downward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
+        run_downward_clv_stage_levelized(
+            D,
+            placement_ops,
+            placement_ops.downward_ops_host,
+            placement_ops.downward_level_offsets_host,
+            sm_count,
+            stream);
     }
 }
 
+// Local SPR uses this after pruning to refresh only the affected CLV region.
+// The upward pass is limited to the path from upward_start_node to the root;
+// passing a negative start skips upward work and applies only downward updates.
 void UpdateTreeClvsAfterPrune(
     DeviceTree& D,
     TreeBuildResult& T,
     HostPacking& H,
     PlacementOpBuffer& placement_ops,
     int upward_start_node,
-    const std::vector<NodeOpInfo>& downward_ops_host,
+    const std::vector<NodeOpInfo>& required_downward_ops,
     cudaStream_t stream)
 {
     const int sm_count = get_device_sm_count();
@@ -1451,19 +1676,32 @@ void UpdateTreeClvsAfterPrune(
         upward_start_node,
         placement_ops.upward_ops_host);
     if (!placement_ops.upward_ops_host.empty()) {
-        upload_ops_to_device(placement_ops, placement_ops.upward_ops_host, stream);
-        launch_upward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
+        run_upward_clv_stage(
+            D,
+            placement_ops,
+            placement_ops.upward_ops_host,
+            sm_count,
+            stream);
     }
 
-    if (downward_ops_host.empty()) {
+    if (required_downward_ops.empty()) {
         placement_ops.num_ops = 0;
         return;
     }
 
-    upload_ops_to_device(placement_ops, downward_ops_host, stream);
-    launch_downward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
+    // Local SPR already supplies the exact dependent downward ops to refresh,
+    // so this path keeps the simple sequential launch instead of rebuilding
+    // level batches from the full tree topology.
+    run_downward_clv_stage(
+        D,
+        placement_ops,
+        required_downward_ops,
+        sm_count,
+        stream);
 }
 
+// After a committed placement inserts a new internal node and query tip, this
+// incrementally refreshes the modified upward path and then rebuilds downward CLVs.
 static void UpdateTreeClvsAfterInsertion(
     DeviceTree& D,
     TreeBuildResult& T,
@@ -1490,18 +1728,29 @@ static void UpdateTreeClvsAfterInsertion(
 
     if (!placement_ops.upward_ops_host.empty()) {
         if (profile) {
-            placement_ops.timing.insertion_upward_stage_ms += time_stream_stage_ms(stream, [&]() {
-                upload_ops_to_device(placement_ops, placement_ops.upward_ops_host, stream);
-                launch_upward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
-            });
+            run_upward_clv_stage(
+                D,
+                placement_ops,
+                placement_ops.upward_ops_host,
+                sm_count,
+                stream,
+                &placement_ops.timing.insertion_upward_stage_ms);
         } else {
-            upload_ops_to_device(placement_ops, placement_ops.upward_ops_host, stream);
-            launch_upward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
+            run_upward_clv_stage(
+                D,
+                placement_ops,
+                placement_ops.upward_ops_host,
+                sm_count,
+                stream);
         }
     }
 
     const auto downward_host_start = SteadyClock::now();
-    build_downward_ops_host(T, placement_ops.node_to_tip, placement_ops.downward_ops_host);
+    build_downward_ops_host_levelized(
+        T,
+        placement_ops.node_to_tip,
+        placement_ops.downward_ops_host,
+        placement_ops.downward_level_offsets_host);
     const auto downward_host_end = SteadyClock::now();
     if (profile) {
         placement_ops.timing.insertion_downward_host_ms += elapsed_ms(downward_host_start, downward_host_end);
@@ -1509,14 +1758,23 @@ static void UpdateTreeClvsAfterInsertion(
     }
 
     if (profile) {
-        placement_ops.timing.insertion_downward_stage_ms += time_stream_stage_ms(stream, [&]() {
-            upload_ops_to_device(placement_ops, placement_ops.downward_ops_host, stream);
-            launch_downward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
-        });
+        run_downward_clv_stage_levelized(
+            D,
+            placement_ops,
+            placement_ops.downward_ops_host,
+            placement_ops.downward_level_offsets_host,
+            sm_count,
+            stream,
+            &placement_ops.timing.insertion_downward_stage_ms);
         placement_ops.timing.insertion_updates += 1;
     } else {
-        upload_ops_to_device(placement_ops, placement_ops.downward_ops_host, stream);
-        launch_downward_clv_update(D, placement_ops.d_ops, placement_ops.num_ops, sm_count, stream);
+        run_downward_clv_stage_levelized(
+            D,
+            placement_ops,
+            placement_ops.downward_ops_host,
+            placement_ops.downward_level_offsets_host,
+            sm_count,
+            stream);
     }
 }
 
@@ -1530,8 +1788,7 @@ static InsertResult insert_query_with_intermediate(
 {
     InsertResult out{};
     if (target_id < 0 || target_id >= (int)T.nodes.size()) {
-        fprintf(stderr, "[insert] invalid target_id=%d\n", target_id);
-        return out;
+        throw std::runtime_error("insert_query_with_intermediate: invalid target_id.");
     }
     int parent_id = T.nodes[target_id].parent;
     const double total = T.nodes[target_id].branch_length_to_parent;
@@ -1573,7 +1830,8 @@ static InsertResult insert_query_with_intermediate(
         } else if (T.nodes[parent_id].right == target_id) {
             T.nodes[parent_id].right = new_internal_id;
         } else {
-            fprintf(stderr, "[insert] parent %d does not reference target %d\n", parent_id, target_id);
+            throw std::runtime_error(
+                "insert_query_with_intermediate: parent does not reference target.");
         }
     } else {
         // Target was root; new internal becomes root.
@@ -1668,6 +1926,12 @@ static void update_insertion_device(
         D.d_tipchars + (size_t)old_tips * sites,
         H.tipchars.data() + (size_t)old_tips * sites,
         sizeof(uint8_t) * sites,
+        cudaMemcpyHostToDevice,
+        stream));
+    CUDA_CHECK(cudaMemcpyAsync(
+        D.d_tip_node_ids + (size_t)old_tips,
+        H.tip_node_ids.data() + (size_t)old_tips,
+        sizeof(int),
         cudaMemcpyHostToDevice,
         stream));
 
@@ -1880,7 +2144,8 @@ static PlacementResult evaluate_single_placement_query(
             placement_ops.d_ops,
             placement_ops.num_ops,
             smoothing,
-            stream);
+            stream,
+            true);
         timing_ops.timing.query_kernel_total_ms +=
             elapsed_ms(kernel_start, SteadyClock::now());
         return result;
@@ -1900,7 +2165,8 @@ static PlacementResult evaluate_single_placement_query(
         placement_ops.d_ops,
         placement_ops.num_ops,
         smoothing,
-        stream);
+        stream,
+        true);
 }
 
 static void evaluate_queries(

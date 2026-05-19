@@ -12,6 +12,8 @@
 #include "likelihood/root_likelihood.cuh"
 #include "derivative.cuh"
 
+constexpr int kMaxRateCats = 8;
+
 static __device__ __forceinline__ unsigned int threshold_scale_shift(fp_t max_val)
 {
     const fp_t scale_threshold = fp_ldexp(fp_t(1), SCALE_THRESHOLD_EXPONENT);
@@ -28,14 +30,16 @@ static __device__ __forceinline__ void build_diagtable_for_branch(
     fp_t* diag_out)
 {
     if (!diag_out || !D.d_lambdas) return;
-    const unsigned int total = (unsigned int)(D.rate_cats * D.states);
-    const unsigned int idx = threadIdx.x;
+    const size_t rate_count = static_cast<size_t>(D.rate_cats);
+    const size_t state_count = static_cast<size_t>(D.states);
+    const size_t total = rate_count * state_count;
+    const size_t idx = threadIdx.x;
     if (idx >= total) return;
-    const int rc = idx / D.states;
-    const int st = idx - rc * D.states;
-    const fp_t lambda = D.d_lambdas[(size_t)rc * D.states + st];
+    const size_t rc = idx / state_count;
+    const size_t st = idx - rc * state_count;
+    const fp_t lambda = D.d_lambdas[rc * state_count + st];
     const fp_t e = fp_exp(lambda * branch_length);
-    const size_t base = (size_t)idx * 4;
+    const size_t base = idx * 4;
     diag_out[base + 0] = e;
     diag_out[base + 1] = lambda * e;
     diag_out[base + 2] = lambda * lambda * e;
@@ -49,11 +53,11 @@ static __device__ __forceinline__ void build_diagtable_states4(
     fp_t* diag_out)
 {
     if (!diag_out || !D.d_lambdas) return;
-    const unsigned int idx = threadIdx.x;
-    if (idx >= (unsigned int)(RATE_CATS * 4)) return;
+    const size_t idx = threadIdx.x;
+    if (idx >= static_cast<size_t>(RATE_CATS * 4)) return;
     const fp_t lambda = D.d_lambdas[idx];
     const fp_t e = fp_exp(lambda * branch_length);
-    const size_t base = (size_t)idx * 4;
+    const size_t base = idx * 4;
     diag_out[base + 0] = e;
     diag_out[base + 1] = lambda * e;
     diag_out[base + 2] = lambda * lambda * e;
@@ -84,130 +88,14 @@ static __device__ __forceinline__
 unsigned int scaler_shift_at_site(
     const DeviceTree& D,
     const unsigned* __restrict__ scaler_base,
-    unsigned int site_idx,
-    int rate_idx);
+    size_t site_idx,
+    size_t rate_idx);
 
 static __device__ __forceinline__
 unsigned int scaler_shift_from_site_ptr(
     const DeviceTree& D,
     const unsigned* __restrict__ scaler_site_ptr,
-    int rate_idx);
-
-static __device__ __forceinline__ void maybe_print_newton_debug(
-    int debug_enabled,
-    int debug_all_iters,
-    int debug_limit,
-    int debug_target_id,
-    const char* kernel_name,
-    int op_global,
-    int target_id,
-    int iter,
-    double branch_before,
-    double branch_after,
-    double block_df,
-    double block_ddf,
-    double branch_lower_bound,
-    double branch_upper_bound,
-    double max_step)
-{
-    if (!debug_enabled) return;
-    if (debug_target_id >= 0 && target_id != debug_target_id) return;
-    if (!debug_all_iters && iter != 0) return;
-    if (debug_limit > 0 && iter >= debug_limit) return;
-    printf(
-        "[newton-debug] kernel=%s op=%d target=%d iter=%d branch_before=%.12f "
-        "branch_after=%.12f df=%.12e ddf=%.12e lb=%.12f ub=%.12f max_step=%.12f\n",
-        kernel_name ? kernel_name : "<null>",
-        op_global,
-        target_id,
-        iter,
-        branch_before,
-        branch_after,
-        block_df,
-        block_ddf,
-        branch_lower_bound,
-        branch_upper_bound,
-        max_step);
-}
-
-static __device__ __forceinline__ void maybe_print_sumtable_debug(
-    int enabled,
-    int debug_target_id,
-    int debug_site,
-    int debug_rate,
-    const char* kernel_name,
-    const char* left_source,
-    const char* right_source,
-    int target_id,
-    unsigned int site_idx,
-    int rate_idx,
-    const fp4_t& qclv,
-    const fp4_t& pbase,
-    const fp4_t& pup,
-    const fp4_t& pclv,
-    const fp4_t& left_proj,
-    const fp4_t& right_proj,
-    const fp_t* target_mat,
-    const fp_t* parent_mat,
-    const fp_t* sumtable_row,
-    unsigned int down_shift,
-    unsigned int up_shift,
-    unsigned int inherited_shift,
-    unsigned int midpoint_shift)
-{
-    if (!enabled) return;
-    if (debug_target_id >= 0 && target_id != debug_target_id) return;
-    if (debug_site < 0 || static_cast<int>(site_idx) != debug_site) return;
-    if (debug_rate >= 0 && rate_idx != debug_rate) return;
-    printf(
-        "[sumtable-proj-debug] kernel=%s left_source=%s right_source=%s target=%d site=%u rate=%d "
-        "down_shift=%u up_shift=%u inherited_shift=%u midpoint_shift=%u "
-        "Qclv=(%.12e,%.12e,%.12e,%.12e) "
-        "Pbase=(%.12e,%.12e,%.12e,%.12e) "
-        "Pup=(%.12e,%.12e,%.12e,%.12e) "
-        "Pclv=(%.12e,%.12e,%.12e,%.12e) "
-        "left_proj=(%.12e,%.12e,%.12e,%.12e) "
-        "right_proj=(%.12e,%.12e,%.12e,%.12e) "
-        "sum=(%.12e,%.12e,%.12e,%.12e)\n",
-        kernel_name ? kernel_name : "<null>",
-        left_source ? left_source : "<null>",
-        right_source ? right_source : "<null>",
-        target_id,
-        site_idx,
-        rate_idx,
-        down_shift,
-        up_shift,
-        inherited_shift,
-        midpoint_shift,
-        static_cast<double>(qclv.x),
-        static_cast<double>(qclv.y),
-        static_cast<double>(qclv.z),
-        static_cast<double>(qclv.w),
-        static_cast<double>(pbase.x),
-        static_cast<double>(pbase.y),
-        static_cast<double>(pbase.z),
-        static_cast<double>(pbase.w),
-        static_cast<double>(pup.x),
-        static_cast<double>(pup.y),
-        static_cast<double>(pup.z),
-        static_cast<double>(pup.w),
-        static_cast<double>(pclv.x),
-        static_cast<double>(pclv.y),
-        static_cast<double>(pclv.z),
-        static_cast<double>(pclv.w),
-        static_cast<double>(left_proj.x),
-        static_cast<double>(left_proj.y),
-        static_cast<double>(left_proj.z),
-        static_cast<double>(left_proj.w),
-        static_cast<double>(right_proj.x),
-        static_cast<double>(right_proj.y),
-        static_cast<double>(right_proj.z),
-        static_cast<double>(right_proj.w),
-        static_cast<double>(sumtable_row[0]),
-        static_cast<double>(sumtable_row[1]),
-        static_cast<double>(sumtable_row[2]),
-        static_cast<double>(sumtable_row[3]));
-}
+    size_t rate_idx);
 
 // Midpoint PMAT staging helpers.
 template<int RATE_CATS>
@@ -218,6 +106,21 @@ __device__ __forceinline__ void load_midpoint_pmat_pair(
     const fp_t* parent_mat)
 {
     const int total_mat_elems = RATE_CATS * 16;
+    for (int idx = threadIdx.x; idx < total_mat_elems; idx += blockDim.x) {
+        shared_target_mat[idx] = target_mat[idx];
+        shared_parent_mat[idx] = parent_mat[idx];
+    }
+    __syncthreads();
+}
+
+static __device__ __forceinline__ void load_midpoint_pmat_pair_generic(
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat,
+    const fp_t* target_mat,
+    const fp_t* parent_mat,
+    int rate_cats)
+{
+    const int total_mat_elems = rate_cats * 16;
     for (int idx = threadIdx.x; idx < total_mat_elems; idx += blockDim.x) {
         shared_target_mat[idx] = target_mat[idx];
         shared_parent_mat[idx] = parent_mat[idx];
@@ -247,7 +150,10 @@ bool load_midpoint_pmat_pair_dispatch(
                 shared_target_mat, shared_parent_mat, target_mat, parent_mat);
             return true;
         default:
-            return false;
+            if (D.rate_cats <= 0 || D.rate_cats > kMaxRateCats) return false;
+            load_midpoint_pmat_pair_generic(
+                shared_target_mat, shared_parent_mat, target_mat, parent_mat, D.rate_cats);
+            return true;
     }
 }
 
@@ -278,8 +184,8 @@ template<int RATE_CATS>
 __device__ __forceinline__ fp4_t build_pendant_midpoint_site_rate(
     const DeviceTree& D,
     int target_id,
-    unsigned int site_idx,
-    int rate_idx,
+    size_t site_idx,
+    size_t rate_idx,
     fp_t* shared_target_mat,
     fp_t* shared_parent_mat,
     unsigned int* total_shift_out,
@@ -292,9 +198,8 @@ __device__ __forceinline__ fp4_t build_pendant_midpoint_site_rate(
     const size_t rate_count = static_cast<size_t>(RATE_CATS);
     const size_t site_span = rate_count * 4;
     const size_t node_base = static_cast<size_t>(target_id) * per_node;
-    const size_t site_base = static_cast<size_t>(site_idx) * site_span;
-    const size_t rate_offset = static_cast<size_t>(rate_idx);
-    const size_t rate_base = rate_offset * 4;
+    const size_t site_base = site_idx * site_span;
+    const size_t rate_base = rate_idx * 4;
 
     const fp_t* mid_base = D.d_clv_mid_base + node_base + site_base;
     const fp_t* target_up = D.d_clv_up + node_base + site_base;
@@ -305,7 +210,7 @@ __device__ __forceinline__ fp4_t build_pendant_midpoint_site_rate(
     const unsigned int up_shift = scaler_shift_from_site_ptr(D, up_scaler, rate_idx);
     unsigned int inherited_shift = down_shift + up_shift;
 
-    const size_t mat_base = rate_offset * 16;
+    const size_t mat_base = rate_idx * 16;
     const fp_t* Mtarget = shared_target_mat + mat_base;
     const fp_t* Mparent = shared_parent_mat + mat_base;
     const fp4_t Pup = reinterpret_cast<const fp4_t*>(target_up + rate_base)[0];
@@ -339,12 +244,75 @@ __device__ __forceinline__ fp4_t build_pendant_midpoint_site_rate(
     return midpoint;
 }
 
+__device__ __forceinline__ fp4_t build_pendant_midpoint_site_rate_generic(
+    const DeviceTree& D,
+    int target_id,
+    size_t site_idx,
+    size_t rate_idx,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat,
+    unsigned int* total_shift_out,
+    unsigned int* down_shift_out,
+    unsigned int* up_shift_out,
+    fp4_t* pbase_out,
+    fp4_t* pup_out)
+{
+    const size_t per_node = per_node_span(D);
+    const size_t rate_count = static_cast<size_t>(D.rate_cats);
+    const size_t site_span = rate_count * 4;
+    const size_t node_base = static_cast<size_t>(target_id) * per_node;
+    const size_t site_base = site_idx * site_span;
+    const size_t rate_base = rate_idx * 4;
+
+    const fp_t* mid_base = D.d_clv_mid_base + node_base + site_base;
+    const fp_t* target_up = D.d_clv_up + node_base + site_base;
+    const unsigned* mid_base_scaler = mid_base_scaler_ptr(D, target_id, site_idx);
+    const unsigned* up_scaler = up_scaler_ptr(D, target_id, site_idx);
+
+    const unsigned int down_shift = scaler_shift_from_site_ptr(D, mid_base_scaler, rate_idx);
+    const unsigned int up_shift = scaler_shift_from_site_ptr(D, up_scaler, rate_idx);
+    unsigned int inherited_shift = down_shift + up_shift;
+
+    const size_t mat_base = rate_idx * 16;
+    const fp_t* Mtarget = shared_target_mat + mat_base;
+    const fp_t* Mparent = shared_parent_mat + mat_base;
+    const fp4_t Pup = reinterpret_cast<const fp4_t*>(target_up + rate_base)[0];
+    const fp4_t Pbase = reinterpret_cast<const fp4_t*>(mid_base + rate_base)[0];
+    if (pbase_out) *pbase_out = Pbase;
+    if (pup_out) *pup_out = Pup;
+    if (down_shift_out) *down_shift_out = down_shift;
+    if (up_shift_out) *up_shift_out = up_shift;
+
+    fp4_t midpoint = matvec4_rows(Mparent, Pbase);
+    const fp4_t target_proj = matvec4_rows(Mtarget, Pup);
+    midpoint.x *= target_proj.x;
+    midpoint.y *= target_proj.y;
+    midpoint.z *= target_proj.z;
+    midpoint.w *= target_proj.w;
+
+    fp_t row_max = fp_hmax4(midpoint.x, midpoint.y, midpoint.z, midpoint.w);
+    unsigned int total_shift = inherited_shift;
+    {
+        const unsigned int shift = threshold_scale_shift(row_max);
+        if (shift) {
+            total_shift += shift;
+            midpoint.x = fp_ldexp(midpoint.x, shift);
+            midpoint.y = fp_ldexp(midpoint.y, shift);
+            midpoint.z = fp_ldexp(midpoint.z, shift);
+            midpoint.w = fp_ldexp(midpoint.w, shift);
+        }
+    }
+
+    if (total_shift_out) *total_shift_out = total_shift;
+    return midpoint;
+}
+
 // Build proximal-side midpoint vectors for a single site across all rate categories.
 template<int RATE_CATS>
 __device__ __forceinline__ void build_proximal_midpoint_site(
     const DeviceTree& D,
     int target_id,
-    unsigned int site_idx,
+    size_t site_idx,
     fp_t* shared_target_mat,
     fp_t* shared_parent_mat,
     fp4_t* midpoint_rows,
@@ -358,7 +326,7 @@ __device__ __forceinline__ void build_proximal_midpoint_site(
     const size_t rate_count = static_cast<size_t>(RATE_CATS);
     const size_t site_span = rate_count * 4;
     const size_t node_base = static_cast<size_t>(target_id) * per_node;
-    const size_t site_base = static_cast<size_t>(site_idx) * site_span;
+    const size_t site_base = site_idx * site_span;
     const fp_t* mid_base = D.d_clv_mid_base + node_base + site_base;
     const fp_t* query_clv = D.d_query_clv + site_base;
     const unsigned* mid_base_scaler = mid_base_scaler_ptr(D, target_id, site_idx);
@@ -405,25 +373,84 @@ __device__ __forceinline__ void build_proximal_midpoint_site(
     }
 }
 
+__device__ __forceinline__ void build_proximal_midpoint_site_generic(
+    const DeviceTree& D,
+    int target_id,
+    size_t site_idx,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat,
+    fp4_t* midpoint_rows,
+    unsigned int* midpoint_shifts,
+    fp4_t* mid_base_rows,
+    fp4_t* query_rows,
+    fp4_t* parent_proj_rows,
+    fp4_t* target_proj_rows)
+{
+    const size_t per_node = per_node_span(D);
+    const size_t rate_count = static_cast<size_t>(D.rate_cats);
+    const size_t site_span = rate_count * 4;
+    const size_t node_base = static_cast<size_t>(target_id) * per_node;
+    const size_t site_base = site_idx * site_span;
+    const fp_t* mid_base = D.d_clv_mid_base + node_base + site_base;
+    const fp_t* query_clv = D.d_query_clv + site_base;
+    const unsigned* mid_base_scaler = mid_base_scaler_ptr(D, target_id, site_idx);
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        unsigned int inherited_shift = scaler_shift_from_site_ptr(D, mid_base_scaler, r);
+
+        const size_t rate_offset = static_cast<size_t>(r);
+        const size_t rate_base = rate_offset * 4;
+        const size_t mat_base = rate_offset * 16;
+        const fp_t* Mtarget = shared_target_mat + mat_base;
+        const fp_t* Mparent = shared_parent_mat + mat_base;
+        const fp4_t Pup = reinterpret_cast<const fp4_t*>(query_clv + rate_base)[0];
+        const fp4_t Pbase = reinterpret_cast<const fp4_t*>(mid_base + rate_base)[0];
+        const fp4_t parent_proj = matvec4_rows(Mparent, Pbase);
+        const fp4_t target_proj = matvec4_rows(Mtarget, Pup);
+
+        if (mid_base_rows) mid_base_rows[r] = Pbase;
+        if (query_rows) query_rows[r] = Pup;
+        if (parent_proj_rows) parent_proj_rows[r] = parent_proj;
+        if (target_proj_rows) target_proj_rows[r] = target_proj;
+
+        fp_t p0 = parent_proj.x * target_proj.x;
+        fp_t p1 = parent_proj.y * target_proj.y;
+        fp_t p2 = parent_proj.z * target_proj.z;
+        fp_t p3 = parent_proj.w * target_proj.w;
+
+        fp_t row_max = fp_hmax4(p0, p1, p2, p3);
+        unsigned int total_shift = inherited_shift;
+        {
+            const unsigned int shift = threshold_scale_shift(row_max);
+            if (shift) {
+                total_shift += shift;
+                p0 = fp_ldexp(p0, shift);
+                p1 = fp_ldexp(p1, shift);
+                p2 = fp_ldexp(p2, shift);
+                p3 = fp_ldexp(p3, shift);
+            }
+        }
+
+        midpoint_rows[r] = make_fp4(p0, p1, p2, p3);
+        midpoint_shifts[r] = total_shift;
+    }
+}
+
 // Build one site's derivative sumtable rows for the pendant-side branch update.
 template<int RATE_CATS>
 __device__ __forceinline__ void update_pendant_sumtable_site(
     DeviceTree D,
     int target_id,
     const fp_t* __restrict__ left_clv_base,
-    unsigned int site_idx,
+    size_t site_idx,
     fp_t* sumtable,
     fp_t* shared_target_mat,
-    fp_t* shared_parent_mat,
-    int debug_sumtable,
-    int debug_target_id,
-    int debug_sumtable_site,
-    int debug_sumtable_rate)
+    fp_t* shared_parent_mat)
 {
     const size_t rate_count = static_cast<size_t>(D.rate_cats);
     const size_t state_count = static_cast<size_t>(D.states);
     const size_t site_span = rate_count * state_count;
-    const size_t site_base = static_cast<size_t>(site_idx) * site_span;
+    const size_t site_base = site_idx * site_span;
     const fp_t* left_clv = left_clv_base + site_base;
     fp_t* sumtable_ptr = sumtable + site_base;
 
@@ -437,10 +464,6 @@ __device__ __forceinline__ void update_pendant_sumtable_site(
         const size_t rate_offset = static_cast<size_t>(r);
         const size_t rate_base = rate_offset * 4;
         const fp4_t Qclv = reinterpret_cast<const fp4_t*>(left_clv + rate_base)[0];
-        fp4_t Pbase = make_fp4(fp_t(0), fp_t(0), fp_t(0), fp_t(0));
-        fp4_t Pup = make_fp4(fp_t(0), fp_t(0), fp_t(0), fp_t(0));
-        unsigned int down_shift = 0u;
-        unsigned int up_shift = 0u;
         const fp4_t Pclv = build_pendant_midpoint_site_rate<RATE_CATS>(
             D,
             target_id,
@@ -449,13 +472,11 @@ __device__ __forceinline__ void update_pendant_sumtable_site(
             shared_target_mat,
             shared_parent_mat,
             &midpoint_shifts[r],
-            &down_shift,
-            &up_shift,
-            &Pbase,
-            &Pup);
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr);
         fp_t* sumtable_row = sumtable_ptr + rate_base;
-        const fp_t* Mtarget = shared_target_mat + static_cast<size_t>(r) * 16;
-        const fp_t* Mparent = shared_parent_mat + static_cast<size_t>(r) * 16;
 
         const fp4_t piq = make_fp4(
             D.d_frequencies[0] * Qclv.x,
@@ -474,30 +495,6 @@ __device__ __forceinline__ void update_pendant_sumtable_site(
         sumtable_row[1] = left_proj.y * right_proj.y;
         sumtable_row[2] = left_proj.z * right_proj.z;
         sumtable_row[3] = left_proj.w * right_proj.w;
-        maybe_print_sumtable_debug(
-            debug_sumtable,
-            debug_target_id,
-            debug_sumtable_site,
-            debug_sumtable_rate,
-            "pendant",
-            "query_clv",
-            "midpoint(mid_base,target_up)",
-            target_id,
-            site_idx,
-            r,
-            Qclv,
-            Pbase,
-            Pup,
-            Pclv,
-            left_proj,
-            right_proj,
-            Mtarget,
-            Mparent,
-            sumtable_row,
-            down_shift,
-            up_shift,
-            down_shift + up_shift,
-            midpoint_shifts[r]);
 
         const fp_t sum_row_max = fp_fmax(
             fp_fmax(sumtable_row[0], sumtable_row[1]),
@@ -516,7 +513,7 @@ __device__ __forceinline__ void update_pendant_sumtable_site(
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
         if ((active_rate_mask & (1u << r)) == 0u) continue;
-        const int diff = (int)midpoint_shifts[r] - (int)site_min_shift;
+        const int diff = static_cast<int>(midpoint_shifts[r]) - static_cast<int>(site_min_shift);
         if (diff <= 0) continue;
         const size_t rate_base = static_cast<size_t>(r) * 4;
         fp_t* sumtable_row = sumtable_ptr + rate_base;
@@ -525,35 +522,86 @@ __device__ __forceinline__ void update_pendant_sumtable_site(
         sumtable_row[2] = fp_ldexp(sumtable_row[2], -diff);
         sumtable_row[3] = fp_ldexp(sumtable_row[3], -diff);
     }
+}
 
-    if (debug_sumtable &&
-        (debug_target_id < 0 || target_id == debug_target_id) &&
-        static_cast<int>(site_idx) == debug_sumtable_site) {
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            if ((active_rate_mask & (1u << r)) == 0u) continue;
-            if (debug_sumtable_rate >= 0 && r != debug_sumtable_rate) continue;
-            const int diff = static_cast<int>(midpoint_shifts[r]) - static_cast<int>(site_min_shift);
-            const size_t rate_base = static_cast<size_t>(r) * 4;
-            const fp_t* sumtable_row = sumtable_ptr + rate_base;
-            printf("[sumtable-common-debug] kernel=pendant left_source=query_clv right_source=midpoint(mid_base,target_up) target=%d site=%u rate=%d site_min_shift=%u rate_shift=%u diff=%d "
-                   "sum_common=(%.12e,%.12e,%.12e,%.12e) "
-                   "sum_restored=(%.12e,%.12e,%.12e,%.12e)\n",
-                   target_id,
-                   site_idx,
-                   r,
-                   site_min_shift,
-                   midpoint_shifts[r],
-                   diff,
-                   static_cast<double>(sumtable_row[0]),
-                   static_cast<double>(sumtable_row[1]),
-                   static_cast<double>(sumtable_row[2]),
-                   static_cast<double>(sumtable_row[3]),
-                   static_cast<double>(fp_ldexp(sumtable_row[0], -static_cast<int>(site_min_shift))),
-                   static_cast<double>(fp_ldexp(sumtable_row[1], -static_cast<int>(site_min_shift))),
-                   static_cast<double>(fp_ldexp(sumtable_row[2], -static_cast<int>(site_min_shift))),
-                   static_cast<double>(fp_ldexp(sumtable_row[3], -static_cast<int>(site_min_shift))));
+__device__ __forceinline__ void update_pendant_sumtable_site_generic(
+    DeviceTree D,
+    int target_id,
+    const fp_t* __restrict__ left_clv_base,
+    size_t site_idx,
+    fp_t* sumtable,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat)
+{
+    if (D.rate_cats <= 0 || D.rate_cats > kMaxRateCats) return;
+
+    const size_t rate_count = static_cast<size_t>(D.rate_cats);
+    const size_t state_count = static_cast<size_t>(D.states);
+    const size_t site_span = rate_count * state_count;
+    const size_t site_base = site_idx * site_span;
+    const fp_t* left_clv = left_clv_base + site_base;
+    fp_t* sumtable_ptr = sumtable + site_base;
+
+    unsigned int midpoint_shifts[kMaxRateCats];
+    bool rate_has_signal[kMaxRateCats];
+    unsigned int site_min_shift = 0u;
+    bool have_signal = false;
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        const size_t rate_offset = static_cast<size_t>(r);
+        const size_t rate_base = rate_offset * 4;
+        const fp4_t Qclv = reinterpret_cast<const fp4_t*>(left_clv + rate_base)[0];
+        const fp4_t Pclv = build_pendant_midpoint_site_rate_generic(
+            D,
+            target_id,
+            site_idx,
+            r,
+            shared_target_mat,
+            shared_parent_mat,
+            &midpoint_shifts[r],
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr);
+        fp_t* sumtable_row = sumtable_ptr + rate_base;
+
+        const fp4_t piq = make_fp4(
+            D.d_frequencies[0] * Qclv.x,
+            D.d_frequencies[1] * Qclv.y,
+            D.d_frequencies[2] * Qclv.z,
+            D.d_frequencies[3] * Qclv.w);
+        const fp4_t left_proj = matvec4_cols(D.d_V, piq);
+        const fp4_t right_proj = matvec4_rows(D.d_Vinv, Pclv);
+
+        sumtable_row[0] = left_proj.x * right_proj.x;
+        sumtable_row[1] = left_proj.y * right_proj.y;
+        sumtable_row[2] = left_proj.z * right_proj.z;
+        sumtable_row[3] = left_proj.w * right_proj.w;
+
+        const fp_t sum_row_max = fp_fmax(
+            fp_fmax(sumtable_row[0], sumtable_row[1]),
+            fp_fmax(sumtable_row[2], sumtable_row[3]));
+        rate_has_signal[r] = (sum_row_max > fp_t(0));
+        if (rate_has_signal[r]) {
+            if (!have_signal || midpoint_shifts[r] < site_min_shift) {
+                site_min_shift = midpoint_shifts[r];
+            }
+            have_signal = true;
         }
+    }
+
+    if (!have_signal) return;
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        if (!rate_has_signal[r]) continue;
+        const int diff = static_cast<int>(midpoint_shifts[r]) - static_cast<int>(site_min_shift);
+        if (diff <= 0) continue;
+        const size_t rate_base = static_cast<size_t>(r) * 4;
+        fp_t* sumtable_row = sumtable_ptr + rate_base;
+        sumtable_row[0] = fp_ldexp(sumtable_row[0], -diff);
+        sumtable_row[1] = fp_ldexp(sumtable_row[1], -diff);
+        sumtable_row[2] = fp_ldexp(sumtable_row[2], -diff);
+        sumtable_row[3] = fp_ldexp(sumtable_row[3], -diff);
     }
 }
 
@@ -564,26 +612,18 @@ __device__ __forceinline__ void update_proximal_sumtable_site(
     int target_id,
     const fp_t* __restrict__ left_clv_base,
     const unsigned* __restrict__ left_scaler_base,
-    unsigned int site_idx,
+    size_t site_idx,
     fp_t* sumtable,
     fp_t* shared_target_mat,
-    fp_t* shared_parent_mat,
-    int debug_sumtable,
-    int debug_target_id,
-    int debug_sumtable_site,
-    int debug_sumtable_rate)
+    fp_t* shared_parent_mat)
 {
     const size_t rate_count = static_cast<size_t>(D.rate_cats);
     const size_t state_count = static_cast<size_t>(D.states);
     const size_t site_span = rate_count * state_count;
-    const size_t site_base = static_cast<size_t>(site_idx) * site_span;
+    const size_t site_base = site_idx * site_span;
     const fp_t* left_clv = left_clv_base + site_base;
     fp_t* sumtable_ptr = sumtable + site_base;
     fp4_t midpoint_rows[RATE_CATS];
-    fp4_t mid_base_rows[RATE_CATS];
-    fp4_t query_rows[RATE_CATS];
-    fp4_t parent_proj_rows[RATE_CATS];
-    fp4_t target_proj_rows[RATE_CATS];
     unsigned int midpoint_shifts[RATE_CATS];
     bool rate_has_signal[RATE_CATS];
     unsigned int site_min_shift = 0u;
@@ -597,10 +637,10 @@ __device__ __forceinline__ void update_proximal_sumtable_site(
         shared_parent_mat,
         midpoint_rows,
         midpoint_shifts,
-        mid_base_rows,
-        query_rows,
-        parent_proj_rows,
-        target_proj_rows);
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr);
 
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
@@ -626,87 +666,6 @@ __device__ __forceinline__ void update_proximal_sumtable_site(
         sumtable_row[2] = left_proj.z * right_proj.z;
         sumtable_row[3] = left_proj.w * right_proj.w;
 
-        if (debug_sumtable &&
-            (debug_target_id < 0 || target_id == debug_target_id) &&
-            static_cast<int>(site_idx) == debug_sumtable_site &&
-            (debug_sumtable_rate < 0 || r == debug_sumtable_rate)) {
-            const unsigned int inherited_shift =
-                scaler_shift_at_site(D, left_scaler_base, site_idx, r);
-            const unsigned int mid_base_shift =
-                scaler_shift_from_site_ptr(D, mid_base_scaler_ptr(D, target_id, site_idx), r);
-            const fp4_t mid_base_vec = mid_base_rows[r];
-            const fp4_t query_vec = query_rows[r];
-            const fp4_t parent_proj = parent_proj_rows[r];
-            const fp4_t target_proj = target_proj_rows[r];
-            printf(
-                "[midpoint-input-debug] kernel=proximal target=%d site=%u rate=%d "
-                "mid_base_shift=%u midpoint_total_shift=%u "
-                "mid_base=(%.12e,%.12e,%.12e,%.12e) "
-                "parent_proj=(%.12e,%.12e,%.12e,%.12e) "
-                "query_clv=(%.12e,%.12e,%.12e,%.12e) "
-                "target_proj=(%.12e,%.12e,%.12e,%.12e) "
-                "Pclv=(%.12e,%.12e,%.12e,%.12e)\n",
-                target_id,
-                site_idx,
-                r,
-                mid_base_shift,
-                midpoint_shifts[r],
-                static_cast<double>(mid_base_vec.x),
-                static_cast<double>(mid_base_vec.y),
-                static_cast<double>(mid_base_vec.z),
-                static_cast<double>(mid_base_vec.w),
-                static_cast<double>(parent_proj.x),
-                static_cast<double>(parent_proj.y),
-                static_cast<double>(parent_proj.z),
-                static_cast<double>(parent_proj.w),
-                static_cast<double>(query_vec.x),
-                static_cast<double>(query_vec.y),
-                static_cast<double>(query_vec.z),
-                static_cast<double>(query_vec.w),
-                static_cast<double>(target_proj.x),
-                static_cast<double>(target_proj.y),
-                static_cast<double>(target_proj.z),
-                static_cast<double>(target_proj.w),
-                static_cast<double>(Pclv.x),
-                static_cast<double>(Pclv.y),
-                static_cast<double>(Pclv.z),
-                static_cast<double>(Pclv.w));
-            printf(
-                "[sumtable-proj-debug] kernel=proximal left_source=up_clv right_source=midpoint(mid_base,query_clv) target=%d site=%u rate=%d "
-                "left_shift=%u midpoint_shift=%u total_shift=%u "
-                "Qclv=(%.12e,%.12e,%.12e,%.12e) "
-                "Pclv=(%.12e,%.12e,%.12e,%.12e) "
-                "left_proj=(%.12e,%.12e,%.12e,%.12e) "
-                "right_proj=(%.12e,%.12e,%.12e,%.12e) "
-                "sum=(%.12e,%.12e,%.12e,%.12e)\n",
-                target_id,
-                site_idx,
-                r,
-                inherited_shift,
-                midpoint_shifts[r],
-                inherited_shift + midpoint_shifts[r],
-                static_cast<double>(Qclv.x),
-                static_cast<double>(Qclv.y),
-                static_cast<double>(Qclv.z),
-                static_cast<double>(Qclv.w),
-                static_cast<double>(Pclv.x),
-                static_cast<double>(Pclv.y),
-                static_cast<double>(Pclv.z),
-                static_cast<double>(Pclv.w),
-                static_cast<double>(left_proj.x),
-                static_cast<double>(left_proj.y),
-                static_cast<double>(left_proj.z),
-                static_cast<double>(left_proj.w),
-                static_cast<double>(right_proj.x),
-                static_cast<double>(right_proj.y),
-                static_cast<double>(right_proj.z),
-                static_cast<double>(right_proj.w),
-                static_cast<double>(sumtable_row[0]),
-                static_cast<double>(sumtable_row[1]),
-                static_cast<double>(sumtable_row[2]),
-                static_cast<double>(sumtable_row[3]));
-        }
-
         const fp_t row_max = fp_fmax(
             fp_fmax(sumtable_row[0], sumtable_row[1]),
             fp_fmax(sumtable_row[2], sumtable_row[3]));
@@ -728,7 +687,7 @@ __device__ __forceinline__ void update_proximal_sumtable_site(
     #pragma unroll
     for (int r = 0; r < RATE_CATS; ++r) {
         if (!rate_has_signal[r]) continue;
-        const int diff = (int)midpoint_shifts[r] - (int)site_min_shift;
+        const int diff = static_cast<int>(midpoint_shifts[r]) - static_cast<int>(site_min_shift);
         if (diff <= 0) continue;
         const size_t rate_base = static_cast<size_t>(r) * 4;
         fp_t* sumtable_row = sumtable_ptr + rate_base;
@@ -736,36 +695,6 @@ __device__ __forceinline__ void update_proximal_sumtable_site(
         sumtable_row[1] = fp_ldexp(sumtable_row[1], -diff);
         sumtable_row[2] = fp_ldexp(sumtable_row[2], -diff);
         sumtable_row[3] = fp_ldexp(sumtable_row[3], -diff);
-    }
-
-    if (debug_sumtable &&
-        (debug_target_id < 0 || target_id == debug_target_id) &&
-        static_cast<int>(site_idx) == debug_sumtable_site) {
-        #pragma unroll
-        for (int r = 0; r < RATE_CATS; ++r) {
-            if (!rate_has_signal[r]) continue;
-            if (debug_sumtable_rate >= 0 && r != debug_sumtable_rate) continue;
-            const int diff = static_cast<int>(midpoint_shifts[r]) - static_cast<int>(site_min_shift);
-            const size_t rate_base = static_cast<size_t>(r) * 4;
-            const fp_t* sumtable_row = sumtable_ptr + rate_base;
-            printf("[sumtable-common-debug] kernel=proximal left_source=up_clv right_source=midpoint(mid_base,query_clv) target=%d site=%u rate=%d site_min_shift=%u rate_shift=%u diff=%d "
-                   "sum_common=(%.12e,%.12e,%.12e,%.12e) "
-                   "sum_restored=(%.12e,%.12e,%.12e,%.12e)\n",
-                   target_id,
-                   site_idx,
-                   r,
-                   site_min_shift,
-                   midpoint_shifts[r],
-                   diff,
-                   static_cast<double>(sumtable_row[0]),
-                   static_cast<double>(sumtable_row[1]),
-                   static_cast<double>(sumtable_row[2]),
-                   static_cast<double>(sumtable_row[3]),
-                   static_cast<double>(fp_ldexp(sumtable_row[0], -static_cast<int>(site_min_shift))),
-                   static_cast<double>(fp_ldexp(sumtable_row[1], -static_cast<int>(site_min_shift))),
-                   static_cast<double>(fp_ldexp(sumtable_row[2], -static_cast<int>(site_min_shift))),
-                   static_cast<double>(fp_ldexp(sumtable_row[3], -static_cast<int>(site_min_shift))));
-        }
     }
 }
 
@@ -894,28 +823,27 @@ static __device__ __forceinline__
 unsigned int scaler_shift_at_site(
     const DeviceTree& D,
     const unsigned* __restrict__ scaler_base,
-    unsigned int site_idx,
-    int rate_idx)
+    size_t site_idx,
+    size_t rate_idx)
 {
     if (!scaler_base) return 0u;
-    const size_t site_offset = static_cast<size_t>(site_idx);
     if (D.per_rate_scaling) {
         const size_t rate_count = static_cast<size_t>(D.rate_cats);
-        const size_t site_base = site_offset * rate_count;
-        return scaler_base[site_base + static_cast<size_t>(rate_idx)];
+        const size_t site_base = site_idx * rate_count;
+        return scaler_base[site_base + rate_idx];
     }
-    return scaler_base[site_offset];
+    return scaler_base[site_idx];
 }
 
 static __device__ __forceinline__
 unsigned int scaler_shift_from_site_ptr(
     const DeviceTree& D,
     const unsigned* __restrict__ scaler_site_ptr,
-    int rate_idx)
+    size_t rate_idx)
 {
     if (!scaler_site_ptr) return 0u;
     if (D.per_rate_scaling) {
-        return scaler_site_ptr[static_cast<size_t>(rate_idx)];
+        return scaler_site_ptr[rate_idx];
     }
     return scaler_site_ptr[0];
 }
@@ -928,45 +856,6 @@ fp_t load_pattern_weight_cached(
     return pattern_weights
         ? static_cast<fp_t>(pattern_weights[site])
         : fp_t(1);
-}
-
-template<int RATE_CATS>
-static __device__ __forceinline__
-void rebuild_distal_midpoint_pmat_shared(
-    const DeviceTree& D,
-    int target_id,
-    double total_branch,
-    double proximal_branch,
-    fp_t* shared_parent_mat)
-{
-    double proximal_len = 0.0;
-    double distal_len = 0.0;
-    normalize_split_branch_lengths(
-        total_branch,
-        proximal_branch,
-        static_cast<double>(OPT_BRANCH_LEN_MIN),
-        proximal_len,
-        distal_len);
-
-    const fp_t branch_length = static_cast<fp_t>(distal_len);
-    const unsigned int rate_idx = threadIdx.x;
-    if (rate_idx < static_cast<unsigned int>(RATE_CATS)) {
-        const size_t state_count = 4;
-        const size_t matrix_span = state_count * state_count;
-        const size_t rate_offset = static_cast<size_t>(rate_idx) * state_count;
-        const fp_t* rate_lambdas = D.d_lambdas + rate_offset;
-        fp_t* out_pmat = shared_parent_mat + static_cast<size_t>(rate_idx) * matrix_span;
-        pmatrix_from_triple_device(
-            D.d_Vinv,
-            D.d_V,
-            rate_lambdas,
-            fp_t(1.0),
-            branch_length,
-            fp_t(0.0),
-            out_pmat,
-            4);
-    }
-    __syncthreads();
 }
 
 // Per-site derivative evaluation helpers.
@@ -1206,6 +1095,94 @@ void accumulate_site_derivatives(
     }
 }
 
+__device__ __forceinline__ void update_proximal_sumtable_site_generic(
+    DeviceTree D,
+    int target_id,
+    const fp_t* __restrict__ left_clv_base,
+    const unsigned* __restrict__ left_scaler_base,
+    size_t site_idx,
+    fp_t* sumtable,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat)
+{
+    if (D.rate_cats <= 0 || D.rate_cats > kMaxRateCats) return;
+
+    const size_t rate_count = static_cast<size_t>(D.rate_cats);
+    const size_t state_count = static_cast<size_t>(D.states);
+    const size_t site_span = rate_count * state_count;
+    const size_t site_base = site_idx * site_span;
+    const fp_t* left_clv = left_clv_base + site_base;
+    fp_t* sumtable_ptr = sumtable + site_base;
+    fp4_t midpoint_rows[kMaxRateCats];
+    unsigned int midpoint_shifts[kMaxRateCats];
+    bool rate_has_signal[kMaxRateCats];
+    unsigned int site_min_shift = 0u;
+    bool have_signal = false;
+
+    build_proximal_midpoint_site_generic(
+        D,
+        target_id,
+        site_idx,
+        shared_target_mat,
+        shared_parent_mat,
+        midpoint_rows,
+        midpoint_shifts,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr);
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        const size_t rate_offset = static_cast<size_t>(r);
+        const size_t rate_base = rate_offset * 4;
+        const fp4_t Qclv = reinterpret_cast<const fp4_t*>(left_clv + rate_base)[0];
+        const fp4_t Pclv = midpoint_rows[r];
+        fp_t* sumtable_row = sumtable_ptr + rate_base;
+
+        const fp4_t piq = make_fp4(
+            D.d_frequencies[0] * Qclv.x,
+            D.d_frequencies[1] * Qclv.y,
+            D.d_frequencies[2] * Qclv.z,
+            D.d_frequencies[3] * Qclv.w);
+        const fp4_t left_proj = matvec4_cols(D.d_V, piq);
+        const fp4_t right_proj = matvec4_rows(D.d_Vinv, Pclv);
+
+        sumtable_row[0] = left_proj.x * right_proj.x;
+        sumtable_row[1] = left_proj.y * right_proj.y;
+        sumtable_row[2] = left_proj.z * right_proj.z;
+        sumtable_row[3] = left_proj.w * right_proj.w;
+
+        const fp_t row_max = fp_fmax(
+            fp_fmax(sumtable_row[0], sumtable_row[1]),
+            fp_fmax(sumtable_row[2], sumtable_row[3]));
+        const unsigned int total_shift =
+            scaler_shift_at_site(D, left_scaler_base, site_idx, r) +
+            midpoint_shifts[r];
+        rate_has_signal[r] = (row_max > fp_t(0));
+        if (rate_has_signal[r]) {
+            if (!have_signal || total_shift < site_min_shift) {
+                site_min_shift = total_shift;
+            }
+            midpoint_shifts[r] = total_shift;
+            have_signal = true;
+        }
+    }
+
+    if (!have_signal) return;
+
+    for (int r = 0; r < D.rate_cats; ++r) {
+        if (!rate_has_signal[r]) continue;
+        const int diff = static_cast<int>(midpoint_shifts[r]) - static_cast<int>(site_min_shift);
+        if (diff <= 0) continue;
+        const size_t rate_base = static_cast<size_t>(r) * 4;
+        fp_t* sumtable_row = sumtable_ptr + rate_base;
+        sumtable_row[0] = fp_ldexp(sumtable_row[0], -diff);
+        sumtable_row[1] = fp_ldexp(sumtable_row[1], -diff);
+        sumtable_row[2] = fp_ldexp(sumtable_row[2], -diff);
+        sumtable_row[3] = fp_ldexp(sumtable_row[3], -diff);
+    }
+}
+
 // Sumtable builders.
 // Walk all sites and dispatch the single-site pendant sumtable builder.
 template<int RATE_CATS>
@@ -1218,25 +1195,40 @@ void build_pendant_sumtable(
     fp_t* shared_target_mat,
     fp_t* shared_parent_mat,
     unsigned int tid,
-    unsigned int step,
-    int debug_sumtable,
-    int debug_target_id,
-    int debug_sumtable_site,
-    int debug_sumtable_rate)
+    unsigned int step)
 {
     for (size_t site = tid; site < D.sites; site += step) {
         update_pendant_sumtable_site<RATE_CATS>(
             D,
             target_id,
             left_base,
-            static_cast<unsigned int>(site),
+            site,
             sumtable_op,
             shared_target_mat,
-            shared_parent_mat,
-            debug_sumtable,
-            debug_target_id,
-            debug_sumtable_site,
-            debug_sumtable_rate);
+            shared_parent_mat);
+    }
+}
+
+static __device__ __forceinline__
+void build_pendant_sumtable_generic(
+    DeviceTree D,
+    int target_id,
+    const fp_t* __restrict__ left_base,
+    fp_t* sumtable_op,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat,
+    unsigned int tid,
+    unsigned int step)
+{
+    for (size_t site = tid; site < D.sites; site += step) {
+        update_pendant_sumtable_site_generic(
+            D,
+            target_id,
+            left_base,
+            site,
+            sumtable_op,
+            shared_target_mat,
+            shared_parent_mat);
     }
 }
 
@@ -1252,11 +1244,7 @@ void build_proximal_sumtable(
     fp_t* shared_target_mat,
     fp_t* shared_parent_mat,
     unsigned int tid,
-    unsigned int step,
-    int debug_sumtable,
-    int debug_target_id,
-    int debug_sumtable_site,
-    int debug_sumtable_rate)
+    unsigned int step)
 {
     for (size_t site = tid; site < D.sites; site += step) {
         update_proximal_sumtable_site<RATE_CATS>(
@@ -1264,14 +1252,35 @@ void build_proximal_sumtable(
             target_id,
             left_base,
             left_scaler_base,
-            static_cast<unsigned int>(site),
+            site,
             sumtable_op,
             shared_target_mat,
-            shared_parent_mat,
-            debug_sumtable,
-            debug_target_id,
-            debug_sumtable_site,
-            debug_sumtable_rate);
+            shared_parent_mat);
+    }
+}
+
+static __device__ __forceinline__
+void build_proximal_sumtable_generic(
+    DeviceTree D,
+    int target_id,
+    const fp_t* __restrict__ left_base,
+    const unsigned* __restrict__ left_scaler_base,
+    fp_t* sumtable_op,
+    fp_t* shared_target_mat,
+    fp_t* shared_parent_mat,
+    unsigned int tid,
+    unsigned int step)
+{
+    for (size_t site = tid; site < D.sites; site += step) {
+        update_proximal_sumtable_site_generic(
+            D,
+            target_id,
+            left_base,
+            left_scaler_base,
+            site,
+            sumtable_op,
+            shared_target_mat,
+            shared_parent_mat);
     }
 }
 
@@ -1290,20 +1299,13 @@ __global__ void LikelihoodDerivativePendantKernel(
     fp_t* new_branch_length,
     size_t sumtable_stride,
     const fp_t* prev_branch_lengths,
-    const int* active_ops,
-    int debug_enabled,
-    int debug_all_iters,
-    int debug_limit,
-    int debug_target_id,
-    int debug_sumtable,
-    int debug_sumtable_site,
-    int debug_sumtable_rate)
+    const int* active_ops)
 {
     if (!sumtable || !ops || op_idx < 0) {
         return;
     }
 
-    const int op_local = op_idx + (int)blockIdx.x;
+    const int op_local = op_idx + static_cast<int>(blockIdx.x);
     const int op_global = op_indices ? op_indices[op_local] : op_local;
     if (op_global < 0 || op_global >= D.N) return;
     if (active_ops && active_ops[op_local] == 0) return;
@@ -1337,21 +1339,6 @@ __global__ void LikelihoodDerivativePendantKernel(
         branch_upper_bound_shared = OPT_BRANCH_LEN_MAX;
         max_step_shared = OPT_BRANCH_LEN_MAX / static_cast<double>(max_iter);
         stop_iterations = 0;
-        if (debug_enabled &&
-            (debug_target_id < 0 || target_id == debug_target_id)) {
-            printf(
-                "[op-debug] kernel=pendant op=%d target=%d parent=%d left=%d right=%d left_tip=%d right_tip=%d op_type=%d dir=%u init=%.12f\n",
-                op_global,
-                target_id,
-                op.parent_id,
-                op.left_id,
-                op.right_id,
-                op.left_tip_index,
-                op.right_tip_index,
-                op.op_type,
-                static_cast<unsigned>(op.dir_tag),
-                init_branch);
-        }
     }
     __syncthreads();
 
@@ -1391,11 +1378,7 @@ __global__ void LikelihoodDerivativePendantKernel(
                 target_midpoint_pmat_shared,
                 parent_midpoint_pmat_shared,
                 tid,
-                step,
-                debug_sumtable,
-                debug_target_id,
-                debug_sumtable_site,
-                debug_sumtable_rate);
+                step);
             break;
         case 4:
             build_pendant_sumtable<4>(
@@ -1406,11 +1389,7 @@ __global__ void LikelihoodDerivativePendantKernel(
                 target_midpoint_pmat_shared,
                 parent_midpoint_pmat_shared,
                 tid,
-                step,
-                debug_sumtable,
-                debug_target_id,
-                debug_sumtable_site,
-                debug_sumtable_rate);
+                step);
             break;
         case 8:
             build_pendant_sumtable<8>(
@@ -1421,14 +1400,19 @@ __global__ void LikelihoodDerivativePendantKernel(
                 target_midpoint_pmat_shared,
                 parent_midpoint_pmat_shared,
                 tid,
-                step,
-                debug_sumtable,
-                debug_target_id,
-                debug_sumtable_site,
-                debug_sumtable_rate);
+                step);
             break;
         default:
-            return;
+            build_pendant_sumtable_generic(
+                D,
+                target_id,
+                D.d_query_clv,
+                sumtable_op,
+                target_midpoint_pmat_shared,
+                parent_midpoint_pmat_shared,
+                tid,
+                step);
+            break;
     }
     __syncthreads();
 
@@ -1437,7 +1421,6 @@ __global__ void LikelihoodDerivativePendantKernel(
     double local_ddf = 0.0;
     for (int iter = 0; iter < max_iter; ++iter) {
         if (stop_iterations) break;
-        const double branch_before = branch_value_shared;
         const fp_t branch = static_cast<fp_t>(branch_value_shared);
         if (D.states == 4) {
             if (!build_diagtable_states4_dispatch(D, branch, branch_diag_shared)) {
@@ -1473,22 +1456,6 @@ __global__ void LikelihoodDerivativePendantKernel(
                 max_step_shared,
                 block_df_shared,
                 block_ddf_shared);
-            maybe_print_newton_debug(
-                debug_enabled,
-                debug_all_iters,
-                debug_limit,
-                debug_target_id,
-                "pendant",
-                op_global,
-                target_id,
-                iter,
-                branch_before,
-                branch_value_shared,
-                block_df_shared,
-                block_ddf_shared,
-                branch_lower_bound_shared,
-                branch_upper_bound_shared,
-                max_step_shared);
         }
         __syncthreads();
         if (stop_iterations) break;
@@ -1514,20 +1481,13 @@ __global__ void LikelihoodDerivativeProximalKernel(
     fp_t* new_branch_length,
     size_t sumtable_stride,
     const fp_t* prev_branch_lengths,
-    const int* active_ops,
-    int debug_enabled,
-    int debug_all_iters,
-    int debug_limit,
-    int debug_target_id,
-    int debug_sumtable,
-    int debug_sumtable_site,
-    int debug_sumtable_rate)
+    const int* active_ops)
 {
     if (!sumtable || !ops || op_idx < 0) {
         return;
     }
 
-    const int op_local = op_idx + (int)blockIdx.x;
+    const int op_local = op_idx + static_cast<int>(blockIdx.x);
     const int op_global = op_indices ? op_indices[op_local] : op_local;
     if (op_global < 0 || op_global >= D.N) return;
     if (active_ops && active_ops[op_local] == 0) return;
@@ -1565,24 +1525,6 @@ __global__ void LikelihoodDerivativeProximalKernel(
             OPT_BRANCH_XTOL,
             (branch_upper_bound_shared - branch_lower_bound_shared) / static_cast<double>(max_iter));
         stop_iterations = 0;
-        if (debug_enabled &&
-            (debug_target_id < 0 || target_id == debug_target_id)) {
-            printf(
-                "[op-debug] kernel=proximal op=%d target=%d parent=%d left=%d right=%d left_tip=%d right_tip=%d op_type=%d dir=%u init=%.12f total=%.12f lb=%.12f ub=%.12f\n",
-                op_global,
-                target_id,
-                op.parent_id,
-                op.left_id,
-                op.right_id,
-                op.left_tip_index,
-                op.right_tip_index,
-                op.op_type,
-                static_cast<unsigned>(op.dir_tag),
-                init_branch,
-                total_branch,
-                branch_lower_bound,
-                branch_upper_bound);
-        }
     }
     __syncthreads();
 
@@ -1602,12 +1544,11 @@ __global__ void LikelihoodDerivativeProximalKernel(
 
     // Resolve the left-side CLV/scaler slice for this target edge.
     if (!D.d_site_scaler_up) return;
-    const size_t node_site_span =
-        static_cast<size_t>(D.sites) * rate_count * state_count;
+    const size_t node_site_span = D.sites * rate_count * state_count;
     const fp_t* left_base = D.d_clv_up + static_cast<size_t>(target_id) * node_site_span;
     const size_t scaler_span = D.per_rate_scaling
-        ? static_cast<size_t>(D.sites) * rate_count
-        : static_cast<size_t>(D.sites);
+        ? D.sites * rate_count
+        : D.sites;
     const unsigned* left_scaler_base = D.d_site_scaler_up + static_cast<size_t>(target_id) * scaler_span;
 
     // Load midpoint PMATs for the current query/target pair.
@@ -1635,11 +1576,7 @@ __global__ void LikelihoodDerivativeProximalKernel(
                 target_midpoint_pmat_shared,
                 parent_midpoint_pmat_shared,
                 tid,
-                step,
-                debug_sumtable,
-                debug_target_id,
-                debug_sumtable_site,
-                debug_sumtable_rate);
+                step);
             break;
         case 4:
             build_proximal_sumtable<4>(
@@ -1651,11 +1588,7 @@ __global__ void LikelihoodDerivativeProximalKernel(
                 target_midpoint_pmat_shared,
                 parent_midpoint_pmat_shared,
                 tid,
-                step,
-                debug_sumtable,
-                debug_target_id,
-                debug_sumtable_site,
-                debug_sumtable_rate);
+                step);
             break;
         case 8:
             build_proximal_sumtable<8>(
@@ -1667,14 +1600,20 @@ __global__ void LikelihoodDerivativeProximalKernel(
                 target_midpoint_pmat_shared,
                 parent_midpoint_pmat_shared,
                 tid,
-                step,
-                debug_sumtable,
-                debug_target_id,
-                debug_sumtable_site,
-                debug_sumtable_rate);
+                step);
             break;
         default:
-            return;
+            build_proximal_sumtable_generic(
+                D,
+                target_id,
+                left_base,
+                left_scaler_base,
+                sumtable_op,
+                target_midpoint_pmat_shared,
+                parent_midpoint_pmat_shared,
+                tid,
+                step);
+            break;
     }
     __syncthreads();
 
@@ -1683,7 +1622,6 @@ __global__ void LikelihoodDerivativeProximalKernel(
     double local_ddf = 0.0;
     for (int iter = 0; iter < max_iter; ++iter) {
         if (stop_iterations) break;
-        const double branch_before = branch_value_shared;
         const fp_t branch = static_cast<fp_t>(branch_value_shared);
         if (D.states == 4) {
             if (!build_diagtable_states4_dispatch(D, branch, branch_diag_shared)) {
@@ -1719,22 +1657,6 @@ __global__ void LikelihoodDerivativeProximalKernel(
                 max_step_shared,
                 block_df_shared,
                 block_ddf_shared);
-            maybe_print_newton_debug(
-                debug_enabled,
-                debug_all_iters,
-                debug_limit,
-                debug_target_id,
-                "proximal",
-                op_global,
-                target_id,
-                iter,
-                branch_before,
-                branch_value_shared,
-                block_df_shared,
-                block_ddf_shared,
-                branch_lower_bound_shared,
-                branch_upper_bound_shared,
-                max_step_shared);
         }
         __syncthreads();
 

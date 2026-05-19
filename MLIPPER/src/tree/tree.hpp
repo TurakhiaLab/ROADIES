@@ -48,6 +48,8 @@ struct PlacementOpBuffer {
     std::vector<int> node_to_tip;
     std::vector<NodeOpInfo> upward_ops_host;
     std::vector<NodeOpInfo> downward_ops_host;
+    // Exclusive offsets for downward ops grouped by child depth.
+    std::vector<int> downward_level_offsets_host;
     bool profile_commit_timing = false;
     CommitTimingStats timing;
 };
@@ -181,6 +183,7 @@ struct DeviceTree {
     fp_t   *d_prev_proximal_length = nullptr; // [N] previous proximal branch lengths (smoothing rollback)
 
     uint8_t *d_tipchars = nullptr; // [tips * sites], DNA4 bitmask when states==4 else DNA5 code
+    int     *d_tip_node_ids = nullptr; // [tips], maps tip index -> node id for tip-CLV initialization
 
     fp_t    *d_clv_up = nullptr;
     fp_t    *d_clv_down = nullptr;
@@ -215,22 +218,23 @@ struct DeviceTree {
     fp_t   *d_query_pmat = nullptr;
 
     size_t per_node_elems() const {
-        return sites * (size_t)rate_cats * (size_t)states;
+        return sites * static_cast<size_t>(rate_cats) * static_cast<size_t>(states);
     }
     size_t clv_pool_elems() const {
-        return (size_t)N * per_node_elems();
+        return static_cast<size_t>(N) * per_node_elems();
     }
     size_t scaler_elems() const {
-        return per_rate_scaling ? (sites * (size_t)rate_cats) : sites;
+        return per_rate_scaling ? (sites * static_cast<size_t>(rate_cats)) : sites;
     }
     size_t scaler_pool_elems() const {
-        return (size_t)capacity_N * scaler_elems();
+        return static_cast<size_t>(capacity_N) * scaler_elems();
     }
     size_t scaler_storage_elems() const {
         return scaler_pool_elems() * 4;
     }
     size_t pmat_per_node_elems() const {
-        return (size_t)rate_cats * (size_t)states * (size_t)states;
+        const size_t state_count = static_cast<size_t>(states);
+        return static_cast<size_t>(rate_cats) * state_count * state_count;
     }
 };
 
@@ -383,7 +387,7 @@ BuildToGpuResult BuildAllToGPU(
 
 void free_device_tree(DeviceTree& D);
 
-void launch_init_tip_clv(const DeviceTree& D);
+void launch_init_tip_clv(const DeviceTree& D, cudaStream_t stream = 0);
 
 double eval_root_loglikelihood(
     const DeviceTree& D,
@@ -414,6 +418,7 @@ void UploadPlacementOps(
     const std::vector<NodeOpInfo>& host_ops,
     cudaStream_t stream = 0);
 
+// Rebuild the full tree CLV state after an initial upload or global topology change.
 void UpdateTreeClvs(
     DeviceTree& D,
     TreeBuildResult& T,
@@ -421,13 +426,16 @@ void UpdateTreeClvs(
     PlacementOpBuffer& placement_ops,
     cudaStream_t stream = 0);
 
+// Recompute only the CLVs affected by a prune/local-regraft scoring pass.
+// upward_start_node < 0 skips the upward path refresh and only applies the
+// supplied downward ops.
 void UpdateTreeClvsAfterPrune(
     DeviceTree& D,
     TreeBuildResult& T,
     HostPacking& H,
     PlacementOpBuffer& placement_ops,
     int upward_start_node,
-    const std::vector<NodeOpInfo>& downward_ops_host,
+    const std::vector<NodeOpInfo>& required_downward_ops,
     cudaStream_t stream = 0);
 
 void EvaluatePlacementQueries(

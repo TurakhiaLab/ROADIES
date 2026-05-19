@@ -24,6 +24,11 @@ namespace mltreeio = mlipper::treeio;
 
 namespace {
 
+// Local SPR uses a few small records to move between three stages:
+// 1. define the local search region around inserted queries,
+// 2. score hypothetical prune/regraft edits,
+// 3. validate and commit the best edits back to the main tree.
+
 struct PruneInfo {
     int pruned_id = -1;
     int free_internal_id = -1;
@@ -79,6 +84,13 @@ struct LocalSprPlacementPassResult {
     std::vector<NodeOpInfo> required_downward_update_ops;
 };
 
+struct LocalSprScoringWorkspace {
+    DeviceTree scoring_dev{};
+    PlacementOpBuffer tree_ops{};
+    PlacementOpBuffer candidate_ops{};
+    int previous_main_pmat_node = -1;
+};
+
 struct LocalSprEvalWorkspace {
     BuildToGpuResult res{};
     PlacementOpBuffer ops{};
@@ -111,6 +123,8 @@ struct IntDisjointSet {
         }
     }
 };
+
+// Basic tree maintenance and assertion helpers.
 
 void rebuild_traversals(TreeBuildResult& T) {
     T.preorder.clear();
@@ -161,6 +175,8 @@ void local_spr_assert(bool condition, const std::string& message) {
     }
 }
 
+// Topology and envelope helpers used to describe local subtrees.
+
 void collect_subtree_node_ids(
     const TreeBuildResult& tree,
     int node_id,
@@ -200,6 +216,8 @@ bool subtree_fully_inside_mask(
     }
     return true;
 }
+
+// Build the minimal downward-update op lists needed to rescore a local edit on GPU.
 
 void rebuild_host_topology_from_tree_local(
     const TreeBuildResult& tree,
@@ -377,6 +395,8 @@ void build_required_downward_update_ops(
     }
 }
 
+// Deduplicate node ops so staged outward expansion only applies genuinely new work.
+
 struct LocalSprNodeOpKey {
     int parent_id = -1;
     int left_id = -1;
@@ -450,6 +470,8 @@ std::vector<NodeOpInfo> filter_local_spr_new_ops(
     }
     return filtered_ops;
 }
+
+// Host/GPU conversion helpers for evaluating a fully materialized candidate tree.
 
 std::vector<char> build_local_spr_subtree_mask(
     const TreeBuildResult& tree,
@@ -583,6 +605,9 @@ double evaluate_local_spr_tree_loglikelihood(
         0);
 }
 
+// Candidate legality checks ensure a proposed regraft stays inside the local envelope
+// and still matches the topology snapshot it was derived from.
+
 void local_spr_assert_candidate_legal(
     const TreeBuildResult& tree,
     const LocalSprRepairUnit& unit,
@@ -634,78 +659,7 @@ void local_spr_assert_candidate_legal(
         "selected regraft edge is not legal under the bounded-radius search");
 }
 
-void local_spr_assert_tree_integrity(
-    const TreeBuildResult& tree,
-    const std::string& label)
-{
-    const int node_count = static_cast<int>(tree.nodes.size());
-    local_spr_assert(node_count > 0, label + ": tree is empty");
-    local_spr_assert(
-        tree.root_id >= 0 && tree.root_id < node_count,
-        label + ": invalid root id");
-
-    std::vector<int> parent_ref_count(static_cast<size_t>(node_count), 0);
-    for (int node_id = 0; node_id < node_count; ++node_id) {
-        const TreeNode& node = tree.nodes[static_cast<size_t>(node_id)];
-        if (node.parent < 0) {
-            local_spr_assert(node_id == tree.root_id, label + ": found non-root node with parent=-1");
-        } else {
-            local_spr_assert(
-                node.parent >= 0 && node.parent < node_count,
-                label + ": node parent out of range");
-            ++parent_ref_count[static_cast<size_t>(node_id)];
-        }
-        if (node.is_tip) {
-            local_spr_assert(node.left < 0 && node.right < 0, label + ": tip node has children");
-            if (!node.name.empty()) {
-                auto it = tree.tip_node_by_name.find(node.name);
-                local_spr_assert(
-                    it != tree.tip_node_by_name.end() && it->second == node_id,
-                    label + ": tip name map is inconsistent");
-            }
-            continue;
-        }
-        local_spr_assert(
-            node.left >= 0 && node.left < node_count &&
-            node.right >= 0 && node.right < node_count &&
-            node.left != node.right,
-            label + ": internal node has invalid children");
-        local_spr_assert(
-            tree.nodes[static_cast<size_t>(node.left)].parent == node_id,
-            label + ": left child parent pointer mismatch");
-        local_spr_assert(
-            tree.nodes[static_cast<size_t>(node.right)].parent == node_id,
-            label + ": right child parent pointer mismatch");
-    }
-
-    for (int node_id = 0; node_id < node_count; ++node_id) {
-        const int expected = (node_id == tree.root_id) ? 0 : 1;
-        local_spr_assert(
-            parent_ref_count[static_cast<size_t>(node_id)] == expected,
-            label + ": node parent reference count mismatch");
-    }
-
-    std::vector<char> visited(static_cast<size_t>(node_count), 0);
-    std::vector<int> stack;
-    stack.push_back(tree.root_id);
-    int visited_count = 0;
-    while (!stack.empty()) {
-        const int cur = stack.back();
-        stack.pop_back();
-        local_spr_assert(cur >= 0 && cur < node_count, label + ": DFS visited out-of-range node");
-        local_spr_assert(!visited[static_cast<size_t>(cur)], label + ": cycle or duplicate child visit detected");
-        visited[static_cast<size_t>(cur)] = 1;
-        ++visited_count;
-        const TreeNode& node = tree.nodes[static_cast<size_t>(cur)];
-        if (!node.is_tip) {
-            stack.push_back(node.right);
-            stack.push_back(node.left);
-        }
-    }
-    local_spr_assert(
-        visited_count == node_count,
-        label + ": tree is disconnected after subtree commit");
-}
+// Graph-distance helpers drive the bounded-radius local search around each prune site.
 
 std::vector<int> build_tree_path_nodes(const TreeBuildResult& tree, int start, int end) {
     std::vector<int> path_a;
@@ -1059,6 +1013,10 @@ bool local_spr_candidate_still_legal(
     return true;
 }
 
+// These two routines are the actual topology edit primitives:
+// prune_subtree_for_spr removes a local subtree from the current tree,
+// regraft_subtree_for_spr inserts it onto a new target edge.
+
 bool prune_subtree_for_spr(TreeBuildResult& tree, int pruned_id, PruneInfo& info) {
     if (pruned_id < 0 || pruned_id >= static_cast<int>(tree.nodes.size())) return false;
     if (pruned_id == tree.root_id) return false;
@@ -1399,6 +1357,9 @@ void regraft_subtree_for_spr(
     rebuild_traversals(tree);
 }
 
+// The search pass temporarily overrides a few placement-tuning environment variables
+// so local SPR scoring uses a predictable, lightweight configuration.
+
 struct EnvSnapshot {
     const char* key = nullptr;
     std::string value;
@@ -1423,36 +1384,21 @@ void restore_env(const EnvSnapshot& snap) {
 
 struct LocalSprEnvGuard {
     EnvSnapshot full_opt = snapshot_env("MLIPPER_FULL_OPT_PASSES");
-    EnvSnapshot refine_global = snapshot_env("MLIPPER_REFINE_GLOBAL_PASSES");
-    EnvSnapshot refine_extra = snapshot_env("MLIPPER_REFINE_EXTRA_PASSES");
-    EnvSnapshot refine_detect = snapshot_env("MLIPPER_REFINE_DETECT_TOPK");
-    EnvSnapshot refine_topk = snapshot_env("MLIPPER_REFINE_TOPK");
     EnvSnapshot export_topk = snapshot_env("MLIPPER_EXPORT_PLACEMENT_TOPK");
-    EnvSnapshot local_child_refine = snapshot_env("MLIPPER_LOCAL_CHILD_REFINE");
     EnvSnapshot double_rerank = snapshot_env("MLIPPER_DOUBLE_RERANK");
 
     LocalSprEnvGuard(bool local_spr_fast, size_t node_count) {
         setenv("MLIPPER_FULL_OPT_PASSES", local_spr_fast ? "1" : "4", 1);
-        setenv("MLIPPER_REFINE_GLOBAL_PASSES", "0", 1);
-        setenv("MLIPPER_REFINE_EXTRA_PASSES", "0", 1);
-        setenv("MLIPPER_REFINE_DETECT_TOPK", "0", 1);
-        setenv("MLIPPER_REFINE_TOPK", "0", 1);
         setenv(
             "MLIPPER_EXPORT_PLACEMENT_TOPK",
             std::to_string(std::max(1, static_cast<int>(node_count) * 2)).c_str(),
             1);
-        setenv("MLIPPER_LOCAL_CHILD_REFINE", "0", 1);
         setenv("MLIPPER_DOUBLE_RERANK", "0", 1);
     }
 
     ~LocalSprEnvGuard() {
-        restore_env(refine_topk);
-        restore_env(refine_detect);
-        restore_env(refine_extra);
-        restore_env(refine_global);
         restore_env(full_opt);
         restore_env(double_rerank);
-        restore_env(local_child_refine);
         restore_env(export_topk);
     }
 };
@@ -1468,9 +1414,11 @@ struct LocalSprSearchContext {
     int states = 0;
     int rate_cats = 0;
     bool per_rate_scaling = false;
-    int local_spr_radius = 0;
+    int local_spr_radius = 4;
     int local_spr_topk_per_unit = 0;
 };
+
+// Repair-unit construction groups nearby inserted queries into one local search region.
 
 std::vector<LocalSprRepairUnit> prepare_local_spr_repair_units(
     const TreeBuildResult& base_tree,
@@ -1487,6 +1435,451 @@ std::vector<LocalSprRepairUnit> prepare_local_spr_repair_units(
         radius);
 }
 
+std::vector<LocalSprPruneRootWorkItem> build_local_spr_prune_root_work_items(
+    const TreeBuildResult& base_tree,
+    const LocalSprRepairUnit& unit,
+    int inner_search_radius,
+    const std::vector<int>& skeleton_distance_by_node)
+{
+    std::vector<LocalSprPruneRootWorkItem> work_items;
+    work_items.reserve(unit.envelope_nodes.size());
+
+    for (int candidate_prune_root_id : unit.envelope_nodes) {
+        if (candidate_prune_root_id < 0 ||
+            candidate_prune_root_id >= static_cast<int>(base_tree.nodes.size()) ||
+            candidate_prune_root_id == base_tree.root_id ||
+            base_tree.nodes[(size_t)candidate_prune_root_id].parent < 0) {
+            continue;
+        }
+
+        std::vector<int> subtree_nodes;
+        if (!subtree_fully_inside_mask(
+                base_tree,
+                candidate_prune_root_id,
+                unit.envelope_mask,
+                &subtree_nodes)) {
+            continue;
+        }
+
+        const std::vector<char> subtree_mask =
+            build_local_spr_subtree_mask(base_tree, subtree_nodes);
+
+        TreeBuildResult pruned_tree = base_tree;
+        PruneInfo prune_info;
+        if (!prune_subtree_for_spr(
+                pruned_tree,
+                candidate_prune_root_id,
+                prune_info)) {
+            continue;
+        }
+
+        std::vector<int> inner_candidate_edges = collect_candidate_edges(
+            pruned_tree,
+            prune_info.sibling_id,
+            prune_info.grandparent_id,
+            inner_search_radius,
+            prune_info.pruned_id,
+            prune_info.free_internal_id);
+        std::vector<int> legal_inner_candidate_edges =
+            filter_local_spr_candidate_edges(
+                pruned_tree,
+                unit.envelope_mask,
+                subtree_mask,
+                inner_candidate_edges);
+        if (legal_inner_candidate_edges.empty()) {
+            continue;
+        }
+
+        int skeleton_distance = std::numeric_limits<int>::max();
+        if (candidate_prune_root_id <
+            static_cast<int>(skeleton_distance_by_node.size())) {
+            const int dist =
+                skeleton_distance_by_node[(size_t)candidate_prune_root_id];
+            if (dist >= 0) {
+                skeleton_distance = dist;
+            }
+        }
+
+        LocalSprPruneRootWorkItem work_item;
+        work_item.prune_root_id = candidate_prune_root_id;
+        work_item.skeleton_distance = skeleton_distance;
+        work_item.subtree_nodes = std::move(subtree_nodes);
+        work_item.legal_inner_candidate_edges =
+            std::move(legal_inner_candidate_edges);
+        work_items.push_back(std::move(work_item));
+    }
+
+    std::sort(
+        work_items.begin(),
+        work_items.end(),
+        [](const LocalSprPruneRootWorkItem& lhs,
+           const LocalSprPruneRootWorkItem& rhs) {
+            if (lhs.skeleton_distance != rhs.skeleton_distance) {
+                return lhs.skeleton_distance < rhs.skeleton_distance;
+            }
+            if (lhs.legal_inner_candidate_edges.size() !=
+                rhs.legal_inner_candidate_edges.size()) {
+                return lhs.legal_inner_candidate_edges.size() >
+                       rhs.legal_inner_candidate_edges.size();
+            }
+            if (lhs.subtree_nodes.size() != rhs.subtree_nodes.size()) {
+                return lhs.subtree_nodes.size() <
+                       rhs.subtree_nodes.size();
+            }
+            return lhs.prune_root_id < rhs.prune_root_id;
+        });
+
+    return work_items;
+}
+
+// Workspace lifecycle and placement-pass helpers for the candidate ranking phase.
+
+void release_local_spr_scoring_workspace(
+    LocalSprScoringWorkspace& workspace,
+    cudaStream_t stream)
+{
+    free_placement_op_buffer(workspace.candidate_ops, stream);
+    free_placement_op_buffer(workspace.tree_ops, stream);
+    cudaStreamSynchronize(stream);
+    free_device_tree(workspace.scoring_dev);
+    workspace = LocalSprScoringWorkspace{};
+}
+
+LocalSprPlacementPassResult run_local_spr_placement_pass(
+    const LocalSprSearchContext& ctx,
+    TreeBuildResult& pruned_tree,
+    HostPacking& pruned_host,
+    const std::vector<int>& node_to_tip,
+    const std::vector<int>& candidate_edges,
+    int upward_start_node,
+    int prune_root_id,
+    LocalSprScoringWorkspace& workspace,
+    const std::vector<NodeOpInfo>* already_updated_ops)
+{
+    LocalSprPlacementPassResult pass_result;
+    std::vector<NodeOpInfo> candidate_ops;
+    build_selected_downward_ops(
+        pruned_tree,
+        node_to_tip,
+        candidate_edges,
+        candidate_ops);
+    build_required_downward_update_ops(
+        pruned_tree,
+        node_to_tip,
+        candidate_edges,
+        pass_result.required_downward_update_ops);
+    local_spr_assert(
+        !candidate_ops.empty(),
+        "local SPR scoring produced zero candidate ops");
+    local_spr_assert(
+        !pass_result.required_downward_update_ops.empty(),
+        "local SPR scoring produced zero required downward update ops");
+
+    if (already_updated_ops == nullptr) {
+        UpdateTreeClvsAfterPrune(
+            workspace.scoring_dev,
+            pruned_tree,
+            pruned_host,
+            workspace.tree_ops,
+            upward_start_node,
+            pass_result.required_downward_update_ops,
+            ctx.stream);
+    } else {
+        std::vector<NodeOpInfo> new_update_ops =
+            filter_local_spr_new_ops(
+                pass_result.required_downward_update_ops,
+                *already_updated_ops);
+        if (!new_update_ops.empty()) {
+            UpdateTreeClvsAfterPrune(
+                workspace.scoring_dev,
+                pruned_tree,
+                pruned_host,
+                workspace.tree_ops,
+                -1,
+                new_update_ops,
+                ctx.stream);
+        }
+    }
+
+    copy_unscaled_up_clv_to_query_slot(
+        ctx.res.dev,
+        prune_root_id,
+        workspace.scoring_dev,
+        0,
+        ctx.stream);
+
+    UploadPlacementOps(
+        workspace.candidate_ops,
+        candidate_ops,
+        ctx.stream);
+
+    DeviceTree query_view =
+        make_query_view(workspace.scoring_dev, 0);
+    pass_result.placement_result = PlacementEvaluationKernel(
+        query_view,
+        workspace.candidate_ops.d_ops,
+        workspace.candidate_ops.num_ops,
+        1,
+        ctx.stream,
+        false);
+    local_spr_assert(
+        pass_result.placement_result.top_placements.size() ==
+            candidate_ops.size(),
+        "local SPR scoring did not return a score for every edge");
+    return pass_result;
+}
+
+double find_local_spr_baseline_loglikelihood(
+    const PlacementResult& placement_result,
+    int baseline_target_id)
+{
+    for (const PlacementResult::RankedPlacement& placement :
+         placement_result.top_placements) {
+        if (placement.target_id == baseline_target_id) {
+            return placement.loglikelihood;
+        }
+    }
+    return -std::numeric_limits<double>::infinity();
+}
+
+// Convert placement scores into concrete SPR proposals that can later be validated
+// against the full tree likelihood.
+
+void append_positive_gain_local_spr_candidates(
+    const PlacementResult& placement_result,
+    const TreeBuildResult& base_tree,
+    const TreeBuildResult& pruned_tree,
+    const LocalSprRepairUnit& unit,
+    int prune_root_id,
+    const std::vector<int>& subtree_nodes,
+    double baseline_logL,
+    int candidate_pool_limit,
+    std::vector<LocalSprCandidateMove>& unit_topk)
+{
+    for (const PlacementResult::RankedPlacement& placement :
+         placement_result.top_placements) {
+        if (placement.target_id < 0 ||
+            placement.target_id >= static_cast<int>(pruned_tree.nodes.size())) {
+            continue;
+        }
+        const int edge_child = placement.target_id;
+        const int edge_parent =
+            pruned_tree.nodes[(size_t)edge_child].parent;
+        if (edge_parent < 0) continue;
+
+        const double approx_gain =
+            placement.loglikelihood - baseline_logL;
+        if (!(approx_gain > 0.0)) {
+            continue;
+        }
+
+        LocalSprCandidateMove candidate;
+        candidate.repair_unit_id = unit.unit_id;
+        candidate.prune_root_id = prune_root_id;
+        candidate.regraft_child_id = edge_child;
+        candidate.regraft_parent_id = edge_parent;
+        candidate.old_parent_id =
+            base_tree.nodes[(size_t)prune_root_id].parent;
+        candidate.approx_gain = approx_gain;
+        candidate.pendant_length = placement.pendant_length;
+        candidate.proximal_length =
+            static_cast<double>(
+                pruned_tree.nodes[(size_t)edge_child].branch_length_to_parent) -
+            placement.proximal_length;
+        candidate.subtree_nodes = subtree_nodes;
+        const int path_start =
+            candidate.old_parent_id >= 0
+                ? candidate.old_parent_id
+                : prune_root_id;
+        candidate.regraft_path_nodes =
+            build_tree_path_nodes(base_tree, path_start, edge_child);
+        keep_local_spr_topk(
+            unit_topk,
+            std::move(candidate),
+            candidate_pool_limit);
+    }
+}
+
+// Score every plausible regraft edge for one chosen prune root, optionally expand
+// outward from the best inner-ring edges, and accumulate the top local candidates.
+
+void evaluate_local_spr_prune_root(
+    const LocalSprSearchContext& ctx,
+    const TreeBuildResult& base_tree,
+    const LocalSprRepairUnit& unit,
+    const LocalSprPruneRootWorkItem& work_item,
+    int inner_search_radius,
+    bool staged_radius_expansion,
+    int outer_seed_limit,
+    int candidate_pool_limit,
+    LocalSprScoringWorkspace& workspace,
+    std::vector<LocalSprCandidateMove>& unit_topk,
+    LocalSprSearchSummary& search_summary)
+{
+    const int prune_root_id = work_item.prune_root_id;
+    const std::vector<int>& subtree_nodes = work_item.subtree_nodes;
+    const std::vector<char> subtree_mask =
+        build_local_spr_subtree_mask(base_tree, subtree_nodes);
+
+    TreeBuildResult pruned_tree = base_tree;
+    PruneInfo prune_info;
+    if (!prune_subtree_for_spr(pruned_tree, prune_root_id, prune_info)) {
+        return;
+    }
+
+    const std::vector<int>& legal_candidate_edges =
+        work_item.legal_inner_candidate_edges;
+    search_summary.enumerated_candidates += legal_candidate_edges.size();
+    if (legal_candidate_edges.empty()) {
+        return;
+    }
+
+    HostPacking pruned_host = ctx.res.hostPack;
+    rebuild_host_topology_from_tree_local(pruned_tree, pruned_host);
+    pruned_host.pattern_weights = ctx.pattern_weights_arg;
+    const std::vector<int> node_to_tip =
+        build_local_spr_node_to_tip(pruned_tree, pruned_host);
+
+    int changed_nodes[1] = { prune_info.sibling_id };
+    fill_pmats_in_host_packing(
+        pruned_tree,
+        pruned_host,
+        ctx.res.eig,
+        ctx.rate_multipliers,
+        ctx.states,
+        ctx.rate_cats,
+        changed_nodes,
+        1);
+    reload_device_tree_live_data_local_spr(
+        workspace.scoring_dev,
+        pruned_tree,
+        pruned_host,
+        ctx.res.hostPack,
+        prune_info.sibling_id,
+        workspace.previous_main_pmat_node,
+        nullptr,
+        ctx.stream,
+        nullptr);
+
+    // Stage 1: score the inner regraft edges around the prune site.
+    copy_upward_state(
+        ctx.res.dev,
+        workspace.scoring_dev,
+        ctx.stream);
+    LocalSprPlacementPassResult inner_pass =
+        run_local_spr_placement_pass(
+            ctx,
+            pruned_tree,
+            pruned_host,
+            node_to_tip,
+            legal_candidate_edges,
+            prune_info.grandparent_id,
+            prune_root_id,
+            workspace,
+            nullptr);
+    PlacementResult placement_result = std::move(inner_pass.placement_result);
+
+    const double baseline_logL =
+        (prune_info.grandparent_id >= 0)
+            ? find_local_spr_baseline_loglikelihood(
+                  placement_result,
+                  prune_info.sibling_id)
+            : -std::numeric_limits<double>::infinity();
+    if (!std::isfinite(baseline_logL)) {
+        return;
+    }
+
+    // Stage 2: if the inner ring looks promising, expand outward once.
+    if (staged_radius_expansion) {
+        const std::vector<int> center_dist = compute_center_distances(
+            pruned_tree,
+            prune_info.sibling_id,
+            prune_info.grandparent_id);
+        const std::vector<int> outer_seed_edges =
+            select_local_spr_seed_edges(
+                placement_result,
+                pruned_tree,
+                center_dist,
+                baseline_logL,
+                outer_seed_limit,
+                inner_search_radius);
+        if (!outer_seed_edges.empty()) {
+            std::vector<int> outer_candidate_edges;
+            outer_candidate_edges.reserve(
+                outer_seed_edges.size() *
+                std::max(1, ctx.local_spr_radius - inner_search_radius));
+            std::unordered_set<int> seen_outer_edges;
+            for (int seed_edge_child_id : outer_seed_edges) {
+                const std::vector<int> expanded_edges =
+                    collect_outward_edges_from_seed(
+                        pruned_tree,
+                        center_dist,
+                        seed_edge_child_id,
+                        inner_search_radius,
+                        ctx.local_spr_radius,
+                        prune_info.pruned_id,
+                        prune_info.free_internal_id);
+                for (int edge_child_id : expanded_edges) {
+                    if (!seen_outer_edges.insert(edge_child_id).second) {
+                        continue;
+                    }
+                    outer_candidate_edges.push_back(edge_child_id);
+                }
+            }
+
+            const std::vector<int> outer_legal_candidate_edges =
+                filter_local_spr_candidate_edges(
+                    pruned_tree,
+                    unit.envelope_mask,
+                    subtree_mask,
+                    outer_candidate_edges);
+            search_summary.enumerated_candidates +=
+                outer_legal_candidate_edges.size();
+            if (!outer_legal_candidate_edges.empty()) {
+                LocalSprPlacementPassResult outer_pass =
+                    run_local_spr_placement_pass(
+                        ctx,
+                        pruned_tree,
+                        pruned_host,
+                        node_to_tip,
+                        outer_legal_candidate_edges,
+                        -1,
+                        prune_root_id,
+                        workspace,
+                        &inner_pass.required_downward_update_ops);
+                placement_result.top_placements.insert(
+                    placement_result.top_placements.end(),
+                    std::make_move_iterator(
+                        outer_pass.placement_result.top_placements.begin()),
+                    std::make_move_iterator(
+                        outer_pass.placement_result.top_placements.end()));
+                std::sort(
+                    placement_result.top_placements.begin(),
+                    placement_result.top_placements.end(),
+                    [](const PlacementResult::RankedPlacement& lhs,
+                       const PlacementResult::RankedPlacement& rhs) {
+                        return lhs.loglikelihood > rhs.loglikelihood;
+                    });
+            }
+        }
+    }
+
+    // Stage 3: convert positive-gain placements into commit candidates.
+    append_positive_gain_local_spr_candidates(
+        placement_result,
+        base_tree,
+        pruned_tree,
+        unit,
+        prune_root_id,
+        subtree_nodes,
+        baseline_logL,
+        candidate_pool_limit,
+        unit_topk);
+}
+
+// Search phase: enumerate candidate prune roots inside each repair unit and keep
+// only the strongest local SPR moves for later validation.
+
 std::vector<LocalSprCandidateMove> rank_local_spr_candidates(
     const LocalSprSearchContext& ctx,
     const TreeBuildResult& base_tree,
@@ -1500,19 +1893,10 @@ std::vector<LocalSprCandidateMove> rank_local_spr_candidates(
     subtree_query_batch.query_chars.assign(
         ctx.sites,
         static_cast<uint8_t>(ctx.states == 4 ? 15 : 4));
-    DeviceTree local_spr_scoring_dev{};
-    PlacementOpBuffer local_spr_tree_ops{};
-    PlacementOpBuffer local_spr_candidate_ops{};
-    int local_spr_prev_main_pmat_node = -1;
-    auto release_local_spr_scoring_workspace = [&]() {
-        free_placement_op_buffer(local_spr_candidate_ops, ctx.stream);
-        free_placement_op_buffer(local_spr_tree_ops, ctx.stream);
-        cudaStreamSynchronize(ctx.stream);
-        free_device_tree(local_spr_scoring_dev);
-    };
+    LocalSprScoringWorkspace scoring_workspace;
 
     try {
-        local_spr_scoring_dev = upload_to_gpu(
+        scoring_workspace.scoring_dev = upload_to_gpu(
             base_tree,
             ctx.res.hostPack,
             ctx.res.eig,
@@ -1541,362 +1925,15 @@ std::vector<LocalSprCandidateMove> rank_local_spr_candidates(
                 build_unit_anchor_skeleton_mask(base_tree, unit.anchor_ids);
             const std::vector<int> skeleton_distance_by_node =
                 multi_source_bfs_distances(base_tree, anchor_skeleton_mask);
-            std::vector<LocalSprPruneRootWorkItem> prune_root_work_items;
-            prune_root_work_items.reserve(unit.envelope_nodes.size());
-
-            for (int candidate_prune_root_id : unit.envelope_nodes) {
-                if (candidate_prune_root_id < 0 ||
-                    candidate_prune_root_id >= static_cast<int>(base_tree.nodes.size()) ||
-                    candidate_prune_root_id == base_tree.root_id ||
-                    base_tree.nodes[(size_t)candidate_prune_root_id].parent < 0) {
-                    continue;
-                }
-
-                std::vector<int> subtree_nodes;
-                if (!subtree_fully_inside_mask(
-                        base_tree,
-                        candidate_prune_root_id,
-                        unit.envelope_mask,
-                        &subtree_nodes)) {
-                    continue;
-                }
-
-                const std::vector<char> subtree_mask =
-                    build_local_spr_subtree_mask(base_tree, subtree_nodes);
-
-                TreeBuildResult pruned_tree = base_tree;
-                PruneInfo prune_info;
-                if (!prune_subtree_for_spr(
-                        pruned_tree,
-                        candidate_prune_root_id,
-                        prune_info)) {
-                    continue;
-                }
-
-                std::vector<int> inner_candidate_edges = collect_candidate_edges(
-                    pruned_tree,
-                    prune_info.sibling_id,
-                    prune_info.grandparent_id,
+            std::vector<LocalSprPruneRootWorkItem> prune_root_work_items =
+                build_local_spr_prune_root_work_items(
+                    base_tree,
+                    unit,
                     inner_search_radius,
-                    prune_info.pruned_id,
-                    prune_info.free_internal_id);
-                std::vector<int> legal_inner_candidate_edges =
-                    filter_local_spr_candidate_edges(
-                        pruned_tree,
-                        unit.envelope_mask,
-                        subtree_mask,
-                        inner_candidate_edges);
-                if (legal_inner_candidate_edges.empty()) {
-                    continue;
-                }
-
-                int skeleton_distance = std::numeric_limits<int>::max();
-                if (candidate_prune_root_id <
-                    static_cast<int>(skeleton_distance_by_node.size())) {
-                    const int dist =
-                        skeleton_distance_by_node[(size_t)candidate_prune_root_id];
-                    if (dist >= 0) {
-                        skeleton_distance = dist;
-                    }
-                }
-
-                LocalSprPruneRootWorkItem work_item;
-                work_item.prune_root_id = candidate_prune_root_id;
-                work_item.skeleton_distance = skeleton_distance;
-                work_item.subtree_nodes = std::move(subtree_nodes);
-                work_item.legal_inner_candidate_edges =
-                    std::move(legal_inner_candidate_edges);
-                prune_root_work_items.push_back(std::move(work_item));
-            }
-
-            std::sort(
-                prune_root_work_items.begin(),
-                prune_root_work_items.end(),
-                [](const LocalSprPruneRootWorkItem& lhs,
-                   const LocalSprPruneRootWorkItem& rhs) {
-                    if (lhs.skeleton_distance != rhs.skeleton_distance) {
-                        return lhs.skeleton_distance < rhs.skeleton_distance;
-                    }
-                    if (lhs.legal_inner_candidate_edges.size() !=
-                        rhs.legal_inner_candidate_edges.size()) {
-                        return lhs.legal_inner_candidate_edges.size() >
-                               rhs.legal_inner_candidate_edges.size();
-                    }
-                    if (lhs.subtree_nodes.size() != rhs.subtree_nodes.size()) {
-                        return lhs.subtree_nodes.size() <
-                               rhs.subtree_nodes.size();
-                    }
-                    return lhs.prune_root_id < rhs.prune_root_id;
-                });
+                    skeleton_distance_by_node);
             if (prune_root_work_items.empty()) {
                 continue;
             }
-
-            auto evaluate_prune_root = [&](const LocalSprPruneRootWorkItem& work_item) {
-                // Stage 1: reconstruct the pruned-tree state for this prune root.
-                const int prune_root_id = work_item.prune_root_id;
-                const std::vector<int>& subtree_nodes = work_item.subtree_nodes;
-                const std::vector<char> subtree_mask =
-                    build_local_spr_subtree_mask(base_tree, subtree_nodes);
-
-                TreeBuildResult pruned_tree = base_tree;
-                PruneInfo prune_info;
-                if (!prune_subtree_for_spr(pruned_tree, prune_root_id, prune_info)) {
-                    return;
-                }
-
-                const std::vector<int>& legal_candidate_edges =
-                    work_item.legal_inner_candidate_edges;
-                search_summary.enumerated_candidates += legal_candidate_edges.size();
-                if (legal_candidate_edges.empty()) {
-                    return;
-                }
-
-                HostPacking pruned_host = ctx.res.hostPack;
-                rebuild_host_topology_from_tree_local(pruned_tree, pruned_host);
-                pruned_host.pattern_weights = ctx.pattern_weights_arg;
-                const std::vector<int> node_to_tip =
-                    build_local_spr_node_to_tip(pruned_tree, pruned_host);
-
-                int changed_nodes[1] = { prune_info.sibling_id };
-                fill_pmats_in_host_packing(
-                    pruned_tree,
-                    pruned_host,
-                    ctx.res.eig,
-                    ctx.rate_multipliers,
-                    ctx.states,
-                    ctx.rate_cats,
-                    changed_nodes,
-                    1);
-                reload_device_tree_live_data_local_spr(
-                    local_spr_scoring_dev,
-                    pruned_tree,
-                    pruned_host,
-                    ctx.res.hostPack,
-                    prune_info.sibling_id,
-                    local_spr_prev_main_pmat_node,
-                    nullptr,
-                    ctx.stream,
-                    nullptr);
-
-                // Stage 2: run the local placement-scoring pipeline on a chosen
-                // regraft edge set.
-                auto run_local_spr_placement_pipeline =
-                    [&](const std::vector<int>& candidate_edges,
-                        int upward_start_node,
-                        const std::vector<NodeOpInfo>* already_updated_ops)
-                        -> LocalSprPlacementPassResult {
-                        LocalSprPlacementPassResult pass_result;
-                        std::vector<NodeOpInfo> candidate_ops;
-                        build_selected_downward_ops(
-                            pruned_tree,
-                            node_to_tip,
-                            candidate_edges,
-                            candidate_ops);
-                        build_required_downward_update_ops(
-                            pruned_tree,
-                            node_to_tip,
-                            candidate_edges,
-                            pass_result.required_downward_update_ops);
-                        local_spr_assert(
-                            !candidate_ops.empty(),
-                            "local SPR scoring produced zero candidate ops");
-                        local_spr_assert(
-                            !pass_result.required_downward_update_ops.empty(),
-                            "local SPR scoring produced zero required downward update ops");
-
-                        if (already_updated_ops == nullptr) {
-                            UpdateTreeClvsAfterPrune(
-                                local_spr_scoring_dev,
-                                pruned_tree,
-                                pruned_host,
-                                local_spr_tree_ops,
-                                upward_start_node,
-                                pass_result.required_downward_update_ops,
-                                ctx.stream);
-                        } else {
-                            std::vector<NodeOpInfo> new_update_ops =
-                                filter_local_spr_new_ops(
-                                    pass_result.required_downward_update_ops,
-                                    *already_updated_ops);
-                            if (!new_update_ops.empty()) {
-                                UpdateTreeClvsAfterPrune(
-                                    local_spr_scoring_dev,
-                                    pruned_tree,
-                                    pruned_host,
-                                    local_spr_tree_ops,
-                                    -1,
-                                    new_update_ops,
-                                    ctx.stream);
-                            }
-                        }
-
-                        copy_unscaled_up_clv_to_query_slot(
-                            ctx.res.dev,
-                            prune_root_id,
-                            local_spr_scoring_dev,
-                            0,
-                            ctx.stream);
-
-                        UploadPlacementOps(
-                            local_spr_candidate_ops,
-                            candidate_ops,
-                            ctx.stream);
-
-                        DeviceTree query_view =
-                            make_query_view(local_spr_scoring_dev, 0);
-                        pass_result.placement_result = PlacementEvaluationKernel(
-                            query_view,
-                            local_spr_candidate_ops.d_ops,
-                            local_spr_candidate_ops.num_ops,
-                            1,
-                            ctx.stream);
-                        local_spr_assert(
-                            pass_result.placement_result.top_placements.size() ==
-                                candidate_ops.size(),
-                            "local SPR scoring did not return a score for every edge");
-                        return pass_result;
-                    };
-
-                // Stage 3: score the inner regraft edges, then optionally expand
-                // to a wider ring if the inner tier looks promising.
-                copy_upward_state(
-                    ctx.res.dev,
-                    local_spr_scoring_dev,
-                    ctx.stream);
-                LocalSprPlacementPassResult inner_pass =
-                    run_local_spr_placement_pipeline(
-                        legal_candidate_edges,
-                        prune_info.grandparent_id,
-                        nullptr);
-                PlacementResult blo_result = std::move(inner_pass.placement_result);
-
-                double baseline_logL = -std::numeric_limits<double>::infinity();
-                if (prune_info.grandparent_id >= 0) {
-                    for (const PlacementResult::RankedPlacement& placement :
-                         blo_result.top_placements) {
-                        if (placement.target_id == prune_info.sibling_id) {
-                            baseline_logL = placement.loglikelihood;
-                            break;
-                        }
-                    }
-                }
-                if (!std::isfinite(baseline_logL)) {
-                    return;
-                }
-
-                if (staged_radius_expansion) {
-                    const std::vector<int> center_dist = compute_center_distances(
-                        pruned_tree,
-                        prune_info.sibling_id,
-                        prune_info.grandparent_id);
-                    const std::vector<int> outer_seed_edges =
-                        select_local_spr_seed_edges(
-                            blo_result,
-                            pruned_tree,
-                            center_dist,
-                            baseline_logL,
-                            local_spr_outer_seed_limit,
-                            inner_search_radius);
-                    if (!outer_seed_edges.empty()) {
-                        std::vector<int> outer_candidate_edges;
-                        outer_candidate_edges.reserve(
-                            outer_seed_edges.size() *
-                            std::max(1, ctx.local_spr_radius - inner_search_radius));
-                        std::unordered_set<int> seen_outer_edges;
-                        for (int seed_edge_child_id : outer_seed_edges) {
-                            const std::vector<int> expanded_edges =
-                                collect_outward_edges_from_seed(
-                                    pruned_tree,
-                                    center_dist,
-                                    seed_edge_child_id,
-                                    inner_search_radius,
-                                    ctx.local_spr_radius,
-                                    prune_info.pruned_id,
-                                    prune_info.free_internal_id);
-                            for (int edge_child_id : expanded_edges) {
-                                if (!seen_outer_edges.insert(edge_child_id).second) {
-                                    continue;
-                                }
-                                outer_candidate_edges.push_back(edge_child_id);
-                            }
-                        }
-
-                        const std::vector<int> outer_legal_candidate_edges =
-                            filter_local_spr_candidate_edges(
-                                pruned_tree,
-                                unit.envelope_mask,
-                                subtree_mask,
-                                outer_candidate_edges);
-                        search_summary.enumerated_candidates +=
-                            outer_legal_candidate_edges.size();
-                        if (!outer_legal_candidate_edges.empty()) {
-                            LocalSprPlacementPassResult outer_pass =
-                                run_local_spr_placement_pipeline(
-                                    outer_legal_candidate_edges,
-                                    -1,
-                                    &inner_pass.required_downward_update_ops);
-                            blo_result.top_placements.insert(
-                                blo_result.top_placements.end(),
-                                std::make_move_iterator(
-                                    outer_pass.placement_result.top_placements.begin()),
-                                std::make_move_iterator(
-                                    outer_pass.placement_result.top_placements.end()));
-                            std::sort(
-                                blo_result.top_placements.begin(),
-                                blo_result.top_placements.end(),
-                                [](const PlacementResult::RankedPlacement& lhs,
-                                   const PlacementResult::RankedPlacement& rhs) {
-                                    return lhs.loglikelihood > rhs.loglikelihood;
-                                });
-                        }
-                    }
-                }
-
-                // Stage 4: materialize positive-gain placements as candidate SPR moves.
-                for (const PlacementResult::RankedPlacement& placement :
-                     blo_result.top_placements) {
-                    if (placement.target_id < 0 ||
-                        placement.target_id >= static_cast<int>(pruned_tree.nodes.size())) {
-                        continue;
-                    }
-                    const int edge_child = placement.target_id;
-                    const int edge_parent =
-                        pruned_tree.nodes[(size_t)edge_child].parent;
-                    if (edge_parent < 0) continue;
-
-                    const double approx_gain =
-                        placement.loglikelihood - baseline_logL;
-                    if (!(approx_gain > 0.0)) {
-                        continue;
-                    }
-
-                    LocalSprCandidateMove candidate;
-                    candidate.repair_unit_id = unit.unit_id;
-                    candidate.prune_root_id = prune_root_id;
-                    candidate.regraft_child_id = edge_child;
-                    candidate.regraft_parent_id = edge_parent;
-                    candidate.old_parent_id =
-                        base_tree.nodes[(size_t)prune_root_id].parent;
-                    candidate.approx_gain = approx_gain;
-                    candidate.pendant_length = placement.pendant_length;
-                    candidate.proximal_length =
-                        static_cast<double>(
-                            pruned_tree.nodes[(size_t)edge_child].branch_length_to_parent) -
-                        placement.proximal_length;
-                    candidate.subtree_nodes = subtree_nodes;
-                    const int path_start =
-                        candidate.old_parent_id >= 0
-                            ? candidate.old_parent_id
-                            : prune_root_id;
-                    candidate.regraft_path_nodes =
-                        build_tree_path_nodes(base_tree, path_start, edge_child);
-                    keep_local_spr_topk(
-                        unit_topk,
-                        std::move(candidate),
-                        local_spr_candidate_pool_limit);
-                }
-            };
 
             bool stop_after_next_tier = false;
             for (size_t work_idx = 0; work_idx < prune_root_work_items.size();) {
@@ -1911,8 +1948,18 @@ std::vector<LocalSprCandidateMove> rank_local_spr_candidates(
 
                 const size_t prev_topk_size = unit_topk.size();
                 for (; work_idx < tier_end; ++work_idx) {
-                    evaluate_prune_root(
-                        prune_root_work_items[work_idx]);
+                    evaluate_local_spr_prune_root(
+                        ctx,
+                        base_tree,
+                        unit,
+                        prune_root_work_items[work_idx],
+                        inner_search_radius,
+                        staged_radius_expansion,
+                        local_spr_outer_seed_limit,
+                        local_spr_candidate_pool_limit,
+                        scoring_workspace,
+                        unit_topk,
+                        search_summary);
                 }
 
                 const bool tier_found_positive =
@@ -1931,12 +1978,15 @@ std::vector<LocalSprCandidateMove> rank_local_spr_candidates(
                 std::make_move_iterator(unit_topk.end()));
         }
     } catch (...) {
-        release_local_spr_scoring_workspace();
+        release_local_spr_scoring_workspace(scoring_workspace, ctx.stream);
         throw;
     }
-    release_local_spr_scoring_workspace();
+    release_local_spr_scoring_workspace(scoring_workspace, ctx.stream);
     return ranked_candidates;
 }
+
+// Validation phase: replay the proposed topology edit on a fresh tree copy and
+// accept it only if the full-tree likelihood really improves.
 
 int validate_local_spr_candidates(
     std::vector<LocalSprCandidateMove> validation_candidates,
@@ -1970,7 +2020,6 @@ int validate_local_spr_candidates(
             continue;
         }
 
-        // local_spr_assert_tree_integrity(base_tree, "before subtree commit");
         TreeBuildResult candidate_tree = base_tree;
         PruneInfo prune_info;
         if (!prune_subtree_for_spr(candidate_tree, candidate.prune_root_id, prune_info)) {
@@ -2021,7 +2070,6 @@ int validate_local_spr_candidates(
             true,
             candidate.pendant_length,
             candidate.proximal_length);
-        // local_spr_assert_tree_integrity(candidate_tree, "after subtree regraft");
         local_spr_assert(
             subtree_fully_inside_mask(
                 candidate_tree,
@@ -2062,6 +2110,9 @@ int validate_local_spr_candidates(
     return accepted_candidates;
 }
 
+// Once a validation round accepts one or more moves, rebuild the authoritative
+// host/device tree state so the next round starts from a consistent baseline.
+
 void rebuild_after_local_spr_round(
     LocalSprBatchRunContext& ctx,
     const TreeBuildResult& base_tree)
@@ -2092,6 +2143,9 @@ void rebuild_after_local_spr_round(
 }
 
 } // namespace
+
+// Public entrypoint: run several rounds of local SPR search, validation, and rebuild
+// on top of the current committed tree for this batch of inserted queries.
 
 void run_local_spr_batch_refinement(LocalSprBatchRunContext& ctx) {
     if (ctx.inserted_names.empty()) {

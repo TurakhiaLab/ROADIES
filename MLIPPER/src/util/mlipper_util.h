@@ -2,12 +2,24 @@
 #include <cstdlib>   // abort
 #include <csignal>   // raise, SIGTRAP
 #include <cuda_runtime.h>
+#include <algorithm>
+#include <chrono>
 #include <cstdint>
+#include <cstring>
 #include <cmath>
+#include <cctype>
+#include <filesystem>
+#include <iomanip>
+#include <iostream>
 #include <string>
 #include <stdexcept>
 #include <cstddef>
+#include <sstream>
+#include <thread>
 #include <vector>
+#include <fcntl.h>
+#include <sys/file.h>
+#include <unistd.h>
 #include "tree/tree.hpp"
 
 // Branch length defaults to match epa-ng constants.
@@ -55,6 +67,269 @@ inline void set_double_env_if_specified(const char* name, double value) {
 }
 
 } // namespace env
+
+namespace gpu {
+
+struct DeviceReservation {
+    int device = -1;
+    int fd = -1;
+    std::string bus_id;
+};
+
+inline std::string trim_ascii_copy(std::string value);
+inline std::string normalize_pci_bus_id_or_throw(const std::string& raw_bus_id);
+
+inline int visible_device_count() {
+    int count = 0;
+    const cudaError_t err = cudaGetDeviceCount(&count);
+    if (err == cudaErrorNoDevice) {
+        return 0;
+    }
+    if (err != cudaSuccess) {
+        throw std::runtime_error(
+            std::string("cudaGetDeviceCount failed: ") + cudaGetErrorString(err));
+    }
+    return count;
+}
+
+inline int current_device_or_throw() {
+    int device = -1;
+    const cudaError_t err = cudaGetDevice(&device);
+    if (err != cudaSuccess) {
+        throw std::runtime_error(
+            std::string("cudaGetDevice failed: ") + cudaGetErrorString(err));
+    }
+    return device;
+}
+
+inline void set_device_or_throw(int device) {
+    const cudaError_t err = cudaSetDevice(device);
+    if (err != cudaSuccess) {
+        std::ostringstream oss;
+        oss << "cudaSetDevice(" << device << ") failed: "
+            << cudaGetErrorString(err);
+        throw std::runtime_error(oss.str());
+    }
+}
+
+inline cudaDeviceProp device_properties_or_throw(int device) {
+    cudaDeviceProp props{};
+    const cudaError_t err = cudaGetDeviceProperties(&props, device);
+    if (err != cudaSuccess) {
+        std::ostringstream oss;
+        oss << "cudaGetDeviceProperties(" << device << ") failed: "
+            << cudaGetErrorString(err);
+        throw std::runtime_error(oss.str());
+    }
+    return props;
+}
+
+inline cudaDeviceProp current_device_properties_or_throw() {
+    return device_properties_or_throw(current_device_or_throw());
+}
+
+inline std::string device_bus_id_or_throw(int device) {
+    char bus_id[32] = {};
+    const cudaError_t err = cudaDeviceGetPCIBusId(
+        bus_id,
+        static_cast<int>(sizeof(bus_id)),
+        device);
+    if (err != cudaSuccess) {
+        std::ostringstream oss;
+        oss << "cudaDeviceGetPCIBusId(" << device << ") failed: "
+            << cudaGetErrorString(err);
+        throw std::runtime_error(oss.str());
+    }
+    return normalize_pci_bus_id_or_throw(bus_id);
+}
+
+inline std::string gpu_lock_dir() {
+    const char* env_dir = std::getenv("MLIPPER_GPU_LOCK_DIR");
+    if (env_dir && env_dir[0]) {
+        return std::string(env_dir);
+    }
+    return "/tmp/mlipper_gpu_locks";
+}
+
+inline int gpu_auto_poll_ms() {
+    const char* env_ms = std::getenv("MLIPPER_GPU_AUTO_POLL_MS");
+    if (env_ms && env_ms[0]) {
+        char* end = nullptr;
+        const long parsed = std::strtol(env_ms, &end, 10);
+        if (end && *end == '\0' && parsed > 0 && parsed <= 60000L) {
+            return static_cast<int>(parsed);
+        }
+    }
+    return 1000;
+}
+
+inline std::string normalize_pci_bus_id_or_throw(const std::string& raw_bus_id) {
+    const std::string value = trim_ascii_copy(raw_bus_id);
+    const size_t first_colon = value.find(':');
+    const size_t second_colon =
+        (first_colon == std::string::npos) ? std::string::npos : value.find(':', first_colon + 1);
+    const size_t dot =
+        (second_colon == std::string::npos) ? std::string::npos : value.find('.', second_colon + 1);
+    if (first_colon == std::string::npos ||
+        second_colon == std::string::npos ||
+        dot == std::string::npos) {
+        throw std::runtime_error("Invalid PCI bus id format: '" + raw_bus_id + "'");
+    }
+
+    const unsigned long domain =
+        std::stoul(value.substr(0, first_colon), nullptr, 16);
+    const unsigned long bus =
+        std::stoul(value.substr(first_colon + 1, second_colon - first_colon - 1), nullptr, 16);
+    const unsigned long device =
+        std::stoul(value.substr(second_colon + 1, dot - second_colon - 1), nullptr, 16);
+    const unsigned long function =
+        std::stoul(value.substr(dot + 1), nullptr, 16);
+
+    std::ostringstream oss;
+    oss << std::hex << std::nouppercase << std::setfill('0')
+        << std::setw(8) << domain
+        << ":" << std::setw(2) << bus
+        << ":" << std::setw(2) << device
+        << "." << function;
+    return oss.str();
+}
+
+inline std::string trim_ascii_copy(std::string value) {
+    const auto is_space = [](unsigned char ch) {
+        return std::isspace(ch) != 0;
+    };
+    value.erase(
+        value.begin(),
+        std::find_if_not(
+            value.begin(),
+            value.end(),
+            is_space));
+    value.erase(
+        std::find_if_not(
+            value.rbegin(),
+            value.rend(),
+            is_space).base(),
+        value.end());
+    return value;
+}
+
+inline std::string sanitize_lock_token(std::string token) {
+    for (char& ch : token) {
+        const unsigned char byte = static_cast<unsigned char>(ch);
+        if (!((byte >= '0' && byte <= '9') ||
+              (byte >= 'A' && byte <= 'Z') ||
+              (byte >= 'a' && byte <= 'z'))) {
+            ch = '_';
+        }
+    }
+    return token;
+}
+
+inline std::string device_lock_path_or_throw(const std::string& bus_id) {
+    const std::filesystem::path lock_dir(gpu_lock_dir());
+    std::error_code ec;
+    std::filesystem::create_directories(lock_dir, ec);
+    if (ec) {
+        throw std::runtime_error(
+            "Failed to create GPU lock directory '" + lock_dir.string() +
+            "': " + ec.message());
+    }
+    return (lock_dir / (sanitize_lock_token(bus_id) + ".lock")).string();
+}
+
+inline int open_lock_file_or_throw(const std::string& lock_path) {
+    const int fd = ::open(lock_path.c_str(), O_RDWR | O_CREAT, 0666);
+    if (fd < 0) {
+        std::ostringstream oss;
+        oss << "open(" << lock_path << ") failed: " << std::strerror(errno);
+        throw std::runtime_error(oss.str());
+    }
+    return fd;
+}
+
+inline bool try_reserve_device(
+    int device,
+    DeviceReservation* reservation_out) {
+    if (reservation_out == nullptr) {
+        throw std::runtime_error("try_reserve_device requires a non-null output pointer.");
+    }
+
+    DeviceReservation reservation{};
+    reservation.device = device;
+    reservation.bus_id = device_bus_id_or_throw(device);
+    const std::string lock_path = device_lock_path_or_throw(reservation.bus_id);
+    reservation.fd = open_lock_file_or_throw(lock_path);
+
+    if (::flock(reservation.fd, LOCK_EX | LOCK_NB) == 0) {
+        *reservation_out = reservation;
+        return true;
+    }
+
+    const int lock_errno = errno;
+    ::close(reservation.fd);
+    if (lock_errno == EWOULDBLOCK || lock_errno == EAGAIN) {
+        return false;
+    }
+
+    std::ostringstream oss;
+    oss << "flock(" << lock_path << ") failed: "
+        << std::strerror(lock_errno);
+    throw std::runtime_error(oss.str());
+}
+
+inline DeviceReservation reserve_specific_device_or_throw(int device) {
+    DeviceReservation reservation{};
+    if (try_reserve_device(device, &reservation)) {
+        return reservation;
+    }
+
+    const cudaDeviceProp props = device_properties_or_throw(device);
+    const std::string bus_id = device_bus_id_or_throw(device);
+    std::ostringstream oss;
+    oss << "CUDA device " << device << " (" << props.name
+        << ", PCI " << bus_id
+        << ") is already reserved by another MLIPPER process.";
+    throw std::runtime_error(oss.str());
+}
+
+inline DeviceReservation reserve_any_visible_device_or_wait_or_throw() {
+    const int device_count = visible_device_count();
+    if (device_count <= 0) {
+        throw std::runtime_error("No CUDA devices are visible.");
+    }
+
+    const int poll_ms = gpu_auto_poll_ms();
+    bool announced_wait = false;
+
+    while (true) {
+        for (int device = 0; device < device_count; ++device) {
+            DeviceReservation reservation{};
+            if (try_reserve_device(device, &reservation)) {
+                return reservation;
+            }
+        }
+
+        if (!announced_wait) {
+            std::cerr
+                << "All " << device_count
+                << " visible CUDA devices are currently reserved by other MLIPPER processes; "
+                << "waiting for a free GPU...\n";
+            announced_wait = true;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(poll_ms));
+    }
+}
+
+inline void release_device_reservation(DeviceReservation* reservation) {
+    if (reservation == nullptr || reservation->fd < 0) {
+        return;
+    }
+    ::close(reservation->fd);
+    reservation->fd = -1;
+}
+
+} // namespace gpu
 } // namespace mlipper
 
 __host__ __device__ inline double effective_split_branch_min(
@@ -172,41 +447,41 @@ inline unsigned int ceil_log2_u32(unsigned int x) {
 
 // ===== Device-side CLV helpers (inlined for reuse across CUDA units) =====
 __device__ __forceinline__ size_t per_node_span(const DeviceTree& D) {
-    return (size_t)D.sites * (size_t)D.rate_cats * (size_t)D.states;
+    return D.sites * static_cast<size_t>(D.rate_cats) * static_cast<size_t>(D.states);
 }
 
 __device__ __forceinline__ size_t scaler_span(const DeviceTree& D) {
     if (D.per_rate_scaling) {
-        return (size_t)D.sites * (size_t)D.rate_cats;
+        return D.sites * static_cast<size_t>(D.rate_cats);
     }
-    return (size_t)D.sites;
+    return D.sites;
 }
 
 __device__ __forceinline__ size_t scaler_site_offset(
     const DeviceTree& D,
-    unsigned int site)
+    size_t site)
 {
     if (D.per_rate_scaling) {
-        return (size_t)site * (size_t)D.rate_cats;
+        return site * static_cast<size_t>(D.rate_cats);
     }
-    return (size_t)site;
+    return site;
 }
 
 __device__ __forceinline__ unsigned int* scaler_ptr_for_node(
     unsigned int* base,
     const DeviceTree& D,
     int node_id,
-    unsigned int site)
+    size_t site)
 {
     if (!base) return nullptr;
     if (node_id < 0 || node_id >= D.capacity_N) return nullptr;
-    return base + (size_t)node_id * scaler_span(D) + scaler_site_offset(D, site);
+    return base + static_cast<size_t>(node_id) * scaler_span(D) + scaler_site_offset(D, site);
 }
 
 __device__ __forceinline__ unsigned int* up_scaler_ptr(
     const DeviceTree& D,
     int node_id,
-    unsigned int site)
+    size_t site)
 {
     return scaler_ptr_for_node(D.d_site_scaler_up, D, node_id, site);
 }
@@ -214,7 +489,7 @@ __device__ __forceinline__ unsigned int* up_scaler_ptr(
 __device__ __forceinline__ unsigned int* down_scaler_ptr(
     const DeviceTree& D,
     int node_id,
-    unsigned int site)
+    size_t site)
 {
     return scaler_ptr_for_node(D.d_site_scaler_down, D, node_id, site);
 }
@@ -222,7 +497,7 @@ __device__ __forceinline__ unsigned int* down_scaler_ptr(
 __device__ __forceinline__ unsigned int* mid_scaler_ptr(
     const DeviceTree& D,
     int node_id,
-    unsigned int site)
+    size_t site)
 {
     return scaler_ptr_for_node(D.d_site_scaler_mid, D, node_id, site);
 }
@@ -230,7 +505,7 @@ __device__ __forceinline__ unsigned int* mid_scaler_ptr(
 __device__ __forceinline__ unsigned int* mid_base_scaler_ptr(
     const DeviceTree& D,
     int node_id,
-    unsigned int site)
+    size_t site)
 {
     return scaler_ptr_for_node(D.d_site_scaler_mid_base, D, node_id, site);
 }
@@ -252,20 +527,20 @@ __device__ __forceinline__ T* clv_read_pool_base(const DeviceTree& D, const Node
 template <typename T>
 __device__ __forceinline__ T* clv_write_ptr_for_node(const DeviceTree& D, const NodeOpInfo& op, int node_id) {
     T* base = clv_write_pool_base<T>(D, op);
-    return base ? base + (size_t)node_id * per_node_span(D) : nullptr;
+    return base ? base + static_cast<size_t>(node_id) * per_node_span(D) : nullptr;
 }
 
 template <typename T>
 __device__ __forceinline__ T* clv_read_ptr_for_node(const DeviceTree& D, const NodeOpInfo& op, int node_id) {
     T* base = clv_read_pool_base<T>(D, op);
-    return base ? base + (size_t)node_id * per_node_span(D) : nullptr;
+    return base ? base + static_cast<size_t>(node_id) * per_node_span(D) : nullptr;
 }
 
 // Variant when the pool is implicitly the "up" pool (used in derivative helpers).
 template <typename T>
 __device__ __forceinline__ T* clv_read_ptr_for_node(const DeviceTree& D, int node_id) {
     T* base = reinterpret_cast<T*>(D.d_clv_up);
-    return base ? base + (size_t)node_id * per_node_span(D) : nullptr;
+    return base ? base + static_cast<size_t>(node_id) * per_node_span(D) : nullptr;
 }
 
 __device__ __forceinline__ unsigned int* site_scaler_ptr_base(

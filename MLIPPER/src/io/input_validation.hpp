@@ -1,12 +1,30 @@
 #pragma once
 
 #include <filesystem>
+#include <stdexcept>
 #include <string>
 
 #include "io/parse_file.hpp"
 
 namespace mlipper {
 namespace input {
+
+class CliError : public std::runtime_error {
+public:
+    using std::runtime_error::runtime_error;
+};
+
+class ValidationError : public CliError {
+public:
+    ValidationError(const std::string& option_name, const std::string& message)
+        : CliError(option_name + ": " + message) {}
+};
+
+class RequiredError : public CliError {
+public:
+    explicit RequiredError(const std::string& requirement)
+        : CliError(requirement + " is required") {}
+};
 
 std::string read_file_to_string(const std::string& path);
 

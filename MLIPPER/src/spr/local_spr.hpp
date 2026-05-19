@@ -23,7 +23,7 @@ struct LocalSprBatchRunContext {
     bool per_rate_scaling = false;
     bool profile_batch_timing = false;
     bool local_spr_fast = false;
-    int local_spr_radius = 0;
+    int local_spr_radius = 4;
     int local_spr_cluster_threshold = 0;
     int local_spr_topk_per_unit = 0;
     bool local_spr_dynamic_validation_conflicts = false;

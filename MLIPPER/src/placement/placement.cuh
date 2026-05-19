@@ -28,8 +28,6 @@ struct PlacementResult {
     // This stores the jplace distal coordinate for the chosen edge.
     double proximal_length = 0.0;
     double pendant_length = 0.0;
-    double gap_top2 = std::numeric_limits<double>::infinity();
-    double gap_top5 = std::numeric_limits<double>::infinity();
     struct RankedPlacement {
         int target_id = -1;
         double loglikelihood = 0.0;
@@ -41,29 +39,12 @@ struct PlacementResult {
     std::vector<RankedPlacement> top_placements;
 };
 
-struct PlacementPruneConfig {
-    bool enable_pruning = false;
-    int max_consecutive_drops = 2;
-    double drop_threshold = 0.0;
-    bool enable_small_frontier_fallback = false;
-    int small_frontier_threshold = 0;
-};
-
 PlacementResult PlacementEvaluationKernel(
     const DeviceTree& D,
     const NodeOpInfo* d_ops,
     int num_ops,
     int smoothing,
-    cudaStream_t stream);
-
-PlacementResult PlacementEvaluationKernelPreorderPruned(
-    const DeviceTree& D,
-    const TreeBuildResult& T,
-    const NodeOpInfo* d_ops,
-    int num_ops,
-    int smoothing,
-    const PlacementPruneConfig& prune_cfg,
     cudaStream_t stream,
-    int pseudo_root_id = -1);
+    bool enable_local_child_refine);
 
 #endif // TREE_GENERATION_TREE_PLACEMENT_CUH
