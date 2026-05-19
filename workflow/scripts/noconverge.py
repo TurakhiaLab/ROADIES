@@ -158,6 +158,11 @@ if __name__ == "__main__":
         action="store_true",
         help="specify if you want to update your tree or grow your tree in placement mode",
     )
+    parser.add_argument(
+        "--no-clean",
+        action="store_true",
+        help="skip deleting the output directory before running (enables Snakemake resume)",
+    )
     # assigning argument values to variables
     args = vars(parser.parse_args())
     config_path = args["config"]
@@ -166,6 +171,7 @@ if __name__ == "__main__":
     deep_mode = args["deep"]
     gpu = args["gpu"]
     grow = args["grow"]
+    no_clean = args["no_clean"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
@@ -181,9 +187,10 @@ if __name__ == "__main__":
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
     ref_path = config["REF_DIR"]
-    os.system("rm -r {0}".format(roadies_dir))
-    os.system("mkdir {0}".format(roadies_dir))
-    os.system("rm {0}".format('sampling_output.txt'))
+    if not no_clean:
+        os.system("rm -r {0}".format(roadies_dir))
+        os.system("mkdir {0}".format(roadies_dir))
+        os.system("rm {0}".format('sampling_output.txt'))
     sys.setrecursionlimit(2000)
     os.system("snakemake --unlock")
     # initialize lists for runs and distances

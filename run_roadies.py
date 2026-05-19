@@ -26,6 +26,9 @@ parser.add_argument("--gpu", type=int, default=0,
 parser.add_argument("--grow", action="store_true",
                     help="Specify if you want to grow your tree or if you want to update your tree in placement mode")
 
+parser.add_argument("--no-clean", action="store_true",
+                    help="Skip deleting the output directory before running (enables Snakemake resume)")
+
 args = parser.parse_args()
 
 # Pick script
@@ -45,6 +48,9 @@ if args.deep:
 
 if args.grow:
     command.append("--grow")
+
+if args.no_clean:
+    command.append("--no-clean")
 
 print("Running:", " ".join(command))
 subprocess.run(command, check=True)

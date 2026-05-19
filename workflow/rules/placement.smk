@@ -28,7 +28,7 @@ rule pasta:
 		roadies_root = lambda wildcards: os.path.abspath(os.path.join(workflow.basedir, ".."))
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
-	threads: lambda wildcards: int(config.get("num_threads", 8))
+	threads: lambda wildcards: int(16)
 	shell:
 		'''
 		if [[ `grep -n '>' {input.input_sequence} | wc -l` -gt 0 ]]

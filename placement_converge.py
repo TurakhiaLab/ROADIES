@@ -1,4 +1,3 @@
-import os
 import csv
 import subprocess
 import time
@@ -57,10 +56,15 @@ def parse_args():
         default=0,
         help="Number of GPU devices to use (default: 0, CPU only)",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume from the last completed iteration (reads time_stamps.csv)",
+    )
     return parser.parse_args()
 
 
-def run_roadies(roadies_script, mode, config_file, cores, gpu):
+def run_roadies(roadies_script, mode, config_file, cores, gpu, no_clean=False):
     cmd = [
         "python3", roadies_script,
         "--mode", mode,
@@ -69,11 +73,13 @@ def run_roadies(roadies_script, mode, config_file, cores, gpu):
         "--noconverge",
         "--gpu", str(gpu),
     ]
+    if no_clean:
+        cmd.append("--no-clean")
     print(f"Running ROADIES: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
 
-def update_gene_count(config_file, iteration, base_gene_count=100):
+def update_gene_count(config_file, iteration, base_gene_count=1000):
     with open(config_file, "r") as f:
         config = yaml.safe_load(f)
 
@@ -121,7 +127,7 @@ def update_config_yaml(config_file, out_dir=None, species=None, ref_dir=None):
         yaml.safe_dump(config, f)
 
 
-def combine_iter(out_dir, iteration, run, cores, out_base_dir, roadies_dir):
+def combine_iter(out_dir, run, cores, out_base_dir, roadies_dir):
     master_gt = Path(out_dir) / "master_gt.nwk"
     master_map = Path(out_dir) / "master_map.txt"
     run_dir = Path(out_dir) / run
@@ -156,6 +162,36 @@ def combine_iter(out_dir, iteration, run, cores, out_base_dir, roadies_dir):
     shutil.copy(run_dir / f"{run}_stats.nwk", Path(out_base_dir) / roadies_dir / "roadies_stats.nwk")
 
 
+def find_resume_point(out_base_dir):
+    """Determine the next iteration to run and restore high_support_list from time_stamps.csv.
+
+    A timestamp row is written only after combine_iter completes, so iterations
+    with backbone-done-but-placement-not-done will have no entry and are correctly
+    returned as the start iteration (Snakemake skips already-done backbone steps).
+    """
+    timestamps_file = Path(out_base_dir) / "time_stamps.csv"
+    if not timestamps_file.exists():
+        return 1, []
+
+    high_support_list = []
+    last_iter = 0
+    with open(timestamps_file, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split(",")
+            if len(parts) >= 2:
+                iter_num = int(parts[0])
+                pct = float(parts[1])
+                last_iter = max(last_iter, iter_num)
+                while len(high_support_list) < iter_num:
+                    high_support_list.append(0.0)
+                high_support_list[iter_num - 1] = pct
+
+    return last_iter + 1, high_support_list
+
+
 def main():
     args = parse_args()
 
@@ -173,24 +209,31 @@ def main():
 
     Path(out_base_dir, roadies_dir).mkdir(parents=True, exist_ok=True)
 
-    iteration = 1
+    if args.resume:
+        iteration, high_support_list = find_resume_point(out_base_dir)
+        print(f"Resuming from iteration {iteration} (found {iteration - 1} completed iteration(s))")
+    else:
+        iteration = 1
+        high_support_list = []
+
+    no_clean = args.resume
     time_stamps = [time.time()]
-    high_support_list = []
 
     while iteration <= max_iterations:
         print(f"\n=== ITERATION {iteration} ===")
 
-        update_gene_count(config_file, iteration, base_gene_count=100)
+        update_gene_count(config_file, iteration, base_gene_count=1000)
 
         backbone_out_dir = f"{out_base_dir}/iter_{iteration}_backbone"
         update_config_yaml(config_file, out_dir=backbone_out_dir, species=backbone_species, ref_dir=None)
-        run_roadies(roadies_script, mode="accurate", config_file=config_file, cores=cores, gpu=gpu)
+        run_roadies(roadies_script, mode="accurate", config_file=config_file, cores=cores, gpu=gpu, no_clean=no_clean)
 
         placement_out_dir = f"{out_base_dir}/iter_{iteration}_placement"
         update_config_yaml(config_file, out_dir=placement_out_dir, species=query_species, ref_dir=backbone_out_dir)
-        run_roadies(roadies_script, mode="placement", config_file=config_file, cores=cores, gpu=gpu)
+        run_roadies(roadies_script, mode="placement", config_file=config_file, cores=cores, gpu=gpu, no_clean=no_clean)
 
-        combine_iter(out_base_dir, iteration, f"iter_{iteration}_placement", cores, out_base_dir, roadies_dir)
+        combine_iter(out_base_dir, f"iter_{iteration}_placement", cores, out_base_dir, roadies_dir)
+        no_clean = False  # only skip cleanup for the first resumed iteration
 
         freq_file = "freqQuad.csv"
         percent_high_support = compute_percent_high_support(freq_file, support_thr)
