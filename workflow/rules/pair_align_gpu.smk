@@ -15,11 +15,11 @@ rule kegalign:
         config["OUT_DIR"] + "/benchmarks/{sample}.lastz.txt"
     threads: lambda wildcards: int(48)
     resources:
-        gpu = int(config.get("NUM_GPU", 2))
+        gpu = 4
     params:
         align_dir = config["OUT_DIR"] + "/alignments",
         scores_path = lambda wildcards: os.path.join(workflow.basedir, "..", config.get("SCORES", "HOXD55.q")),
-        num_gpu = config.get("NUM_GPU", 2)
+        num_gpu = 4
     conda:
         "../envs/kegalign.yaml"
     shell:
@@ -42,7 +42,7 @@ rule kegalign:
 
 		awk '{{
 		sub(/ 2> /,
-			" --coverage=85 --continuity=85 --filter=identity:65 --ambiguous=iupac --step=1 --queryhspbest=20 --scores={params.scores_path} 2> ");
+			" --coverage=85 --continuity=85 --filter=identity:65 --ambiguous=iupac --step=1 --queryhspbest=20 2> ");
 			print
 		}}' {wildcards.sample}_lastz-commands.txt \
 		> {wildcards.sample}_lastz-commands.final.sh

@@ -20,7 +20,7 @@ mkdir $workDir/iter0_tree_output
 
 touch $workDir/iter0_msa.aln
 
-/home/ang037@AD.UCSD.EDU/TWILIGHT/bin/twilight -a $ref_msa -i $seqFile -o $workDir/iter0_msa.aln -C $threads --match 40 --mismatch -7 --transition 17 --gap-open -140 --gap-extend -10 --overwrite
+/home/ubuntu/TWILIGHT/bin/twilight -a $ref_msa -i $seqFile -o $workDir/iter0_msa.aln -C $threads --match 40 --mismatch -7 --transition 17 --gap-open -140 --gap-extend -10 --overwrite
 
 TIP_QUERY=$(mktemp)
 TIP_REF=$(mktemp)
@@ -59,13 +59,13 @@ extract_sequences() {
 extract_sequences "$TIP_QUERY" "$workDir/iter0_msa.aln" "$OUT_QUERY"
 extract_sequences "$TIP_REF" "$workDir/iter0_msa.aln" "$OUT_REF"
 
-epa-ng --ref-msa $workDir/iter0_output_msa_from_ref.fa --tree $ref_gene_tree --query $workDir/iter0_output_msa_from_query.fa --model $ref_model --threads $2 --outdir $workDir/iter0_tree_output --redo #--no-heur
+/home/ubuntu/epa-ng/bin/epa-ng --ref-msa $workDir/iter0_output_msa_from_ref.fa --tree $ref_gene_tree --query $workDir/iter0_output_msa_from_query.fa --model $ref_model --threads $2 --outdir $workDir/iter0_tree_output --redo #--no-heur
 
-gappa examine graft --jplace-path $workDir/iter0_tree_output/epa_result.jplace --out-dir $workDir/iter0_tree_output --fully-resolve --allow-file-overwriting
+/home/ubuntu/gappa/bin/gappa examine graft --jplace-path $workDir/iter0_tree_output/epa_result.jplace --out-dir $workDir/iter0_tree_output --fully-resolve --allow-file-overwriting
 
 cat $seqFile $refseqFile > $workDir/iter1_input.fa
 
-/home/ang037@AD.UCSD.EDU/TWILIGHT/bin/twilight -t $workDir/iter0_tree_output/epa_result.newick -i $workDir/iter1_input.fa -o $output_msa -C $threads --match 40 --mismatch -7 --transition 17 --gap-open -140 --gap-extend -10 --overwrite
+/home/ubuntu/TWILIGHT/bin/twilight -t $workDir/iter0_tree_output/epa_result.newick -i $workDir/iter1_input.fa -o $output_msa -C $threads --match 40 --mismatch -7 --transition 17 --gap-open -140 --gap-extend -10 --overwrite
 
 OUT_QUERY_ITR1="$workDir/iter1_output_msa_from_query.fa"
 OUT_REF_ITR1="$workDir/iter1_output_msa_from_ref.fa"
@@ -78,7 +78,7 @@ extract_sequences "$TIP_REF" "$output_msa" "$OUT_REF_ITR1"
 
 # /home/ang037@AD.UCSD.EDU/conda/pkgs/raxml-ng-1.2.2-h6747034_2/bin/raxml-ng --msa $output_msa --model GTR+G+F --threads auto{{$threads}} --tree-constraint $ref_gene_tree --prefix $workDir/iter1_tree_output/gene_tree --redo --blopt nr_safe
 # /home/ang037@AD.UCSD.EDU/raxml-ng --msa $output_msa --model GTR+G+F --threads auto{{$threads}} --workers 1 --tree-constraint $ref_gene_tree --prefix $workDir/iter1_tree_output/gene_tree --stop-rule KH --tree pars{5} --redo
-/${roadies_root}/MLIPPER/MLIPPER --tree-alignment $workDir/iter1_output_msa_from_ref.fa --query-alignment $workDir/iter1_output_msa_from_query.fa --tree $ref_gene_tree --best-model $ref_model --commit-to-tree $output_gene_trees --local-spr --batch-insert-size 5 --local-spr-radius 4 --local-spr-rounds 1
+/${roadies_root}/MLIPPER/MLIPPER --tree-alignment $workDir/iter1_output_msa_from_ref.fa --query-alignment $workDir/iter1_output_msa_from_query.fa --tree $ref_gene_tree --best-model $ref_model --commit-to-tree $output_gene_trees --local-spr --batch-insert-size 5 --local-spr-radius 4 --local-spr-rounds 1 --gpu-auto
 
 # cp $workDir/iter1_tree_output/gene_tree.raxml.bestTree $output_gene_trees
 

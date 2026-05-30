@@ -2,8 +2,8 @@ ALL_OUT_DIR: converge_files
 CONTINUITY: 85
 COVERAGE: 85
 FILTERFRAGMENTS: 0.5
-GENE_COUNT: 100
-GENOMES: /data/ang037/roadies-datasets/Output_folder_100_taxa_35_MB/query_genomes/
+GENE_COUNT: 1000
+GENOMES: /data/mammals_query
 GROUP_CSV: group_file.csv
 IDENTITY: 65
 IDENTITY_DEEP: 40
@@ -11,9 +11,9 @@ LENGTH: 500
 MASKSITES: 0.02
 MAX_DUP: 10
 NUM_INSTANCES: 16
-OUT_DIR: /home/ang037@AD.UCSD.EDU/ROADIES/roadies_iterations/iter_1_placement
+OUT_DIR: /home/ubuntu/ROADIES/roadies_iterations/iter_1_placement
 REFERENCE: null
-REF_DIR: /home/ang037@AD.UCSD.EDU/ROADIES/roadies_iterations/iter_1_backbone
+REF_DIR: /home/ubuntu/ROADIES/roadies_iterations/iter_1_backbone
 SCORES: HOXD55.q
 STEPS: 1
 SUPPORT_THRESHOLD: 0.95

@@ -1,7 +1,17 @@
 # ==========================================
 # CUDA
 # ==========================================
-CUDA_HOME ?= /usr/local/cuda-12
+# Prefer /usr/local/cuda (distro symlink to current default), then fall back
+# to the highest versioned /usr/local/cuda-X.Y directory found on the system.
+CUDA_HOME ?= $(shell \
+    if [ -d /usr/local/cuda ]; then \
+        echo /usr/local/cuda; \
+    else \
+        ls -d /usr/local/cuda-[0-9]* 2>/dev/null | sort -t- -k2 -V | tail -1; \
+    fi)
+ifeq ($(CUDA_HOME),)
+$(error No CUDA installation found under /usr/local/cuda*. Set CUDA_HOME explicitly, e.g.: make CUDA_HOME=/path/to/cuda)
+endif
 NVCC      := $(CUDA_HOME)/bin/nvcc
 CUDA_INC  := -I$(CUDA_HOME)/include
 CUDA_LIB  := -L$(CUDA_HOME)/lib64
@@ -29,8 +39,15 @@ BUILD_DIR ?= build
 # ==========================================
 # libpll
 # ==========================================
-PLL_INC_DIR ?= /usr/local/include
-PLL_LIB_DIR ?= /usr/local/lib
+# Prefer /usr/local (source/manual install), fall back to /usr (apt install).
+PLL_INC_DIR ?= $(shell \
+    if [ -f /usr/local/include/libpll/pll.h ]; then echo /usr/local/include; \
+    elif [ -f /usr/include/libpll/pll.h ];       then echo /usr/include; \
+    else echo /usr/local/include; fi)
+PLL_LIB_DIR ?= $(shell \
+    if [ -f /usr/local/lib/libpll.so ];                    then echo /usr/local/lib; \
+    elif [ -f /usr/lib/x86_64-linux-gnu/libpll.so ];       then echo /usr/lib/x86_64-linux-gnu; \
+    else echo /usr/local/lib; fi)
 PLL_LINK_FLAGS := -L$(PLL_LIB_DIR) -lpll
 
 # ==========================================

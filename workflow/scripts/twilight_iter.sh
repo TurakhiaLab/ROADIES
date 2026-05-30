@@ -15,6 +15,6 @@ rm mafft.out && rm $seqFile.tree
 
 # MSA Iter 1: TWILIGHT
 # twilight -i $seqFile -t $tempDir/tree_iter0.nwk -o $tempDir/msa_iter1.fa -C $threads --no-filtering --check
-/home/ang037@AD.UCSD.EDU/TWILIGHT/bin/twilight -i $seqFile -t $tempDir/tree_iter0.nwk -o $tempDir/msa_iter1.fa -C $threads --match 40 --mismatch -7 --transition 17 --gap-open -140 --gap-extend -10 --overwrite
+/home/ubuntu/TWILIGHT/bin/twilight -i $seqFile -t $tempDir/tree_iter0.nwk -o $tempDir/msa_iter1.fa -C $threads --match 40 --mismatch -7 --transition 17 --gap-open -140 --gap-extend -10 --overwrite
 
 cp $tempDir/msa_iter1.fa $output 

@@ -35,8 +35,8 @@ def parse_args():
     parser.add_argument(
         "--cores",
         type=int,
-        default=32,
-        help="Number of cores for ASTRAL (default: 32)",
+        default=48,
+        help="Number of cores (default: 48)",
     )
     parser.add_argument(
         "--support-threshold",
@@ -128,38 +128,46 @@ def update_config_yaml(config_file, out_dir=None, species=None, ref_dir=None):
 
 
 def combine_iter(out_dir, run, cores, out_base_dir, roadies_dir):
-    master_gt = Path(out_dir) / "master_gt.nwk"
-    master_map = Path(out_dir) / "master_map.txt"
     run_dir = Path(out_dir) / run
+    astral_out = run_dir / f"{run}.nwk"
+    astral_stats_out = run_dir / f"{run}_stats.nwk"
 
-    with open(run_dir / "genetrees/gene_tree_merged.nwk") as infile, open(master_gt, "a") as outfile:
-        for line in infile:
-            outfile.write(line)
+    if not astral_out.exists():
+        master_gt = Path(out_dir) / "master_gt.nwk"
+        master_map = Path(out_dir) / "master_map.txt"
+        append_marker = run_dir / f"{run}.append_done"
 
-    with open(run_dir / "genes/mapping_combined.txt") as infile, open(master_map, "a") as outfile:
-        for line in infile:
-            outfile.write(line)
+        if not append_marker.exists():
+            with open(run_dir / "genetrees/gene_tree_merged.nwk") as infile, open(master_gt, "a") as outfile:
+                outfile.write(infile.read())
+            with open(run_dir / "genes/mapping_combined.txt") as infile, open(master_map, "a") as outfile:
+                outfile.write(infile.read())
+            append_marker.touch()
 
-    astral_cmd_main = [
-        "astral-pro3",
-        "-t", str(cores),
-        "-i", str(master_gt),
-        "-o", str(run_dir / f"{run}.nwk"),
-        "-a", str(master_map),
-    ]
-    astral_cmd_stats = [
-        "astral-pro3",
-        "-t", str(cores),
-        "-u", "3",
-        "-i", str(master_gt),
-        "-o", str(run_dir / f"{run}_stats.nwk"),
-        "-a", str(master_map),
-    ]
-    subprocess.run(astral_cmd_main, check=True)
-    subprocess.run(astral_cmd_stats, check=True)
+        subprocess.run(["astral-pro3", "-t", str(cores), "-i", str(master_gt),
+                        "-o", str(astral_out), "-a", str(master_map)], check=True)
+        subprocess.run(["astral-pro3", "-t", str(cores), "-u", "3", "-i", str(master_gt),
+                        "-o", str(astral_stats_out), "-a", str(master_map)], check=True)
 
-    shutil.copy(run_dir / f"{run}.nwk", Path(out_base_dir) / roadies_dir / "roadies.nwk")
-    shutil.copy(run_dir / f"{run}_stats.nwk", Path(out_base_dir) / roadies_dir / "roadies_stats.nwk")
+    shutil.copy(astral_out, Path(out_base_dir) / roadies_dir / "roadies.nwk")
+    shutil.copy(astral_stats_out, Path(out_base_dir) / roadies_dir / "roadies_stats.nwk")
+
+
+def sampling_output_is_from_query(query_dir):
+    """Return True if sampling_output.txt exists and its first sample belongs to the query directory."""
+    path = Path("sampling_output.txt")
+    if not path.exists():
+        return False
+    query_path = Path(query_dir)
+    section = None
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith("#"):
+                section = line[1:].strip()
+            elif section == "SAMPLES" and line:
+                return bool(list(query_path.glob(f"{line}.fa*")))
+    return False
 
 
 def find_resume_point(out_base_dir):
@@ -216,7 +224,6 @@ def main():
         iteration = 1
         high_support_list = []
 
-    no_clean = args.resume
     time_stamps = [time.time()]
 
     while iteration <= max_iterations:
@@ -224,16 +231,39 @@ def main():
 
         update_gene_count(config_file, iteration, base_gene_count=1000)
 
+        # --- Backbone ---
         backbone_out_dir = f"{out_base_dir}/iter_{iteration}_backbone"
-        update_config_yaml(config_file, out_dir=backbone_out_dir, species=backbone_species, ref_dir=None)
-        run_roadies(roadies_script, mode="accurate", config_file=config_file, cores=cores, gpu=gpu, no_clean=no_clean)
+        backbone_done = Path(backbone_out_dir, "roadies.nwk").exists()
+        # Check for partial backbone before update_config_yaml creates the dir
+        backbone_partial = (
+            not backbone_done
+            and Path(backbone_out_dir).exists()
+            and any(Path(backbone_out_dir).iterdir())
+        )
+        if backbone_done:
+            print(f"[ITER {iteration}] Backbone already complete, skipping.")
+        else:
+            Path("sampling_output.txt").unlink(missing_ok=True)
+            update_config_yaml(config_file, out_dir=backbone_out_dir, species=backbone_species, ref_dir=None)
+            run_roadies(roadies_script, mode="accurate", config_file=config_file,
+                        cores=cores, gpu=gpu, no_clean=backbone_partial)
 
+        # --- Placement ---
         placement_out_dir = f"{out_base_dir}/iter_{iteration}_placement"
         update_config_yaml(config_file, out_dir=placement_out_dir, species=query_species, ref_dir=backbone_out_dir)
-        run_roadies(roadies_script, mode="placement", config_file=config_file, cores=cores, gpu=gpu, no_clean=no_clean)
+        placement_done = Path(placement_out_dir, "genetrees", "gene_tree_merged.nwk").exists()
+        if placement_done:
+            print(f"[ITER {iteration}] Placement already complete, skipping to combine.")
+        elif sampling_output_is_from_query(query_species):
+            print(f"[ITER {iteration}] Resuming mid-placement (query sampling_output.txt found).")
+            run_roadies(roadies_script, mode="placement", config_file=config_file,
+                        cores=cores, gpu=gpu, no_clean=True)
+        else:
+            Path("sampling_output.txt").unlink(missing_ok=True)
+            run_roadies(roadies_script, mode="placement", config_file=config_file,
+                        cores=cores, gpu=gpu, no_clean=False)
 
         combine_iter(out_base_dir, f"iter_{iteration}_placement", cores, out_base_dir, roadies_dir)
-        no_clean = False  # only skip cleanup for the first resumed iteration
 
         freq_file = "freqQuad.csv"
         percent_high_support = compute_percent_high_support(freq_file, support_thr)
