@@ -61,7 +61,7 @@ cd pasta
 python3 setup.py develop --user
 ```
 
-Also, in the `align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
+Also, in the `multi_align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
 
 - `pasta.py` with `python pasta/run_pasta.py`
 - `run_seqtools.py` with `python pasta/run_seqtools.py`
@@ -151,3 +151,6 @@ After successful setup (Setup complete message), your environment `roadies_env` 
 
 !!! Note
     If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
+
+!!! Note
+    `roadies_env.sh` also builds the additional tools needed for ROADIES_XP (TWILIGHT, and MLIPPER when CUDA and libpll are available). No extra installation steps are required to use `--mode placement`; GPU acceleration (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration) for details.

@@ -9,7 +9,6 @@ import shutil
 
 ROADIES_ROOT = Path(__file__).resolve().parent
 
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Iterative ROADIES backbone + placement pipeline"

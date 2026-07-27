@@ -38,6 +38,9 @@ Adjust other parameters listed in `config.yaml` as per specific user requirement
 | **NUM_INSTANCES** | Specify the number of instances for PASTA, LASTZ, MashTree and RAxML-NG to run in parallel. It is recommended to set the number of instances equal to (`--cores`/4) for optimal runtime. | 4 | 
 | **SCORES** | Set the alignment scores for LASTZ (needed when `--deep True` - details below). | `HOXD55.q` - file is provided along with the ROADIES package |
 
+!!! Note
+    ROADIES_XP (`--mode placement` and/or `--gpu`) adds two further parameters, **REF_DIR** and **GROUP_CSV** — see the [ROADIES_XP guide](roadies_xp.md#new-configyaml-parameters) for details.
+
 ## Step 3: Run the ROADIES pipeline
 
 Once the required installations are completed and the parameters are configured in `config.yaml` file, execute the following command (from ROADIES repo home directory):
@@ -55,10 +58,13 @@ There are multiple command line arguments through which user can change the mode
 | Argument | Description |
 | --- | --- |
 | `--cores` | Specify the number of cores |
-| `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced` or `fast`).`accurate` mode is the default mode. | 
+| `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced`, `fast`, or `placement`). `accurate` mode is the default mode. `placement` is a ROADIES_XP mode; see the [ROADIES_XP guide](roadies_xp.md). | 
 | `--noconverge` | Run ROADIES in non converge mode (for single iteration) if you know the optimal gene count to start with |
 | `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
 | `--deep` | Specify if ROADIES will evaluate deeper phylogeny. Set it to `True` or `False`. By default, its set to `False`. |
+| `--gpu` | *(ROADIES_XP)* Number of GPU devices to use; `0` (default) runs on CPU. Supported with `accurate`, `balanced`, and `placement` modes. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration). |
+| `--grow` | *(ROADIES_XP, placement mode only)* Constrain the output species tree to the backbone tree's topology instead of freely updating it. See [Grow vs. update](roadies_xp.md#grow-vs-update). |
+| `--no-clean` | Skip deleting the output directory before running, to resume an interrupted run via Snakemake's incomplete-job detection. |
 
 For example:
 

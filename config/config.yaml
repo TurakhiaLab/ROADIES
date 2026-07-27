@@ -1,20 +1,45 @@
-ALL_OUT_DIR: converge_files
-CONTINUITY: 85
-COVERAGE: 85
-FILTERFRAGMENTS: 0.5
-GENE_COUNT: 1000
-GENOMES: /data/mammals_query
-GROUP_CSV: group_file.csv
-IDENTITY: 65
-IDENTITY_DEEP: 40
+#This file configures the parameters for ROADIES / ROADIES_XP
+
+#Path for input genomes (in de novo modes) or query genomes (in placement mode)
+GENOMES: "test/test_data"
+#Reference tree (optional, default set as null)
+REFERENCE: NULL
+#Length of each of the genes
 LENGTH: 500
-MASKSITES: 0.02
+#Number of genes per iteration
+GENE_COUNT: 250
+#Minimum % uppercase for sampling valid genes
+UPPER_CASE: 0.90
+#ROADIES output directory for current iteration
+OUT_DIR: "output_files"
+#ROADIES output directory for all iterations (not needed in --noconverge option)
+ALL_OUT_DIR: "converge_files"
+#Minimum % match in LASTZ/KegAlign alignment
+IDENTITY: 65
+#Minimum % match in LASTZ/KegAlign alignment in deep mode - to capture deeper phylogeny
+IDENTITY_DEEP: 40
+#Minimum input sequence coverage in LASTZ/KegAlign alignment
+COVERAGE: 85
+#Minimum continuity of LASTZ/KegAlign alignments
+CONTINUITY: 85
+#Max number of gene copies from a genome in an alignment
 MAX_DUP: 10
-NUM_INSTANCES: 16
-OUT_DIR: /home/ubuntu/ROADIES/roadies_iterations/iter_1_placement
-REFERENCE: null
-REF_DIR: /home/ubuntu/ROADIES/roadies_iterations/iter_1_backbone
-SCORES: HOXD55.q
+#Number of steps in LASTZ/KegAlign sampling
 STEPS: 1
+#PASTA/TWILIGHT filtering parameters
+FILTERFRAGMENTS: 0.50
+MASKSITES: 0.02
+#Threshold for high support (not needed in --noconverge option)
 SUPPORT_THRESHOLD: 0.95
-UPPER_CASE: 0.9
+#Number of instances to run in parallel
+NUM_INSTANCES: 4
+#Scoring matrix (used in deep mode)
+SCORES: "HOXD55.q"
+#[ROADIES_XP/placement mode only] Directory of the backbone/reference iteration
+#(the OUT_DIR from a prior de novo or placement run) to place query genomes onto.
+#Not used in de novo modes (fast/balanced/accurate).
+REF_DIR: null
+#[Optional] CSV file with "species,group" columns used to bias gene sampling
+#towards under-represented lineages/clades. Leave unset or point to a
+#nonexistent path to sample uniformly across all input genomes.
+GROUP_CSV: ""

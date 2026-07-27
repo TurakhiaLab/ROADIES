@@ -25,7 +25,8 @@ rule pasta:
         ref_gene_tree = config["REF_DIR"]+"/genes/gene_{id}_filtered.fa.aln.raxml.bestTree",
         ref_model = config["REF_DIR"]+"/genes/gene_{id}_filtered.fa.aln.raxml.bestModel",
 		ref_sequences = config["REF_DIR"]+"/genes/gene_{id}.fa",
-		roadies_root = lambda wildcards: os.path.abspath(os.path.join(workflow.basedir, ".."))
+		roadies_root = lambda wildcards: os.path.abspath(os.path.join(workflow.basedir, "..")),
+		gpu = gpu
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
 	threads: lambda wildcards: int(16)
@@ -35,7 +36,7 @@ rule pasta:
 		then
 			if [[ -s {params.ref_gene_tree} ]]
 			then
-				./workflow/scripts/placement.sh {input.input_sequence} {threads} {params.workdir} {params.ref_msa} {params.ref_gene_tree} {params.ref_model} {params.msa} {output.gene_tree} {params.ref_sequences} {params.roadies_root}
+				./workflow/scripts/placement.sh {input.input_sequence} {threads} {params.workdir} {params.ref_msa} {params.ref_gene_tree} {params.ref_model} {params.msa} {output.gene_tree} {params.ref_sequences} {params.roadies_root} {params.gpu}
 
 			else
 				cp {params.ref_gene_tree} {output.gene_tree}

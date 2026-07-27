@@ -31,6 +31,7 @@
     - [Option 4: Install via Source Script](#script)
 - [Quick Start](#start)
 - [Running ROADIES on your own data](#runpipeline)
+- [ROADIES_XP: Placement Mode & GPU Acceleration](#xp)
 - [Citing ROADIES](#citation)
 
 <br>
@@ -38,6 +39,8 @@
 ## <a name="overview"></a> Introduction
 
 Welcome to the official repository of ROADIES, a novel pipeline for inferring phylogenetic species trees directly from raw genomic assemblies. ROADIES offers a fully automated, scalable, and easy-to-use solution, eliminating manual steps and allowing flexible control over the trade-off between accuracy and runtime.
+
+**ROADIES_XP** is an extension of ROADIES that adds GPU-accelerated alignment/tree-building and a *placement* mode for growing or updating an existing species tree with new genomes, without recomputing it from scratch. De novo tree inference (the original ROADIES pipeline published in PNAS) remains the default; ROADIES_XP's additional capabilities are opt-in via command-line arguments — see [ROADIES_XP: Placement Mode & GPU Acceleration](#xp) below. ROADIES_XP is being prepared as its own publication, distinct from (but building on) the original ROADIES PNAS paper.
 
 ### 🟡 For a detailed overview of ROADIES' features and configuration options, please visit our [Wiki](https://turakhialab.github.io/ROADIES/).
 
@@ -117,7 +120,7 @@ cd pasta
 python3 setup.py develop --user
 ```
 
-Also, in the `align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
+Also, in the `multi_align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
 
 - `pasta.py` with `python pasta/run_pasta.py`
 - `run_seqtools.py` with `python pasta/run_seqtools.py`
@@ -293,11 +296,54 @@ Final unrooted species tree (in Newick format) for individual iterations (latest
 
 <br>
 
+## <a name="xp"></a> ROADIES_XP: Placement Mode & GPU Acceleration
+
+ROADIES_XP extends the de novo pipeline above with two independent, opt-in capabilities:
+
+- **Placement mode**: grow or update an existing ("backbone") species tree with new query genomes, instead of re-inferring the whole tree from scratch.
+- **GPU acceleration**: swap in GPU-accelerated tools for the alignment and placement stages.
+
+De novo mode (`accurate` / `balanced` / `fast`, CPU-only) remains ROADIES' default behavior — nothing changes unless you opt into placement mode and/or GPU mode explicitly.
+
+| Stage | De novo (CPU) | De novo (GPU, `--gpu`) | Placement (CPU) | Placement (GPU, `--gpu`) |
+| --- | --- | --- | --- | --- |
+| Pairwise alignment | [LASTZ](https://lastz.github.io/lastz/) | [KegAlign](https://github.com/galaxyproject/KegAlign) | LASTZ | KegAlign |
+| Multiple sequence alignment | [PASTA](https://github.com/smirarab/pasta) | [TWILIGHT](https://github.com/TurakhiaLab/TWILIGHT) | TWILIGHT (query onto backbone) | TWILIGHT (query onto backbone) |
+| Gene tree building | RAxML-NG (unconstrained) | RAxML-NG (unconstrained) | RAxML-NG (`--tree-constraint`, backbone-constrained) | MLIPPER (GPU-accelerated placement onto backbone tree) |
+
+**Run in placement mode** (add `--mode placement`, and point `GENOMES`/`REF_DIR` in `config.yaml` at your query genomes and existing backbone output directory respectively):
+```bash
+python run_roadies.py --cores 16 --mode placement
+```
+
+**Run on GPU** (works with `accurate`, `balanced`, or `placement` modes; not `fast`):
+```bash
+python run_roadies.py --cores 16 --mode placement --gpu 1
+```
+
+**Grow vs. update an existing tree in placement mode**: by default, placement mode re-infers the combined species tree freely from backbone + query gene trees ("update"). Add `--grow` to instead constrain the result to the existing backbone topology while attaching the new query taxa ("grow"):
+```bash
+python run_roadies.py --cores 16 --mode placement --grow
+```
+
+**Iteratively grow a tree to convergence**: `placement_converge.py` automates repeated backbone-then-placement runs (analogous to ROADIES' own de novo convergence loop) until the tree stabilizes, given separate backbone and query genome directories:
+```bash
+python placement_converge.py --backbone /path/to/backbone_genomes --query /path/to/query_genomes --cores 16 --gpu 1
+```
+
+Building the GPU/placement tools (TWILIGHT, MLIPPER, epa-ng, gappa) is handled automatically by `roadies_env.sh` when the required build dependencies (CUDA, libpll) are available.
+
+### For full details on placement mode, GPU requirements, and new `config.yaml` parameters (`REF_DIR`, `GROUP_CSV`), refer to the [ROADIES_XP Wiki page](https://turakhialab.github.io/ROADIES/roadies_xp/)
+
+<br>
+
 ## <a name="citation"></a> Citing ROADIES
 
 If you use ROADIES in your research or publications, please cite the following paper:
 
 A. Gupta, S. Mirarab, & Y. Turakhia, Accurate, scalable, and fully automated inference of species trees from raw genome assemblies using ROADIES, Proc. Natl. Acad. Sci. U.S.A. 122 (19) e2500553122, [https://doi.org/10.1073/pnas.2500553122](https://doi.org/10.1073/pnas.2500553122) (2025).
+
+A manuscript describing ROADIES_XP (placement mode and GPU acceleration) is in preparation as a separate publication. Citation details will be added here once available.
 
 ### Accessing ROADIES output files
 

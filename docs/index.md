@@ -54,6 +54,9 @@ ROADIES supports multiple modes of operation based on various user requirements 
 !!! Note
     ROADIES also supports another mode of operation for datasets from deeper evolutionary timescales. If your datasets are from distant timescales, we recommend to switch on this mode (by adding extra argument `--deep True`; details mentioned in the [Usage](index.md#other-command-line-arguments) section).
 
+!!! Note
+    **ROADIES_XP** adds a fourth mode, `placement`, for growing or updating an existing species tree with new genomes instead of rebuilding it from scratch, plus optional GPU acceleration (`--gpu`). See the [ROADIES_XP guide](roadies_xp.md) for details.
+
 ## Convergence Mechanism
 
 The initial count of the genes is crucial to get the accurate species tree at the end. The number of genes sufficient for getting the accurate tree also varies with datasets. Hence, ROADIES incorporates an adaptive algorithm for establishing accurate trees by tracking its confident scores. It performs multiple iterations of the entire pipeline and stops if it gets the confident tree, otherwise it continues with more gene counts. The confidence of the tree is evaluated by the confidence of its branches (or local posterior probability). The tree having most of the confident branches with high posterior probability are considered to be confident and stable. 

@@ -37,3 +37,6 @@ python run_roadies.py --cores 16 --noconverge
 !!! Note
     ROADIES outputs unrooted trees by default. You can reroot trees on your own or use the provided `reroot.py` script in `workflow/scripts/` (given a reference rooted species tree as input). 
 
+!!! Note
+    Already have a species tree and want to add more genomes to it (rather than rebuild from scratch), or want GPU acceleration? See the [ROADIES_XP guide](roadies_xp.md).
+
