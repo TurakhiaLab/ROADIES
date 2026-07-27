@@ -1,4 +1,5 @@
 import csv
+import os
 import subprocess
 import time
 import yaml
@@ -6,12 +7,13 @@ import argparse
 from pathlib import Path
 import shutil
 
+ROADIES_ROOT = Path(__file__).resolve().parent
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Iterative ROADIES backbone + placement pipeline"
     )
-    _roadies_root = Path(__file__).resolve().parent
     parser.add_argument(
         "--backbone",
         required=True,
@@ -24,12 +26,12 @@ def parse_args():
     )
     parser.add_argument(
         "--config",
-        default=str(_roadies_root / "config" / "config.yaml"),
+        default=str(ROADIES_ROOT / "config" / "config.yaml"),
         help="Path to ROADIES config.yaml (default: config/config.yaml next to this script)",
     )
     parser.add_argument(
         "--out-base-dir",
-        default=str(_roadies_root / "roadies_iterations"),
+        default=str(ROADIES_ROOT / "roadies_iterations"),
         help="Base output directory for all iterations (default: roadies_iterations/ next to this script)",
     )
     parser.add_argument(
@@ -61,10 +63,15 @@ def parse_args():
         action="store_true",
         help="Resume from the last completed iteration (reads time_stamps.csv)",
     )
+    parser.add_argument(
+        "--deep",
+        action="store_true",
+        help="Enable deep phylogeny mode (applies to both the backbone and placement stages)",
+    )
     return parser.parse_args()
 
 
-def run_roadies(roadies_script, mode, config_file, cores, gpu, no_clean=False):
+def run_roadies(roadies_script, mode, config_file, cores, gpu, no_clean=False, deep=False):
     cmd = [
         "python3", roadies_script,
         "--mode", mode,
@@ -75,6 +82,8 @@ def run_roadies(roadies_script, mode, config_file, cores, gpu, no_clean=False):
     ]
     if no_clean:
         cmd.append("--no-clean")
+    if deep:
+        cmd.append("--deep")
     print(f"Running ROADIES: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
@@ -145,9 +154,9 @@ def combine_iter(out_dir, run, cores, out_base_dir, roadies_dir):
             append_marker.touch()
 
         subprocess.run(["astral-pro3", "-t", str(cores), "-i", str(master_gt),
-                        "-o", str(astral_out), "-a", str(master_map)], check=True)
+                        "-o", str(astral_out), "-a", str(master_map)], check=True, cwd=str(ROADIES_ROOT))
         subprocess.run(["astral-pro3", "-t", str(cores), "-u", "3", "-i", str(master_gt),
-                        "-o", str(astral_stats_out), "-a", str(master_map)], check=True)
+                        "-o", str(astral_stats_out), "-a", str(master_map)], check=True, cwd=str(ROADIES_ROOT))
 
     shutil.copy(astral_out, Path(out_base_dir) / roadies_dir / "roadies.nwk")
     shutil.copy(astral_stats_out, Path(out_base_dir) / roadies_dir / "roadies_stats.nwk")
@@ -155,7 +164,7 @@ def combine_iter(out_dir, run, cores, out_base_dir, roadies_dir):
 
 def sampling_output_is_from_query(query_dir):
     """Return True if sampling_output.txt exists and its first sample belongs to the query directory."""
-    path = Path("sampling_output.txt")
+    path = ROADIES_ROOT / "sampling_output.txt"
     if not path.exists():
         return False
     query_path = Path(query_dir)
@@ -203,8 +212,14 @@ def find_resume_point(out_base_dir):
 def main():
     args = parse_args()
 
-    roadies_root = Path(__file__).resolve().parent
-    roadies_script = str(roadies_root / "run_roadies.py")
+    # Resolve every user-supplied path against the caller's cwd now, before any
+    # subprocess inherits/changes cwd elsewhere, so this script works from any directory.
+    args.config = os.path.abspath(args.config)
+    args.out_base_dir = os.path.abspath(args.out_base_dir)
+    args.backbone = os.path.abspath(args.backbone)
+    args.query = os.path.abspath(args.query)
+
+    roadies_script = str(ROADIES_ROOT / "run_roadies.py")
     config_file = args.config
     out_base_dir = args.out_base_dir
     backbone_species = args.backbone
@@ -213,6 +228,7 @@ def main():
     max_iterations = args.max_iterations
     cores = args.cores
     gpu = args.gpu
+    deep = args.deep
     roadies_dir = "roadies_final"
 
     Path(out_base_dir, roadies_dir).mkdir(parents=True, exist_ok=True)
@@ -243,10 +259,10 @@ def main():
         if backbone_done:
             print(f"[ITER {iteration}] Backbone already complete, skipping.")
         else:
-            Path("sampling_output.txt").unlink(missing_ok=True)
+            (ROADIES_ROOT / "sampling_output.txt").unlink(missing_ok=True)
             update_config_yaml(config_file, out_dir=backbone_out_dir, species=backbone_species, ref_dir=None)
             run_roadies(roadies_script, mode="accurate", config_file=config_file,
-                        cores=cores, gpu=gpu, no_clean=backbone_partial)
+                        cores=cores, gpu=gpu, no_clean=backbone_partial, deep=deep)
 
         # --- Placement ---
         placement_out_dir = f"{out_base_dir}/iter_{iteration}_placement"
@@ -257,15 +273,15 @@ def main():
         elif sampling_output_is_from_query(query_species):
             print(f"[ITER {iteration}] Resuming mid-placement (query sampling_output.txt found).")
             run_roadies(roadies_script, mode="placement", config_file=config_file,
-                        cores=cores, gpu=gpu, no_clean=True)
+                        cores=cores, gpu=gpu, no_clean=True, deep=deep)
         else:
-            Path("sampling_output.txt").unlink(missing_ok=True)
+            (ROADIES_ROOT / "sampling_output.txt").unlink(missing_ok=True)
             run_roadies(roadies_script, mode="placement", config_file=config_file,
-                        cores=cores, gpu=gpu, no_clean=False)
+                        cores=cores, gpu=gpu, no_clean=False, deep=deep)
 
         combine_iter(out_base_dir, f"iter_{iteration}_placement", cores, out_base_dir, roadies_dir)
 
-        freq_file = "freqQuad.csv"
+        freq_file = str(ROADIES_ROOT / "freqQuad.csv")
         percent_high_support = compute_percent_high_support(freq_file, support_thr)
         print(f"Iteration {iteration}: Percent high support = {percent_high_support:.2f}%")
 

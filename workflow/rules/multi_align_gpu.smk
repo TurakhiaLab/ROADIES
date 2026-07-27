@@ -10,7 +10,8 @@ rule pasta:
 		prefix = "gene_{id}",
 		suffix = "fa.aln",
 		outdir = config["OUT_DIR"]+"/genes",
-		workdir = config["OUT_DIR"]+"/genes/gene_{id}"
+		workdir = config["OUT_DIR"]+"/genes/gene_{id}",
+		roadies_root = lambda wildcards: os.path.abspath(os.path.join(workflow.basedir, ".."))
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{id}.pasta.txt"
 	threads: lambda wildcards: int(config['num_threads'])
@@ -38,7 +39,7 @@ rule pasta:
 			if [ "$all_matched" = true ]; then
 				cp "$input_file" "$output_file"
 			else
-				./workflow/scripts/twilight_iter.sh {input} {threads} {params.workdir} {output}
+				./workflow/scripts/twilight_iter.sh {input} {threads} {params.workdir} {output} {params.roadies_root}
 			fi
 		fi
 		touch {output}

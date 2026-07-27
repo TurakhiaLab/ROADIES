@@ -20,7 +20,7 @@ source "${CONDA_PATH}/etc/profile.d/conda.sh"  # Temporarily source conda for th
 source "${CONDA_PATH}/etc/profile.d/mamba.sh"  # Temporarily source mamba for this script
 
 if ! conda env list | grep -q "roadies_env"; then
-    mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 raxml-ng ete3 lastz=1.04.52 aster=1.19 pyyaml seaborn twilight libstdcxx-ng
+    mamba create -y -c conda-forge -c bioconda --name roadies_env snakemake alive-progress biopython iqtree=2.2.0.3 numpy lastz mashtree matplotlib seaborn treeswift=1.1.28 fasttree=2.1.11 python=3.11 raxml-ng ete3 lastz=1.04.52 aster=1.19 pyyaml seaborn epa-ng gappa libstdcxx-ng
 fi
 conda activate roadies_env
 
@@ -42,6 +42,30 @@ if [ -d "pasta" ]; then
         python3 setup.py develop --user
         cd ..
     fi
+fi
+
+# Clone and build TWILIGHT (used for placement-mode MSA) from source, same as PASTA above
+if [ ! -d "TWILIGHT" ]; then
+    git clone https://github.com/TurakhiaLab/TWILIGHT.git
+fi
+if [ -d "TWILIGHT" ] && [ ! -f "TWILIGHT/bin/twilight" ]; then
+    cd TWILIGHT
+    if command -v nvcc &>/dev/null; then
+        bash install/buildTWILIGHT.sh cuda
+    else
+        bash install/buildTWILIGHT.sh
+    fi
+    cd ..
+fi
+
+# Build MLIPPER (GPU placement tool) from source, best-effort: only needed for
+# `--mode placement --gpu`, so skip without failing the rest of the setup if
+# CUDA or libpll aren't available on this system.
+if command -v nvcc &>/dev/null && { [ -f /usr/local/include/libpll/pll.h ] || [ -f /usr/include/libpll/pll.h ]; }; then
+    echo "Building MLIPPER from source..."
+    (cd MLIPPER && make) || echo "Warning: MLIPPER build failed; keeping the existing MLIPPER/MLIPPER binary, if any."
+else
+    echo "Warning: CUDA (nvcc) and/or libpll not found; skipping MLIPPER build. GPU-accelerated placement (--mode placement with --gpu) needs MLIPPER - once CUDA/libpll are available, build it with: bash MLIPPER/install/setup_host.sh"
 fi
 
 # Build sampling code

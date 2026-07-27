@@ -2,6 +2,10 @@
 
 import subprocess
 import argparse
+import os
+from pathlib import Path
+
+ROADIES_ROOT = Path(__file__).resolve().parent
 
 parser = argparse.ArgumentParser(description="Script to run ROADIES.")
 
@@ -14,8 +18,8 @@ parser.add_argument("--noconverge", action="store_true",
 parser.add_argument("--cores", type=int, default=32,
                     help="number of CPU cores")
 
-parser.add_argument("--config", default="config/config.yaml",
-                    help="config file path")
+parser.add_argument("--config", default=None,
+                    help="config file path (default: config/config.yaml bundled with ROADIES)")
 
 parser.add_argument("--deep", action="store_true",
                     help="enable deep phylogeny mode")
@@ -31,6 +35,13 @@ parser.add_argument("--no-clean", action="store_true",
 
 args = parser.parse_args()
 
+# Resolve the config path against the caller's cwd (not the repo root) before
+# anything changes cwd, so a relative --config keeps meaning what the user typed.
+if args.config is None:
+    config_path = str(ROADIES_ROOT / "config" / "config.yaml")
+else:
+    config_path = os.path.abspath(args.config)
+
 # Pick script
 script = "noconverge.py" if args.noconverge else "converge.py"
 
@@ -39,7 +50,7 @@ command = [
     "python", f"workflow/scripts/{script}",
     "--cores", str(args.cores),
     "--mode", args.mode,
-    "--config", args.config,
+    "--config", config_path,
     "--gpu", str(args.gpu),
 ]
 
@@ -53,4 +64,7 @@ if args.no_clean:
     command.append("--no-clean")
 
 print("Running:", " ".join(command))
-subprocess.run(command, check=True)
+# Run with cwd pinned to the ROADIES repo root so every relative path used
+# internally by converge.py/noconverge.py/Snakemake resolves correctly,
+# regardless of the directory this script was invoked from.
+subprocess.run(command, check=True, cwd=str(ROADIES_ROOT))

@@ -18,6 +18,13 @@ rule kegalign:
         gpu = 4
     params:
         align_dir = config["OUT_DIR"] + "/alignments",
+        identity = config['IDENTITY'],
+        identity_deep = config['IDENTITY_DEEP'],
+        coverage = config['COVERAGE'],
+        continuity = config['CONTINUITY'],
+        max_dup = 2*int(config['MAX_DUP']),
+        steps = config["STEPS"],
+        deep_mode = str(deep_mode),
         scores_path = lambda wildcards: os.path.join(workflow.basedir, "..", config.get("SCORES", "HOXD55.q")),
         num_gpu = 4
     conda:
@@ -40,12 +47,21 @@ rule kegalign:
             --num_gpu {params.num_gpu} \
             --num_threads {threads} > {wildcards.sample}_lastz-commands.txt
 
-		awk '{{
-		sub(/ 2> /,
-			" --coverage=85 --continuity=85 --filter=identity:65 --ambiguous=iupac --step=1 --queryhspbest=20 2> ");
-			print
-		}}' {wildcards.sample}_lastz-commands.txt \
-		> {wildcards.sample}_lastz-commands.final.sh
+		if [[ "{params.deep_mode}" == "True" ]]; then
+			awk '{{
+			sub(/ 2> /,
+				" --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity_deep} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} --scores={params.scores_path} 2> ");
+				print
+			}}' {wildcards.sample}_lastz-commands.txt \
+			> {wildcards.sample}_lastz-commands.final.sh
+		else
+			awk '{{
+			sub(/ 2> /,
+				" --coverage={params.coverage} --continuity={params.continuity} --filter=identity:{params.identity} --ambiguous=iupac --step={params.steps} --queryhspbest={params.max_dup} 2> ");
+				print
+			}}' {wildcards.sample}_lastz-commands.txt \
+			> {wildcards.sample}_lastz-commands.final.sh
+		fi
 
         chmod +x {wildcards.sample}_lastz-commands.final.sh
 

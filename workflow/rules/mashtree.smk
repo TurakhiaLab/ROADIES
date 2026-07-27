@@ -83,7 +83,7 @@ rule lastz:
 		max_dup = 2*int(config['MAX_DUP']),
 		steps = config["STEPS"],
 		deep_mode = str(deep_mode),
-		scores = config['SCORES']
+		scores = lambda wildcards: os.path.join(workflow.basedir, "..", config.get("SCORES", "HOXD55.q"))
 	shell:
 		'''
 		if [[ "{input.genome}" == *.gz ]]; then
