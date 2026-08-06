@@ -8,6 +8,7 @@ import argparse
 import random
 import subprocess
 import signal
+import shutil
 from ete3 import Tree
 from reroot import rerootTree
 import yaml
@@ -167,6 +168,10 @@ def converge_run(
                 local_pp_values.append(value)
 
     percent_high_support = (count / (total_rows / 3)) * 100
+
+    # preserve this iteration's quartet-support data before the next
+    # iteration's ASTRAL-Pro3 run overwrites the shared freqQuad.csv
+    shutil.copy("freqQuad.csv", out_dir + "/" + run + "/freqQuad.csv")
 
     return percent_high_support, len(gene_trees), t
 

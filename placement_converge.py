@@ -284,6 +284,10 @@ def main():
         percent_high_support = compute_percent_high_support(freq_file, support_thr)
         print(f"Iteration {iteration}: Percent high support = {percent_high_support:.2f}%")
 
+        # preserve this iteration's quartet-support data before the next
+        # iteration's ASTRAL-Pro3 run overwrites the shared freqQuad.csv
+        shutil.copy(freq_file, Path(placement_out_dir) / "freqQuad.csv")
+
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(curr_time))
         elapsed_time = curr_time - time_stamps[0]

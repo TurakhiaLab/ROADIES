@@ -29,14 +29,14 @@ Adjust other parameters listed in `config.yaml` as per specific user requirement
 | **COVERAGE** | Set the percentage of input sequence included in the alignment for LASTZ. | 85 |
 | **CONTINUITY** | Define the allowable percentage of non-gappy alignment columns for LASTZ. | 85 |
 | **IDENTITY** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ. For larger evolutionary timescales, consider lowering the identity values than default for more homologous hits to be encountered. | 65 | 
-| **IDENTITY_DEEP** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ, for larger evolutionary timescales (needed when `--deep True` - details below). | 40 | 
+| **IDENTITY_DEEP** | Set the percentage of the aligned base pairs (matches/mismatches) for LASTZ, for larger evolutionary timescales (needed when `--deep` is set - details below). | 40 | 
 | **MAX_DUP** | Specify maximum number of allowed gene copies from one input genome in an alignment. | 10 |
 | **STEPS** |Specify the number of steps in the LASTZ sampling (increasing number speeds up alignment but decreases LASTZ accuracy).|1 |
 | **FILTERFRAGMENTS** | Specify the portion so that sites with less than the specified portion of non-gap characters in PASTA alignments will be masked out. If it is set to 0.5, then sites with less than 50% of non-gap characters will be masked out. | 0.5 |
 | **MASKSITES** | Specify the portion so that sequences with less than the specified portion of non-gap sequences will be removed in PASTA alignment. If it is set to 0.05, then sequences having less than 5% of non-gap characters (i.e., more than 95% gaps) will be masked out.| 0.02 |
 | **SUPPORT_THRESHOLD** | Specify the threshold so that support values with equal to or higher than this threshold is considered as highly supported node. Such highly supported nodes crossing this threshold will be counted at every iteration to check the confidence of the tree (works in `--converge` mode). | 0.95 |
 | **NUM_INSTANCES** | Specify the number of instances for PASTA, LASTZ, MashTree and RAxML-NG to run in parallel. It is recommended to set the number of instances equal to (`--cores`/4) for optimal runtime. | 4 | 
-| **SCORES** | Set the alignment scores for LASTZ (needed when `--deep True` - details below). | `HOXD55.q` - file is provided along with the ROADIES package |
+| **SCORES** | Set the alignment scores for LASTZ (needed when `--deep` is set - details below). | `HOXD55.q` - file is provided along with the ROADIES package |
 
 !!! Note
     ROADIES_XP (`--mode placement` and/or `--gpu`) adds two further parameters, **REF_DIR** and **GROUP_CSV** — see the [ROADIES_XP guide](roadies_xp.md#new-configyaml-parameters) for details.
@@ -61,7 +61,7 @@ There are multiple command line arguments through which user can change the mode
 | `--mode` | Specify [modes of operation](index.md#modes-of-operation) (`accurate`, `balanced`, `fast`, or `placement`). `accurate` mode is the default mode. `placement` is a ROADIES_XP mode; see the [ROADIES_XP guide](roadies_xp.md). | 
 | `--noconverge` | Run ROADIES in non converge mode (for single iteration) if you know the optimal gene count to start with |
 | `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
-| `--deep` | Specify if ROADIES will evaluate deeper phylogeny. Set it to `True` or `False`. By default, its set to `False`. |
+| `--deep` | Enable deep-phylogeny mode, for datasets spanning larger evolutionary timescales. This is a flag: add `--deep` to turn it on, omit it to leave it off (default). |
 | `--gpu` | *(ROADIES_XP)* Number of GPU devices to use; `0` (default) runs on CPU. Supported with `accurate`, `balanced`, and `placement` modes. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration). |
 | `--grow` | *(ROADIES_XP, placement mode only)* Constrain the output species tree to the backbone tree's topology instead of freely updating it. See [Grow vs. update](roadies_xp.md#grow-vs-update). |
 | `--no-clean` | Skip deleting the output directory before running, to resume an interrupted run via Snakemake's incomplete-job detection. |
@@ -69,7 +69,7 @@ There are multiple command line arguments through which user can change the mode
 For example:
 
 ```
-python run_roadies.py --cores 16 --mode balanced --noconverge --config config/config.yaml --deep True
+python run_roadies.py --cores 16 --mode balanced --noconverge --config config/config.yaml --deep
 ```
 
 Use `--help` to get the list of command line arguments.

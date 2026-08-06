@@ -1,0 +1,107 @@
+{% set name = "roadies" %}
+{% set version = "0.2.0" %}  {# TODO: set to the actual tag once main+roadies_2 are merged and released #}
+{% set libpll_version = "0.3.2" %}  {# matches Ubuntu's libpll-dev 0.3.2-2 (Source: libpll, Homepage: http://www.libpll.org/) #}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  - url: https://github.com/TurakhiaLab/ROADIES/archive/v{{ version }}.tar.gz
+    sha256: REPLACE_ME  # TODO: sha256sum of the v{{ version }} release tarball once it exists
+  # libpll has no bioconda/conda-forge package (checked both channels: absent).
+  # Vendored here purely to satisfy MLIPPER's link-time dependency. Verified:
+  # xflouris/libpll tag "0.3.2" exists (no "v" prefix) and matches the version
+  # Ubuntu ships as libpll-dev 0.3.2-2 (Source: libpll, Homepage:
+  # http://www.libpll.org/, Debian Med Packaging Team). Build system is
+  # autotools (Makefile.am/configure.ac/autogen.sh), confirmed from the repo.
+  # STILL TODO: confirm this is the exact ABI MLIPPER's src/ was built against
+  # (i.e. that whoever built/tested MLIPPER used this libpll, not libpll-2).
+  - git_url: https://github.com/xflouris/libpll.git
+    git_rev: {{ libpll_version }}
+    folder: libpll-src
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage("roadies", max_pin=None) }}
+  # CUDA build is Linux-only, same as upstream TWILIGHT/KegAlign recipes.
+  skip: True  # [win or osx]
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}
+    - {{ compiler('cuda') }}          # for MLIPPER; see TWILIGHT/KegAlign recipes for this pattern
+    - cuda-version >=12.2,<13         # keep in sync with TWILIGHT's pin
+    - cmake
+    - make
+    - autoconf                        # libpll's build system is autotools (confirmed: Makefile.am/configure.ac/autogen.sh)
+    - automake
+    - libtool
+    - pkg-config
+  host:
+    - python ==3.9
+    - pip
+    - boost-cpp
+    - zlib
+    - wget
+    - unzip
+    - openjdk >=1.7
+    - perl >=5.22
+    - perl-bioperl >=1.7.2
+    - perl-module-build
+    - liblapack                       # MLIPPER links -llapack -lblas directly
+    - libblas
+    - cuda-cudart-dev                 # [linux]
+  run:
+    - python ==3.9
+    - biopython
+    - numpy
+    - boost-cpp
+    - matplotlib-base
+    - seaborn-base
+    - ete3
+    - pyyaml
+    - raxml-ng
+    - snakemake-minimal
+    - pasta >=1.9.0
+    - treeswift >=1.1.28
+    - fasttree >=2.1.11
+    - alive-progress
+    - perl >=5.22
+    - perl-bioperl >=1.7.2
+    - mash >=2
+    - quicktree
+    - mashtree ==1.4.6
+    - lastz >=1.04.52
+    - aster >=1.19
+    # --- ROADIES_XP additions ---
+    - twilight                        # GPU/CPU MSA for de novo (GPU) and placement modes
+    - kegalign                        # GPU pairwise alignment; published on conda-forge, not bioconda proper
+    - epa-ng                          # placement-mode dependency
+    - gappa                           # placement-mode dependency
+    - {{ pin_compatible("cuda-version", min_pin="x.x", max_pin="x") }}  # [linux] - mirrors kegalign-feedstock's run pin
+
+test:
+  commands:
+    - python $PREFIX/ROADIES/run_roadies.py --help
+    - mashtree --help
+    - test -x $PREFIX/ROADIES/MLIPPER/MLIPPER          # confirms the vendored MLIPPER binary made it into the package
+
+about:
+  home: "https://github.com/TurakhiaLab/ROADIES"
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  doc_url: "https://turakhia.ucsd.edu/ROADIES"
+  dev_url: "https://github.com/TurakhiaLab/ROADIES"
+  summary: "Reference-free Orthology-free Alignment-free DIscordance aware Estimation of Species tree (ROADIES), including ROADIES_XP placement mode and GPU acceleration."
+  description: |
+    ROADIES is an end-to-end pipeline designed for phylogenetic tree inference of the species directly from their raw genomic assemblies. ROADIES offers a fully automated, easy-to-use, scalable solution, eliminating any error-prone manual steps and providing unique flexibility in adjusting the tradeoff between accuracy and runtime. ROADIES_XP extends this with GPU-accelerated alignment/tree-building and a placement mode for growing or updating an existing species tree with new genomes.
+
+extra:
+  recipe-maintainers:
+    - ang037
+  identifiers:
+    - doi:10.1101/2024.05.27.596098

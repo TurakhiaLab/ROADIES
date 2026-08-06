@@ -242,7 +242,7 @@ python run_roadies.py --cores 16 --noconverge
 **Step 3:** Access final species tree
 
 **Default mode:**
-Final species tree (in Newick format) for individual iterations (latest one will be the most confident and accurate tree) will be saved in separate `converge_files/iteration_<iteration_number>` folders.
+Final species tree (in Newick format) for individual iterations (latest one will be the most confident and accurate tree) will be saved in separate `converge_files/iteration_<iteration_number>` folders. `output_files/roadies.nwk` is also updated after every iteration to always match the latest one, so you don't need to hunt for the highest-numbered iteration folder — it's your answer once the run finishes.
 
 **If `--noconverge` is used:**
 Final species tree (in Newick format) will be saved as `roadies.nwk` in a separate `output_files` folder. 

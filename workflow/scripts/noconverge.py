@@ -7,6 +7,7 @@ import argparse
 import random
 import subprocess
 import signal
+import shutil
 from ete3 import Tree
 from reroot import rerootTree
 import yaml
@@ -109,6 +110,11 @@ def converge_run(
                 roadies_dir, cores
             )
         )
+
+    # keep this run's quartet-support data with its own output instead of
+    # leaving it in the ROADIES install directory, where the next run would overwrite it
+    if os.path.exists("freqQuad.csv"):
+        shutil.copy("freqQuad.csv", roadies_dir + "/freqQuad.csv")
 
     gt = open(roadies_dir + "/genetrees/gene_tree_merged.nwk", "r")
     gene_trees = gt.readlines()
