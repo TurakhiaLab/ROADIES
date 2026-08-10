@@ -64,7 +64,7 @@ There are multiple command line arguments through which user can change the mode
 | `--deep` | Enable deep-phylogeny mode, for datasets spanning larger evolutionary timescales. This is a flag: add `--deep` to turn it on, omit it to leave it off (default). |
 | `--gpu` | *(ROADIES_XP)* Number of GPU devices to use; `0` (default) runs on CPU. Supported with `accurate`, `balanced`, and `placement` modes. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration). |
 | `--grow` | *(ROADIES_XP, placement mode only)* Constrain the output species tree to the backbone tree's topology instead of freely updating it. See [Grow vs. update](roadies_xp.md#grow-vs-update). |
-| `--no-clean` | Skip deleting the output directory before running, to resume an interrupted run via Snakemake's incomplete-job detection. |
+| `--clean` | Delete the output directory before running, for a genuine fresh start. Default is to leave existing output alone and let Snakemake's `--rerun-incomplete` resume it - omit this flag to resume an interrupted run, or if in doubt (safer against accidentally wiping a run in progress, e.g. from a double-launch). |
 
 For example:
 

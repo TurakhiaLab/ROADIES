@@ -1,19 +1,20 @@
 #This file configures the parameters for ROADIES / ROADIES_XP
 
 #Path for input genomes (in de novo modes) or query genomes (in placement mode)
-GENOMES: "test/test_data"
+GENOMES: "/private/groups/patenlab/VGP_datasets/new_22_boney_fish_query_genomes"
 #Reference tree (optional, default set as null)
 REFERENCE: NULL
 #Length of each of the genes
 LENGTH: 500
-#Number of genes per iteration
-GENE_COUNT: 250
+#Number of genes per iteration - must match the backbone's GENE_COUNT (locus
+#IDs 1..32000 in REF_DIR/genes) so gene_{id} numbering lines up
+GENE_COUNT: 128000
 #Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
 #ROADIES output directory for current iteration
-OUT_DIR: "output_files"
+OUT_DIR: "/private/groups/patenlab/VGP_datasets/output_files_fish_only_128k_placement_22query"
 #ROADIES output directory for all iterations (not needed in --noconverge option)
-ALL_OUT_DIR: "converge_files"
+ALL_OUT_DIR: "/private/groups/patenlab/VGP_datasets/converge_files_fish_only_128k_placement_22query"
 #Minimum % match in LASTZ/KegAlign alignment
 IDENTITY: 65
 #Minimum % match in LASTZ/KegAlign alignment in deep mode - to capture deeper phylogeny
@@ -31,15 +32,20 @@ FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
 #Threshold for high support (not needed in --noconverge option)
 SUPPORT_THRESHOLD: 0.95
-#Number of instances to run in parallel
-NUM_INSTANCES: 4
+#Number of instances to run in parallel - matches the backbone run (16), so
+#num_threads = cores // NUM_INSTANCES reproduces its per-rule thread count
+NUM_INSTANCES: 16
 #Scoring matrix (used in deep mode)
 SCORES: "HOXD55.q"
 #[ROADIES_XP/placement mode only] Directory of the backbone/reference iteration
 #(the OUT_DIR from a prior de novo or placement run) to place query genomes onto.
 #Not used in de novo modes (fast/balanced/accurate).
-REF_DIR: null
+REF_DIR: "/private/groups/patenlab/VGP_datasets/output_files_fish_only_3_outgroups_128k_total"
 #[Optional] CSV file with "species,group" columns used to bias gene sampling
 #towards under-represented lineages/clades. Leave unset or point to a
 #nonexistent path to sample uniformly across all input genomes.
 GROUP_CSV: ""
+#[Placement mode only] Loci per lastz batch. REF_DIR/samples must already
+#contain out_batch_1.fa..out_batch_N.fa split at this size (this backbone has
+#16 batches of 2000 - N*BATCH_SIZE must equal GENE_COUNT).
+BATCH_SIZE: 4000

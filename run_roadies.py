@@ -30,8 +30,13 @@ parser.add_argument("--gpu", type=int, default=0,
 parser.add_argument("--grow", action="store_true",
                     help="Specify if you want to grow your tree or if you want to update your tree in placement mode")
 
-parser.add_argument("--no-clean", action="store_true",
-                    help="Skip deleting the output directory before running (enables Snakemake resume)")
+parser.add_argument("--clean", action="store_true",
+                    help="Delete the output directory before running, for a genuine fresh start "
+                         "(default is to leave existing output alone - safer against accidental double-launches)")
+
+parser.add_argument("--cluster", action="store_true",
+                    help="Submit Snakemake rule jobs to SLURM via sbatch for multi-node execution, "
+                         "instead of running everything locally on this machine")
 
 args = parser.parse_args()
 
@@ -60,8 +65,11 @@ if args.deep:
 if args.grow:
     command.append("--grow")
 
-if args.no_clean:
-    command.append("--no-clean")
+if args.clean:
+    command.append("--clean")
+
+if args.cluster:
+    command.append("--cluster")
 
 print("Running:", " ".join(command))
 # Run with cwd pinned to the ROADIES repo root so every relative path used

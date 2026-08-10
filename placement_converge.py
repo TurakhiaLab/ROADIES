@@ -70,7 +70,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_roadies(roadies_script, mode, config_file, cores, gpu, no_clean=False, deep=False):
+def run_roadies(roadies_script, mode, config_file, cores, gpu, clean=False, deep=False):
     cmd = [
         "python3", roadies_script,
         "--mode", mode,
@@ -79,8 +79,8 @@ def run_roadies(roadies_script, mode, config_file, cores, gpu, no_clean=False, d
         "--noconverge",
         "--gpu", str(gpu),
     ]
-    if no_clean:
-        cmd.append("--no-clean")
+    if clean:
+        cmd.append("--clean")
     if deep:
         cmd.append("--deep")
     print(f"Running ROADIES: {' '.join(cmd)}")
@@ -261,7 +261,7 @@ def main():
             (ROADIES_ROOT / "sampling_output.txt").unlink(missing_ok=True)
             update_config_yaml(config_file, out_dir=backbone_out_dir, species=backbone_species, ref_dir=None)
             run_roadies(roadies_script, mode="accurate", config_file=config_file,
-                        cores=cores, gpu=gpu, no_clean=backbone_partial, deep=deep)
+                        cores=cores, gpu=gpu, clean=not backbone_partial, deep=deep)
 
         # --- Placement ---
         placement_out_dir = f"{out_base_dir}/iter_{iteration}_placement"
@@ -272,11 +272,11 @@ def main():
         elif sampling_output_is_from_query(query_species):
             print(f"[ITER {iteration}] Resuming mid-placement (query sampling_output.txt found).")
             run_roadies(roadies_script, mode="placement", config_file=config_file,
-                        cores=cores, gpu=gpu, no_clean=True, deep=deep)
+                        cores=cores, gpu=gpu, clean=False, deep=deep)
         else:
             (ROADIES_ROOT / "sampling_output.txt").unlink(missing_ok=True)
             run_roadies(roadies_script, mode="placement", config_file=config_file,
-                        cores=cores, gpu=gpu, no_clean=False, deep=deep)
+                        cores=cores, gpu=gpu, clean=True, deep=deep)
 
         combine_iter(out_base_dir, f"iter_{iteration}_placement", cores, out_base_dir, roadies_dir)
 

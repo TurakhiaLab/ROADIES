@@ -71,7 +71,7 @@ elif (mode == "placement"):
 	if gpu != 0:
 		include: "rules/pair_align_gpu.smk"
 	else:
-		include: "rules/pair_align.smk"
+		include: "rules/pair_align_placement_batch.smk"
 	include: "rules/placement.smk"
 else:
 	include: "rules/sampling.smk"
