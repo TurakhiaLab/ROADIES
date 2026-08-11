@@ -13,7 +13,9 @@ rule lastz:
 		config["OUT_DIR"]+"/alignments/{sample}.maf"
 	benchmark:
 		config["OUT_DIR"]+"/benchmarks/{sample}.lastz.txt"
-	threads: lambda wildcards: int(config['num_threads'])
+	threads: 2
+	resources:
+		mem_mb=20000
 	params:
 		species = "{sample}",
 		identity = config['IDENTITY'],

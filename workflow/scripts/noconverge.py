@@ -22,16 +22,126 @@ def comp_tree(t1, t2):
     return d["norm_rf"]
 
 
+# Rules that spawn one Snakemake job per sampled locus (up to GENE_COUNT
+# jobs), keyed by mode. Under --cluster these get grouped so they don't each
+# turn into a separate sbatch submission. Each entry is (rule, group_name,
+# group_size) - rules sharing a group_name get bundled into the same sbatch
+# submissions.
+#
+# --group-components snowballs when a group has far more members than fit in
+# one Snakemake scheduling wave (i.e. more than roughly --jobs): the DAG's
+# incremental update loop re-runs _update_group_components() on every new
+# wave of discovered jobs, and each call re-chunks *all* jobs assigned to
+# that group id so far - including ones already merged into a group by a
+# PREVIOUS call. A group-of-4 formed in wave 1 becomes one "component" going
+# into wave 2's chunking, gets merged with another already-formed group-of-4,
+# and keeps compounding across waves. Confirmed live: lastz_batch was
+# configured group-of-4 (16 cpu/62.5G requested) but actually executed with
+# 16 members (needed ~64cpu/256G), causing the sbatch allocation to OOM-kill
+# 6 of 16 concurrent lastz_40 processes. placement's lastz_batch (352 total
+# jobs) and pasta (up to 32000) both vastly exceed --jobs 48, so both are
+# left ungrouped here - each job requests exactly its own declared
+# threads/resources with no bin-packing/merge risk. accurate/balanced modes
+# haven't hit this in practice yet but share the identical mechanism (same
+# many-disconnected-jobs-under-a-jobs-cap shape) - treat their grouping as
+# equally suspect before relying on it for a real run.
+GROUPED_RULES = {
+    "accurate": [
+        ("pasta", "group0", 250),
+        ("filtermsa", "group0", 250),
+        ("raxmlng", "group0", 250),
+    ],
+    "balanced": [
+        ("pasta", "group0", 250),
+        ("filtermsa", "group0", 250),
+        ("fasttree", "group0", 250),
+    ],
+}
+
+# Multi-node SLURM execution args, opt-in via --cluster. The submit command is
+# templated with {threads}/{resources.mem_mb} so each rule gets sized for what
+# it actually needs, instead of every job (lastz included) requesting a flat
+# 64 cpus / 256G. --cores/--resources below are the *ceiling* Snakemake uses
+# to bin-pack grouped jobs (see pasta's per-locus resources in placement.smk):
+# 64 threads / 256000 mem_mb reproduces the old fixed per-group-job request
+# (4 concurrent pasta instances @ 16 threads / 64G each), just derived
+# explicitly instead of accidentally via a hardcoded string applied to every
+# rule. lastz_batch's per-job resources (pair_align_placement_batch.smk) are
+# tiny in comparison, so a group of 4 of them fits well inside that same
+# ceiling without ever needing to split into multiple layers.
+def cluster_snakemake_args(mode):
+    args = [
+        # Raised 48 -> 200 alongside right-sizing pasta's resources (8cpu/2G
+        # for real placements, 1cpu/500M for the touch/cp fallback - was a
+        # flat 16cpu/64G for everything). 48 concurrent jobs at the old
+        # footprint could already saturate a lot of cluster capacity; at the
+        # new footprint it's tiny, so the --jobs cap (not node availability)
+        # was going to be the limiting factor. Checked cluster-wide headroom
+        # via `sinfo -p long` before picking this: ~3062 idle cpus across
+        # the partition at the time (shared with other users, so this is
+        # advisory not exclusive - actual concurrency still depends on
+        # fairshare/what else is running).
+        "--jobs", "200",
+        "--cores", "64",
+        "--resources", "mem_mb=256000",
+        "--latency-wait", "120",
+        "--keep-going",
+        # Snakemake defaults to --scheduler ilp, which solves an integer
+        # linear program over every currently-ready job each round to
+        # optimize resource packing. Fine when few jobs are ready at once,
+        # but placement's pasta stage has ~100k+ mutually-independent jobs
+        # all ready simultaneously (nothing depends on anything else), so
+        # ILP has to optimize over a huge candidate pool every round.
+        # Confirmed via sstat on a live 128k-locus run: driver CPU time was
+        # ~48% of wall-clock with rounds taking 1-2 minutes to select only
+        # 15-36 jobs, even though individual pasta jobs (many are instant
+        # touch/cp fallbacks) run in seconds. greedy has nothing meaningful
+        # to optimize here anyway - every pasta job wants the same
+        # threads/mem_mb - so its speed is pure upside for this workload.
+        "--scheduler", "greedy",
+    ]
+    grouped_rules = GROUPED_RULES.get(mode, [])
+    if grouped_rules:
+        args += ["--groups"] + [f"{rule}={group}" for rule, group, _ in grouped_rules]
+        seen_groups = {}
+        for _, group, size in grouped_rules:
+            seen_groups[group] = size
+        args += ["--group-components"] + [
+            f"{group}={size}" for group, size in seen_groups.items()
+        ]
+    args += [
+        "--executor",
+        "cluster-generic",
+        "--cluster-generic-submit-cmd",
+        (
+            "sbatch "
+            "--job-name=ROADIES_run "
+            "--partition=long "
+            "--account=standard "
+            "--nodes=1 "
+            "--ntasks=1 "
+            "--cpus-per-task={threads} "
+            "--mem={resources.mem_mb}M "
+            "--time=8-0 "
+            "--output=%x_%j.out "
+            "--error=%x_%j.err"
+        ),
+    ]
+    return args
+
+
 # function to run snakemake with settings and add to run folder
-def run_snakemake(cores, mode, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu):
+def run_snakemake(cores, mode, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster):
 
     # Set threads per instance dynamically
     num_threads = cores // fixed_parallel_instances
 
-    cmd = [
-        "snakemake",
-        "--cores",
-        str(cores),
+    cmd = ["snakemake"]
+    if cluster:
+        cmd += cluster_snakemake_args(mode)
+    else:
+        cmd += ["--cores", str(cores)]
+    cmd += [
         "--config",
         "mode=" + str(mode),
         "config_path=" + str(config_path),
@@ -66,10 +176,11 @@ def converge_run(
     MIN_ALIGN,
     ref_path,
     gpu,
-    grow
+    grow,
+    cluster
 ):
     # run snakemake with specificed gene number and length
-    run_snakemake(cores, mode, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu)
+    run_snakemake(cores, mode, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster)
     if (mode == 'placement'):
         os.system(
             "cat {0}/genes/mapping.txt {1}/genes/mapping.txt >> {0}/genes/mapping_combined.txt".format(
@@ -165,9 +276,16 @@ if __name__ == "__main__":
         help="specify if you want to update your tree or grow your tree in placement mode",
     )
     parser.add_argument(
-        "--no-clean",
+        "--clean",
         action="store_true",
-        help="skip deleting the output directory before running (enables Snakemake resume)",
+        help="delete the output directory before running, for a genuine fresh start "
+             "(default is to leave existing output alone and let Snakemake's "
+             "--rerun-incomplete resume it - safer against accidental double-launches)",
+    )
+    parser.add_argument(
+        "--cluster",
+        action="store_true",
+        help="submit Snakemake rule jobs to SLURM via sbatch for multi-node execution",
     )
     # assigning argument values to variables
     args = vars(parser.parse_args())
@@ -177,7 +295,8 @@ if __name__ == "__main__":
     deep_mode = args["deep"]
     gpu = args["gpu"]
     grow = args["grow"]
-    no_clean = args["no_clean"]
+    clean = args["clean"]
+    cluster = args["cluster"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
@@ -193,10 +312,12 @@ if __name__ == "__main__":
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
     ref_path = config["REF_DIR"]
-    if not no_clean:
+    if clean:
         os.system("rm -r {0}".format(roadies_dir))
         os.system("mkdir {0}".format(roadies_dir))
         os.system("rm {0}".format('sampling_output.txt'))
+    else:
+        os.makedirs(roadies_dir, exist_ok=True)
     sys.setrecursionlimit(2000)
     os.system("snakemake --unlock")
     # initialize lists for runs and distances
@@ -223,7 +344,8 @@ if __name__ == "__main__":
         MIN_ALIGN,
         ref_path,
         gpu,
-        grow
+        grow,
+        cluster
     )
     curr_time = time.time()
     curr_time_l = time.asctime(time.localtime(time.time()))

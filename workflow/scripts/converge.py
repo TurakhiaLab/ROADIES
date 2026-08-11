@@ -44,18 +44,99 @@ def read_initial_gene_count(config_path):
     return config["GENE_COUNT"]
 
 
+def format_run(iteration):
+    """iteration_00, iteration_01, ..., iteration_10, iteration_11, ... -
+    shared by converge_run/combine_iter/resume-scanning so they can never
+    disagree on what an iteration's directory/file names look like."""
+    return "iteration_" + str(iteration).zfill(2)
+
+
+def find_resume_point(out_dir):
+    """Scan out_dir for iterations that actually finished (i.e. have a final
+    {run}.nwk ASTRAL output - the last file combine_iter writes, and the
+    first thing converge_run reads back afterwards, so its presence proves
+    that whole iteration completed) and reconstruct where to pick back up.
+
+    Stops at the first gap: iterations always run strictly in order, so a
+    missing {run}.nwk means that iteration never finished, regardless of
+    what higher-numbered directories might exist from an earlier attempt.
+    """
+    percent_by_iteration = {}
+    ts_path = os.path.join(out_dir, "time_stamps.csv")
+    if os.path.exists(ts_path):
+        with open(ts_path) as f:
+            for line in f:
+                parts = line.strip().split(",")
+                if len(parts) < 3:
+                    continue  # "Start time: ..." header lines
+                try:
+                    percent_by_iteration[int(parts[0])] = float(parts[2])
+                except ValueError:
+                    continue
+
+    high_support_list = []
+    iteration = 0
+    while (
+        os.path.exists(os.path.join(out_dir, format_run(iteration) + ".nwk"))
+        and iteration in percent_by_iteration
+    ):
+        high_support_list.append(percent_by_iteration[iteration])
+        iteration += 1
+    return iteration, high_support_list
+
+
+# Rules that spawn one Snakemake job per sampled locus (up to GENE_COUNT
+# jobs), keyed by mode. Under --cluster these get grouped so they don't each
+# turn into a separate sbatch submission.
+PER_LOCUS_RULES = {
+    "placement": ["pasta"],
+    "accurate": ["pasta", "filtermsa", "raxmlng"],
+    "balanced": ["pasta", "filtermsa", "fasttree"],
+}
+CLUSTER_GROUP_SIZE = 250  # loci per sbatch submission
+
+# Multi-node SLURM execution args, opt-in via --cluster. Mirrors the resource
+# profile used on this cluster for the fish-only 32k backbone run: 32
+# concurrent sbatch jobs, each 1 node / 16 tasks / 4 cpus-per-task (64 cpus).
+def cluster_snakemake_args(mode):
+    args = ["--jobs", "32", "--latency-wait", "120", "--keep-going"]
+    per_locus_rules = PER_LOCUS_RULES.get(mode, [])
+    if per_locus_rules:
+        args += ["--groups"] + [f"{rule}=group0" for rule in per_locus_rules]
+        args += ["--group-components", f"group0={CLUSTER_GROUP_SIZE}"]
+    args += [
+        "--cluster",
+        (
+            "sbatch "
+            "--job-name=ROADIES_run "
+            "--partition=long "
+            "--account=standard "
+            "--nodes=1 "
+            "--ntasks-per-node=16 "
+            "--cpus-per-task=4 "
+            "--time=8-0 "
+            "--mem-per-cpu=4G "
+            "--output=%x_%j.out "
+            "--error=%x_%j.err"
+        ),
+    ]
+    return args
+
+
 # function to run snakemake with settings and add to run folder
 def run_snakemake(
-    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu
+    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster
 ):
 
     # Set threads per instance dynamically
     num_threads = cores // fixed_parallel_instances
 
-    cmd = [
-        "snakemake",
-        "--cores",
-        str(cores),
+    cmd = ["snakemake"]
+    if cluster:
+        cmd += cluster_snakemake_args(mode)
+    else:
+        cmd += ["--cores", str(cores)]
+    cmd += [
         "--config",
         "mode=" + str(mode),
         "config_path=" + str(config_path),
@@ -80,25 +161,55 @@ def run_snakemake(
 
 
 # function to combine gene trees and mapping files from all iterations
-def combine_iter(out_dir, run, cores, roadies_dir):
-    os.system(
-        "cat {0}/{1}/gene_tree_merged.nwk >> {0}/master_gt.nwk".format(out_dir, run)
-    )
-    # os.system("cp {0}/master_gt.nwk {0}/{1}.gt.nwk".format(out_dir, run))
-    os.system("cat {0}/{1}/mapping.txt >> {0}/master_map.txt".format(out_dir, run))
-    # os.system("cp {0}/master_map.txt {0}/{1}.map.txt".format(out_dir, run))
+def combine_iter(out_dir, iteration, cores, roadies_dir):
+    run = format_run(iteration)
 
-    # open both files and get lines, each line is a separate gene tree
-    os.system(
-        "astral-pro3 -t {2} -i {0}/master_gt.nwk -o {0}/{1}.nwk -a {0}/master_map.txt".format(
-            out_dir, run, cores
+    # Rebuild the cumulative master files from scratch out of every
+    # completed iteration's own saved output, rather than incrementally
+    # appending onto them. An append is not safe to retry: if a previous
+    # attempt at this same iteration crashed after appending but before
+    # {run}.nwk was written, retrying with `cat >>` would double-count that
+    # iteration's gene trees. Rebuilding from 0..iteration every time is
+    # idempotent by construction - it doesn't matter how many times or in
+    # what state this gets re-run, the result only depends on which
+    # iteration directories exist on disk. Written to temp paths and
+    # rename()'d into place so a crash mid-write never leaves a partial
+    # master file that a later run might read as complete.
+    master_gt_tmp = out_dir + "/master_gt.nwk.tmp"
+    master_map_tmp = out_dir + "/master_map.txt.tmp"
+    with open(master_gt_tmp, "w") as gt_out, open(master_map_tmp, "w") as map_out:
+        for i in range(iteration + 1):
+            run_i = format_run(i)
+            with open(f"{out_dir}/{run_i}/gene_tree_merged.nwk") as f:
+                gt_out.write(f.read())
+            with open(f"{out_dir}/{run_i}/mapping.txt") as f:
+                map_out.write(f.read())
+    os.replace(master_gt_tmp, out_dir + "/master_gt.nwk")
+    os.replace(master_map_tmp, out_dir + "/master_map.txt")
+
+    # Same reasoning for the ASTRAL outputs: write to temp paths, only
+    # promote to the final {run}.nwk name (the file resume uses as proof
+    # this iteration is done) once both calls have actually succeeded.
+    nwk_tmp = f"{out_dir}/{run}.nwk.tmp"
+    stats_tmp = f"{out_dir}/{run}_stats.nwk.tmp"
+    ret1 = os.system(
+        "astral-pro3 -t {0} -i {1}/master_gt.nwk -o {2} -a {1}/master_map.txt".format(
+            cores, out_dir, nwk_tmp
         )
     )
-    os.system(
-        "astral-pro3 -t {2} -u 3 -i {0}/master_gt.nwk -o {0}/{1}_stats.nwk -a {0}/master_map.txt".format(
-            out_dir, run, cores
+    ret2 = os.system(
+        "astral-pro3 -t {0} -u 3 -i {1}/master_gt.nwk -o {2} -a {1}/master_map.txt".format(
+            cores, out_dir, stats_tmp
         )
     )
+    if ret1 != 0 or ret2 != 0:
+        raise RuntimeError(
+            f"astral-pro3 failed for {run} (exit status {ret1}, {ret2}) - "
+            f"{run}.nwk was not written, so this iteration will be retried on resume."
+        )
+    os.replace(nwk_tmp, f"{out_dir}/{run}.nwk")
+    os.replace(stats_tmp, f"{out_dir}/{run}_stats.nwk")
+
     os.system("cp {0}/{1}.nwk {2}/roadies.nwk".format(out_dir, run, roadies_dir))
     os.system("cp {0}/{1}_stats.nwk {2}/roadies_stats.nwk".format(out_dir, run, roadies_dir))
     # open both master files and get gene trees and mapping
@@ -124,17 +235,17 @@ def converge_run(
     MIN_ALIGN,
     ref_path,
     gpu,
-    grow
+    grow,
+    cluster
 ):
+    # Per-iteration scratch space - always wiped fresh regardless of --clean,
+    # since each iteration's Snakemake run needs a clean DAG/working
+    # directory. This is unrelated to whether the ALL_OUT_DIR convergence
+    # history (out_dir) gets preserved across a resume.
     os.system("rm -r {0}".format(roadies_dir))
     os.system("mkdir {0}".format(roadies_dir))
     os.system("rm {0}".format('sampling_output.txt'))
-    run = "iteration_"
-    # allows sorting runs correctly
-    if iteration < 10:
-        run += "0" + str(iteration)
-    else:
-        run += str(iteration)
+    run = format_run(iteration)
     # run snakemake with specificed gene number and length
     if iteration >= 2:
         base_gene_count = read_initial_gene_count(
@@ -142,10 +253,10 @@ def converge_run(
         )  # Read initial GENE_COUNT value
         update_config(config_path, base_gene_count)
     run_snakemake(
-        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu
+        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster
     )
     # merging gene trees and mapping files
-    gene_trees = combine_iter(out_dir, run, cores, roadies_dir)
+    gene_trees = combine_iter(out_dir, iteration, cores, roadies_dir)
     t = Tree(out_dir + "/" + run + ".nwk")
     # add species tree to tree list
     if ref_exist:
@@ -210,6 +321,20 @@ if __name__ == "__main__":
         action="store_true",
         help="specify if you want to update your tree or grow your tree in placement mode",
     )
+    parser.add_argument(
+        "--cluster",
+        action="store_true",
+        help="submit Snakemake rule jobs to SLURM via sbatch for multi-node execution",
+    )
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="delete the ALL_OUT_DIR convergence directory before running, for a "
+             "genuine fresh start (default is to resume from the last iteration "
+             "that fully completed - master_gt.nwk/master_map.txt get rebuilt "
+             "from just the completed iterations' own saved output each time, so "
+             "a crash mid-iteration can't leave duplicated/corrupted data behind)",
+    )
     # assigning argument values to variables
     args = vars(parser.parse_args())
     config_path = args["config"]
@@ -218,6 +343,8 @@ if __name__ == "__main__":
     deep_mode = args["deep"]
     gpu = args["gpu"]
     grow = args["grow"]
+    cluster = args["cluster"]
+    clean = args["clean"]
     # read config.yaml for variables
     config = yaml.safe_load(Path(config_path).read_text())
     ref_exist = False
@@ -235,23 +362,26 @@ if __name__ == "__main__":
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
     ref_path = config["REF_DIR"]
-    master_gt = out_dir + "/master_gt.nwk"
-    master_map = out_dir + "/master_map.txt"
-    os.system("rm -r {0}".format(out_dir))
-    os.system("mkdir -p " + out_dir)
-    os.system("touch {0}".format(master_gt))
-    os.system("touch {0}".format(master_map))
+    if clean:
+        os.system("rm -r {0}".format(out_dir))
+        os.system("mkdir -p " + out_dir)
+        iteration = 0
+        high_support_list = []
+    else:
+        os.makedirs(out_dir, exist_ok=True)
+        iteration, high_support_list = find_resume_point(out_dir)
+        if iteration > 0:
+            print(
+                f"Resuming from iteration {iteration} "
+                f"({len(high_support_list)} already-completed iteration(s) "
+                f"found in {out_dir})"
+            )
     sys.setrecursionlimit(2000)
     os.system("snakemake --unlock")
-    # initialize lists for runs and distances
-    time_stamps = []
     if ref_exist:
         ref_dists = []
-    high_support_list = []
-    iteration = 0
     start_time = time.time()
     start_time_l = time.asctime(time.localtime(time.time()))
-    time_stamps.append(start_time)
     with open(out_dir + "/time_stamps.csv", "a") as t_out:
         t_out.write("Start time: " + str(start_time_l) + "\n")
     while True:
@@ -270,12 +400,11 @@ if __name__ == "__main__":
             MIN_ALIGN,
             ref_path,
             gpu,
-            grow
+            grow,
+            cluster
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))
-        to_previous = curr_time - time_stamps[len(time_stamps) - 1]
-        time_stamps.append(curr_time)
         high_support_list.append(percent_high_support)
         elapsed_time = curr_time - start_time
         with open(out_dir + "/time_stamps.csv", "a") as t_out:
