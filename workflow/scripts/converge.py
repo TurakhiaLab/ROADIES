@@ -87,35 +87,88 @@ def find_resume_point(out_dir):
 
 # Rules that spawn one Snakemake job per sampled locus (up to GENE_COUNT
 # jobs), keyed by mode. Under --cluster these get grouped so they don't each
-# turn into a separate sbatch submission.
-PER_LOCUS_RULES = {
-    "placement": ["pasta"],
-    "accurate": ["pasta", "filtermsa", "raxmlng"],
-    "balanced": ["pasta", "filtermsa", "fasttree"],
+# turn into a separate sbatch submission. Each entry is (rule, group_name,
+# group_size) - rules sharing a group_name get bundled into the same sbatch
+# submissions.
+#
+# --group-components snowballs when a group has far more members than fit in
+# one Snakemake scheduling wave (i.e. more than roughly --jobs): the DAG's
+# incremental update loop re-runs _update_group_components() on every new
+# wave of discovered jobs, and each call re-chunks *all* jobs assigned to
+# that group id so far - including ones already merged into a group by a
+# PREVIOUS call. A group-of-4 formed in wave 1 becomes one "component" going
+# into wave 2's chunking, gets merged with another already-formed group-of-4,
+# and keeps compounding across waves. Confirmed live: lastz_batch was
+# configured group-of-4 (16 cpu/62.5G requested) but actually executed with
+# 16 members (needed ~64cpu/256G), causing the sbatch allocation to OOM-kill
+# 6 of 16 concurrent lastz_40 processes. placement's lastz_batch (352 total
+# jobs) and pasta (up to 32000) both vastly exceed --jobs 48, so both are
+# left ungrouped here - each job requests exactly its own declared
+# threads/resources with no bin-packing/merge risk. accurate/balanced modes
+# haven't hit this in practice yet but share the identical mechanism (same
+# many-disconnected-jobs-under-a-jobs-cap shape) - treat their grouping as
+# equally suspect before relying on it for a real run.
+GROUPED_RULES = {
+    "accurate": [
+        ("pasta", "group0", 250),
+        ("filtermsa", "group0", 250),
+        ("raxmlng", "group0", 250),
+    ],
+    "balanced": [
+        ("pasta", "group0", 250),
+        ("filtermsa", "group0", 250),
+        ("fasttree", "group0", 250),
+    ],
 }
-CLUSTER_GROUP_SIZE = 250  # loci per sbatch submission
 
-# Multi-node SLURM execution args, opt-in via --cluster. Mirrors the resource
-# profile used on this cluster for the fish-only 32k backbone run: 32
-# concurrent sbatch jobs, each 1 node / 16 tasks / 4 cpus-per-task (64 cpus).
+# Multi-node SLURM execution args, opt-in via --cluster. The submit command is
+# templated with {threads}/{resources.mem_mb} so each rule gets sized for what
+# it actually needs, instead of every job requesting a flat hardcoded amount.
+# --jobs/--cores/--resources below are the *ceiling* Snakemake uses to
+# bin-pack grouped jobs (see pasta's per-locus resources in placement.smk) -
+# actual per-job requests still come from each rule's own threads/resources.
 def cluster_snakemake_args(mode):
-    args = ["--jobs", "32", "--latency-wait", "120", "--keep-going"]
-    per_locus_rules = PER_LOCUS_RULES.get(mode, [])
-    if per_locus_rules:
-        args += ["--groups"] + [f"{rule}=group0" for rule in per_locus_rules]
-        args += ["--group-components", f"group0={CLUSTER_GROUP_SIZE}"]
+    args = [
+        "--jobs", "200",
+        "--cores", "64",
+        "--resources", "mem_mb=256000",
+        "--latency-wait", "120",
+        "--keep-going",
+        # Snakemake defaults to --scheduler ilp, which solves an integer
+        # linear program over every currently-ready job each round to
+        # optimize resource packing. Fine when few jobs are ready at once,
+        # but placement's pasta stage has ~100k+ mutually-independent jobs
+        # all ready simultaneously (nothing depends on anything else), so
+        # ILP has to optimize over a huge candidate pool every round. greedy
+        # has nothing meaningful to optimize here anyway - every pasta job
+        # wants the same threads/mem_mb - so its speed is pure upside for
+        # this workload. See noconverge.py's cluster_snakemake_args for the
+        # measurements this was based on.
+        "--scheduler", "greedy",
+    ]
+    grouped_rules = GROUPED_RULES.get(mode, [])
+    if grouped_rules:
+        args += ["--groups"] + [f"{rule}={group}" for rule, group, _ in grouped_rules]
+        seen_groups = {}
+        for _, group, size in grouped_rules:
+            seen_groups[group] = size
+        args += ["--group-components"] + [
+            f"{group}={size}" for group, size in seen_groups.items()
+        ]
     args += [
-        "--cluster",
+        "--executor",
+        "cluster-generic",
+        "--cluster-generic-submit-cmd",
         (
             "sbatch "
             "--job-name=ROADIES_run "
             "--partition=long "
             "--account=standard "
             "--nodes=1 "
-            "--ntasks-per-node=16 "
-            "--cpus-per-task=4 "
+            "--ntasks=1 "
+            "--cpus-per-task={threads} "
+            "--mem={resources.mem_mb}M "
             "--time=8-0 "
-            "--mem-per-cpu=4G "
             "--output=%x_%j.out "
             "--error=%x_%j.err"
         ),

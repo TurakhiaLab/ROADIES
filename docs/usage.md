@@ -65,6 +65,7 @@ There are multiple command line arguments through which user can change the mode
 | `--gpu` | *(ROADIES_XP)* Number of GPU devices to use; `0` (default) runs on CPU. Supported with `accurate`, `balanced`, and `placement` modes. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration). |
 | `--grow` | *(ROADIES_XP, placement mode only)* Constrain the output species tree to the backbone tree's topology instead of freely updating it. See [Grow vs. update](roadies_xp.md#grow-vs-update). |
 | `--clean` | Delete the output directory before running, for a genuine fresh start. Default is to leave existing output alone and let Snakemake's `--rerun-incomplete` resume it - omit this flag to resume an interrupted run, or if in doubt (safer against accidentally wiping a run in progress, e.g. from a double-launch). |
+| `--cluster` | Submit each Snakemake rule as its own SLURM job via `sbatch` instead of running everything on this machine. See [Run ROADIES on a SLURM cluster](#run-roadies-on-a-slurm-cluster) below. |
 
 For example:
 
@@ -126,90 +127,19 @@ For extensive debugging, other intermediate output files for each stage of the p
 7. `ref_dist.csv` - this file provides the iteration number, number of gene trees and the Normalized Robinson-Foulds distance between the final estimated species tree (i.e., `roadies.nwk`) and the reference tree (i.e., REFERENCE parameter in `config.yaml`), for all iterations.
 8. `time_stamps.csv`- this file contains the start time in first line, iteration number, number of gene trees required for estimating species tree, end time, and total runtime (in seconds), respectively, for all iterations in subsequent lines.
 
-# Run ROADIES in a multi-node cluster (using SLURM) (currently being tested)
+## Run ROADIES on a SLURM cluster
 
-To run ROADIES in a multi-node cluster, make the following changes in the file `workflow/scripts/converge.py` (for `--noconverge` mode - make changes in `workflow/scripts/noconverge.py`)
+Add `--cluster` to `run_roadies.py` (works with `--noconverge` and with de novo/placement convergence alike) to submit each Snakemake rule as its own `sbatch` job across the cluster, instead of running everything locally on one machine:
 
-Replace below lines:
-
-```
-    cmd = [
-        "snakemake",
-         "--cores",
-         str(cores),
-         "--config",
-         "mode=" + str(mode),
-         "config_path=" + str(config_path),
-         "num_threads=" + str(num_threads),
-         "deep_mode=" + str(deep_mode),
-         "MIN_ALIGN=" + str(MIN_ALIGN),
-         "--use-conda",
-         "--rerun-incomplete",
-    ]
+```bash
+python run_roadies.py --cores 64 --cluster
 ```
 
-With below lines (you can change the value of `--jobs` and other account details based on your cluster configuration):
+Each job is submitted with `--cpus-per-task`/`--mem` set from that rule's own declared `threads`/`resources` (never a flat hardcoded size), and jobs that spawn one task per sampled locus (e.g. `pasta`) are grouped into batches so they don't turn into thousands of individual `sbatch` submissions. The submit command (partition, account, time limit, etc.) is defined in `cluster_snakemake_args()` in `workflow/scripts/converge.py`/`noconverge.py` — edit it there to match your cluster's SLURM configuration (partition name, account, walltime).
 
-```
-    cmd = [
-    "snakemake",
-    "--jobs",
-    "4",
-    "--groups",
-    "lastz=group0",
-    "--group-components",
-    "group0=8",
-    "--config",
-    "mode=" + str(mode),
-    "config_path=" + str(config_path),
-    "num_threads=" + str(num_threads),
-    "--use-conda",
-    "--rerun-incomplete",
-    "--cluster",
-    (
-        "sbatch "
-        "--job-name=XXX "
-        "--partition=XXX "
-        "--account=XXX "
-        "--nodes=1 "
-        "--ntasks-per-node=4 "
-        "--cpus-per-task=8 "
-        "--time=8-0 "
-        "--mem-per-cpu=11G "
-        "--output=%x_%j.out "
-        "--error=%x_%j.err "
-        "--mail-user=XXX "
-        "--mail-type=ALL"
-    )
-]
-```
+!!! Note
+    Launch `run_roadies.py --cluster` itself from a persistent session (e.g. `tmux`/`screen`, or as its own lightweight `sbatch`/login-node job) — it stays alive submitting and polling the per-rule jobs for the whole run.
 
-After the above changes, save the following lines of code as separate file called `roadies.slurm` and run `sbatch roadies.slurm`.
-```
-#! /bin/bash
-#SBATCH -J ROADIES_XXX
-#SBATCH -p XXX
-#SBATCH --account=XXX
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=32
-#SBATCH --time=8-0
-#SBATCH --mem-per-cpu=11G
-#SBATCH -o %x_%j.out 
-#SBATCH -e %x_%j.err
-#SBATCH --mail-user=XXX
-#SBATCH --mail-type=ALL
-
-echo Starting at `date`
-echo This is job $SLURM_JOB_ID
-echo Running on `hostname`
-
-source /<PATH>/miniconda3/etc/profile.d/conda.sh
-conda activate myenv
-cd /<PATH>/miniconda3/envs/myenv/ROADIES
-srun --nodes=1 python run_roadies.py --cores 128
-
-echo Exiting at `date`
-srun sleep 30
-```
+!!! Note
+    `placement_converge.py` (the experimental iterative backbone+placement wrapper, see the [ROADIES_XP guide](roadies_xp.md)) does not support `--cluster`. Use `run_roadies.py --mode placement --cluster` directly for cluster execution of placement mode.
 

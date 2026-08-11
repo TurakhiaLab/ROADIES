@@ -106,3 +106,4 @@ These parameters are used by ROADIES_XP in addition to the ones documented in th
 | --- | --- | --- |
 | **REF_DIR** | Path to the backbone iteration's output directory, used only in `--mode placement`. Not used in de novo modes. | `null` |
 | **GROUP_CSV** | Optional path to a CSV file with `species,group` columns, used to bias gene sampling towards under-represented lineages/clades rather than sampling genomes uniformly. Leave unset (or point to a nonexistent path) to sample uniformly, as in de novo mode. | `""` (unset) |
+| **BATCH_SIZE** | *(`--mode placement` only)* Number of loci per LASTZ batch. `REF_DIR/samples` must already contain `out_batch_1.fa..out_batch_N.fa` split at this size, i.e. `N * BATCH_SIZE` must equal `GENE_COUNT`. | 250 |

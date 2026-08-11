@@ -1,156 +1,91 @@
 # Installation Methods
 
-Please follow any of the options below to install ROADIES in your system. 
+Please follow any of the options below to install ROADIES on your system.
 
 ## Option 1: Install via Bioconda (Recommended)
 
-1. Install Conda (if not installed):
+1. Install Conda, if you don't already have it, then make sure the `bioconda`/`conda-forge` channels are configured:
 
 ```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-chmod +x Miniconda3-latest-Linux-x86_64.sh
-./Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+export PATH="$HOME/miniconda3/bin:$PATH" && source ~/.bashrc
 
-export PATH="$HOME/miniconda3/bin:$PATH"
-source ~/.bashrc
-```
-
-2. Configure Conda channels:
-
-```bash
 conda config --add channels defaults
-```
-```bash
 conda config --add channels bioconda
-```
-```bash
 conda config --add channels conda-forge
 ```
 
-Verify the installation by running `conda` in your terminal
-
-3. Create and activate a custom environment:
+2. Create an environment and install ROADIES into it:
 
 ```bash
 conda create -n roadies_env python=3.9 ete3 seaborn
-```
-```bash
 conda activate roadies_env
-```
-
-4. Install ROADIES:
-
-```bash
 conda install roadies=0.1.10
 ```
 
-5. Locate the installed files:
+3. `conda install` puts the full repository contents (Snakemake rules, scripts, `config.yaml`, `run_roadies.py`, etc.) under `$CONDA_PREFIX/ROADIES` — that's your working directory from now on:
 
 ```bash
 cd $CONDA_PREFIX/ROADIES
 ```
 
-Now, you will be able to find the contents of the repository within this ROADIES folder.
-
-6. Run the following commands:
+4. The bioconda package doesn't vendor PASTA (the default multiple-sequence aligner), so build it from source once:
 
 ```bash
 git clone https://github.com/smirarab/pasta.git
 git clone https://github.com/smirarab/sate-tools-linux.git
-cd pasta
-python3 setup.py develop --user
+cd pasta && python3 setup.py develop --user && cd ..
 ```
 
-Also, in the `multi_align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of:
+Then, in `workflow/rules/multi_align.smk`, replace every `pasta.py` with `python pasta/run_pasta.py` and every `run_seqtools.py` with `python pasta/run_seqtools.py`.
 
-- `pasta.py` with `python pasta/run_pasta.py`
-- `run_seqtools.py` with `python pasta/run_seqtools.py`
-
-After following all these steps, now you are ready to follow the Quick Start section to run the pipeline. Make sure to go back to the main directory to follow the next steps:
-
-```bash
-cd ROADIES
-```
+You're now ready for Quick Start — run it from this `$CONDA_PREFIX/ROADIES` directory (`cd ROADIES` if you've since moved elsewhere and need to get back).
 
 ## Option 2: Install via DockerHub
 
-If you would like to install ROADIES using DockerHub, follow these steps:
-
-1. Pull the ROADIES image from DockerHub:
+1. Pull and run the prebuilt image:
 
 ```bash
 docker pull ang037/roadies:latest
-```
-2. Launch a container:
-
-```bash
 docker run -it ang037/roadies:latest
 ```
 
-These commands will launch the Docker container in interactive mode, with the roadies_env environment activated and the working directory set to the ROADIES repository containing all necessary files. Once you are able to access the ROADIES repository, refer to the Quick Start section to run the pipeline. 
+This launches an interactive container with the `roadies_env` conda environment already active and the working directory set to the ROADIES repository. Proceed to Quick Start.
 
 ## Option 3: Install via Local Docker Build
 
-1. Clone the ROADIES repository:
+1. Clone the repository and build the image:
 
 ```bash
 git clone https://github.com/TurakhiaLab/ROADIES.git
-```
-```bash
 cd ROADIES
-```
-
-2. Build and run the Docker container:
-
-```bash
 docker build -t roadies_image .
-```
-```bash
 docker run -it roadies_image
 ```
 
-Once you are able to access the ROADIES repository, refer to Quick Start instructions to run the pipeline. 
+Proceed to Quick Start once you're inside the container.
 
 ## Option 4: Install via Source Script
 
-1. Install the following dependencies (**requires sudo access**):
-
-- Java Runtime Environment (Version 1.7 or higher)
-- Python (Version 3.9 or higher)
-- `wget` and `unzip` commands
-- GCC (Version 11.4 or higher)
-- cmake (Download here: https://cmake.org/download/)
-- Boost library (Download here: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/)
-- zlib (Download here: http://www.zlib.net/)
-
-For Ubuntu, you can install these dependencies with: 
+1. Install the system dependencies (**requires sudo access**): Java Runtime Environment (1.7+), Python (3.9+), `wget`/`unzip`, GCC (11.4+), [cmake](https://cmake.org/download/), [Boost](https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/), [zlib](http://www.zlib.net/). On Ubuntu:
 
 ```bash
 sudo apt-get install -y wget unzip make g++ python3 python3-pip python3-setuptools git default-jre libgomp1 libboost-all-dev cmake
 ```
 
-2. Clone the repository:
+2. Clone the repository and run the setup script:
 
 ```bash
 git clone https://github.com/TurakhiaLab/ROADIES.git
-```
-```bash
 cd ROADIES
-```
-
-3. Run the installation script:
-
-```bash
-chmod +x roadies_env.sh
-```
-```bash
 source roadies_env.sh
 ```
 
-After successful setup (Setup complete message), your environment `roadies_env` will be activated. Proceed to Quick Start.
+`roadies_env.sh` creates and activates the `roadies_env` conda environment, then builds everything ROADIES needs from source — PASTA, and (for ROADIES_XP) TWILIGHT plus, best-effort, MLIPPER if CUDA and libpll are already present. A `Setup complete` message means you're ready for Quick Start.
 
 !!! Note
     If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
 !!! Note
-    `roadies_env.sh` also builds the additional tools needed for ROADIES_XP (TWILIGHT, and MLIPPER when CUDA and libpll are available). No extra installation steps are required to use `--mode placement`; GPU acceleration (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration) for details.
+    No extra steps are needed to use `--mode placement`; GPU acceleration (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration) for details, and re-run `roadies_env.sh` (or `bash MLIPPER/install/setup_host.sh`) once CUDA/libpll are available if MLIPPER was skipped at first setup.
