@@ -10,3 +10,4 @@ dependencies:
   - lastz=1.04.22
   - cmake
   - tbb
+  - parallel

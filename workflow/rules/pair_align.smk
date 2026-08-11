@@ -44,9 +44,10 @@ rule lastz:
 
 rule lastz2fasta:
 	input:
-		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   
+		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)
 	output:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa",id=IDS),
+		config["OUT_DIR"]+"/genes/mapping.txt",
 		report(config["OUT_DIR"]+"/plots/num_genes.png",caption="../report/num_genes_p.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/homologs.csv",caption="../report/homologs.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/num_genes.csv",caption="../report/num_genes_t.rst",category="Genes Report"),

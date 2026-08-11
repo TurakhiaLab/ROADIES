@@ -15,7 +15,7 @@ rule kegalign:
         config["OUT_DIR"] + "/benchmarks/{sample}.lastz.txt"
     threads: lambda wildcards: int(48)
     resources:
-        gpu = 4
+        gpu = gpu
     params:
         align_dir = config["OUT_DIR"] + "/alignments",
         identity = config['IDENTITY'],
@@ -26,7 +26,15 @@ rule kegalign:
         steps = config["STEPS"],
         deep_mode = str(deep_mode),
         scores_path = lambda wildcards: os.path.join(workflow.basedir, "..", config.get("SCORES", "HOXD55.q")),
-        num_gpu = 4
+        num_gpu = gpu,
+        # The shell block below cd's into a per-sample work directory before
+        # referencing these, so they must be absolute - Snakemake's
+        # {input.genome}/{input.genes}/{output.maf} wildcards are otherwise
+        # substituted as the relative paths they're declared with, which
+        # would resolve against the wrong directory once inside $sample_workdir.
+        genome_abs = lambda wildcards, input: os.path.abspath(input.genome),
+        genes_abs = lambda wildcards, input: os.path.abspath(input.genes),
+        maf_abs = lambda wildcards, output: os.path.abspath(output.maf)
     conda:
         "../envs/kegalign.yaml"
     shell:
@@ -38,12 +46,12 @@ rule kegalign:
         mkdir -p work
         cd work
 
-        /usr/bin/time faToTwoBit <(gzip -cdfq {input.genome}) ref.2bit
-        /usr/bin/time faToTwoBit <(gzip -cdfq {input.genes}) query.2bit
+        /usr/bin/time faToTwoBit <(gzip -cdfq {params.genome_abs}) ref.2bit
+        /usr/bin/time faToTwoBit <(gzip -cdfq {params.genes_abs}) query.2bit
 
         cd ..
 
-        /usr/bin/time -v kegalign {input.genome} {input.genes} work/ \
+        /usr/bin/time -v kegalign {params.genome_abs} {params.genes_abs} work/ \
             --num_gpu {params.num_gpu} \
             --num_threads {threads} > {wildcards.sample}_lastz-commands.txt
 
@@ -68,7 +76,7 @@ rule kegalign:
         /usr/bin/time -v parallel --max-procs {threads} \
             < {wildcards.sample}_lastz-commands.final.sh
 
-        (echo "##maf version=1"; cat *.maf-) > {output.maf}
+        (echo "##maf version=1"; cat *.maf-) > {params.maf_abs}
 
         rm -rf $sample_workdir
         """
@@ -76,9 +84,10 @@ rule kegalign:
 
 rule lastz2fasta:
 	input:
-		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)   
+		expand(config["OUT_DIR"]+"/alignments/{sample}.maf",sample=SAMPLES)
 	output:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa",id=IDS),
+		config["OUT_DIR"]+"/genes/mapping.txt",
 		report(config["OUT_DIR"]+"/plots/num_genes.png",caption="../report/num_genes_p.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/homologs.csv",caption="../report/homologs.rst",category="Genes Report"),
 		report(config["OUT_DIR"]+"/statistics/num_genes.csv",caption="../report/num_genes_t.rst",category="Genes Report"),

@@ -8,8 +8,9 @@ num_species = len(os.listdir(config["GENOMES"]))
 num_genomes = len(SAMPLES)
 
 def fasta_input_for_id(wildcards):
-	batch = (int(wildcards.id) - 1) // config["BATCH_SIZE"] + 1
-	_ = checkpoints.lastz2fasta_batch.get(batch=batch)
+	if batched_placement:
+		batch = (int(wildcards.id) - 1) // config["BATCH_SIZE"] + 1
+		_ = checkpoints.lastz2fasta_batch.get(batch=batch)
 	return config["OUT_DIR"] + f"/genes/gene_{wildcards.id}.fa"
 
 # Whether a locus gets a real placement.sh run (twilight/epa-ng/raxml-ng, all
@@ -77,19 +78,37 @@ rule pasta:
 		fi
 		'''
 
+# Batched alignment (lastz2fasta_batch.py) writes one mapping_batch_<n>.txt
+# per batch, since concurrent batches can run as separate cluster jobs and
+# appending to one shared file risks torn writes - those need concatenating
+# into the final genes/mapping.txt, which makes mapping.txt this rule's own
+# output. Non-batched alignment (lastz2fasta.py, in pair_align.smk) runs as a
+# single job and already writes genes/mapping.txt directly as ITS output -
+# mapping.txt must NOT also be declared as mergeTrees' output in that case,
+# since Snakemake deletes a rule's declared outputs before running it, which
+# would wipe the file lastz2fasta already wrote right before this rule's
+# shell command runs (whether or not that command tries to recreate it).
+mapping_outputs = {"mapping": config["OUT_DIR"]+"/genes/mapping.txt"} if batched_placement else {}
+mapping_cmd = (
+	"cat {0}/mapping_batch_*.txt > {0}/mapping.txt".format(config["OUT_DIR"]+"/genes")
+	if batched_placement
+	else "true"
+)
+
 rule mergeTrees:
 	input:
 		expand(config["OUT_DIR"]+"/genes/gene_{id}.fa.aln.raxml.bestTree",id=IDS)
 	output:
 		original_list=config["OUT_DIR"]+"/genetrees/original_list.txt",
 		merged_list=config["OUT_DIR"]+"/genetrees/gene_tree_merged.nwk",
-		mapping=config["OUT_DIR"]+"/genes/mapping.txt"
+		**mapping_outputs
 	resources:
 		mem_mb=4000
 	params:
 		msa_dir = config["OUT_DIR"]+"/genes",
 		plotdir = config["OUT_DIR"]+"/plots",
-		statdir = config["OUT_DIR"]+"/statistics"
+		statdir = config["OUT_DIR"]+"/statistics",
+		mapping_cmd = mapping_cmd
 	shell:
 		'''
 		for file in {params.msa_dir}/*.fa.aln.raxml.bestTree; do
@@ -97,5 +116,5 @@ rule mergeTrees:
             cat $file >> {output.merged_list}
             echo "$id, $(cat $file)" >> {output.original_list}
         done
-		cat {params.msa_dir}/mapping_batch_*.txt > {output.mapping}
+		{params.mapping_cmd}
 		'''

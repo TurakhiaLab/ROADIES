@@ -122,3 +122,30 @@ Ensure that the number of cores is greater than or equal to the number of instan
 ```bash
 python run_roadies.py --cores <available_cores> --config_path config/config.yaml
 ```
+
+## Error 7. MLIPPER fails with `undefined symbol: ATL_dGetNB` (GPU placement mode)
+
+You may see the following when running `--mode placement --gpu`:
+
+```bash
+MLIPPER/MLIPPER: symbol lookup error: /lib/x86_64-linux-gnu/liblapack.so.3: undefined symbol: ATL_dGetNB
+```
+
+This means your system's `liblapack.so.3`/`libblas.so.3` (via Debian/Ubuntu's `update-alternatives`) currently resolves to an ATLAS build that's missing its own `libatlas.so.3` dependency - a broken/incomplete ATLAS package install, unrelated to MLIPPER or ROADIES itself.
+
+### Solution
+
+Check which LAPACK/BLAS variant is active:
+
+```bash
+update-alternatives --display liblapack.so.3-x86_64-linux-gnu
+update-alternatives --display libblas.so.3-x86_64-linux-gnu
+```
+
+If a non-ATLAS alternative is listed (commonly under `/usr/lib/x86_64-linux-gnu/lapack/` and `/usr/lib/x86_64-linux-gnu/blas/`), you can point the dynamic linker at it for your ROADIES session without changing the system-wide default:
+
+```bash
+export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu/lapack:/usr/lib/x86_64-linux-gnu/blas:$LD_LIBRARY_PATH"
+```
+
+Then re-run `run_roadies.py`. If no non-ATLAS alternative exists on your system, reinstalling `libatlas3-base` (or your distro's equivalent) should restore the missing `libatlas.so.3` dependency.

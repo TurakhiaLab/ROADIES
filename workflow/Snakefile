@@ -22,6 +22,7 @@ mode = config.get("mode","accurate")
 deep_mode = config.get("deep_mode","False")
 MIN_ALIGN = config.get("MIN_ALIGN",4)
 gpu = int(config.get("gpu",0))
+cluster = config.get("cluster","False") == "True"
 
 SELECTED_SAMPLES = []
 od = {}
@@ -46,7 +47,13 @@ with open("sampling_output.txt") as f:
 		if line.startswith("#"):
 			section = line[1:].strip()  # Detect sections like "# SAMPLES"
 		elif section == "SAMPLES":
-			SAMPLES.append(line)
+			# SAMPLES is already populated by glob_wildcards() above - this
+			# section of sampling_output.txt just mirrors precompute_sampling.py's
+			# own view of the genome directory for external consumers. Appending
+			# it here would duplicate every genome in SAMPLES (each entry twice),
+			# which corrupts any rule that does index/count arithmetic over
+			# SAMPLES directly (e.g. mashtree.smk's per-genome sampling ranges).
+			pass
 		elif section == "SELECTED_SAMPLES":
 			SELECTED_SAMPLES.append(line)
 		elif section == "od":
@@ -68,10 +75,19 @@ elif (mode == "balanced"):
 		include: "rules/multi_align.smk"
 	include: "rules/fasttree.smk"
 elif (mode == "placement"):
+	# Batched pairwise alignment (out_batch_N.fa, checkpointed lastz2fasta_batch)
+	# exists purely to keep --cluster runs from turning into one sbatch job per
+	# locus; it requires REF_DIR/samples to already be pre-split into batches,
+	# which only a cluster-scale backbone build produces. A plain single-machine
+	# run always has a non-batched backbone (REF_DIR/samples/out.fa), so it uses
+	# the same non-batched pair_align.smk the non-GPU de novo modes use.
+	batched_placement = (gpu == 0 and cluster)
 	if gpu != 0:
 		include: "rules/pair_align_gpu.smk"
-	else:
+	elif cluster:
 		include: "rules/pair_align_placement_batch.smk"
+	else:
+		include: "rules/pair_align.smk"
 	include: "rules/placement.smk"
 else:
 	include: "rules/sampling.smk"

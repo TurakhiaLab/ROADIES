@@ -197,6 +197,7 @@ def run_snakemake(
         "deep_mode=" + str(deep_mode),
         "MIN_ALIGN=" + str(MIN_ALIGN),
         "gpu=" + str(gpu),
+        "cluster=" + str(cluster),
         "--use-conda",
         "--rerun-incomplete",
         "--conda-frontend", "conda"
@@ -414,7 +415,7 @@ if __name__ == "__main__":
     support_thr = config["SUPPORT_THRESHOLD"]
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
-    ref_path = config["REF_DIR"]
+    ref_path = config.get("REF_DIR")
     if clean:
         os.system("rm -r {0}".format(out_dir))
         os.system("mkdir -p " + out_dir)
@@ -430,7 +431,7 @@ if __name__ == "__main__":
                 f"found in {out_dir})"
             )
     sys.setrecursionlimit(2000)
-    os.system("snakemake --unlock")
+    os.system("snakemake --unlock --config config_path={0}".format(config_path))
     if ref_exist:
         ref_dists = []
     start_time = time.time()

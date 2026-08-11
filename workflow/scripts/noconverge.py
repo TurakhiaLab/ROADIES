@@ -149,6 +149,7 @@ def run_snakemake(cores, mode, config_path, fixed_parallel_instances, deep_mode,
         "deep_mode=" + str(deep_mode),
         "MIN_ALIGN=" + str(MIN_ALIGN),
         "gpu=" + str(gpu),
+        "cluster=" + str(cluster),
         "--use-conda",
         "--rerun-incomplete",
         "--conda-frontend", "conda"
@@ -311,7 +312,7 @@ if __name__ == "__main__":
     MIN_ALIGN = max(4, math.ceil(0.1 * NUM_GENOMES))
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
-    ref_path = config["REF_DIR"]
+    ref_path = config.get("REF_DIR")
     if clean:
         os.system("rm -r {0}".format(roadies_dir))
         os.system("mkdir {0}".format(roadies_dir))
@@ -319,7 +320,7 @@ if __name__ == "__main__":
     else:
         os.makedirs(roadies_dir, exist_ok=True)
     sys.setrecursionlimit(2000)
-    os.system("snakemake --unlock")
+    os.system("snakemake --unlock --config config_path={0}".format(config_path))
     # initialize lists for runs and distances
     time_stamps = []
     if ref_exist:
