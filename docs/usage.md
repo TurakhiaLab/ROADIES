@@ -143,3 +143,6 @@ Each job is submitted with `--cpus-per-task`/`--mem` set from that rule's own de
 !!! Note
     `placement_converge.py` (the experimental iterative backbone+placement wrapper, see the [ROADIES_XP guide](roadies_xp.md)) does not support `--cluster`. Use `run_roadies.py --mode placement --cluster` directly for cluster execution of placement mode.
 
+!!! Note
+    `--mode placement --cluster` additionally requires a cluster-scale backbone whose `samples/` directory is already pre-split into batches (`BATCH_SIZE` in `config.yaml`) — a plain, non-`--cluster` backbone build won't have this. See the [ROADIES_XP guide](roadies_xp.md#placement-mode) for details.
+

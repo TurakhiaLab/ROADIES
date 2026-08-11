@@ -38,6 +38,8 @@ ROADIES is a fully automated, scalable pipeline for inferring phylogenetic speci
 
 **ROADIES_XP** extends ROADIES with GPU-accelerated alignment/tree-building and a *placement* mode for growing or updating an existing species tree with new genomes, without recomputing it from scratch — see [ROADIES_XP](#xp) below. It's opt-in; de novo tree inference (the original PNAS pipeline) remains the default.
 
+**Requirements:** Linux (tested on Ubuntu 20.04/22.04). GPU features (ROADIES_XP, optional) additionally need an NVIDIA GPU with CUDA.
+
 ### 🟡 For a detailed overview of ROADIES' features and configuration options, please visit our [Wiki](https://turakhialab.github.io/ROADIES/).
 
 ### 🟡 If you encounter issues while running the pipeline, please refer to [this page](https://turakhialab.github.io/ROADIES/troubleshooting/) for common errors and troubleshooting tips.

@@ -41,6 +41,9 @@ python run_roadies.py --cores 16 --mode placement
 
 The resulting species tree (`roadies.nwk`) is saved in the current run's `OUT_DIR`, same as de novo mode.
 
+!!! Note
+    A plain (non-`--cluster`) placement run just needs `REF_DIR/samples/out.fa`, which any de novo or placement backbone build already produces automatically — no extra setup. Placement **with** `--cluster` is different: it requires the backbone's samples to already be pre-split into `REF_DIR/samples/out_batch_1.fa..out_batch_N.fa` (see `BATCH_SIZE` below), which only a cluster-scale backbone build produces. See [Run ROADIES on a SLURM cluster](usage.md#run-roadies-on-a-slurm-cluster) for details.
+
 ### Grow vs. update
 
 By default (no `--grow`), placement mode re-infers the combined species tree freely from the backbone's and query's gene trees together — the final topology can revise relationships from the original backbone tree ("**update**").
@@ -63,10 +66,14 @@ python run_roadies.py --cores 16 --mode placement --gpu 1       # placement, GPU
 GPU mode requires the GPU-specific tools to be built, which `roadies_env.sh` handles automatically when the necessary build dependencies are present on your system:
 
 - **TWILIGHT**: built automatically; uses CUDA if `nvcc` is available, falls back to a CPU build otherwise.
-- **MLIPPER**: only built if both `nvcc` (CUDA) and `libpll` (`pll.h`) are found. If they're missing at setup time, `roadies_env.sh` skips the build with a warning — GPU *placement* specifically needs MLIPPER, so build it once CUDA/libpll are available:
+- **MLIPPER**: not shipped as a prebuilt binary — always built from source on your machine. `roadies_env.sh` attempts a best-effort build only if both `nvcc` (CUDA) and `libpll` (`pll.h`) are already found; it skips with a warning otherwise, since these two aren't installed automatically. Either way, MLIPPER's build also needs `gfortran`, `libblas-dev`, `liblapack-dev`, and `libtbb-dev` (not installed by `roadies_env.sh`). Once CUDA/libpll/these are available, build (or rebuild) it explicitly:
   ```bash
   bash MLIPPER/install/setup_host.sh
   ```
+  Pass `--skip-apt` if you've already installed the apt dependencies yourself (the script's default apt install needs sudo); see `bash MLIPPER/install/setup_host.sh --help` for all options (e.g. pointing at a non-default `libpll` install location).
+
+  !!! Note
+      If MLIPPER fails at *runtime* with `undefined symbol: ATL_dGetNB` (not a build failure), that's an unrelated, pre-existing broken BLAS/LAPACK alternative on your system, not a MLIPPER or ROADIES bug — see [Troubleshooting: Error 7](troubleshooting.md#error-7-mlipper-fails-with-undefined-symbol-atl_dgetnb-gpu-placement-mode).
 - **KegAlign**: installed via the `kegalign` conda environment (`workflow/envs/kegalign.yaml`), used automatically by Snakemake's `--use-conda` for the `kegalign` rule.
 
 ## Iterative backbone + placement convergence
@@ -106,4 +113,4 @@ These parameters are used by ROADIES_XP in addition to the ones documented in th
 | --- | --- | --- |
 | **REF_DIR** | Path to the backbone iteration's output directory, used only in `--mode placement`. Not used in de novo modes. | `null` |
 | **GROUP_CSV** | Optional path to a CSV file with `species,group` columns, used to bias gene sampling towards under-represented lineages/clades rather than sampling genomes uniformly. Leave unset (or point to a nonexistent path) to sample uniformly, as in de novo mode. | `""` (unset) |
-| **BATCH_SIZE** | *(`--mode placement` only)* Number of loci per LASTZ batch. `REF_DIR/samples` must already contain `out_batch_1.fa..out_batch_N.fa` split at this size, i.e. `N * BATCH_SIZE` must equal `GENE_COUNT`. | 250 |
+| **BATCH_SIZE** | *(`--mode placement` with `--cluster` only)* Number of loci per LASTZ batch. `REF_DIR/samples` must already contain `out_batch_1.fa..out_batch_N.fa` split at this size, i.e. `N * BATCH_SIZE` must equal `GENE_COUNT`. Ignored for plain (non-cluster) placement runs — see the note below. | 250 |

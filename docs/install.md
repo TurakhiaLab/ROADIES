@@ -2,6 +2,9 @@
 
 Please follow any of the options below to install ROADIES on your system.
 
+!!! Note
+    ROADIES requires Linux (tested on Ubuntu 20.04/22.04). GPU features (ROADIES_XP, optional) additionally need an NVIDIA GPU with CUDA.
+
 ## Option 1: Install via Bioconda (Recommended)
 
 1. Install Conda, if you don't already have it, then make sure the `bioconda`/`conda-forge` channels are configured:

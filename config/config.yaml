@@ -46,7 +46,9 @@ REF_DIR: null
 #towards under-represented lineages/clades. Leave unset or point to a
 #nonexistent path to sample uniformly across all input genomes.
 GROUP_CSV: ""
-#[Placement mode only] Loci per lastz batch. REF_DIR/samples must already
+#[Placement mode + --cluster only] Loci per lastz batch. Only read when both
+#--mode placement and --cluster are used - REF_DIR/samples must already
 #contain out_batch_1.fa..out_batch_N.fa split at this size (N*BATCH_SIZE must
-#equal GENE_COUNT).
+#equal GENE_COUNT). Plain (non-cluster) placement runs ignore this and just
+#need REF_DIR/samples/out.fa, produced automatically by any backbone build.
 BATCH_SIZE: 250
