@@ -28,8 +28,21 @@ SELECTED_SAMPLES = []
 od = {}
 od_e = {}
 section = None
-if not os.path.exists("sampling_output.txt"):
-	group_csv_arg = config.get("GROUP_CSV", "")
+group_csv_arg = config.get("GROUP_CSV", "")
+expected_fingerprint = "{0}|{1}|{2}".format(config["GENOMES"], num, group_csv_arg if group_csv_arg and os.path.exists(group_csv_arg) else "")
+
+# sampling_output.txt caches precompute_sampling.py's (slow) output so a
+# resumed run doesn't redo it - but that's only valid for the same
+# GENOMES/GENE_COUNT/GROUP_CSV it was computed for. Regenerate if it's
+# missing, unreadable, or was computed for different inputs (e.g. GENOMES
+# pointing at a different directory since the last run).
+needs_precompute = True
+if os.path.exists("sampling_output.txt"):
+	with open("sampling_output.txt") as f:
+		if f.readline().strip() == "# CONFIG_FINGERPRINT" and f.readline().strip() == expected_fingerprint:
+			needs_precompute = False
+
+if needs_precompute:
 	if group_csv_arg and os.path.exists(group_csv_arg):
 		ret = subprocess.run(
 			["python3", "workflow/scripts/precompute_sampling.py", "--group_csv", group_csv_arg, str(num), config["GENOMES"]]

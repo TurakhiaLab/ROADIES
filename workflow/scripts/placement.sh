@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 seqFile=$1
 threads=$2
@@ -13,6 +14,20 @@ roadies_root=${10}
 gpu=${11}
 
 export OMP_NUM_THREADS=$threads
+
+# Fail fast with a clear message instead of a silent "command not found" that
+# only surfaces several steps later as an unrelated-looking error (e.g. an
+# empty alignment file or a raxml-ng "file not found").
+if [[ ! -x "${roadies_root}/TWILIGHT/bin/twilight" ]]; then
+	echo "ERROR: ${roadies_root}/TWILIGHT/bin/twilight not found or not executable." >&2
+	echo "Placement mode needs TWILIGHT built - run roadies_env.sh again (it builds this automatically) or see the ROADIES_XP guide." >&2
+	exit 1
+fi
+if [[ "$gpu" -gt 0 && ! -x "${roadies_root}/MLIPPER/MLIPPER" ]]; then
+	echo "ERROR: ${roadies_root}/MLIPPER/MLIPPER not found or not executable." >&2
+	echo "GPU placement needs MLIPPER built - run roadies_env.sh again with CUDA/libpll available, or: bash MLIPPER/install/setup_host.sh" >&2
+	exit 1
+fi
 
 mkdir -p $workDir
 mkdir $workDir/iter0_msa_input

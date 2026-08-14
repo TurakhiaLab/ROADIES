@@ -67,7 +67,7 @@ conda activate roadies_env
 conda install roadies=0.1.10
 cd $CONDA_PREFIX/ROADIES   # the installed package contents live here
 ```
-PASTA (the default multiple-sequence-aligner) still needs a one-time source build — see [Install: Bioconda](https://turakhialab.github.io/ROADIES/install/#option-1-install-via-bioconda-recommended) for the remaining steps.
+See [Install: Bioconda](https://turakhialab.github.io/ROADIES/install/#option-1-install-via-bioconda-recommended) for the remaining steps.
 
 **Option 2: DockerHub** — pull and run the prebuilt image:
 ```bash

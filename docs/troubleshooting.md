@@ -4,7 +4,7 @@
 
 ### Solution
 
-When running the pipeline, if you encounter that the pipeline fails by the failure of PASTA, please install PASTA from source by executing the following commands. Please run the following steps from the main ROADIES repository directory (after doing `cd ROADIES`) - within the activated Conda environment:
+Bioconda's `pasta` package (>=1.9.0) normally installs `run_pasta.py`/`run_seqtools.py` correctly on its own - the rules in `workflow/rules/multi_align.smk` already call those names directly, so this shouldn't come up in a clean install. If it still does (e.g. `run_pasta.py`/`run_seqtools.py` not found, or resolving to the wrong install), build PASTA from source instead. Run the following from the main ROADIES repository directory (after doing `cd ROADIES`), within the activated Conda environment:
 
 ```bash
 git clone https://github.com/smirarab/pasta.git
@@ -13,8 +13,7 @@ cd pasta
 python3 setup.py develop --user
 ```
 
-Also, in the `align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of `pasta.py` with `python pasta/run_pasta.py`, AND
-`run_seqtools.py` with `python pasta/run_seqtools.py`.
+This installs `run_pasta.py`/`run_seqtools.py` as scripts under `~/.local/bin`, which takes priority on `PATH` over any conda environment's own copy - including in *other* conda environments on the same machine later on. If PASTA behaves oddly after switching environments or machines, check for a stray `~/.local/bin/run_pasta.py`/`run_seqtools.py` from a past run of this workaround before assuming something else is wrong.
 
 After doing this change, please re-run the ROADIES pipeline.
 

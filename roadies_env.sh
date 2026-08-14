@@ -49,39 +49,21 @@ if [ ! -d "TWILIGHT" ]; then
     git clone https://github.com/TurakhiaLab/TWILIGHT.git
 fi
 if [ -d "TWILIGHT" ] && [ ! -f "TWILIGHT/bin/twilight" ]; then
-    # VERIFIED (2026-08-07, bioconda packaging validation - see
-    # packaging/bioconda/README.md for the full writeup): TWILIGHT's own
-    # CMakeLists.txt hardcodes -march=native, which is wrong for portability
-    # (ties the binary to whatever CPU features this specific build host
-    # happens to have) and, independently, causes nvcc to fail parsing
-    # newer GCC's AVX512BF16/AMX intrinsics headers on hosts with both a
-    # recent GCC (12.2+) and an AVX512BF16-capable CPU
-    # ("__builtin_ia32_... is undefined"). Patch to the portable
-    # x86-64-v3 baseline (AVX2/FMA/BMI2, safe since Haswell/2013) so this
-    # build - and the resulting binary - work the same regardless of which
-    # host builds it.
+    # TWILIGHT/CMakeLists.txt hardcodes -march=native, which ties the binary
+    # to this specific host's CPU features and can also break nvcc parsing
+    # newer GCC's AVX512BF16/AMX intrinsics headers. Portable baseline
+    # instead (AVX2/FMA/BMI2, safe since Haswell/2013).
     sed -i 's/-march=native/-march=x86-64-v3/g' TWILIGHT/CMakeLists.txt
     cd TWILIGHT
-    # Force TWILIGHT's own vendored oneTBB build deterministically rather
-    # than trusting whatever `libtbb-dev` a given host's package manager
-    # happens to provide - some distros' TBB packages don't ship a modern
-    # CMake config (find_package(TBB CONFIG REQUIRED) then fails outright),
-    # and that's not something worth discovering per-host. Also apply two
-    # more fixes discovered the same way: cmake >= 4 refuses oneTBB's own
-    # `cmake_minimum_required(VERSION <3.5)`, and building oneTBB's default
-    # target compiles its full test suite (not needed - only the library +
-    # TBBConfig.cmake matter), which can hit a GCC 12.4 false-positive
-    # -Wstringop-overflow treated as fatal in one test file.
+    # Force TWILIGHT's vendored oneTBB build rather than trusting whatever
+    # libtbb-dev a host's package manager provides (some don't ship a modern
+    # CMake config), and route around two oneTBB build issues on newer
+    # toolchains: cmake >=4 refusing its cmake_minimum_required(<3.5), and
+    # its test suite hitting a GCC 12.4 -Wstringop-overflow false positive.
     CMAKE_WRAP_DIR="$(mktemp -d)"
     REAL_CMAKE="$(command -v cmake)"
-    # Belt-and-suspenders: on a cmake used inside a hermetic build sandbox
-    # (verified during bioconda packaging), check_language(CUDA) failed to
-    # find nvcc via PATH or the documented CUDACXX env var - only an
-    # explicit -DCMAKE_CUDA_COMPILER worked. Not reproduced on a plain host
-    # with an older cmake (3.28) here, so this may be specific to that
-    # sandboxing rather than cmake itself - but injecting it is harmless
-    # (matches what PATH-based detection would find anyway) and removes any
-    # doubt on hosts with a newer cmake.
+    # CMake's check_language(CUDA) auto-detection doesn't reliably find nvcc
+    # via PATH/CUDACXX in every environment - pass it explicitly when found.
     REAL_NVCC="$(command -v nvcc || true)"
     cat > "${CMAKE_WRAP_DIR}/cmake" <<EOF
 #!/bin/bash

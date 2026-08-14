@@ -52,3 +52,8 @@ GROUP_CSV: ""
 #equal GENE_COUNT). Plain (non-cluster) placement runs ignore this and just
 #need REF_DIR/samples/out.fa, produced automatically by any backbone build.
 BATCH_SIZE: 250
+#[--cluster only] sbatch settings for submitted jobs - set these to match
+#your own SLURM cluster (partition/account names, max walltime)
+CLUSTER_PARTITION: "long"
+CLUSTER_ACCOUNT: "standard"
+CLUSTER_TIME: "8-0"

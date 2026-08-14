@@ -86,28 +86,17 @@ def find_resume_point(out_dir):
 
 
 # Rules that spawn one Snakemake job per sampled locus (up to GENE_COUNT
-# jobs), keyed by mode. Under --cluster these get grouped so they don't each
-# turn into a separate sbatch submission. Each entry is (rule, group_name,
-# group_size) - rules sharing a group_name get bundled into the same sbatch
-# submissions.
+# jobs), keyed by mode. Under --cluster, rules sharing a group_name are
+# bundled into one sbatch submission of group_size jobs instead of one
+# submission per job.
 #
-# --group-components snowballs when a group has far more members than fit in
-# one Snakemake scheduling wave (i.e. more than roughly --jobs): the DAG's
-# incremental update loop re-runs _update_group_components() on every new
-# wave of discovered jobs, and each call re-chunks *all* jobs assigned to
-# that group id so far - including ones already merged into a group by a
-# PREVIOUS call. A group-of-4 formed in wave 1 becomes one "component" going
-# into wave 2's chunking, gets merged with another already-formed group-of-4,
-# and keeps compounding across waves. Confirmed live: lastz_batch was
-# configured group-of-4 (16 cpu/62.5G requested) but actually executed with
-# 16 members (needed ~64cpu/256G), causing the sbatch allocation to OOM-kill
-# 6 of 16 concurrent lastz_40 processes. placement's lastz_batch (352 total
-# jobs) and pasta (up to 32000) both vastly exceed --jobs 48, so both are
-# left ungrouped here - each job requests exactly its own declared
-# threads/resources with no bin-packing/merge risk. accurate/balanced modes
-# haven't hit this in practice yet but share the identical mechanism (same
-# many-disconnected-jobs-under-a-jobs-cap shape) - treat their grouping as
-# equally suspect before relying on it for a real run.
+# Keep group_size small relative to --jobs: --group-components re-chunks
+# ALL jobs assigned to a group id on every new scheduling wave, including
+# ones already merged by a previous wave, so a group can silently balloon
+# past its declared size (and its sbatch resource request) as more jobs are
+# discovered. lastz_batch/pasta here comfortably exceed --jobs on their own
+# and are left ungrouped for that reason - each job just requests its own
+# declared threads/resources.
 GROUPED_RULES = {
     "accurate": [
         ("pasta", "group0", 250),
@@ -127,23 +116,18 @@ GROUPED_RULES = {
 # --jobs/--cores/--resources below are the *ceiling* Snakemake uses to
 # bin-pack grouped jobs (see pasta's per-locus resources in placement.smk) -
 # actual per-job requests still come from each rule's own threads/resources.
-def cluster_snakemake_args(mode):
+def cluster_snakemake_args(mode, partition, account, time_limit):
     args = [
         "--jobs", "200",
         "--cores", "64",
         "--resources", "mem_mb=256000",
         "--latency-wait", "120",
         "--keep-going",
-        # Snakemake defaults to --scheduler ilp, which solves an integer
-        # linear program over every currently-ready job each round to
-        # optimize resource packing. Fine when few jobs are ready at once,
-        # but placement's pasta stage has ~100k+ mutually-independent jobs
-        # all ready simultaneously (nothing depends on anything else), so
-        # ILP has to optimize over a huge candidate pool every round. greedy
-        # has nothing meaningful to optimize here anyway - every pasta job
-        # wants the same threads/mem_mb - so its speed is pure upside for
-        # this workload. See noconverge.py's cluster_snakemake_args for the
-        # measurements this was based on.
+        # greedy instead of Snakemake's default ilp scheduler: placement's
+        # pasta stage has ~100k+ mutually independent jobs ready at once,
+        # and ilp's per-round optimization over that many candidates became
+        # the wall-clock bottleneck. greedy has nothing to optimize here
+        # anyway, since every pasta job wants the same threads/mem_mb.
         "--scheduler", "greedy",
     ]
     grouped_rules = GROUPED_RULES.get(mode, [])
@@ -162,13 +146,13 @@ def cluster_snakemake_args(mode):
         (
             "sbatch "
             "--job-name=ROADIES_run "
-            "--partition=long "
-            "--account=standard "
+            f"--partition={partition} "
+            f"--account={account} "
             "--nodes=1 "
             "--ntasks=1 "
             "--cpus-per-task={threads} "
             "--mem={resources.mem_mb}M "
-            "--time=8-0 "
+            f"--time={time_limit} "
             "--output=%x_%j.out "
             "--error=%x_%j.err"
         ),
@@ -178,7 +162,8 @@ def cluster_snakemake_args(mode):
 
 # function to run snakemake with settings and add to run folder
 def run_snakemake(
-    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster
+    cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster,
+    cluster_partition, cluster_account, cluster_time
 ):
 
     # Set threads per instance dynamically
@@ -186,7 +171,7 @@ def run_snakemake(
 
     cmd = ["snakemake"]
     if cluster:
-        cmd += cluster_snakemake_args(mode)
+        cmd += cluster_snakemake_args(mode, cluster_partition, cluster_account, cluster_time)
     else:
         cmd += ["--cores", str(cores)]
     cmd += [
@@ -241,6 +226,17 @@ def combine_iter(out_dir, iteration, cores, roadies_dir):
     os.replace(master_gt_tmp, out_dir + "/master_gt.nwk")
     os.replace(master_map_tmp, out_dir + "/master_map.txt")
 
+    # ASTRAL-Pro3 segfaults on 0 input gene trees rather than erroring
+    # cleanly - catch it here with a clear message (most often means every
+    # sampled locus failed MIN_ALIGN) instead of relying on the generic
+    # "astral-pro3 failed" below to explain what actually went wrong.
+    if os.path.getsize(out_dir + "/master_gt.nwk") == 0:
+        raise RuntimeError(
+            f"No gene trees were produced for {run} (master_gt.nwk is empty) - "
+            "every sampled locus likely failed the MIN_ALIGN species-count filter. "
+            "Try more genomes, a higher GENE_COUNT, or relaxing IDENTITY/COVERAGE in config.yaml."
+        )
+
     # Same reasoning for the ASTRAL outputs: write to temp paths, only
     # promote to the final {run}.nwk name (the file resume uses as proof
     # this iteration is done) once both calls have actually succeeded.
@@ -290,7 +286,10 @@ def converge_run(
     ref_path,
     gpu,
     grow,
-    cluster
+    cluster,
+    cluster_partition,
+    cluster_account,
+    cluster_time
 ):
     # Per-iteration scratch space - always wiped fresh regardless of --clean,
     # since each iteration's Snakemake run needs a clean DAG/working
@@ -307,7 +306,8 @@ def converge_run(
         )  # Read initial GENE_COUNT value
         update_config(config_path, base_gene_count)
     run_snakemake(
-        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster
+        cores, mode, out_dir, run, roadies_dir, config_path, fixed_parallel_instances, deep_mode, MIN_ALIGN, gpu, cluster,
+        cluster_partition, cluster_account, cluster_time
     )
     # merging gene trees and mapping files
     gene_trees = combine_iter(out_dir, iteration, cores, roadies_dir)
@@ -416,6 +416,9 @@ if __name__ == "__main__":
     roadies_dir = config["OUT_DIR"]
     fixed_parallel_instances = config["NUM_INSTANCES"]
     ref_path = config.get("REF_DIR")
+    cluster_partition = config.get("CLUSTER_PARTITION", "long")
+    cluster_account = config.get("CLUSTER_ACCOUNT", "standard")
+    cluster_time = config.get("CLUSTER_TIME", "8-0")
     if clean:
         os.system("rm -r {0}".format(out_dir))
         os.system("mkdir -p " + out_dir)
@@ -455,7 +458,10 @@ if __name__ == "__main__":
             ref_path,
             gpu,
             grow,
-            cluster
+            cluster,
+            cluster_partition,
+            cluster_account,
+            cluster_time
         )
         curr_time = time.time()
         curr_time_l = time.asctime(time.localtime(time.time()))

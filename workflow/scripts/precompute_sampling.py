@@ -129,6 +129,11 @@ for species in SELECTED_SAMPLES:
 
 # Save values to text file
 with open("sampling_output.txt", "w") as f:
+    # Fingerprint of the inputs this sampling plan was computed from, so a
+    # later run with different GENOMES/num/group_csv doesn't silently reuse
+    # a stale plan computed for a different genome directory.
+    f.write("# CONFIG_FINGERPRINT\n")
+    f.write(f"{args.genomes}|{args.num}|{args.group_csv or ''}\n")
     f.write("# SAMPLES\n")
     for s in SAMPLES:
         f.write(f"{s}\n")

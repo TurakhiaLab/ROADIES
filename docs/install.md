@@ -33,17 +33,10 @@ conda install roadies=0.1.10
 cd $CONDA_PREFIX/ROADIES
 ```
 
-4. The bioconda package doesn't vendor PASTA (the default multiple-sequence aligner), so build it from source once:
-
-```bash
-git clone https://github.com/smirarab/pasta.git
-git clone https://github.com/smirarab/sate-tools-linux.git
-cd pasta && python3 setup.py develop --user && cd ..
-```
-
-Then, in `workflow/rules/multi_align.smk`, replace every `pasta.py` with `python pasta/run_pasta.py` and every `run_seqtools.py` with `python pasta/run_seqtools.py`.
-
 You're now ready for Quick Start — run it from this `$CONDA_PREFIX/ROADIES` directory (`cd ROADIES` if you've since moved elsewhere and need to get back).
+
+!!! Note
+    Bioconda's `pasta` package (the default multiple-sequence aligner) already installs `run_pasta.py`/`run_seqtools.py` correctly — no manual PASTA build should be needed. If the pipeline does fail on the PASTA step, see [Troubleshooting: Issues with PASTA](troubleshooting.md#error-1-issues-with-pasta).
 
 ## Option 2: Install via DockerHub
 

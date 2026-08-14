@@ -135,7 +135,7 @@ Add `--cluster` to `run_roadies.py` (works with `--noconverge` and with de novo/
 python run_roadies.py --cores 64 --cluster
 ```
 
-Each job is submitted with `--cpus-per-task`/`--mem` set from that rule's own declared `threads`/`resources` (never a flat hardcoded size), and jobs that spawn one task per sampled locus (e.g. `pasta`) are grouped into batches so they don't turn into thousands of individual `sbatch` submissions. The submit command (partition, account, time limit, etc.) is defined in `cluster_snakemake_args()` in `workflow/scripts/converge.py`/`noconverge.py` — edit it there to match your cluster's SLURM configuration (partition name, account, walltime).
+Each job is submitted with `--cpus-per-task`/`--mem` set from that rule's own declared `threads`/`resources` (never a flat hardcoded size), and jobs that spawn one task per sampled locus (e.g. `pasta`) are grouped into batches so they don't turn into thousands of individual `sbatch` submissions. The submit command's partition, account, and walltime come from `CLUSTER_PARTITION`, `CLUSTER_ACCOUNT`, and `CLUSTER_TIME` in `config.yaml` — set these to match your own cluster before using `--cluster`.
 
 !!! Note
     Launch `run_roadies.py --cluster` itself from a persistent session (e.g. `tmux`/`screen`, or as its own lightweight `sbatch`/login-node job) — it stays alive submitting and polling the per-rule jobs for the whole run.

@@ -9,25 +9,14 @@ package:
 source:
   - url: https://github.com/TurakhiaLab/ROADIES/archive/v{{ version }}.tar.gz
     sha256: REPLACE_ME  # TODO: sha256sum of the v{{ version }} release tarball once it exists
-  # libpll has no bioconda/conda-forge package (checked both channels: absent).
-  # Vendored here purely to satisfy MLIPPER's link-time dependency. Verified:
-  # xflouris/libpll tag "0.3.2" exists (no "v" prefix) and matches the version
-  # Ubuntu ships as libpll-dev 0.3.2-2 (Source: libpll, Homepage:
-  # http://www.libpll.org/, Debian Med Packaging Team). Build system is
-  # autotools (Makefile.am/configure.ac/autogen.sh), confirmed from the repo.
-  # VERIFIED (2026-08-06, GPU host): MLIPPER/src/ only calls two libpll
-  # functions anywhere - pll_rtree_parse_newick/pll_rtree_destroy - both from
-  # the precision-independent Newick-parsing subset of the API; it never
-  # touches the CLV/likelihood functions where libpll vs. libpll-2's
-  # float/double split actually lives. Rebuilt MLIPPER from source against a
-  # freshly-built copy of this exact vendored libpll and ran a real GPU
-  # placement; matched the repo's already-tracked MLIPPER binary (which
-  # happens to link against a single-precision libpll-2 install on that
-  # host) on topology, with log-likelihoods agreeing to 7 significant
-  # figures. Safe as vendored here, provided build and link always use a
-  # matching header+lib pair (already guaranteed by the Makefile's
-  # PLL_INC_DIR/PLL_LIB_DIR pairing) - see packaging/bioconda/README.md for
-  # the full writeup.
+  # libpll has no bioconda/conda-forge package - vendored here to satisfy
+  # MLIPPER's link-time dependency. Tag 0.3.2 matches Ubuntu's libpll-dev
+  # 0.3.2-2 (upstream: xflouris/libpll, autotools build). MLIPPER's src/
+  # only uses libpll's precision-independent Newick-parsing API, so it's
+  # safe against either libpll or libpll-2 as long as build/link always use
+  # a matching header+lib pair (already guaranteed by the Makefile's
+  # PLL_INC_DIR/PLL_LIB_DIR pairing) - see README.md for the full writeup
+  # and the GPU-tested verification behind this.
   - git_url: https://github.com/xflouris/libpll.git
     git_rev: {{ libpll_version }}
     folder: libpll-src
@@ -47,19 +36,14 @@ requirements:
     - cuda-version >=12.2,<13         # keep in sync with TWILIGHT's own CUDA build path
     - cmake                           # also needed to vendor-build TWILIGHT (install/buildTWILIGHT.sh)
     - make
-    - autoconf                        # libpll's build system is autotools (confirmed: Makefile.am/configure.ac/autogen.sh)
+    - autoconf                        # libpll's build system is autotools
     - automake
     - libtool
     - pkg-config
     - git                             # build.sh git-clones TWILIGHT (buildTWILIGHT.sh's own wget dep is in host:)
   host:
-    # VERIFIED (2026-08-06/07): matches roadies_env.sh's actual working dev
-    # setup (`mamba create ... python=3.11 ...`), which is the ground truth
-    # for what this codebase runs against day to day - NOT the ==3.9 the
-    # live v0.1.10 bioconda recipe currently pins. (An earlier pass in this
-    # session bumped this to 3.12 to satisfy kegalign's hard python 3.12.*
-    # pin, before realizing kegalign shouldn't be a run: dep at all - see the
-    # note by the old `twilight`/`kegalign` run: entries below.)
+    # Matches roadies_env.sh's actual dev setup (python=3.11), not the ==3.9
+    # the live v0.1.10 bioconda recipe pins.
     - python ==3.11
     - pip
     - boost-cpp
@@ -72,18 +56,11 @@ requirements:
     - perl-module-build
     - liblapack                       # MLIPPER links -llapack -lblas directly
     - libblas
-    # VERIFIED (2026-08-06/07, real conda-build run): an unpinned
-    # cuda-cudart-dev here let the solver pick the newest available (12.9)
-    # while the build: compiler was pinned to cuda-version 12.2 (via
-    # conda_build_config.yaml's cuda_compiler_version) - nvlink then
-    # refused to link with "libcudadevrt.a ... newer than toolkit (129 vs
-    # 122)". Standard conda-forge CUDA recipes (TWILIGHT/KegAlign included)
-    # pin host-side CUDA packages to the same cuda-version as the compiler
-    # for exactly this reason - this recipe was missing that pin. Range
-    # mirrors cuda-cudart-dev's own self-declared `cuda-version
-    # >=12.2,<12.3.0a0` dependency for its 12.2.140 build (checked via
-    # `conda search cuda-cudart-dev=12.2* --info`) - keep in sync with
-    # conda_build_config.yaml's cuda_compiler_version if that ever changes.
+    # Must stay pinned to the same cuda-version as the build: compiler
+    # (conda_build_config.yaml's cuda_compiler_version) - left unpinned, the
+    # solver can pick a newer cudart than the toolkit and nvlink refuses to
+    # link ("libcudadevrt.a ... newer than toolkit"). Standard practice in
+    # conda-forge CUDA recipes (TWILIGHT/KegAlign included).
     - cuda-cudart-dev >=12.2,<12.3    # [linux]
   run:
     - python ==3.11
@@ -108,31 +85,14 @@ requirements:
     - lastz >=1.04.52
     - aster >=1.19
     # --- ROADIES_XP additions ---
-    # VERIFIED (2026-08-06/07, real conda-build run + reading the actual
-    # rules): `twilight` and `kegalign` do NOT belong here as plain run:
-    # deps - discovered this only after their bioconda/conda-forge builds
-    # produced a real, unresolvable solver conflict (kegalign pins
-    # tbb>=2020.2,<2021.0.0a0 on every published build; twilight>=0.1.3 pins
-    # tbb>=2021.13.0 on every published build - disjoint across their entire
-    # version history, confirmed via `conda search ... --info` on both).
-    # Investigating *why* showed the conflict is moot for this codebase:
-    #   - TWILIGHT is never installed as a conda package at all.
-    #     roadies_env.sh git-clones TurakhiaLab/TWILIGHT and runs
-    #     `install/buildTWILIGHT.sh [cuda]`, which vendors its OWN oneTBB
-    #     2021.9.0 build from source - it's invoked via the hardcoded path
-    #     ${roadies_root}/TWILIGHT/bin/twilight (see workflow/scripts/
-    #     placement.sh), not looked up on $PATH. build.sh below now
-    #     vendor-builds it the same way, mirroring the MLIPPER/libpll
-    #     pattern already in this recipe.
-    #   - kegalign is invoked exclusively from the `kegalign` Snakemake rule
-    #     (workflow/rules/pair_align_gpu.smk) via `conda:
-    #     "../envs/kegalign.yaml"` - Snakemake's --use-conda creates a
-    #     completely separate, isolated env for just that rule, so it never
-    #     needs to coexist with twilight/epa-ng/gappa in the main
-    #     environment. This is presumably *why* upstream isolated it that
-    #     way in the first place. Nothing to bundle here; users get it
-    #     automatically the first time that rule runs, provided they have
-    #     --use-conda and bioconda/conda-forge channel access at runtime.
+    # `twilight`/`kegalign` deliberately NOT listed here: their published
+    # builds pin disjoint tbb version ranges (kegalign <2021, twilight
+    # >=2021.13), an unsolvable conflict in one environment. Turns out
+    # neither needs to be a run: dep anyway - TWILIGHT is vendor-built from
+    # source below (invoked via a hardcoded path, vendors its own oneTBB);
+    # kegalign runs in its own isolated Snakemake --use-conda environment
+    # (workflow/envs/kegalign.yaml), fetched automatically the first time
+    # that rule runs. See README.md for the full investigation.
     - epa-ng                          # placement-mode dependency
     - gappa                           # placement-mode dependency
     - cuda-cudart                     # [linux] - MLIPPER links -lcudart -lcuda; needed at run time, not just build time
