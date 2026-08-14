@@ -49,7 +49,7 @@ Once the required installations are completed and the parameters are configured 
 python run_roadies.py --cores <number of cores>
 ```
 
-This will let ROADIES run in accurate mode by default with specified number of cores. After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in a separate `output_files` folder.
+This will let ROADIES run in accurate mode by default with specified number of cores. After the completion of the execution, the output species tree in Newick format will be saved as `roadies.nwk` in the folder set by `OUT_DIR` in `config.yaml`.
 
 ## Command line arguments
 
@@ -62,7 +62,7 @@ There are multiple command line arguments through which user can change the mode
 | `--noconverge` | Run ROADIES in non converge mode (for single iteration) if you know the optimal gene count to start with |
 | `--config` | Provide optional custom YAML files (in the same format as `config.yaml` provided with this repository). If not given, by default `config/config.yaml` file will be considered.|
 | `--deep` | Enable deep-phylogeny mode, for datasets spanning larger evolutionary timescales. This is a flag: add `--deep` to turn it on, omit it to leave it off (default). |
-| `--gpu` | *(ROADIES_XP)* Number of GPU devices to use; `0` (default) runs on CPU. Supported with `accurate`, `balanced`, and `placement` modes. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration). |
+| `--gpu` | *(ROADIES_XP, placement mode only)* Number of GPU devices to use; `0` (default) runs placement mode on CPU. De novo mode has no GPU variant. See the [ROADIES_XP guide](roadies_xp.md#gpu-placement). |
 | `--grow` | *(ROADIES_XP, placement mode only)* Constrain the output species tree to the backbone tree's topology instead of freely updating it. See [Grow vs. update](roadies_xp.md#grow-vs-update). |
 | `--clean` | Delete the output directory before running, for a genuine fresh start. Default is to leave existing output alone and let Snakemake's `--rerun-incomplete` resume it - omit this flag to resume an interrupted run, or if in doubt (safer against accidentally wiping a run in progress, e.g. from a double-launch). |
 | `--cluster` | Submit each Snakemake rule as its own SLURM job via `sbatch` instead of running everything on this machine. See [Run ROADIES on a SLURM cluster](#run-roadies-on-a-slurm-cluster) below. |
@@ -79,7 +79,7 @@ Use `--help` to get the list of command line arguments.
 
 ### Output from current iteration
 
-After the pipeline finishes running, the final species tree of current iteration estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `--OUT_DIR` parameter in the `config/config.yaml` file. 
+After the pipeline finishes running, the final species tree of current iteration estimated by ROADIES will be saved as `roadies.nwk` inside a separate folder mentioned in the `OUT_DIR` parameter in the `config/config.yaml` file. 
 
 ROADIES also provides a number of intermediate output files for extensive debugging by the user, described below:
 
@@ -107,15 +107,15 @@ ROADIES also provides a number of intermediate output files for extensive debugg
 
 ### Extra output files from all iterations (these are not generated if --noconverge is used)
 
-By default, results of all iterations (along with the corresponding species tree in the name `iteration_<iteration_number>.nwk`) will be saved in a separate folder mentioned in the `--ALL_OUT_DIR` parameter in the `config/config.yaml` file.
+By default, results of all iterations (along with the corresponding species tree in the name `iteration_<iteration_number>.nwk`) will be saved in a separate folder mentioned in the `ALL_OUT_DIR` parameter in the `config/config.yaml` file.
 
 !!! Note
-    With `--noconverge` option, ROADIES only saves the results of the current ongoing iteration in the folder specified by `--OUT_DIR` and the files below won't be generated.
+    With `--noconverge` option, ROADIES only saves the results of the current ongoing iteration in the folder specified by `OUT_DIR` and the files below won't be generated.
 
-For extensive debugging, other intermediate output files for each stage of the pipeline for each iterations are saved in `--ALL_OUT_DIR` as follows:
+For extensive debugging, other intermediate output files for each stage of the pipeline for each iterations are saved in `ALL_OUT_DIR` as follows:
 
 1. Folder with `iteration_<iteration_number>` - this folder contains results from the specific iteration corresponding to the iteration number in the folder name.
-    -  Folder with name in `--OUT_DIR` - this contains the results of all stages of the pipeline (as described above in non convergence section). 
+    -  Folder with name in `OUT_DIR` - this contains the results of all stages of the pipeline (as described above in non convergence section). 
     - `gene_tree_merged.nwk` - this file lists all gene trees together generated by IQTREE/FastTree/MashTree in that particular iteration. It is concatenated with master list of gene trees from all past iterations before providing to ASTRAL-Pro to estimate the final converged species tree.
     - `iteration_<iteration_number>.log` - this file contains the log information of the corresponding iteration execution. 
     - `mapping.txt` - This file maps all gene names in the gene trees with the corresponding species name from where it originates. It is required by ASTRAL-Pro, along with the master list of gene trees from all iterations, to infer species tree. 
@@ -139,9 +139,6 @@ Each job is submitted with `--cpus-per-task`/`--mem` set from that rule's own de
 
 !!! Note
     Launch `run_roadies.py --cluster` itself from a persistent session (e.g. `tmux`/`screen`, or as its own lightweight `sbatch`/login-node job) — it stays alive submitting and polling the per-rule jobs for the whole run.
-
-!!! Note
-    `placement_converge.py` (the experimental iterative backbone+placement wrapper, see the [ROADIES_XP guide](roadies_xp.md)) does not support `--cluster`. Use `run_roadies.py --mode placement --cluster` directly for cluster execution of placement mode.
 
 !!! Note
     `--mode placement --cluster` additionally requires a cluster-scale backbone whose `samples/` directory is already pre-split into batches (`BATCH_SIZE` in `config.yaml`) — a plain, non-`--cluster` backbone build won't have this. See the [ROADIES_XP guide](roadies_xp.md#placement-mode) for details.

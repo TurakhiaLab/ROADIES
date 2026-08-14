@@ -36,7 +36,7 @@ $ python ROADIES/run_roadies.py --cores 1
 You may encounter this error:
 
 ```bash
-rm: cannot remove 'output_files': No such file or directory
+rm: cannot remove '<OUT_DIR>': No such file or directory
 Unlocking working directory.
 snakemake --cores 1 --config mode=accurate config_path=config/config.yaml num_threads=0 --use-conda --rerun-incomplete
 Config file config/config.yaml is extended by additional config specified via the command line.

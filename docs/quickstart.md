@@ -30,8 +30,8 @@ python run_roadies.py --cores 16 --noconverge
 
 ## Step 3: Analyze Output:
 
- - Final **UNROOTED** newick tree saved as `roadies.nwk` in a separate `output_files` folder. 
- - Intermediate files (if `--noconverge` not used) saved in a separate `converge_files` folder. 
+ - Final **UNROOTED** newick tree saved as `roadies.nwk` in the folder set by `OUT_DIR` in `config.yaml`, kept up to date after every iteration.
+ - Intermediate files (if `--noconverge` not used) saved in the folder set by `ALL_OUT_DIR` in `config.yaml`.
 
 
 !!! Note

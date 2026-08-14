@@ -7,22 +7,18 @@ Please follow any of the options below to install ROADIES on your system.
 
 ## Option 1: Install via Bioconda (Recommended)
 
-1. Install Conda, if you don't already have it, then make sure the `bioconda`/`conda-forge` channels are configured:
+1. Install Conda, if you don't already have it:
 
 ```bash
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 export PATH="$HOME/miniconda3/bin:$PATH" && source ~/.bashrc
-
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
 ```
 
 2. Create an environment and install ROADIES into it:
 
 ```bash
-conda create -n roadies_env python=3.9 ete3 seaborn
+conda create -n roadies_env -c bioconda -c conda-forge python=3.9 ete3 seaborn
 conda activate roadies_env
 conda install roadies=0.1.10
 ```
@@ -84,4 +80,4 @@ source roadies_env.sh
     If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
 !!! Note
-    No extra steps are needed to use `--mode placement`; GPU acceleration (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-acceleration) for details, and re-run `roadies_env.sh` (or `bash MLIPPER/install/setup_host.sh`) once CUDA/libpll are available if MLIPPER was skipped at first setup.
+    No extra steps are needed to use `--mode placement`; GPU placement (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-placement) for details, and re-run `roadies_env.sh` (or `bash MLIPPER/install/setup_host.sh`) once CUDA/libpll are available if MLIPPER was skipped at first setup.
