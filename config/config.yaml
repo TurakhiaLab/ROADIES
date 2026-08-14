@@ -1,12 +1,14 @@
-#This file configures the parameters for ROADIES
+#This file configures the parameters for ROADIES / ROADIES_XP
 
-#Path for input genomes
+#Path for input genomes (in de novo modes) or query genomes (in placement mode)
 GENOMES: "test/test_data"
 #Reference tree (optional, default set as null)
 REFERENCE: NULL
 #Length of each of the genes
 LENGTH: 500
-#Number of genes per iteration
+#Number of genes per iteration. In placement mode this must match the
+#backbone's GENE_COUNT (locus IDs 1..GENE_COUNT in REF_DIR/genes) so
+#gene_{id} numbering lines up
 GENE_COUNT: 250
 #Minimum % uppercase for sampling valid genes
 UPPER_CASE: 0.90
@@ -14,24 +16,44 @@ UPPER_CASE: 0.90
 OUT_DIR: "output_files"
 #ROADIES output directory for all iterations (not needed in --noconverge option)
 ALL_OUT_DIR: "converge_files"
-#Minimum % match in LASTZ alignment
+#Minimum % match in LASTZ/KegAlign alignment
 IDENTITY: 65
-#Minimum % match in LASTZ alignment in deep mode - to capture deeper phylogeny
+#Minimum % match in LASTZ/KegAlign alignment in deep mode - to capture deeper phylogeny
 IDENTITY_DEEP: 40
-#Minimum input sequence coverage in LASTZ alignment
+#Minimum input sequence coverage in LASTZ/KegAlign alignment
 COVERAGE: 85
-#Minimum continuity of LASTZ alignments
+#Minimum continuity of LASTZ/KegAlign alignments
 CONTINUITY: 85
 #Max number of gene copies from a genome in an alignment
 MAX_DUP: 10
-#Number of steps in LASTZ sampling
+#Number of steps in LASTZ/KegAlign sampling
 STEPS: 1
-#PASTA filtering parameters
+#PASTA/TWILIGHT filtering parameters
 FILTERFRAGMENTS: 0.50
 MASKSITES: 0.02
 #Threshold for high support (not needed in --noconverge option)
 SUPPORT_THRESHOLD: 0.95
-#Number of instances to run in parallel
+#Number of instances to run in parallel - each rule's thread count is derived
+#from cores // NUM_INSTANCES at runtime, so this is never a hardcoded number
 NUM_INSTANCES: 4
 #Scoring matrix (used in deep mode)
 SCORES: "HOXD55.q"
+#[ROADIES_XP/placement mode only] Directory of the backbone/reference iteration
+#(the OUT_DIR from a prior de novo or placement run) to place query genomes onto.
+#Not used in de novo modes (fast/balanced/accurate).
+REF_DIR: null
+#[Optional] CSV file with "species,group" columns used to bias gene sampling
+#towards under-represented lineages/clades. Leave unset or point to a
+#nonexistent path to sample uniformly across all input genomes.
+GROUP_CSV: ""
+#[Placement mode + --cluster only] Loci per lastz batch. Only read when both
+#--mode placement and --cluster are used - REF_DIR/samples must already
+#contain out_batch_1.fa..out_batch_N.fa split at this size (N*BATCH_SIZE must
+#equal GENE_COUNT). Plain (non-cluster) placement runs ignore this and just
+#need REF_DIR/samples/out.fa, produced automatically by any backbone build.
+BATCH_SIZE: 250
+#[--cluster only] sbatch settings for submitted jobs - set these to match
+#your own SLURM cluster (partition/account names, max walltime)
+CLUSTER_PARTITION: "long"
+CLUSTER_ACCOUNT: "standard"
+CLUSTER_TIME: "8-0"

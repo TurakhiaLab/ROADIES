@@ -26,13 +26,18 @@ parser.add_argument("--plotdir", default="results/plots")
 parser.add_argument("--statdir", default="results/statistics")
 parser.add_argument("-d", type=int, default=100)
 parser.add_argument("--tool", default="accurate")
+parser.add_argument("--gpu", default="0")
 args = parser.parse_args()
 path = args.path
 outdir = args.outdir
 plotdir = args.plotdir
 statdir = args.statdir
 tool = args.tool
-m = args.m
+num_gpus = int(args.gpu)
+if tool == "placement":
+    m = 1 #args.m
+else:
+    m = args.m
 k = args.k
 d = args.d
 num_genes = {}
@@ -52,26 +57,49 @@ for filename in glob.glob(os.path.join(path, "*.maf")):
         # make dict of genes for each species
         genes = {}
         # go through every 4th line due to maf format
-        for l in range(15, len(lines)):
-            if (l - 15) % 4 == 0:
-                # get gene id
-                gene_line = lines[l + 1].split()
-                gene = gene_line[1]
-                gene_s = gene.split("_")
-                gene_id = gene_s[1]
-                # get score of that alignment
-                score_line = lines[l - 1].split()
-                score_expr = score_line[1].split("=")
-                score = int(score_expr[1])
-                # get position in species fasta
-                seq_line = lines[l].split()
-                position = int(seq_line[2])
-                # add to dict of genes
-                if gene_id not in genes:
-                    genes[gene_id] = [(score, l, position)]
+        if num_gpus != 0:
+            for l in range(2, len(lines)):
+                if (l - 2) % 4 == 0:
+                    # get gene id
+                    gene_line = lines[l + 1].split()
+                    gene = gene_line[1]
+                    gene_s = gene.split("_")
+                    gene_id = gene_s[1]
+                    # get score of that alignment
+                    score_line = lines[l - 1].split()
+                    score_expr = score_line[1].split("=")
+                    score = int(score_expr[1])
+                    # get position in species fasta
+                    seq_line = lines[l].split()
+                    position = int(seq_line[2])
+                    # add to dict of genes
+                    if gene_id not in genes:
+                        genes[gene_id] = [(score, l, position)]
 
-                else:
-                    genes[gene_id].append((score, l, position))
+                    else:
+                        genes[gene_id].append((score, l, position))
+        else:
+            for l in range(15, len(lines)):
+                if (l - 15) % 4 == 0:
+                    # get gene id
+                    gene_line = lines[l + 1].split()
+                    gene = gene_line[1]
+                    gene_s = gene.split("_")
+                    gene_id = gene_s[1]
+                    # get score of that alignment
+                    score_line = lines[l - 1].split()
+                    score_expr = score_line[1].split("=")
+                    score = int(score_expr[1])
+                    # get position in species fasta
+                    seq_line = lines[l].split()
+                    position = int(seq_line[2])
+                    # add to dict of genes
+                    if gene_id not in genes:
+                        genes[gene_id] = [(score, l, position)]
+
+                    else:
+                        genes[gene_id].append((score, l, position))
+
         # get number of genes for that species
         num_genes[species] = len(genes)
         aa = list(genes.keys())
@@ -240,7 +268,7 @@ for filename in glob.glob(os.path.join(outdir, "*.fa")):
     else:
         with open(filename, "w") as w:
             w.write("")
-sorted(gene_dup)
+gene_dup.sort()
 # output duplicity as csv
 with open(statdir + "/gene_dup.csv", "w") as f:
     f.write("Species,number of genes aligned" + "\n")

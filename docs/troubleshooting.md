@@ -4,7 +4,7 @@
 
 ### Solution
 
-When running the pipeline, if you encounter that the pipeline fails by the failure of PASTA, please install PASTA from source by executing the following commands. Please run the following steps from the main ROADIES repository directory (after doing `cd ROADIES`) - within the activated Conda environment:
+Bioconda's `pasta` package (>=1.9.0) normally installs `run_pasta.py`/`run_seqtools.py` correctly on its own - the rules in `workflow/rules/multi_align.smk` already call those names directly, so this shouldn't come up in a clean install. If it still does (e.g. `run_pasta.py`/`run_seqtools.py` not found, or resolving to the wrong install), build PASTA from source instead. Run the following from the main ROADIES repository directory (after doing `cd ROADIES`), within the activated Conda environment:
 
 ```bash
 git clone https://github.com/smirarab/pasta.git
@@ -13,8 +13,7 @@ cd pasta
 python3 setup.py develop --user
 ```
 
-Also, in the `align.smk` file (inside the `workflow/rules` directory of the ROADIES repository), please replace any instance of `pasta.py` with `python pasta/run_pasta.py`, AND
-`run_seqtools.py` with `python pasta/run_seqtools.py`.
+This installs `run_pasta.py`/`run_seqtools.py` as scripts under `~/.local/bin`, which takes priority on `PATH` over any conda environment's own copy - including in *other* conda environments on the same machine later on. If PASTA behaves oddly after switching environments or machines, check for a stray `~/.local/bin/run_pasta.py`/`run_seqtools.py` from a past run of this workaround before assuming something else is wrong.
 
 After doing this change, please re-run the ROADIES pipeline.
 
@@ -37,7 +36,7 @@ $ python ROADIES/run_roadies.py --cores 1
 You may encounter this error:
 
 ```bash
-rm: cannot remove 'output_files': No such file or directory
+rm: cannot remove '<OUT_DIR>': No such file or directory
 Unlocking working directory.
 snakemake --cores 1 --config mode=accurate config_path=config/config.yaml num_threads=0 --use-conda --rerun-incomplete
 Config file config/config.yaml is extended by additional config specified via the command line.
@@ -122,3 +121,30 @@ Ensure that the number of cores is greater than or equal to the number of instan
 ```bash
 python run_roadies.py --cores <available_cores> --config_path config/config.yaml
 ```
+
+## Error 7. MLIPPER fails with `undefined symbol: ATL_dGetNB` (GPU placement mode)
+
+You may see the following when running `--mode placement --gpu`:
+
+```bash
+MLIPPER/MLIPPER: symbol lookup error: /lib/x86_64-linux-gnu/liblapack.so.3: undefined symbol: ATL_dGetNB
+```
+
+This means your system's `liblapack.so.3`/`libblas.so.3` (via Debian/Ubuntu's `update-alternatives`) currently resolves to an ATLAS build that's missing its own `libatlas.so.3` dependency - a broken/incomplete ATLAS package install, unrelated to MLIPPER or ROADIES itself.
+
+### Solution
+
+Check which LAPACK/BLAS variant is active:
+
+```bash
+update-alternatives --display liblapack.so.3-x86_64-linux-gnu
+update-alternatives --display libblas.so.3-x86_64-linux-gnu
+```
+
+If a non-ATLAS alternative is listed (commonly under `/usr/lib/x86_64-linux-gnu/lapack/` and `/usr/lib/x86_64-linux-gnu/blas/`), you can point the dynamic linker at it for your ROADIES session without changing the system-wide default:
+
+```bash
+export LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu/lapack:/usr/lib/x86_64-linux-gnu/blas:$LD_LIBRARY_PATH"
+```
+
+Then re-run `run_roadies.py`. If no non-ATLAS alternative exists on your system, reinstalling `libatlas3-base` (or your distro's equivalent) should restore the missing `libatlas.so.3` dependency.

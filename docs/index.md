@@ -52,7 +52,10 @@ ROADIES supports multiple modes of operation based on various user requirements 
     These modes of operation can be modified using command line argument `--mode` (details mentioned in the [Usage](index.md#other-command-line-arguments) section).
 
 !!! Note
-    ROADIES also supports another mode of operation for datasets from deeper evolutionary timescales. If your datasets are from distant timescales, we recommend to switch on this mode (by adding extra argument `--deep True`; details mentioned in the [Usage](index.md#other-command-line-arguments) section).
+    ROADIES also supports another mode of operation for datasets from deeper evolutionary timescales. If your datasets are from distant timescales, we recommend to switch on this mode (by adding the flag `--deep`; details mentioned in the [Usage](index.md#other-command-line-arguments) section).
+
+!!! Note
+    **ROADIES_XP** adds a fourth mode, `placement`, for growing or updating an existing species tree with new genomes instead of rebuilding it from scratch, plus optional GPU acceleration (`--gpu`). See the [ROADIES_XP guide](roadies_xp.md) for details.
 
 ## Convergence Mechanism
 

@@ -1,0 +1,8 @@
+roadies_iterations/
+converge_files*/
+.snakemake/
+test/test_data/
+__pycache__/
+*.pyc
+*.pyo
+.git/

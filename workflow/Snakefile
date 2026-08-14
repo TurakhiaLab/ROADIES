@@ -1,6 +1,9 @@
 from snakemake.utils import min_version
 min_version("7.12.1")
 import glob
+import os
+import subprocess
+import sys
 
 config_path = config.get("config_path","config/config.yaml")
 configfile: config_path
@@ -18,16 +21,95 @@ IDS = list(range(1,num+1))
 mode = config.get("mode","accurate")
 deep_mode = config.get("deep_mode","False")
 MIN_ALIGN = config.get("MIN_ALIGN",4)
+gpu = int(config.get("gpu",0))
+cluster = config.get("cluster","False") == "True"
+
+SELECTED_SAMPLES = []
+od = {}
+od_e = {}
+section = None
+group_csv_arg = config.get("GROUP_CSV", "")
+expected_fingerprint = "{0}|{1}|{2}".format(config["GENOMES"], num, group_csv_arg if group_csv_arg and os.path.exists(group_csv_arg) else "")
+
+# sampling_output.txt caches precompute_sampling.py's (slow) output so a
+# resumed run doesn't redo it - but that's only valid for the same
+# GENOMES/GENE_COUNT/GROUP_CSV it was computed for. Regenerate if it's
+# missing, unreadable, or was computed for different inputs (e.g. GENOMES
+# pointing at a different directory since the last run).
+needs_precompute = True
+if os.path.exists("sampling_output.txt"):
+	with open("sampling_output.txt") as f:
+		if f.readline().strip() == "# CONFIG_FINGERPRINT" and f.readline().strip() == expected_fingerprint:
+			needs_precompute = False
+
+if needs_precompute:
+	if group_csv_arg and os.path.exists(group_csv_arg):
+		ret = subprocess.run(
+			["python3", "workflow/scripts/precompute_sampling.py", "--group_csv", group_csv_arg, str(num), config["GENOMES"]]
+		)
+	else:
+		ret = subprocess.run(
+			["python3", "workflow/scripts/precompute_sampling.py", str(num), config["GENOMES"]]
+		)
+	if ret.returncode != 0:
+		sys.exit(f"precompute_sampling.py failed with exit code {ret.returncode}")
+
+with open("sampling_output.txt") as f:
+	for line in f:
+		line = line.strip()
+		if line.startswith("#"):
+			section = line[1:].strip()  # Detect sections like "# SAMPLES"
+		elif section == "SAMPLES":
+			# SAMPLES is already populated by glob_wildcards() above - this
+			# section of sampling_output.txt just mirrors precompute_sampling.py's
+			# own view of the genome directory for external consumers. Appending
+			# it here would duplicate every genome in SAMPLES (each entry twice),
+			# which corrupts any rule that does index/count arithmetic over
+			# SAMPLES directly (e.g. mashtree.smk's per-genome sampling ranges).
+			pass
+		elif section == "SELECTED_SAMPLES":
+			SELECTED_SAMPLES.append(line)
+		elif section == "od":
+			key, value = line.split(",")
+			od[key] = int(value)
+		elif section == "od_e":
+			key, value = line.split(",")
+			od_e[key] = int(value)
 
 if (mode == "fast"):
 	include: "rules/mashtree.smk"
 elif (mode == "balanced"):
-	include: "rules/align.smk"
 	include: "rules/sampling.smk"
+	if gpu != 0:
+		include: "rules/pair_align_gpu.smk"
+		include: "rules/multi_align_gpu.smk"
+	else:
+		include: "rules/pair_align.smk"
+		include: "rules/multi_align.smk"
 	include: "rules/fasttree.smk"
+elif (mode == "placement"):
+	# Batched pairwise alignment (out_batch_N.fa, checkpointed lastz2fasta_batch)
+	# exists purely to keep --cluster runs from turning into one sbatch job per
+	# locus; it requires REF_DIR/samples to already be pre-split into batches,
+	# which only a cluster-scale backbone build produces. A plain single-machine
+	# run always has a non-batched backbone (REF_DIR/samples/out.fa), so it uses
+	# the same non-batched pair_align.smk the non-GPU de novo modes use.
+	batched_placement = (gpu == 0 and cluster)
+	if gpu != 0:
+		include: "rules/pair_align_gpu.smk"
+	elif cluster:
+		include: "rules/pair_align_placement_batch.smk"
+	else:
+		include: "rules/pair_align.smk"
+	include: "rules/placement.smk"
 else:
-	include: "rules/align.smk"
 	include: "rules/sampling.smk"
+	if gpu != 0:
+		include: "rules/pair_align_gpu.smk"
+		include: "rules/multi_align_gpu.smk"
+	else:
+		include: "rules/pair_align.smk"
+		include: "rules/multi_align.smk"
 	include: "rules/tree.smk"
 	
 rule all:

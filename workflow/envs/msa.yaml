@@ -2,5 +2,5 @@ name: pasta
 channels:
   - bioconda
 dependencies:
-  - python=2.7
+  - python=3.9
   - dendropy=4.5.2

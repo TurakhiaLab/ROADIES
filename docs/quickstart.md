@@ -30,10 +30,13 @@ python run_roadies.py --cores 16 --noconverge
 
 ## Step 3: Analyze Output:
 
- - Final **UNROOTED** newick tree saved as `roadies.nwk` in a separate `output_files` folder. 
- - Intermediate files (if `--noconverge` not used) saved in a separate `converge_files` folder. 
+ - Final **UNROOTED** newick tree saved as `roadies.nwk` in the folder set by `OUT_DIR` in `config.yaml`, kept up to date after every iteration.
+ - Intermediate files (if `--noconverge` not used) saved in the folder set by `ALL_OUT_DIR` in `config.yaml`.
 
 
 !!! Note
     ROADIES outputs unrooted trees by default. You can reroot trees on your own or use the provided `reroot.py` script in `workflow/scripts/` (given a reference rooted species tree as input). 
+
+!!! Note
+    Already have a species tree and want to add more genomes to it (rather than rebuild from scratch), or want GPU acceleration? See the [ROADIES_XP guide](roadies_xp.md).
 
