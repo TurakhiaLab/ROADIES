@@ -3,7 +3,7 @@
 Please follow any of the options below to install ROADIES on your system.
 
 !!! Note
-    ROADIES requires Linux (tested on Ubuntu 20.04/22.04). GPU features (ROADIES_XP, optional) additionally need an NVIDIA GPU with CUDA.
+    The Bioconda install (Option 1) supports both Linux and macOS. GPU features (ROADIES_XP, optional) need Linux with an NVIDIA GPU and CUDA — there's no CUDA toolchain for macOS, so GPU-mode components aren't built there; CPU mode works on both. The source-script install (Option 4) is Linux-only (tested on Ubuntu 20.04/22.04).
 
 ## Option 1: Install via Bioconda (Recommended)
 
@@ -18,9 +18,8 @@ export PATH="$HOME/miniconda3/bin:$PATH" && source ~/.bashrc
 2. Create an environment and install ROADIES into it:
 
 ```bash
-conda create -n roadies_env -c bioconda -c conda-forge python=3.9 ete3 seaborn
+conda create -n roadies_env -c bioconda -c conda-forge roadies
 conda activate roadies_env
-conda install roadies=0.1.10
 ```
 
 3. `conda install` puts the full repository contents (Snakemake rules, scripts, `config.yaml`, `run_roadies.py`, etc.) under `$CONDA_PREFIX/ROADIES` — that's your working directory from now on:

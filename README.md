@@ -62,9 +62,8 @@ Four ways to install ROADIES — pick one. Full step-by-step instructions (inclu
 
 **Option 1: Bioconda (recommended)**
 ```bash
-conda create -n roadies_env -c bioconda -c conda-forge python=3.9 ete3 seaborn
+conda create -n roadies_env -c bioconda -c conda-forge roadies
 conda activate roadies_env
-conda install roadies=0.1.10
 cd $CONDA_PREFIX/ROADIES   # the installed package contents live here
 ```
 See [Install: Bioconda](https://turakhialab.github.io/ROADIES/install/#option-1-install-via-bioconda-recommended) for the remaining steps.
