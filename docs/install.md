@@ -79,4 +79,4 @@ source roadies_env.sh
     If you encounter issues with the Boost library, add its path to `$CPLUS_LIBRARY_PATH` and save it in `~/.bashrc`.
 
 !!! Note
-    No extra steps are needed to use `--mode placement`; GPU placement (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-placement) for details, and re-run `roadies_env.sh` (or `bash MLIPPER/install/setup_host.sh`) once CUDA/libpll are available if MLIPPER was skipped at first setup.
+    No extra steps are needed to use `--mode placement`; GPU placement (`--gpu`) does require a CUDA-capable GPU. See the [ROADIES_XP guide](roadies_xp.md#gpu-placement) for details, and re-run `roadies_env.sh` (or run `make -C MLIPPER -j4 MLIPPER`) once CUDA/libpll are available if MLIPPER was skipped at first setup.

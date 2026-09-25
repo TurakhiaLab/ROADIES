@@ -3,6 +3,9 @@
 #include <cuda_runtime.h>
 #include <cmath>
 
+// One compile-time precision mode is shared by host packing, device buffers,
+// kernels, and transition matrices. Mixing objects compiled with different
+// MLIPPER_USE_DOUBLE settings would change layouts and is unsupported.
 #if defined(MLIPPER_USE_DOUBLE)
 using fp_t = double;
 using fp2_t = double2;
@@ -104,17 +107,5 @@ __host__ __device__ __forceinline__ fp_t fp_hmax4(fp_t a, fp_t b, fp_t c, fp_t d
 }
 
 __host__ __device__ __forceinline__ void fp_scale_pow2(fp_t& x, int shift) {
-#if defined(__CUDA_ARCH__)
-#if defined(MLIPPER_USE_DOUBLE)
-    long long bits = __double_as_longlong(x);
-    bits += ((long long)shift << 52);
-    x = __longlong_as_double(bits);
-#else
-    int bits = __float_as_int(x);
-    bits += (shift << 23);
-    x = __int_as_float(bits);
-#endif
-#else
     x = fp_ldexp(x, shift);
-#endif
 }
