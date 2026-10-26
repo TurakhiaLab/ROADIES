@@ -1,0 +1,46 @@
+# Native build outputs and local binaries
+/build/
+/build_*/
+/build-*/
+/bin/
+/MLIPPER
+/MLIPPER_*
+*.o
+*.d
+
+# Profiling traces
+*.nsys-rep
+*.sqlite
+*.ncu-rep
+*.ncu.log
+*.details.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local scratch and tool state
+/.codex
+/.codex/
+/.tmp_truth_rank_probe/
+/tmp/
+/output/
+
+# Generated logs and one-off root-level artifacts
+*.log
+/*.fa
+/*.fasta
+/*.aln
+/*.tre
+/*.nwk
+/*.jplace
+*.tar.gz
+
+# Local data and generated outputs stay out of git by default. Keep only the
+# documented representative datasets in version control.
+/data/*
+!/data/README.md
+!/data/small_tip/
+!/data/small_tip/**
+!/data/divide_and_conquer/
+!/data/divide_and_conquer/**

@@ -1,10 +1,9 @@
-/**
- * Derivative kernel declarations.
- */
 #pragma once
 
 #include <cuda_runtime.h>
+
 #include <cstddef>
+
 #include "tree/tree.hpp"
 
 // Pendant-side derivative kernel. It builds midpoint state and derivative
@@ -23,7 +22,8 @@ __global__ void LikelihoodDerivativePendantKernel(
     fp_t* new_branch_length,
     size_t sumtable_stride,
     const fp_t* prev_branch_lengths,
-    const int* active_ops);
+    const int* active_ops,
+    double branch_min);
 
 // Proximal-side derivative kernel. It builds midpoint state and derivative
 // sumtable rows directly inside the kernel.
@@ -41,4 +41,32 @@ __global__ void LikelihoodDerivativeProximalKernel(
     fp_t* new_branch_length,
     size_t sumtable_stride,
     const fp_t* prev_branch_lengths,
-    const int* active_ops);
+    const int* active_ops,
+    double branch_min);
+
+// Optimize one existing tree edge from the two directional CLVs surrounding
+// it. The edge sumtable is built once and reused throughout the local Newton
+// loop, matching the RAxML/corax branch-coordinate contract.
+void OptimizeSingleTreeEdgeFromCurrentClvs(
+    const DeviceTree& D,
+    int target_id,
+    fp_t* d_sumtable,
+    double* d_partial_gradient,
+    double* d_partial_hessian,
+    double* d_newton_state,
+    int* d_newton_failure,
+    int max_iter,
+    cudaStream_t stream = 0);
+
+// High-occupancy DNA+G4 path used by sequential tree-edge optimization. A
+// half-warp cooperates on each site; other model shapes use the generic path.
+void OptimizeSingleTreeEdgeFromCurrentClvsWarpSite(
+    const DeviceTree& D,
+    int target_id,
+    fp_t* d_sumtable,
+    double* d_partial_gradient,
+    double* d_partial_hessian,
+    double* d_newton_state,
+    int* d_newton_failure,
+    int max_iter,
+    cudaStream_t stream = 0);

@@ -95,7 +95,7 @@ if command -v nvcc &>/dev/null && { [ -f /usr/local/include/libpll/pll.h ] || [ 
     echo "Building MLIPPER from source..."
     (cd MLIPPER && make) || echo "Warning: MLIPPER build failed; keeping the existing MLIPPER/MLIPPER binary, if any."
 else
-    echo "Warning: CUDA (nvcc) and/or libpll not found; skipping MLIPPER build. GPU-accelerated placement (--mode placement with --gpu) needs MLIPPER - once CUDA/libpll are available, build it with: bash MLIPPER/install/setup_host.sh"
+    echo "Warning: CUDA (nvcc) and/or libpll not found; skipping MLIPPER build. GPU-accelerated placement (--mode placement with --gpu) needs MLIPPER - once CUDA/libpll are available, build it with: make -C MLIPPER -j4 MLIPPER"
 fi
 
 # Build sampling code

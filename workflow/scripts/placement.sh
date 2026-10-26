@@ -25,7 +25,7 @@ if [[ ! -x "${roadies_root}/TWILIGHT/bin/twilight" ]]; then
 fi
 if [[ "$gpu" -gt 0 && ! -x "${roadies_root}/MLIPPER/MLIPPER" ]]; then
 	echo "ERROR: ${roadies_root}/MLIPPER/MLIPPER not found or not executable." >&2
-	echo "GPU placement needs MLIPPER built - run roadies_env.sh again with CUDA/libpll available, or: bash MLIPPER/install/setup_host.sh" >&2
+	echo "GPU placement needs MLIPPER built - run roadies_env.sh again with CUDA/libpll available, or: make -C MLIPPER -j4 MLIPPER" >&2
 	exit 1
 fi
 
@@ -94,7 +94,7 @@ mkdir -p $workDir/iter1_tree_output
 
 if [[ "$gpu" -gt 0 ]]; then
 	# GPU placement: MLIPPER commits queries directly onto the reference gene tree
-	${roadies_root}/MLIPPER/MLIPPER --tree-alignment $OUT_REF_ITR1 --query-alignment $OUT_QUERY_ITR1 --tree $ref_gene_tree --best-model $ref_model --commit-to-tree $output_gene_trees --local-spr --batch-insert-size 5 --local-spr-radius 4 --local-spr-rounds 1 --gpu-auto
+	${roadies_root}/MLIPPER/MLIPPER --tree-alignment $OUT_REF_ITR1 --query-alignment $OUT_QUERY_ITR1 --tree $ref_gene_tree --best-model $ref_model --commit-to-tree $output_gene_trees --batch-insert-size 5 --local-spr-radius 4 --local-spr-rounds 1 --no-model-optimization --no-global-branch-optimization --gpu-auto
 else
 	# CPU placement: re-optimize the gene tree under a topological constraint from the reference tree
 	raxml-ng --msa $output_msa --model GTR+G+F --threads auto{$threads} --worker 1 --tree-constraint $ref_gene_tree --prefix $workDir/iter1_tree_output/gene_tree --redo --blopt nr_safe

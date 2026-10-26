@@ -1,0 +1,101 @@
+ARG CUDA_VERSION=11.8.0
+ARG UBUNTU_VERSION=22.04
+
+FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION} AS builder
+
+ARG LIBPLL_VERSION=0.4.0
+
+SHELL ["/bin/bash", "-lc"]
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV CUDA_HOME=/usr/local/cuda
+ENV CONDA_PREFIX=/usr/local
+ENV PLL_INC_DIR=/usr/local/include
+ENV PLL_LIB_DIR=/usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:${LD_LIBRARY_PATH}
+
+WORKDIR /workspace/MLIPPER
+
+RUN success=0; \
+    for attempt in 1 2 3 4 5; do \
+      if apt-get update && \
+      apt-get install -y --no-install-recommends \
+    autoconf \
+    automake \
+    bison \
+    build-essential \
+    ca-certificates \
+    cmake \
+    flex \
+    git \
+    libblas-dev \
+    libboost-program-options-dev \
+    liblapack-dev \
+    libtbb-dev \
+    libtool \
+    pkg-config \
+    zlib1g-dev \
+    python3; then \
+      rm -rf /var/lib/apt/lists/*; \
+      success=1; \
+      break; \
+      fi; \
+      echo "apt install failed on attempt ${attempt}, retrying..." >&2; \
+      rm -rf /var/lib/apt/lists/*; \
+      sleep 5; \
+    done; \
+    test "$success" = 1
+
+RUN git clone --quiet --branch "${LIBPLL_VERSION}" --depth 1 \
+    https://github.com/xflouris/libpll-2.git /tmp/libpll-2 \
+    && cd /tmp/libpll-2 \
+    && ./autogen.sh \
+    && ./configure --prefix=/usr/local \
+    && make -j4 \
+    && make install \
+    && ldconfig \
+    && rm -rf /tmp/libpll-2
+
+COPY . /workspace/MLIPPER
+
+RUN make clean && make USE_DOUBLE=1 MLIPPER
+
+
+FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu${UBUNTU_VERSION}
+
+SHELL ["/bin/bash", "-lc"]
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV CUDA_HOME=/usr/local/cuda
+ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:${LD_LIBRARY_PATH}
+
+WORKDIR /workspace/MLIPPER
+
+RUN success=0; \
+    for attempt in 1 2 3 4 5; do \
+      if apt-get update && \
+      apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libblas3 \
+    libboost-program-options1.74.0 \
+    libgfortran5 \
+    liblapack3 \
+    libquadmath0 \
+    libtbb12; then \
+      rm -rf /var/lib/apt/lists/*; \
+      success=1; \
+      break; \
+      fi; \
+      echo "apt install failed on attempt ${attempt}, retrying..." >&2; \
+      rm -rf /var/lib/apt/lists/*; \
+      sleep 5; \
+    done; \
+    test "$success" = 1
+
+COPY --from=builder /workspace/MLIPPER/MLIPPER /workspace/MLIPPER/MLIPPER
+COPY --from=builder /usr/local/lib/libpll.so.0.0.0 /usr/local/lib/
+
+RUN ldconfig
+
+ENTRYPOINT ["/workspace/MLIPPER/MLIPPER"]
+CMD ["--help"]

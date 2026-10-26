@@ -1,79 +1,58 @@
-#include <vector>
-#include <limits>
-#include <stdexcept>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cassert>
-#include <algorithm>
+#include <limits>
 #include <numeric>
+#include <stdexcept>
 #include <tuple>
-#include <cmath>
+#include <vector>
+
 #include <cuda_runtime.h>
-#include <cub/cub.cuh>
+
+#include "derivative.cuh"
+#include "gpu/device_buffer.hpp"
+#include "likelihood/placement_likelihood.cuh"
 #include "placement.cuh"
-#include "util/mlipper_util.h"
 #include "pmatrix/pmat.h"
 #include "pmatrix/pmat_gpu.cuh"
 #include "tree/tree.hpp"
-#include "likelihood/partial_likelihood.cuh"
-#include "likelihood/root_likelihood.cuh"
-#include "derivative.cuh"
-
+#include "util/checked_size.hpp"
+#include "util/mlipper_util.h"
 
 namespace {
-constexpr int kDefaultFullOptPasses = 4;
-constexpr int kExportPlacementTopK = 5;
+constexpr int kPlacementStateCount = 4;
+constexpr int kMaximumPlacementRateCategories = 8;
 
-struct RefineConfig {
-    int full_opt_passes = kDefaultFullOptPasses;
-};
-
-static int getenv_int_or_default(const char* name, int default_value) {
-    const char* value = std::getenv(name);
-    if (!value || !value[0]) {
-        return default_value;
-    }
-    return std::max(0, std::atoi(value));
-}
-
-static double getenv_double_or_default(const char* name, double default_value) {
-    const char* value = std::getenv(name);
-    if (!value || !value[0]) {
-        return default_value;
-    }
-    return std::atof(value);
-}
-
-static RefineConfig load_refine_config() {
-    RefineConfig cfg;
-    cfg.full_opt_passes =
-        getenv_int_or_default("MLIPPER_FULL_OPT_PASSES", cfg.full_opt_passes);
-    return cfg;
-}
-
-static int target_id_from_op(const NodeOpInfo& op) {
-    const bool target_is_left = (op.dir_tag == static_cast<uint8_t>(CLV_DIR_DOWN_LEFT));
-    const bool target_is_right = (op.dir_tag == static_cast<uint8_t>(CLV_DIR_DOWN_RIGHT));
-    return target_is_left ? op.left_id : (target_is_right ? op.right_id : op.parent_id);
-}
-
+template <typename Likelihood>
 static std::vector<double> compute_like_weight_ratios(
-    const std::vector<fp_t>& top_values)
+    const std::vector<Likelihood>& log_likelihoods)
 {
-    std::vector<double> ratios(top_values.size(), 0.0);
-    if (top_values.empty()) {
+    std::vector<double> ratios(log_likelihoods.size(), 0.0);
+    if (log_likelihoods.empty()) {
         return ratios;
     }
 
-    const double max_ll = static_cast<double>(top_values.front());
+    // EPA-ng-compatible, numerically stable likelihood weight ratios:
+    // exp(logL_i - max(logL)) / sum_j exp(logL_j - max(logL)).
+    double max_ll = -std::numeric_limits<double>::infinity();
+    for (const Likelihood value : log_likelihoods) {
+        const double likelihood = static_cast<double>(value);
+        if (!std::isfinite(likelihood)) {
+            throw std::runtime_error("Placement ranking contains a non-finite likelihood.");
+        }
+        max_ll = std::max(max_ll, likelihood);
+    }
     double sum_weights = 0.0;
-    for (size_t i = 0; i < top_values.size(); ++i) {
-        const double weight = std::exp(static_cast<double>(top_values[i]) - max_ll);
+    for (size_t i = 0; i < log_likelihoods.size(); ++i) {
+        const double weight = std::exp(
+            static_cast<double>(log_likelihoods[i]) - max_ll);
         ratios[i] = weight;
         sum_weights += weight;
     }
     if (sum_weights <= 0.0 || !std::isfinite(sum_weights)) {
-        ratios.assign(top_values.size(), 0.0);
+        ratios.assign(log_likelihoods.size(), 0.0);
         ratios.front() = 1.0;
         return ratios;
     }
@@ -83,11 +62,21 @@ static std::vector<double> compute_like_weight_ratios(
     return ratios;
 }
 
-static int export_placement_topk() {
-    const char* value = std::getenv("MLIPPER_EXPORT_PLACEMENT_TOPK");
-    if (!value || !value[0]) return kExportPlacementTopK;
-    const int parsed = std::atoi(value);
-    return parsed > 0 ? parsed : kExportPlacementTopK;
+static void retain_accumulated_lwr(
+    std::vector<RawPlacementResult::RankedPlacement>& placements,
+    double threshold)
+{
+    if (placements.empty() || threshold <= 0.0) {
+        return;
+    }
+
+    double accumulated_lwr = 0.0;
+    size_t keep = 0;
+    while (keep < placements.size() && accumulated_lwr < threshold) {
+        accumulated_lwr += placements[keep].like_weight_ratio;
+        ++keep;
+    }
+    placements.resize(std::max<size_t>(keep, 1));
 }
 
 struct LocalChildRefineFamilyOps {
@@ -126,7 +115,7 @@ static LocalChildRefineFamilyOps find_local_child_refine_family_ops(
     }
     for (size_t op_idx = 0; op_idx < host_ops.size(); ++op_idx) {
         const NodeOpInfo& op = host_ops[op_idx];
-        const int target_id = target_id_from_op(op);
+        const int target_id = node_op_target_id(op);
         if (target_id == selected_target_id && family.selected_op < 0) {
             family.selected_op = static_cast<int>(op_idx);
         }
@@ -182,11 +171,13 @@ static HostPlacementEvalInputs load_host_placement_eval_inputs(
     HostPlacementEvalInputs out;
     const size_t rate_count = static_cast<size_t>(D.rate_cats);
     const size_t state_count = static_cast<size_t>(D.states);
-    const size_t per_site = rate_count * state_count;
+    const size_t per_site = mlipper::util::checked_mul_size(
+        rate_count, state_count, "host placement CLV site stride");
 
     CUDA_CHECK(cudaStreamSynchronize(stream));
 
-    out.query_clv.resize(D.sites * per_site, fp_t(0));
+    out.query_clv.resize(mlipper::util::checked_mul_size(
+        D.sites, per_site, "host placement query CLV"), fp_t(0));
     out.rate_weights.resize(rate_count, fp_t(0));
     out.frequencies.resize(state_count, fp_t(0));
     out.pattern_weights.assign(D.sites, 1u);
@@ -299,7 +290,7 @@ static DoubleRerankCandidateBuffers load_double_rerank_candidate_buffers(
         cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaMemcpy(
         out.distal_clv.data(),
-        D.d_clv_mid_base + target_offset * per_node_clv,
+        D.d_edge_outside_clv + target_offset * per_node_clv,
         sizeof(fp_t) * per_node_clv,
         cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaMemcpy(
@@ -308,10 +299,10 @@ static DoubleRerankCandidateBuffers load_double_rerank_candidate_buffers(
         sizeof(fp_t) * per_node_clv,
         cudaMemcpyDeviceToHost));
     if (scaler_span > 0) {
-        if (D.d_site_scaler_mid_base) {
+        if (D.d_edge_outside_scaler) {
             CUDA_CHECK(cudaMemcpy(
                 out.distal_scalers.data(),
-                D.d_site_scaler_mid_base + target_offset * scaler_span,
+                D.d_edge_outside_scaler + target_offset * scaler_span,
                 sizeof(unsigned) * scaler_span,
                 cudaMemcpyDeviceToHost));
         }
@@ -408,30 +399,22 @@ static double recompute_candidate_loglikelihood_double(
 }
 
 #if !defined(MLIPPER_USE_DOUBLE)
-constexpr int kDefaultDoubleRerankUlpFactor = 4;
-
 static void maybe_apply_double_rerank(
     const DeviceTree& D,
     const NodeOpInfo* d_ops,
     const std::vector<int>& top_indices,
-    PlacementResult& result,
-    const HostPlacementEvalInputs& host_inputs)
+    RawPlacementResult& result,
+    const HostPlacementEvalInputs& host_inputs,
+    const PlacementTuningConfig& tuning)
 {
-    const char* double_rerank_env = std::getenv("MLIPPER_DOUBLE_RERANK");
-    if (double_rerank_env && double_rerank_env[0] &&
-        std::atoi(double_rerank_env) == 0) {
-        return;
-    }
+    if (!tuning.enable_double_rerank) return;
     if (!d_ops) return;
     if (top_indices.size() < 2 || result.top_placements.size() < 2) return;
 
     const double best_ll = result.top_placements.front().loglikelihood;
     const double gap_top2 = result.top_placements[0].loglikelihood - result.top_placements[1].loglikelihood;
-    const int ulp_factor = getenv_int_or_default(
-        "MLIPPER_DOUBLE_RERANK_ULP_FACTOR",
-        kDefaultDoubleRerankUlpFactor);
-    const double gap_floor =
-        getenv_double_or_default("MLIPPER_DOUBLE_RERANK_GAP_TOP2", 0.0);
+    const int ulp_factor = std::max(0, tuning.double_rerank_ulp_factor);
+    const double gap_floor = std::max(0.0, tuning.double_rerank_gap_top2);
     const float best_ll_f = static_cast<float>(best_ll);
     const float best_ll_next =
         std::nextafter(best_ll_f, std::numeric_limits<float>::infinity());
@@ -450,7 +433,7 @@ static void maybe_apply_double_rerank(
     if (rerank_count < 2) return;
 
     struct RankedWithOriginal {
-        PlacementResult::RankedPlacement placement;
+        RawPlacementResult::RankedPlacement placement;
         size_t original_rank = 0;
     };
 
@@ -471,7 +454,7 @@ static void maybe_apply_double_rerank(
             sizeof(NodeOpInfo),
             cudaMemcpyDeviceToHost));
 
-        const int target_id = target_id_from_op(host_op);
+        const int target_id = node_op_target_id(host_op);
         if (target_id < 0 || target_id >= D.N) continue;
 
         const DoubleRerankCandidateBuffers candidate =
@@ -494,11 +477,11 @@ static void maybe_apply_double_rerank(
 
     result.top_placements.clear();
     result.top_placements.reserve(reranked.size());
-    std::vector<fp_t> reranked_logliks;
+    std::vector<double> reranked_logliks;
     reranked_logliks.reserve(reranked.size());
     for (const RankedWithOriginal& entry : reranked) {
         result.top_placements.push_back(entry.placement);
-        reranked_logliks.push_back(static_cast<fp_t>(entry.placement.loglikelihood));
+        reranked_logliks.push_back(entry.placement.loglikelihood);
     }
 
     const std::vector<double> like_weight_ratios = compute_like_weight_ratios(reranked_logliks);
@@ -508,7 +491,7 @@ static void maybe_apply_double_rerank(
 
     result.target_id = result.top_placements.front().target_id;
     result.loglikelihood = result.top_placements.front().loglikelihood;
-    result.proximal_length = result.top_placements.front().proximal_length;
+    result.distal_length = result.top_placements.front().distal_length;
     result.pendant_length = result.top_placements.front().pendant_length;
 }
 
@@ -516,9 +499,10 @@ static void maybe_apply_double_rerank(
 
 static void rerank_selected_target_and_children(
     const DeviceTree& D,
-    PlacementResult& result,
+    RawPlacementResult& result,
     const std::vector<NodeOpInfo>& host_ops,
-    const HostPlacementEvalInputs& host_inputs)
+    const HostPlacementEvalInputs& host_inputs,
+    const PlacementTuningConfig& tuning)
 {
     if (host_ops.empty()) return;
     if (result.target_id < 0 || result.target_id >= D.N) return;
@@ -528,7 +512,7 @@ static void rerank_selected_target_and_children(
     if (family.child_left_op < 0 && family.child_right_op < 0) return;
 
     struct LocalCandidate {
-        PlacementResult::RankedPlacement placement;
+        RawPlacementResult::RankedPlacement placement;
         int op_index = -1;
     };
 
@@ -537,7 +521,7 @@ static void rerank_selected_target_and_children(
     auto append_local_candidate = [&](int op_index) {
         if (op_index < 0) return;
         const NodeOpInfo& op = host_ops[static_cast<size_t>(op_index)];
-        const int target_id = target_id_from_op(op);
+        const int target_id = node_op_target_id(op);
         if (target_id < 0 || target_id >= D.N) return;
 
         LocalCandidate candidate;
@@ -557,7 +541,7 @@ static void rerank_selected_target_and_children(
             sizeof(fp_t),
             cudaMemcpyDeviceToHost));
         candidate.placement.pendant_length = static_cast<double>(pendant_length);
-        candidate.placement.proximal_length = static_cast<double>(proximal_length);
+        candidate.placement.distal_length = static_cast<double>(proximal_length);
 
         const DoubleRerankCandidateBuffers buffers =
             load_double_rerank_candidate_buffers(D, op_index, target_id);
@@ -583,10 +567,10 @@ static void rerank_selected_target_and_children(
             return lhs.op_index < rhs.op_index;
         });
 
-    std::vector<PlacementResult::RankedPlacement> merged = result.top_placements;
+    std::vector<RawPlacementResult::RankedPlacement> merged = result.top_placements;
     for (const LocalCandidate& local : local_candidates) {
         bool replaced = false;
-        for (PlacementResult::RankedPlacement& existing : merged) {
+        for (RawPlacementResult::RankedPlacement& existing : merged) {
             if (existing.target_id == local.placement.target_id) {
                 existing = local.placement;
                 replaced = true;
@@ -608,20 +592,24 @@ static void rerank_selected_target_and_children(
     std::stable_sort(
         merged.begin(),
         merged.end(),
-        [&](const PlacementResult::RankedPlacement& lhs, const PlacementResult::RankedPlacement& rhs) {
+        [&](const RawPlacementResult::RankedPlacement& lhs, const RawPlacementResult::RankedPlacement& rhs) {
             if (lhs.loglikelihood != rhs.loglikelihood) {
                 return lhs.loglikelihood > rhs.loglikelihood;
             }
             return existing_rank(lhs.target_id) < existing_rank(rhs.target_id);
         });
 
-    const size_t keep = std::max<size_t>(export_placement_topk(), 3);
+    const size_t keep = tuning.export_accumulated_lwr_threshold > 0.0
+        ? merged.size()
+        : std::max<size_t>(
+            static_cast<size_t>(std::max(1, tuning.export_placement_topk)),
+            3);
     if (merged.size() > keep) {
         merged.resize(keep);
     }
     std::vector<fp_t> merged_logliks;
     merged_logliks.reserve(merged.size());
-    for (const PlacementResult::RankedPlacement& placement : merged) {
+    for (const RawPlacementResult::RankedPlacement& placement : merged) {
         merged_logliks.push_back(static_cast<fp_t>(placement.loglikelihood));
     }
     const std::vector<double> like_weight_ratios = compute_like_weight_ratios(merged_logliks);
@@ -632,19 +620,76 @@ static void rerank_selected_target_and_children(
     result.top_placements.swap(merged);
     result.target_id = result.top_placements.front().target_id;
     result.loglikelihood = result.top_placements.front().loglikelihood;
-    result.proximal_length = result.top_placements.front().proximal_length;
+    result.distal_length = result.top_placements.front().distal_length;
     result.pendant_length = result.top_placements.front().pendant_length;
 }
 
-static std::vector<PlacementResult::RankedPlacement> build_top_ranked_placements(
+struct RankedPlacementDeviceMetadata {
+    int target_id = -1;
+    fp_t pendant_length = fp_t(0);
+    fp_t proximal_length = fp_t(0);
+};
+
+struct PlacementKernelScratchBuffers {
+    mlipper::gpu::DeviceBuffer<fp_t> previous_loglikelihoods;
+    mlipper::gpu::DeviceBuffer<int> active_operations;
+    mlipper::gpu::DeviceBuffer<int> ranked_indices;
+    mlipper::gpu::DeviceBuffer<RankedPlacementDeviceMetadata> ranked_metadata;
+    std::vector<fp_t> host_loglk_cache;
+    std::vector<int> host_order_cache;
+    std::vector<RankedPlacementDeviceMetadata> host_ranked_metadata;
+};
+
+__global__ void GatherRankedPlacementMetadataKernel(
+    DeviceTree D,
+    const NodeOpInfo* ops,
+    const int* ranked_indices,
+    int count,
+    RankedPlacementDeviceMetadata* metadata)
+{
+    const int rank = blockIdx.x * blockDim.x + threadIdx.x;
+    if (rank >= count || !ops || !ranked_indices || !metadata) return;
+    const int op_index = ranked_indices[rank];
+    if (op_index < 0) return;
+    const NodeOpInfo op = ops[op_index];
+    const int target_id = node_op_target_id(op);
+    if (target_id < 0 || target_id >= D.N) return;
+    metadata[rank].target_id = target_id;
+    metadata[rank].pendant_length = D.d_prev_pendant_length[target_id];
+    metadata[rank].proximal_length = D.d_prev_proximal_length[target_id];
+}
+
+static std::vector<RawPlacementResult::RankedPlacement> build_top_ranked_placements(
     const DeviceTree& D,
     const NodeOpInfo* d_ops,
     const std::vector<int>& top_indices,
-    const std::vector<fp_t>& top_values)
+    const std::vector<fp_t>& top_values,
+    PlacementKernelScratchBuffers& scratch,
+    cudaStream_t stream)
 {
-    std::vector<PlacementResult::RankedPlacement> ranked;
+    // Only compact metadata crosses back after host ranking; the full
+    // per-candidate CLV and PMAT buffers remain resident on the device.
+    std::vector<RawPlacementResult::RankedPlacement> ranked;
     const size_t keep = std::min(top_indices.size(), top_values.size());
     ranked.reserve(keep);
+
+    scratch.ranked_indices.ensureCapacity(keep);
+    scratch.ranked_metadata.ensureCapacity(keep);
+    scratch.host_ranked_metadata.assign(keep, RankedPlacementDeviceMetadata{});
+    CUDA_CHECK(cudaMemcpyAsync(
+        scratch.ranked_indices.get(), top_indices.data(),
+        keep * sizeof(int), cudaMemcpyHostToDevice, stream));
+    constexpr int kBlockSize = 256;
+    const int grid_size = static_cast<int>((keep + kBlockSize - 1) / kBlockSize);
+    GatherRankedPlacementMetadataKernel<<<grid_size, kBlockSize, 0, stream>>>(
+        D, d_ops, scratch.ranked_indices.get(), static_cast<int>(keep),
+        scratch.ranked_metadata.get());
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaMemcpyAsync(
+        scratch.host_ranked_metadata.data(), scratch.ranked_metadata.get(),
+        keep * sizeof(RankedPlacementDeviceMetadata),
+        cudaMemcpyDeviceToHost, stream));
+    CUDA_CHECK(cudaStreamSynchronize(stream));
 
     const std::vector<double> like_weight_ratios = compute_like_weight_ratios(top_values);
     for (size_t i = 0; i < keep; ++i) {
@@ -652,71 +697,29 @@ static std::vector<PlacementResult::RankedPlacement> build_top_ranked_placements
         if (op_index < 0) {
             continue;
         }
-
-        NodeOpInfo host_op{};
-        CUDA_CHECK(cudaMemcpy(
-            &host_op,
-            d_ops + op_index,
-            sizeof(NodeOpInfo),
-            cudaMemcpyDeviceToHost));
-
-        const int target_id = target_id_from_op(host_op);
+        const RankedPlacementDeviceMetadata& metadata =
+            scratch.host_ranked_metadata[i];
+        const int target_id = metadata.target_id;
         if (target_id < 0 || target_id >= D.N) {
             continue;
         }
 
-        fp_t pendant_length = fp_t(0);
-        fp_t proximal_length = fp_t(0);
-        CUDA_CHECK(cudaMemcpy(
-            &pendant_length,
-            D.d_prev_pendant_length + target_id,
-            sizeof(fp_t),
-            cudaMemcpyDeviceToHost));
-        CUDA_CHECK(cudaMemcpy(
-            &proximal_length,
-            D.d_prev_proximal_length + target_id,
-            sizeof(fp_t),
-            cudaMemcpyDeviceToHost));
-
-        PlacementResult::RankedPlacement candidate;
+        RawPlacementResult::RankedPlacement candidate;
         candidate.target_id = target_id;
         candidate.loglikelihood = static_cast<double>(top_values[i]);
-        candidate.proximal_length = static_cast<double>(proximal_length);
-        candidate.pendant_length = static_cast<double>(pendant_length);
+        candidate.distal_length = static_cast<double>(metadata.proximal_length);
+        candidate.pendant_length = static_cast<double>(metadata.pendant_length);
         candidate.like_weight_ratio = like_weight_ratios[i];
         ranked.push_back(candidate);
     }
     return ranked;
 }
 
-template <typename T>
-static void cuda_free_noexcept(T*& ptr) noexcept {
-    if (!ptr) return;
-    cudaFree(ptr);
-    ptr = nullptr;
-}
-
-struct PlacementKernelScratchBuffers {
-    fp_t* d_prev_loglk = nullptr;
-    int* d_active_ops = nullptr;
-    std::vector<fp_t> host_loglk_cache;
-    std::vector<int> host_order_cache;
-
-    ~PlacementKernelScratchBuffers() {
-        release();
-    }
-
-    void release() noexcept {
-        cuda_free_noexcept(d_prev_loglk);
-        cuda_free_noexcept(d_active_ops);
-    }
-};
-
 template <typename CheckCudaFn>
-static void fetch_topk_loglikelihoods(
+static void fetch_ranked_loglikelihoods(
     const fp_t* d_source,
     int num_ops,
-    int topk,
+    int result_limit,
     PlacementKernelScratchBuffers& scratch,
     cudaStream_t stream,
     std::vector<int>& top_indices,
@@ -725,7 +728,7 @@ static void fetch_topk_loglikelihoods(
 {
     top_indices.clear();
     top_values.clear();
-    if (!d_source || num_ops <= 0 || topk <= 0) return;
+    if (!d_source || num_ops <= 0 || result_limit <= 0) return;
 
     scratch.host_loglk_cache.resize(static_cast<size_t>(num_ops));
     check_cuda("cudaMemcpyAsync host_loglk_cache", cudaMemcpyAsync(
@@ -736,21 +739,28 @@ static void fetch_topk_loglikelihoods(
         stream));
     check_cuda("cudaStreamSynchronize host_loglk_cache", cudaStreamSynchronize(stream));
 
-    const int actual_topk = std::min(num_ops, topk);
+    for (const fp_t value : scratch.host_loglk_cache) {
+        if (!std::isfinite(static_cast<double>(value))) {
+            throw std::runtime_error(
+                "Placement likelihood evaluation produced a non-finite score.");
+        }
+    }
+
+    const int result_count = std::min(num_ops, result_limit);
     scratch.host_order_cache.resize(static_cast<size_t>(num_ops));
     std::iota(scratch.host_order_cache.begin(), scratch.host_order_cache.end(), 0);
     std::partial_sort(
         scratch.host_order_cache.begin(),
-        scratch.host_order_cache.begin() + actual_topk,
+        scratch.host_order_cache.begin() + result_count,
         scratch.host_order_cache.end(),
         [&](int lhs, int rhs) {
             return scratch.host_loglk_cache[static_cast<size_t>(lhs)] >
                    scratch.host_loglk_cache[static_cast<size_t>(rhs)];
         });
 
-    top_indices.resize(static_cast<size_t>(actual_topk));
-    top_values.resize(static_cast<size_t>(actual_topk));
-    for (int i = 0; i < actual_topk; ++i) {
+    top_indices.resize(static_cast<size_t>(result_count));
+    top_values.resize(static_cast<size_t>(result_count));
+    for (int i = 0; i < result_count; ++i) {
         const int op_idx = scratch.host_order_cache[static_cast<size_t>(i)];
         top_indices[static_cast<size_t>(i)] = op_idx;
         top_values[static_cast<size_t>(i)] =
@@ -758,11 +768,11 @@ static void fetch_topk_loglikelihoods(
     }
 }
 
-static void include_topk_best_target_children(
+static void include_best_target_children(
     const DeviceTree& D,
     const std::vector<NodeOpInfo>& host_ops,
     const std::vector<fp_t>& host_loglk_cache,
-    int export_topk,
+    int result_limit,
     std::vector<int>& final_top_indices,
     std::vector<fp_t>& final_top_values)
 {
@@ -778,7 +788,7 @@ static void include_topk_best_target_children(
         return;
     }
 
-    const int best_target_id = target_id_from_op(host_ops[static_cast<size_t>(best_op_index)]);
+    const int best_target_id = node_op_target_id(host_ops[static_cast<size_t>(best_op_index)]);
     if (best_target_id < 0 || best_target_id >= D.N) {
         return;
     }
@@ -809,8 +819,8 @@ static void include_topk_best_target_children(
         std::unique(augmented_indices.begin(), augmented_indices.end()),
         augmented_indices.end());
 
-    const int keep =
-        std::min<int>(std::max(1, export_topk), static_cast<int>(augmented_indices.size()));
+    const int keep = std::min<int>(
+        result_limit, static_cast<int>(augmented_indices.size()));
     augmented_indices.resize(static_cast<size_t>(keep));
 
     std::vector<fp_t> augmented_values(static_cast<size_t>(keep), fp_t(0));
@@ -902,7 +912,8 @@ __global__ void KeepBestBranchLengthsKernel(
     if (target_id < 0 || target_id >= total_nodes) return;
     const fp_t curr = curr_loglk[op_idx];
     const fp_t prev = prev_loglk[op_idx];
-    if (curr < prev) {
+    if (!isfinite(static_cast<double>(curr)) ||
+        (isfinite(static_cast<double>(prev)) && curr < prev)) {
         curr_loglk[op_idx] = prev;
         curr_pendant[target_id] = prev_pendant[target_id];
         curr_proximal[target_id] = prev_proximal[target_id];
@@ -958,7 +969,7 @@ __global__ void BuildPendantPMATPerOpKernel(
     const size_t matrix_span = state_count * state_count;
     const fp_t* rate_lambdas = lambdas + rate_offset;
     fp_t* out_pmat = P + static_cast<size_t>(flat_index) * matrix_span;
-    pmatrix_from_triple_device(Vinv, V, rate_lambdas, fp_t(1.0), branch_length, p, out_pmat, states);
+    pmatrix_from_triple_gpu(Vinv, V, rate_lambdas, fp_t(1.0), branch_length, p, out_pmat, states);
 }
 
 // Build proximal PMATs for every node from the current proximal branch lengths.
@@ -1003,7 +1014,7 @@ __global__ void BuildNodeProximalPMATKernel(
         (static_cast<size_t>(node_idx) * rate_count + static_cast<size_t>(rate_idx)) * matrix_span;
     const fp_t* rate_lambdas = lambdas + rate_offset;
     fp_t* out_pmat = P + output_base;
-    pmatrix_from_triple_device(Vinv, V, rate_lambdas, fp_t(1.0), branch_length, p, out_pmat, states);
+    pmatrix_from_triple_gpu(Vinv, V, rate_lambdas, fp_t(1.0), branch_length, p, out_pmat, states);
 }
 
 // Build distal PMATs for every node from total branch length minus proximal length.
@@ -1047,90 +1058,37 @@ __global__ void BuildNodeDistalPMATKernel(
         (static_cast<size_t>(node_idx) * rate_count + static_cast<size_t>(rate_idx)) * matrix_span;
     const fp_t* rate_lambdas = lambdas + rate_offset;
     fp_t* out_pmat = P + output_base;
-    pmatrix_from_triple_device(Vinv, V, rate_lambdas, fp_t(1.0), branch_length, p, out_pmat, states);
+    pmatrix_from_triple_gpu(Vinv, V, rate_lambdas, fp_t(1.0), branch_length, p, out_pmat, states);
 }
 
-// Per-site placement kernel: build midpoint CLV for placement.
-__global__ void BuildMidpointForPlacementKernel(
-    DeviceTree D,
-    const NodeOpInfo* d_ops,
-    const int* d_op_indices,
-    int op_offset,
-    int num_ops,
-    bool proximal_mode)
-{
-    const int op_local = op_offset + static_cast<int>(blockIdx.y);
-    unsigned int tid  = blockIdx.x * blockDim.x + threadIdx.x;
-    if (!d_ops || op_local >= num_ops) return;
-    const int op_idx = d_op_indices ? d_op_indices[op_local] : op_local;
-    if (op_idx < 0) return;
-    const NodeOpInfo op = d_ops[op_idx];
-    const bool active_thread = (tid < D.sites);
-    __shared__ fp_t shared_target_mat[8 * 16];
-    __shared__ fp_t shared_parent_mat[8 * 16];
-    if (D.states == 4) {
-        switch (D.rate_cats) {
-            case 1:
-                compute_midpoint_inner_inner_ratecat<1>(
-                    D,
-                    op,
-                    tid,
-                    proximal_mode,
-                    op_idx,
-                    active_thread,
-                    shared_target_mat,
-                    shared_parent_mat);
-                break;
-            case 4:
-                compute_midpoint_inner_inner_ratecat<4>(
-                    D,
-                    op,
-                    tid,
-                    proximal_mode,
-                    op_idx,
-                    active_thread,
-                    shared_target_mat,
-                    shared_parent_mat);
-                break;
-            case 8:
-                compute_midpoint_inner_inner_ratecat<8>(
-                    D,
-                    op,
-                    tid,
-                    proximal_mode,
-                    op_idx,
-                    active_thread,
-                    shared_target_mat,
-                    shared_parent_mat);
-                break;
-            default:
-                compute_midpoint_inner_inner_states4_generic(
-                    D,
-                    op,
-                    tid,
-                    proximal_mode,
-                    op_idx,
-                    active_thread,
-                    shared_target_mat,
-                    shared_parent_mat);
-                break;
-        }
-    }
-}
-
-// Per-site root likelihood kernel: assumes midpoint CLV already computed.
-PlacementResult PlacementEvaluationKernel (
+// Placement is deliberately split into device-side scoring/optimization and
+// host-side ranking. The returned node IDs still refer to the unchanged input
+// tree; committing a result is the responsibility of the tree workflow layer.
+RawPlacementResult EvaluatePlacementCandidates(
     const DeviceTree& D,
     const NodeOpInfo* d_ops,
     int num_ops,
     int smoothing,
     cudaStream_t stream,
-    bool enable_local_child_refine
-){
-    PlacementResult result;
+    bool enable_local_child_refine,
+    const PlacementTuningConfig& tuning,
+    const PlacementScratchOverride* scratch_override
+)
+{
+    RawPlacementResult result;
     assert(num_ops > 0 && "num_ops must be positive");
     if (num_ops <= 0) return result;
     assert(smoothing > 0 && "smoothing must be positive");
+    if (scratch_override == nullptr) {
+        throw std::invalid_argument(
+            "EvaluatePlacementCandidates requires explicit scratch buffers.");
+    }
+    if (D.states != kPlacementStateCount ||
+        D.rate_cats <= 0 ||
+        D.rate_cats > kMaximumPlacementRateCategories) {
+        throw std::invalid_argument(
+            "Placement evaluation currently supports four-state models with 1-8 rate categories.");
+    }
 
     // Stage 1: validate inputs and plan the runtime/launch configuration.
     const size_t num_ops_count = static_cast<size_t>(num_ops);
@@ -1139,8 +1097,50 @@ PlacementResult PlacementEvaluationKernel (
     const size_t rate_count = static_cast<size_t>(D.rate_cats);
     const size_t state_count = static_cast<size_t>(D.states);
     const size_t sumtable_stride = D.sites * rate_count * state_count;
-    if (num_ops_count > D.sumtable_capacity_ops || num_ops_count > D.likelihood_capacity_ops) {
-        throw std::runtime_error("DeviceTree buffers too small for num_ops.");
+    if (scratch_override != nullptr) {
+        const bool has_proximal_pmat =
+            scratch_override->d_pmat_mid_prox != nullptr;
+        const bool has_distal_pmat =
+            scratch_override->d_pmat_mid_dist != nullptr;
+        if (has_proximal_pmat != has_distal_pmat) {
+            throw std::runtime_error(
+                "EvaluatePlacementCandidates midpoint PMAT scratch is incomplete.");
+        }
+        const bool has_midpoint_clv =
+            scratch_override->d_edge_midpoint_clv != nullptr;
+        const bool has_midpoint_scaler =
+            scratch_override->d_edge_midpoint_scaler != nullptr;
+        if (has_midpoint_clv != has_midpoint_scaler) {
+            throw std::runtime_error(
+                "EvaluatePlacementCandidates midpoint CLV scratch is incomplete.");
+        }
+    }
+    const size_t sumtable_capacity_ops = scratch_override->sumtable_capacity_ops;
+    const size_t likelihood_capacity_ops =
+        scratch_override->likelihood_capacity_ops;
+    const size_t query_pmat_capacity_ops =
+        scratch_override->query_pmat_capacity_ops;
+    const size_t midpoint_pmat_capacity_nodes =
+        (scratch_override != nullptr &&
+         scratch_override->d_pmat_mid_prox != nullptr &&
+         scratch_override->d_pmat_mid_dist != nullptr)
+            ? scratch_override->midpoint_pmat_capacity_nodes
+            : static_cast<size_t>(std::max(D.N, 0));
+    const size_t midpoint_clv_capacity_nodes =
+        (scratch_override != nullptr &&
+         scratch_override->d_edge_midpoint_clv != nullptr &&
+         scratch_override->d_edge_midpoint_scaler != nullptr)
+            ? scratch_override->midpoint_clv_capacity_nodes
+            : static_cast<size_t>(std::max(D.N, 0));
+    if (num_ops_count > sumtable_capacity_ops ||
+        num_ops_count > likelihood_capacity_ops ||
+        num_ops_count > query_pmat_capacity_ops ||
+        static_cast<size_t>(std::max(D.N, 0)) > midpoint_pmat_capacity_nodes ||
+        static_cast<size_t>(std::max(D.N, 0)) > midpoint_clv_capacity_nodes) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates scratch capacity is too small for " +
+            std::to_string(num_ops_count) + " operations and " +
+            std::to_string(node_count) + " nodes.");
     }
     auto grid_x = [](size_t work_items, unsigned int block_width) {
         return static_cast<unsigned int>((work_items + block_width - 1) / block_width);
@@ -1157,15 +1157,85 @@ PlacementResult PlacementEvaluationKernel (
         }
     };
     PlacementKernelScratchBuffers scratch;
-    fp_t*& d_prev_loglk = scratch.d_prev_loglk;
-    int*& d_active_ops = scratch.d_active_ops;
+    fp_t* d_prev_loglk =
+        scratch_override != nullptr && scratch_override->d_prev_loglk != nullptr
+            ? scratch_override->d_prev_loglk
+            : nullptr;
+    int* d_active_ops =
+        scratch_override != nullptr && scratch_override->d_active_ops != nullptr
+            ? scratch_override->d_active_ops
+            : nullptr;
     std::vector<fp_t>& host_loglk_cache = scratch.host_loglk_cache;
     HostPlacementPostprocessCache postprocess_cache;
-    fp_t* d_likelihoods = D.d_likelihoods;
-    fp_t* d_sumtable = D.d_sumtable;
+    fp_t* d_likelihoods = scratch_override->d_likelihoods;
+    fp_t* d_sumtable = scratch_override->d_sumtable;
+    fp_t* d_query_pmat = scratch_override->d_query_pmat;
+    fp_t* d_pmat_mid_prox =
+        (scratch_override != nullptr && scratch_override->d_pmat_mid_prox != nullptr)
+            ? scratch_override->d_pmat_mid_prox
+            : D.d_pmat_mid_prox;
+    fp_t* d_pmat_mid_dist =
+        (scratch_override != nullptr && scratch_override->d_pmat_mid_dist != nullptr)
+            ? scratch_override->d_pmat_mid_dist
+            : D.d_pmat_mid_dist;
+    if (d_likelihoods == nullptr) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates requires a likelihood scratch buffer.");
+    }
+    if (d_sumtable == nullptr) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates requires a sumtable scratch buffer.");
+    }
+    if (d_query_pmat == nullptr) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates requires a query PMAT scratch buffer.");
+    }
+    if (d_pmat_mid_prox == nullptr || d_pmat_mid_dist == nullptr) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates requires midpoint PMAT scratch buffers.");
+    }
+    // DeviceTree is a non-owning pointer view. Redirect scratch fields in a
+    // shallow copy so this call cannot change the caller's buffer bindings.
+    DeviceTree placement_view = D;
+    placement_view.d_query_pmat = d_query_pmat;
+    placement_view.d_pmat_mid_prox = d_pmat_mid_prox;
+    placement_view.d_pmat_mid_dist = d_pmat_mid_dist;
+    if (scratch_override != nullptr && scratch_override->d_edge_midpoint_clv != nullptr) {
+        placement_view.d_edge_midpoint_clv = scratch_override->d_edge_midpoint_clv;
+        placement_view.d_edge_midpoint_scaler =
+            scratch_override->d_edge_midpoint_scaler;
+    }
+    if (scratch_override != nullptr &&
+        (scratch_override->d_new_pendant_length != nullptr ||
+         scratch_override->d_new_proximal_length != nullptr ||
+         scratch_override->d_prev_pendant_length != nullptr ||
+         scratch_override->d_prev_proximal_length != nullptr)) {
+        if (scratch_override->d_new_pendant_length == nullptr ||
+            scratch_override->d_new_proximal_length == nullptr ||
+            scratch_override->d_prev_pendant_length == nullptr ||
+            scratch_override->d_prev_proximal_length == nullptr ||
+            scratch_override->branch_length_capacity_nodes < node_count) {
+            throw std::runtime_error(
+                "EvaluatePlacementCandidates branch-length scratch is incomplete or too small.");
+        }
+        placement_view.d_new_pendant_length =
+            scratch_override->d_new_pendant_length;
+        placement_view.d_new_proximal_length =
+            scratch_override->d_new_proximal_length;
+        placement_view.d_prev_pendant_length =
+            scratch_override->d_prev_pendant_length;
+        placement_view.d_prev_proximal_length =
+            scratch_override->d_prev_proximal_length;
+    }
+    if (!placement_view.d_new_pendant_length ||
+        !placement_view.d_new_proximal_length ||
+        !placement_view.d_prev_pendant_length ||
+        !placement_view.d_prev_proximal_length) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates requires branch-length scratch buffers.");
+    }
 
     const size_t diag_shared = rate_count * state_count * 4;
-    const RefineConfig refine_cfg = load_refine_config();
     const size_t midpoint_pmat_shared = rate_count * 16 * 2;
     size_t shmem_bytes = sizeof(fp_t) * diag_shared;
     shmem_bytes += sizeof(fp_t) * midpoint_pmat_shared;
@@ -1175,13 +1245,17 @@ PlacementResult PlacementEvaluationKernel (
     int pendant_block_threads = 512;
     int max_blocks_per_sm = 0;
     cudaFuncAttributes attr{};
-    check_cuda("cudaFuncGetAttributes pendant", cudaFuncGetAttributes(&attr, LikelihoodDerivativePendantKernel));
+    check_cuda(
+        "cudaFuncGetAttributes pendant",
+        cudaFuncGetAttributes(&attr, LikelihoodDerivativePendantKernel));
     while (pendant_block_threads >= 32) {
-        check_cuda("cudaOccupancyMaxActiveBlocksPerMultiprocessor pendant", cudaOccupancyMaxActiveBlocksPerMultiprocessor(
-            &max_blocks_per_sm,
-            LikelihoodDerivativePendantKernel,
-            pendant_block_threads,
-            shmem_bytes));
+        check_cuda(
+            "cudaOccupancyMaxActiveBlocksPerMultiprocessor pendant",
+            cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+                &max_blocks_per_sm,
+                LikelihoodDerivativePendantKernel,
+                pendant_block_threads,
+                shmem_bytes));
         if (max_blocks_per_sm > 0) break;
         pendant_block_threads /= 2;
     }
@@ -1191,13 +1265,17 @@ PlacementResult PlacementEvaluationKernel (
 
     int proximal_block_threads = 512;
     max_blocks_per_sm = 0;
-    check_cuda("cudaFuncGetAttributes proximal", cudaFuncGetAttributes(&attr, LikelihoodDerivativeProximalKernel));
+    check_cuda(
+        "cudaFuncGetAttributes proximal",
+        cudaFuncGetAttributes(&attr, LikelihoodDerivativeProximalKernel));
     while (proximal_block_threads >= 32) {
-        check_cuda("cudaOccupancyMaxActiveBlocksPerMultiprocessor proximal", cudaOccupancyMaxActiveBlocksPerMultiprocessor(
-            &max_blocks_per_sm,
-            LikelihoodDerivativeProximalKernel,
-            proximal_block_threads,
-            shmem_bytes));
+        check_cuda(
+            "cudaOccupancyMaxActiveBlocksPerMultiprocessor proximal",
+            cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+                &max_blocks_per_sm,
+                LikelihoodDerivativeProximalKernel,
+                proximal_block_threads,
+                shmem_bytes));
         if (max_blocks_per_sm > 0) break;
         proximal_block_threads /= 2;
     }
@@ -1205,24 +1283,38 @@ PlacementResult PlacementEvaluationKernel (
         throw std::runtime_error("No valid block size for LikelihoodDerivativeProximalKernel on this GPU.");
     }
 
-    const int midpoint_block_threads = 256;
     const int pmat_block_threads = 128;
     dim3 pendant_block(pendant_block_threads);
     dim3 proximal_block(proximal_block_threads);
-    dim3 midpoint_block(midpoint_block_threads);
     dim3 pmat_block(pmat_block_threads);
-    dim3 midpoint_grid(grid_x(D.sites, midpoint_block.x), num_ops_grid_y);
 
     // Stage 2: allocate scratch buffers and initialize branch-length state.
-    check_cuda("cudaMalloc d_prev_loglk", cudaMalloc(&d_prev_loglk, sizeof(fp_t) * num_ops_count));
-    check_cuda("cudaMalloc d_active_ops", cudaMalloc(&d_active_ops, sizeof(int) * num_ops_count));
-    check_cuda("cudaMemset d_active_ops", cudaMemset(d_active_ops, 1, sizeof(int) * num_ops_count));
+    if (scratch_override != nullptr &&
+        (scratch_override->d_prev_loglk != nullptr ||
+         scratch_override->d_active_ops != nullptr) &&
+        (scratch_override->d_prev_loglk == nullptr ||
+         scratch_override->d_active_ops == nullptr ||
+         scratch_override->ranking_state_capacity_ops < num_ops_count)) {
+        throw std::runtime_error(
+            "EvaluatePlacementCandidates ranking-state scratch is incomplete or too small.");
+    }
+    if (d_prev_loglk == nullptr) {
+        scratch.previous_loglikelihoods.ensureCapacity(num_ops_count);
+        d_prev_loglk = scratch.previous_loglikelihoods.get();
+    }
+    if (d_active_ops == nullptr) {
+        scratch.active_operations.ensureCapacity(num_ops_count);
+        d_active_ops = scratch.active_operations.get();
+    }
+    check_cuda(
+        "cudaMemsetAsync d_active_ops",
+        cudaMemsetAsync(d_active_ops, 1, sizeof(int) * num_ops_count, stream));
     {
         dim3 init_block(256);
         dim3 init_grid(grid_x(node_count, init_block.x));
         BuildNodePendantLengthsKernel<<<init_grid, init_block, 0, stream>>>(
             nullptr,
-            D.d_prev_pendant_length,
+            placement_view.d_prev_pendant_length,
             D.N,
             D.root_id,
             OPT_BRANCH_LEN_MIN,
@@ -1231,7 +1323,7 @@ PlacementResult PlacementEvaluationKernel (
         check_launch("BuildNodePendantLengthsKernel");
         BuildInitialProximalLengthsKernel<<<init_grid, init_block, 0, stream>>>(
             D.d_blen,
-            D.d_prev_proximal_length,
+            placement_view.d_prev_proximal_length,
             D.N,
             D.root_id,
             OPT_BRANCH_LEN_MIN,
@@ -1248,12 +1340,12 @@ PlacementResult PlacementEvaluationKernel (
         BuildPendantPMATPerOpKernel<<<pmat_grid, pmat_block, 0, stream>>>(
             d_ops,
             nullptr,
-            D.d_prev_pendant_length,
+            placement_view.d_prev_pendant_length,
             D.d_Vinv,
             D.d_V,
             D.d_lambdas,
             0.0,
-            D.d_query_pmat,
+            d_query_pmat,
             D.states,
             D.rate_cats,
             num_ops,
@@ -1265,12 +1357,12 @@ PlacementResult PlacementEvaluationKernel (
 
         dim3 node_grid(grid_x(node_rate_work, pmat_block.x));
         BuildNodeProximalPMATKernel<<<node_grid, pmat_block, 0, stream>>>(
-            D.d_prev_proximal_length,
+            placement_view.d_prev_proximal_length,
             D.d_Vinv,
             D.d_V,
             D.d_lambdas,
             0.0,
-            D.d_pmat_mid_prox,
+            d_pmat_mid_prox,
             D.states,
             D.rate_cats,
             D.N,
@@ -1282,12 +1374,12 @@ PlacementResult PlacementEvaluationKernel (
 
         BuildNodeDistalPMATKernel<<<node_grid, pmat_block, 0, stream>>>(
             D.d_blen,
-            D.d_prev_proximal_length,
+            placement_view.d_prev_proximal_length,
             D.d_Vinv,
             D.d_V,
             D.d_lambdas,
             0.0,
-            D.d_pmat_mid_dist,
+            d_pmat_mid_dist,
             D.states,
             D.rate_cats,
             D.N,
@@ -1297,36 +1389,29 @@ PlacementResult PlacementEvaluationKernel (
             DEFAULT_BRANCH_LENGTH);
         check_launch("BuildNodeDistalPMATKernel baseline");
 
-        BuildMidpointForPlacementKernel<<<midpoint_grid, midpoint_block, 0, stream>>>(
-            D,
-            d_ops,
-            nullptr,
-            0,
-            num_ops,
-            false);
-        check_launch("BuildMidpointForPlacementKernel baseline");
+        mlipper::likelihood::placement::update_midpoint_partials(
+            placement_view, d_ops, num_ops, stream);
 
-        root_likelihood::Placement_Root_Loglk(
-            D,
+        mlipper::likelihood::placement::compute_edge_loglikelihoods(
+            placement_view,
             d_ops,
-            nullptr,
             num_ops,
-            D.d_query_pmat,
-            D.d_pmat_mid_dist,
-            D.d_pmat_mid_prox,
+            d_query_pmat,
+            d_pmat_mid_dist,
+            d_pmat_mid_prox,
             d_prev_loglk,
             stream);
     }
 
     // Stage 4: iteratively optimize pendant/proximal branch lengths per op.
-    const int opt_passes = std::max(refine_cfg.full_opt_passes, smoothing);
+    const int opt_passes = std::max(std::max(1, tuning.full_opt_passes), smoothing);
     const size_t op_rate_work = num_ops_count * rate_count;
     const size_t node_rate_work = node_count * rate_count;
     for (int pass = 0; pass < opt_passes; ++pass) {
         dim3 current_deriv_grid(num_ops_grid_y);
         dim3 current_pmat_grid(grid_x(op_rate_work, pmat_block.x));
         LikelihoodDerivativePendantKernel<<<current_deriv_grid, pendant_block, shmem_bytes, stream>>>(
-            D,
+            placement_view,
             d_ops,
             0,
             nullptr,
@@ -1336,22 +1421,23 @@ PlacementResult PlacementEvaluationKernel (
             d_sumtable,
             D.d_pattern_weights_u,
             30,
-            D.d_new_pendant_length,
+            placement_view.d_new_pendant_length,
             sumtable_stride,
-            D.d_prev_pendant_length,
-            d_active_ops);
+            placement_view.d_prev_pendant_length,
+            d_active_ops,
+            tuning.pendant_branch_min);
         check_launch("LikelihoodDerivativePendantKernel");
 
         // Rebuild query-side PMATs from the updated pendant lengths.
         BuildPendantPMATPerOpKernel<<<current_pmat_grid, pmat_block, 0, stream>>>(
             d_ops,
             nullptr,
-            D.d_new_pendant_length,
+            placement_view.d_new_pendant_length,
             D.d_Vinv,
             D.d_V,
             D.d_lambdas,
             0.0,
-            D.d_query_pmat,
+            d_query_pmat,
             D.states,
             D.rate_cats,
             num_ops,
@@ -1361,7 +1447,7 @@ PlacementResult PlacementEvaluationKernel (
             DEFAULT_BRANCH_LENGTH);
         check_launch("BuildPendantPMATPerOpKernel refine");
         LikelihoodDerivativeProximalKernel<<<current_deriv_grid, proximal_block, shmem_bytes, stream>>>(
-            D,
+            placement_view,
             d_ops,
             0,
             nullptr,
@@ -1371,22 +1457,23 @@ PlacementResult PlacementEvaluationKernel (
             d_sumtable,
             D.d_pattern_weights_u,
             30,
-            D.d_new_proximal_length,
+            placement_view.d_new_proximal_length,
             sumtable_stride,
-            D.d_prev_proximal_length,
-            d_active_ops);
+            placement_view.d_prev_proximal_length,
+            d_active_ops,
+            tuning.split_branch_min);
         check_launch("LikelihoodDerivativeProximalKernel");
 
         // Rebuild midpoint PMATs from the updated proximal lengths.
         {
             dim3 pmat_grid(grid_x(node_rate_work, pmat_block.x));
             BuildNodeProximalPMATKernel<<<pmat_grid, pmat_block, 0, stream>>>(
-                D.d_new_proximal_length,
+                placement_view.d_new_proximal_length,
                 D.d_Vinv,
                 D.d_V,
                 D.d_lambdas,
                 0.0,
-                D.d_pmat_mid_prox,
+                d_pmat_mid_prox,
                 D.states,
                 D.rate_cats,
                 D.N,
@@ -1402,12 +1489,12 @@ PlacementResult PlacementEvaluationKernel (
             dim3 pmat_grid(grid_x(node_rate_work, pmat_block.x));
             BuildNodeDistalPMATKernel<<<pmat_grid, pmat_block, 0, stream>>>(
                 D.d_blen,
-                D.d_new_proximal_length,
+                placement_view.d_new_proximal_length,
                 D.d_Vinv,
                 D.d_V,
                 D.d_lambdas,
                 0.0,
-                D.d_pmat_mid_dist,
+                d_pmat_mid_dist,
                 D.states,
                 D.rate_cats,
                 D.N,
@@ -1419,14 +1506,13 @@ PlacementResult PlacementEvaluationKernel (
         }
 
         // Score each placement op after the pendant/proximal updates.
-        root_likelihood::Placement_Root_Loglk(
-            D,
+        mlipper::likelihood::placement::compute_edge_loglikelihoods(
+            placement_view,
             d_ops,
-            nullptr,
             num_ops,
-            D.d_query_pmat,
-            D.d_pmat_mid_dist,
-            D.d_pmat_mid_prox,
+            d_query_pmat,
+            d_pmat_mid_dist,
+            d_pmat_mid_prox,
             d_likelihoods,
             stream);
 
@@ -1437,24 +1523,28 @@ PlacementResult PlacementEvaluationKernel (
             nullptr,
             d_likelihoods,
             d_prev_loglk,
-            D.d_new_pendant_length,
-            D.d_new_proximal_length,
-            D.d_prev_pendant_length,
-            D.d_prev_proximal_length,
+            placement_view.d_new_pendant_length,
+            placement_view.d_new_proximal_length,
+            placement_view.d_prev_pendant_length,
+            placement_view.d_prev_proximal_length,
             d_active_ops,
             num_ops,
             D.N);
         check_launch("KeepBestBranchLengthsKernel");
     }
 
-    // Stage 5: collect the final top-k ranking and assemble the result.
+    // Stage 5: collect either the fixed-size internal ranking or every
+    // candidate needed for accumulated-LWR output.
     std::vector<int> final_top_indices;
     std::vector<fp_t> final_top_values;
-    const int export_topk = export_placement_topk();
-    fetch_topk_loglikelihoods(
+    const int result_limit =
+        tuning.export_accumulated_lwr_threshold > 0.0
+            ? num_ops
+            : std::max(1, tuning.export_placement_topk);
+    fetch_ranked_loglikelihoods(
         d_prev_loglk,
         num_ops,
-        export_topk,
+        result_limit,
         scratch,
         stream,
         final_top_indices,
@@ -1468,31 +1558,32 @@ PlacementResult PlacementEvaluationKernel (
         host_loglk_cache.size() == static_cast<size_t>(num_ops)) {
         const std::vector<NodeOpInfo>& host_ops =
             ensure_host_ops_loaded(d_ops, num_ops, stream, postprocess_cache);
-        include_topk_best_target_children(
+        include_best_target_children(
             D,
             host_ops,
             host_loglk_cache,
-            export_topk,
+            result_limit,
             final_top_indices,
             final_top_values);
     }
     if (final_top_indices.empty() || final_top_values.empty()) {
-        throw std::runtime_error("PlacementEvaluationKernel: no placement candidates produced");
+        throw std::runtime_error("EvaluatePlacementCandidates: no placement candidates produced");
     }
 
     result.top_placements = build_top_ranked_placements(
         D,
         d_ops,
         final_top_indices,
-        final_top_values);
+        final_top_values,
+        scratch,
+        stream);
     if (result.top_placements.empty()) {
-        throw std::runtime_error("PlacementEvaluationKernel: failed to materialize ranked placements");
+        throw std::runtime_error("EvaluatePlacementCandidates: failed to materialize ranked placements");
     }
 
-    scratch.release();
     result.target_id = result.top_placements.front().target_id;
     result.loglikelihood = result.top_placements.front().loglikelihood;
-    result.proximal_length = result.top_placements.front().proximal_length;
+    result.distal_length = result.top_placements.front().distal_length;
     result.pendant_length = result.top_placements.front().pendant_length;
 
     // Stage 6: apply host-side postprocessing to the assembled ranking.
@@ -1501,11 +1592,12 @@ PlacementResult PlacementEvaluationKernel (
         final_top_indices.size() > 1 &&
         result.top_placements.size() > 1) {
         maybe_apply_double_rerank(
-            D,
+            placement_view,
             d_ops,
             final_top_indices,
             result,
-            ensure_host_placement_eval_inputs(D, stream, postprocess_cache));
+            ensure_host_placement_eval_inputs(placement_view, stream, postprocess_cache),
+            tuning);
     }
 #endif
     if (enable_local_child_refine &&
@@ -1517,11 +1609,15 @@ PlacementResult PlacementEvaluationKernel (
             ensure_host_ops_loaded(d_ops, num_ops, stream, postprocess_cache);
         if (!host_ops.empty()) {
             rerank_selected_target_and_children(
-                D,
+                placement_view,
                 result,
                 host_ops,
-                ensure_host_placement_eval_inputs(D, stream, postprocess_cache));
+                ensure_host_placement_eval_inputs(placement_view, stream, postprocess_cache),
+                tuning);
         }
     }
+    retain_accumulated_lwr(
+        result.top_placements,
+        tuning.export_accumulated_lwr_threshold);
     return result;
 }

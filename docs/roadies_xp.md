@@ -69,9 +69,9 @@ GPU placement requires the GPU-specific tools to be built, which `roadies_env.sh
 - **TWILIGHT**: built automatically; uses CUDA if `nvcc` is available, falls back to a CPU build otherwise.
 - **MLIPPER**: not shipped as a prebuilt binary — always built from source on your machine. `roadies_env.sh` attempts a best-effort build only if both `nvcc` (CUDA) and `libpll` (`pll.h`) are already found; it skips with a warning otherwise, since these two aren't installed automatically. Either way, MLIPPER's build also needs `gfortran`, `libblas-dev`, `liblapack-dev`, and `libtbb-dev` (not installed by `roadies_env.sh`). Once CUDA/libpll/these are available, build (or rebuild) it explicitly:
   ```bash
-  bash MLIPPER/install/setup_host.sh
+  make -C MLIPPER -j4 MLIPPER
   ```
-  Pass `--skip-apt` if you've already installed the apt dependencies yourself (the script's default apt install needs sudo); see `bash MLIPPER/install/setup_host.sh --help` for all options (e.g. pointing at a non-default `libpll` install location).
+  Override `CUDA_HOME`, `PLL_INC_DIR`, or `PLL_LIB_DIR` on the `make` command when those dependencies are installed outside their standard locations; see `MLIPPER/README.md` for the supported build variables.
 
   !!! Note
       If MLIPPER fails at *runtime* with `undefined symbol: ATL_dGetNB` (not a build failure), that's an unrelated, pre-existing broken BLAS/LAPACK alternative on your system, not a MLIPPER or ROADIES bug — see [Troubleshooting: Error 7](troubleshooting.md#error-7-mlipper-fails-with-undefined-symbol-atl_dgetnb-gpu-placement-mode).
