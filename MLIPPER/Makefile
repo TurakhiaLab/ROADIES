@@ -227,7 +227,7 @@ $(TARGET): $(ALL_OBJS) $(CORAX_LIB)
 			$(BOOST_LINK_FLAGS) \
 			$(ZLIB_LINK_FLAGS) \
 			$(PLL_LINK_FLAGS) \
-			$(CUDA_LIB) -lcudart -lcuda -lnvidia-ml \
+			$(CUDA_LIB) -lcudart -lcuda \
 			-ltbb \
 			$(LAPACK_LIBS)
 
@@ -270,7 +270,7 @@ $(TOPOLOGY_REFINEMENT_TEST): tests/topology_refinement_test.cpp src/spr/local_sp
 $(GPU_ADMISSION_TEST): tests/gpu_admission_test.cpp src/gpu/gpu_admission.cpp src/gpu/gpu_admission.hpp $(BUILD_CONFIG)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) tests/gpu_admission_test.cpp src/gpu/gpu_admission.cpp \
-		-o $@ $(CUDA_LIB) -lcudart -lnvidia-ml -lrt
+		-o $@ $(CUDA_LIB) -lcudart -lrt
 
 $(CHECKED_SIZE_TEST): tests/checked_size_test.cpp src/util/checked_size.hpp $(BUILD_CONFIG)
 	@mkdir -p $(dir $@)

@@ -48,15 +48,12 @@ int main()
 
     DeviceReservation source;
     source.device = 3;
-    source.reserved_memory_mb = 1024;
-    source.process_start_ticks = 99;
+    source.bus_id = "00000000:03:00.0";
     DeviceReservation destination = std::move(source);
     assert(source.device == -1);
-    assert(source.reserved_memory_mb == 0);
-    assert(source.process_start_ticks == 0);
+    assert(source.bus_id.empty());
     assert(destination.device == 3);
-    assert(destination.reserved_memory_mb == 1024);
-    assert(destination.process_start_ticks == 99);
+    assert(destination.bus_id == "00000000:03:00.0");
 
     mlipper::MlipperGpuConfig invalid_config;
     invalid_config.acquire_mode =

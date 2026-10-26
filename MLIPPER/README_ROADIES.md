@@ -99,7 +99,8 @@ a compatible host driver, and the NVIDIA Container Toolkit.
 
 MLIPPER uses one GPU per invocation. For a local executable, select a device
 with `--gpu-id N`, restrict visibility with `CUDA_VISIBLE_DEVICES`, or use
-`--gpu-auto` for shared admission across visible GPUs. For Docker, control
-which devices enter the container with Docker's `--gpus` option.
+`--gpu-auto` to pick the first visible GPU not already locked by another
+MLIPPER process. For Docker, control which devices enter the container with
+Docker's `--gpus` option.
 
-See [`src/gpu/README.md`](src/gpu/README.md) for the detailed runtime controls.
+See [`src/gpu/README.md`](src/gpu/README.md) for details.

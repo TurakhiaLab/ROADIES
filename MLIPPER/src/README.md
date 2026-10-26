@@ -84,7 +84,7 @@ CUDA work is documented beside the data it produces: [PMAT construction](pmatrix
 - `HostPacking` owns host arrays derived from that topology.
 - `OwnedDeviceTree` owns CUDA allocations; `DeviceTree` is only a non-owning, trivially-copyable view passed to kernels.
 - `PlacementOpBuffer` owns/prepares traversal operations but does not own the tree itself.
-- `gpu::DeviceReservation` owns one shared admission-table entry, not CUDA memory. Its destructor releases that reservation.
+- `gpu::DeviceReservation` owns one open file descriptor locking a GPU against other MLIPPER processes, not CUDA memory. Its destructor closes the descriptor, releasing the lock.
 - After changing topology, rebuild traversals and refresh every affected host and device representation before evaluating likelihood.
 
 ## Before Changing Shared Code

@@ -162,7 +162,7 @@ kept in `runDivideAndConquerWorkflow()` in `src/main.cpp`.
 | `src/optimize/`         | Model and branch-length optimization                                |
 | `src/likelihood/`       | CUDA likelihood kernels                                             |
 | `src/pmatrix/`          | Transition matrices and eigendecomposition                          |
-| `src/gpu/`              | GPU selection and multi-process admission                           |
+| `src/gpu/`              | GPU selection and per-device locking                                |
 | `src/workflow/`         | Narrow adapters to external workflow components                     |
 | `tests/`                | CPU regressions and GPU integration fixture                         |
 | `scripts/`              | Maintained ROADIES single-gene wrapper                              |
@@ -206,7 +206,7 @@ construction, sector NNI, and final optimization.
 | Transition matrices/eigendecomposition     | `src/pmatrix/`                                              |
 | Newick or jplace output                    | `src/io/tree_newick.*`, `src/io/jplace.*`                 |
 | DIPPER adapter                             | `src/workflow/dipper_starting_tree.*`                       |
-| GPU admission                              | `src/gpu/gpu_admission.*`                                   |
+| GPU device locking                         | `src/gpu/gpu_admission.*`                                   |
 | ROADIES invocation                         | `README_ROADIES.md`                                      |
 
 ## Development Principles

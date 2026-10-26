@@ -10,11 +10,11 @@
 namespace mlipper {
 
 enum class MlipperGpuAcquireMode {
-    // Select a device without cross-process memory accounting.
+    // Select a device without any cross-process coordination.
     UseCurrentDevice,
-    // Wait until gpu_id can accommodate this process's estimated demand.
+    // Wait until gpu_id is not held by another MLIPPER process.
     AdmitSpecificDevice,
-    // Wait for and select the least-loaded admissible visible device.
+    // Wait for and select a visible device not held by another MLIPPER process.
     AutoAdmitAnyVisible
 };
 
@@ -26,9 +26,12 @@ struct MlipperGpuConfig {
 
 namespace gpu {
 
-// Process-local ownership of one entry in the shared GPU admission table.
-// Destruction removes the reservation on a best-effort basis; stale entries
-// are also reclaimed using PID and process-start-time identity checks.
+// Process-local ownership of an exclusive, advisory lock on one GPU, so two
+// MLIPPER processes don't run on the same device at once. The lock is a
+// flock() on a per-device file under MLIPPER_GPU_LOCK_DIR (default
+// /tmp/mlipper_gpu_locks); the OS releases it automatically when this
+// process's file descriptor is closed, including on crash, so there is no
+// persistent cross-process state to go stale or get stuck.
 struct DeviceReservation {
     DeviceReservation() = default;
     ~DeviceReservation() noexcept;
@@ -43,9 +46,7 @@ struct DeviceReservation {
 
     int device = -1;
     std::string bus_id;
-    int reserved_memory_mb = 0;
-    pid_t pid = 0;
-    std::uint64_t process_start_ticks = 0;
+    int fd = -1;
 };
 
 /// Returns a conservative MiB estimate for resident tree and placement state.
@@ -80,13 +81,18 @@ int current_device_or_throw();
 void set_device_or_throw(int device);
 cudaDeviceProp current_device_properties_or_throw();
 
-/// Selects and activates a CUDA device, waiting when admission is temporary.
-/// A returned empty reservation means cross-process admission was not requested.
+/// Selects and activates a CUDA device, waiting when every candidate device
+/// is currently locked by another MLIPPER process. estimated_process_memory_mb
+/// is accepted for call-site compatibility but unused: device selection here
+/// is a simple per-device mutual-exclusion lock, not memory-aware admission.
+/// A returned empty reservation means no cross-process lock was requested
+/// (UseCurrentDevice).
 DeviceReservation select_device_or_wait_or_throw(
     const MlipperGpuConfig& config,
     int estimated_process_memory_mb);
 
-/// Grows an existing reservation to estimated_process_memory_mb, if necessary.
+/// No-op: this simpler lock model has no notion of growing a reservation's
+/// memory budget. Kept for call-site compatibility.
 void ensure_reservation_capacity_or_wait(
     DeviceReservation& reservation,
     int estimated_process_memory_mb);

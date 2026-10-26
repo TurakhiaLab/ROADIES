@@ -283,9 +283,9 @@ SmallTipParseResult loadSmallTipConfigFromCommandLine(
     po::options_description runtime_options("Runtime");
     runtime_options.add_options()
         ("gpu-id", po::value<int>(&args.gpu_id),
-         "CUDA device ordinal within the visible GPU set")
+         "Visible CUDA device ordinal; waits if another MLIPPER process holds it")
         ("gpu-auto", cli_flag(&args.gpu_auto),
-         "Auto-select the visible CUDA device with the lowest projected reserved-memory ratio");
+         "Auto-select the first visible CUDA device not held by another MLIPPER process");
 
     po::options_description all_options("MLIPPER");
     all_options.add(general_options).add(input_options).add(output_options)
@@ -605,9 +605,9 @@ bool parse_divide_and_conquer_args(
          po::value<std::string>(&args.dipper_starting_tree_mode)->default_value("nj-placement"),
          "DIPPER starting-tree algorithm: nj-placement or divide-and-conquer")
         ("gpu-id", po::value<int>(&args.gpu_id),
-         "Visible CUDA device ordinal; waits for shared admission thresholds")
+         "Visible CUDA device ordinal; waits if another MLIPPER process holds it")
         ("gpu-auto", cli_flag(&args.gpu_auto),
-         "Auto-select the visible CUDA device with the lowest projected reserved-memory ratio");
+         "Auto-select the first visible CUDA device not held by another MLIPPER process");
 
     po::variables_map vm;
     try {
